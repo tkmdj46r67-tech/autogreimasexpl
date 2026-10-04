@@ -1,117 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Greimas Square — 3D Explorer</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Greimas Square — 3D Wireframe</title>
 <style>
-  *{ box-sizing: border-box; }
-  html, body{
-    margin:0; height:100%; overflow:hidden; background:#05070d; color:#e9edf7;
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: #05070d; color: #e9edf7;
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
-  #app{ position:fixed; inset:0; }
-  #app canvas{ display:block; }
+  #app { position: fixed; inset: 0; }
+  #app canvas { display: block; }
 
   /* ---------- 3D labels ---------- */
-  .lbl{
-    pointer-events:none; user-select:none; white-space:nowrap; color:#fff;
-    text-shadow: 0 0 10px rgba(0,0,0,.95), 0 1px 3px rgba(0,0,0,.9);
+  .lbl {
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+    text-shadow: 0 0 8px rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.9);
   }
-  .lbl.main{
-    font-size:15px; font-weight:600; padding:2px 10px; border-radius:999px;
-    background: rgba(8,11,20,.62); border:1px solid rgba(255,255,255,.08);
+  .lbl.main { font-size: 14px; font-weight: 600; }
+  .lbl.main b {
+    font-weight: 500; font-size: 10px; opacity: 0.55;
+    margin-right: 5px; letter-spacing: 0.06em;
   }
-  .lbl.main b{
-    font-weight:500; font-size:10.5px; opacity:.55; margin-right:6px; letter-spacing:.06em;
+  .lbl.mid { font-size: 13px; font-weight: 600; color: #ffd166; }
+  .lbl.mid b {
+    font-weight: 500; font-size: 9.5px; opacity: 0.55;
+    margin-right: 5px; letter-spacing: 0.06em;
   }
-  .lbl.sub{ font-size:11px; opacity:.85; letter-spacing:.05em; }
+  .lbl.corner { font-size: 12px; font-weight: 500; color: #e8b64c; opacity: 0.92; }
+  .lbl.corner b {
+    font-weight: 400; font-size: 9px; opacity: 0.55;
+    margin-right: 4px; letter-spacing: 0.06em;
+  }
+  .lbl.sub { font-size: 10.5px; opacity: 0.85; letter-spacing: 0.04em; }
 
   /* ---------- console ---------- */
-  #ui{
-    position:fixed; top:16px; left:16px; z-index:10;
-    width:280px; max-height:calc(100vh - 32px); overflow-y:auto;
-    padding:14px 15px 15px;
-    border-radius:14px;
-    background: rgba(10,14,24,.86);
-    border:1px solid rgba(255,255,255,.08);
-    box-shadow: 0 16px 44px rgba(0,0,0,.55);
-    font-size:12px; line-height:1.4;
+  #ui {
+    position: fixed;
+    top: 14px; left: 14px;
+    z-index: 10;
+    width: 262px;
+    max-height: calc(100vh - 28px);
+    overflow-y: auto;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(9, 13, 22, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+    font-size: 12px;
+    line-height: 1.4;
   }
-  #ui::-webkit-scrollbar{ width:7px; }
-  #ui::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.13); border-radius:4px; }
-
-  #ui h1{
-    margin:0 0 2px; font-size:13px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  #ui::-webkit-scrollbar { width: 6px; }
+  #ui::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 3px; }
+  #ui h1 {
+    margin: 0 0 2px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
-  #ui h1 span{
-    display:inline-block; margin-left:6px; padding:1px 6px; font-size:9px; letter-spacing:.14em;
-    border-radius:5px; color:#0a0e1c; vertical-align:2px;
-    background:linear-gradient(120deg,#4ecdc4,#ff6fae);
+  #ui h1 span {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 5px;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    border-radius: 4px;
+    color: #0a0e1c;
+    vertical-align: 2px;
+    background: linear-gradient(120deg, #4ecdc4, #ffd166);
   }
-  .hint{ margin:0 0 13px; font-size:10.5px; color:#8a96b4; letter-spacing:.02em; }
-
-  .term{ margin-bottom:9px; }
-  .term label{
-    display:flex; align-items:center; gap:6px; margin-bottom:4px;
-    font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:#9aa6c0;
-  }
-  .term label i{
-    width:8px; height:8px; border-radius:50%; flex:0 0 auto;
-    background:var(--c); box-shadow:0 0 9px var(--c);
-  }
-  input[type=text]{
-    width:100%; padding:6px 9px; margin-bottom:4px; border-radius:8px;
-    font:inherit; font-size:12px; color:#e9edf7;
-    background:rgba(255,255,255,.055);
-    border:1px solid rgba(255,255,255,.09);
-    outline:none; transition:border-color .15s, background .15s;
-  }
-  input[type=text]:focus{
-    border-color:rgba(126,160,255,.55); background:rgba(126,160,255,.10);
-  }
-  input.t-sub{ font-size:11px; color:#a8b3cc; }
-
-  .buttons{ display:flex; gap:8px; margin:6px 0 12px; }
-  button{
-    flex:1; padding:8px 4px; border-radius:9px; cursor:pointer;
-    font:inherit; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
-    color:#e9edf7; background:rgba(126,160,255,.18);
-    border:1px solid rgba(126,160,255,.4);
-    transition:background .15s, border-color .15s;
-  }
-  button:hover{ background:rgba(126,160,255,.32); }
-  button:active{ transform:translateY(1px); }
-  button.ghost{
-    flex:0 0 76px; background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.11);
-  }
-  button.ghost:hover{ background:rgba(255,255,255,.11); }
-
-  .toggles{
-    display:flex; flex-wrap:wrap; gap:6px;
-    padding-top:11px; border-top:1px solid rgba(255,255,255,.07);
-  }
-  .toggles label{
-    display:flex; align-items:center; gap:5px;
-    padding:5px 9px; border-radius:8px; cursor:pointer; user-select:none;
-    font-size:10.5px; letter-spacing:.03em;
-    background:rgba(255,255,255,.045);
-    border:1px solid rgba(255,255,255,.06);
-    transition:background .15s, border-color .15s;
-  }
-  .toggles label:hover{ background:rgba(255,255,255,.09); }
-  .toggles input{ display:none; }
-  .toggles label:has(input:checked){
-    background:rgba(126,160,255,.16);
-    border-color:rgba(126,160,255,.42);
-    color:#fff;
+  .hint {
+    margin: 0 0 10px;
+    font-size: 10px;
+    color: #7e8aa8;
+    letter-spacing: 0.02em;
   }
 
-  @media (max-width:560px){
-    #ui{ width:206px; padding:11px; font-size:11px; }
-    .hint{ display:none; }
-    #ui h1{ font-size:11.5px; }
-    .lbl.main{ font-size:13px; }
+  .sec {
+    margin-bottom: 9px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .sec:last-of-type { border-bottom: none; margin-bottom: 4px; }
+  .sec-title {
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #7e8aa8;
+    margin-bottom: 6px;
+  }
+
+  .row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .row .sym {
+    flex: 0 0 36px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: right;
+    letter-spacing: 0.02em;
+  }
+  .row .sym.dot {
+    flex: 0 0 36px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .row .sym.dot i {
+    display: block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+  }
+  .row input {
+    flex: 1; min-width: 0;
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e9edf7;
+    font: inherit;
+    font-size: 11.5px;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .row input:focus {
+    border-color: rgba(126, 160, 255, 0.5);
+    background: rgba(126, 160, 255, 0.10);
+  }
+  .row.sub input { font-size: 10.5px; color: #a8b3cc; }
+  .row.sub { margin-bottom: 7px; }
+
+  .buttons { display: flex; gap: 7px; margin: 8px 0 10px; }
+  button {
+    flex: 1;
+    padding: 7px 4px;
+    border-radius: 7px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #e9edf7;
+    background: rgba(126, 160, 255, 0.18);
+    border: 1px solid rgba(126, 160, 255, 0.4);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  button:hover { background: rgba(126, 160, 255, 0.32); }
+  button:active { transform: translateY(1px); }
+  button.ghost {
+    flex: 0 0 72px;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.10);
+  }
+  button.ghost:hover { background: rgba(255, 255, 255, 0.11); }
+
+  .toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding-top: 9px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .toggles label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 8px;
+    border-radius: 7px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 10px;
+    letter-spacing: 0.03em;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .toggles label:hover { background: rgba(255, 255, 255, 0.09); }
+  .toggles input { display: none; }
+  .toggles label:has(input:checked) {
+    background: rgba(126, 160, 255, 0.16);
+    border-color: rgba(126, 160, 255, 0.4);
+    color: #fff;
+  }
+
+  @media (max-width: 560px) {
+    #ui { width: 200px; padding: 10px; font-size: 11px; }
+    .hint { display: none; }
+    #ui h1 { font-size: 11px; }
   }
 </style>
 </head>
@@ -119,33 +200,84 @@
 
 <div id="app"></div>
 
-<!-- ================= CONSOLE ================= -->
 <div id="ui">
   <h1>Greimas Square<span>3D</span></h1>
-  <p class="hint">drag · rotate &nbsp;|&nbsp; scroll · zoom &nbsp;|&nbsp; right-drag · pan</p>
+  <p class="hint">drag · rotate | scroll · zoom | right-drag · pan</p>
 
-  <div class="term">
-    <label><i style="--c:#ff9f43"></i>S₁ &nbsp;·&nbsp; top-left</label>
-    <input class="t-main" data-k="s1" type="text" placeholder="term" />
-    <input class="t-sub"  data-k="s1" type="text" placeholder="subterms, comma separated" />
+  <div class="sec">
+    <div class="sec-title">Inner Square</div>
+    <div class="row">
+      <span class="sym" style="color:#ffb86b">S₁</span>
+      <input type="text" data-k="s1" data-f="name">
+    </div>
+    <div class="row sub">
+      <span class="sym dot" style="color:#ff9f43"><i></i></span>
+      <input type="text" data-k="s1" data-f="subs" placeholder="subterms, comma separated">
+    </div>
+    <div class="row">
+      <span class="sym" style="color:#6fe3da">S₂</span>
+      <input type="text" data-k="s2" data-f="name">
+    </div>
+    <div class="row sub">
+      <span class="sym dot" style="color:#4ecdc4"><i></i></span>
+      <input type="text" data-k="s2" data-f="subs" placeholder="subterms, comma separated">
+    </div>
+    <div class="row">
+      <span class="sym" style="color:#a3adff">~S₁</span>
+      <input type="text" data-k="ns1" data-f="name">
+    </div>
+    <div class="row sub">
+      <span class="sym dot" style="color:#7b8cff"><i></i></span>
+      <input type="text" data-k="ns1" data-f="subs" placeholder="subterms, comma separated">
+    </div>
+    <div class="row">
+      <span class="sym" style="color:#ffa0cd">~S₂</span>
+      <input type="text" data-k="ns2" data-f="name">
+    </div>
+    <div class="row sub">
+      <span class="sym dot" style="color:#ff6fae"><i></i></span>
+      <input type="text" data-k="ns2" data-f="subs" placeholder="subterms, comma separated">
+    </div>
   </div>
 
-  <div class="term">
-    <label><i style="--c:#4ecdc4"></i>S₂ &nbsp;·&nbsp; top-right</label>
-    <input class="t-main" data-k="s2" type="text" placeholder="term" />
-    <input class="t-sub"  data-k="s2" type="text" placeholder="subterms, comma separated" />
+  <div class="sec">
+    <div class="sec-title">Outer Midpoints</div>
+    <div class="row">
+      <span class="sym" style="color:#ffd166">M₁</span>
+      <input type="text" data-k="m1" data-f="name">
+    </div>
+    <div class="row">
+      <span class="sym" style="color:#ffd166">M₂</span>
+      <input type="text" data-k="m2" data-f="name">
+    </div>
+    <div class="row">
+      <span class="sym" style="color:#ffd166">M₃</span>
+      <input type="text" data-k="m3" data-f="name">
+    </div>
+    <div class="row">
+      <span class="sym" style="color:#ffd166">M₄</span>
+      <input type="text" data-k="m4" data-f="name">
+    </div>
   </div>
 
-  <div class="term">
-    <label><i style="--c:#7b8cff"></i>~S₁ &nbsp;·&nbsp; bottom-left</label>
-    <input class="t-main" data-k="ns1" type="text" placeholder="term" />
-    <input class="t-sub"  data-k="ns1" type="text" placeholder="subterms, comma separated" />
-  </div>
-
-  <div class="term">
-    <label><i style="--c:#ff6fae"></i>~S₂ &nbsp;·&nbsp; bottom-right</label>
-    <input class="t-main" data-k="ns2" type="text" placeholder="term" />
-    <input class="t-sub"  data-k="ns2" type="text" placeholder="subterms, comma separated" />
+  <div class="sec">
+    <div class="sec-title">Outer Corners</div>
+    <div class="row">
+      <span class="sym" style="color:#e8b64c">C₁</span>
+      <input type="text" data-k="c1" data-f="name">
+    </div>
+    <div class="row">
+      <span class="sym" style="color:#e8b64c">C₂</span>
+      <input type="text" data-k="c2" data-f="name">
+    </div>
+    <div class="row">
+      <span class="sym" style="color:#e8b64c">C₃</span>
+      <input type="text" data-k="c3" data-f="name">
+    </div>
+    <div class="row">
+      <span class="sym" style="color:#e8b64c">C₄</span>
+      <input type="text" data-k="c4" data-f="name">
+    </div>
   </div>
 
   <div class="buttons">
@@ -156,7 +288,6 @@
   <div class="toggles">
     <label><input type="checkbox" id="t-labels" checked><span>Labels</span></label>
     <label><input type="checkbox" id="t-subs" checked><span>Subterms</span></label>
-    <label><input type="checkbox" id="t-blur" checked><span>Motion blur</span></label>
     <label><input type="checkbox" id="t-rotate"><span>Auto-rotate</span></label>
   </div>
 </div>
@@ -179,85 +310,122 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 
 /* =====================================================================
-   1.  DATA
+   DATA
    ===================================================================== */
-const KEYS = ['s1', 's2', 'ns1', 'ns2'];
+const INNER_KEYS = ['s1', 's2', 'ns1', 'ns2'];
+const M_KEYS     = ['m1', 'm2', 'm3', 'm4'];
+const C_KEYS     = ['c1', 'c2', 'c3', 'c4'];
+const ALL_KEYS   = [...INNER_KEYS, ...M_KEYS, ...C_KEYS];
 
-const COLORS = { s1: 0xff9f43, s2: 0x4ecdc4, ns1: 0x7b8cff, ns2: 0xff6fae };
-const TEXTC  = { s1: '#ffb86b', s2: '#6fe3da', ns1: '#a3adff', ns2: '#ffa0cd' };
-const SYM    = { s1: 'S₁', s2: 'S₂', ns1: '~S₁', ns2: '~S₂' };
+const SYMBOLS = {
+  s1: 'S₁', s2: 'S₂', ns1: '~S₁', ns2: '~S₂',
+  m1: 'M₁', m2: 'M₂', m3: 'M₃', m4: 'M₄',
+  c1: 'C₁', c2: 'C₂', c3: 'C₃', c4: 'C₄',
+};
+
+const COLORS = {
+  s1: 0xff9f43, s2: 0x4ecdc4, ns1: 0x7b8cff, ns2: 0xff6fae,
+  m1: 0xffd166, m2: 0xffd166, m3: 0xffd166, m4: 0xffd166,
+  c1: 0xe8b64c, c2: 0xe8b64c, c3: 0xe8b64c, c4: 0xe8b64c,
+};
+
+const TEXT_COLORS = {
+  s1: '#ffb86b', s2: '#6fe3da', ns1: '#a3adff', ns2: '#ffa0cd',
+  m1: '#ffd166', m2: '#ffd166', m3: '#ffd166', m4: '#ffd166',
+  c1: '#e8b64c', c2: '#e8b64c', c3: '#e8b64c', c4: '#e8b64c',
+};
 
 const DEFAULTS = {
-  s1 : { term: 'Life',      subs: 'Flora, Fauna, Body' },
-  s2 : { term: 'Death',     subs: 'Silence, Decay, Ghost' },
-  ns1: { term: 'Non-life',  subs: 'Mineral, Machine, Crystal' },
-  ns2: { term: 'Non-death', subs: 'Memory, Relic, Seed' },
+  s1:  { name: 'Being',       subs: 'Flora, Fauna, Body' },
+  s2:  { name: 'Seeming',     subs: 'Silence, Decay, Ghost' },
+  ns1: { name: 'Non-being',   subs: 'Mineral, Machine, Crystal' },
+  ns2: { name: 'Non-seeming', subs: 'Memory, Relic, Seed' },
+  m1:  { name: 'Truth' },
+  m2:  { name: 'Lie' },
+  m3:  { name: 'Falsehood' },
+  m4:  { name: 'Secret' },
+  c1:  { name: 'Paradox' },
+  c2:  { name: 'Deception' },
+  c3:  { name: 'Subterfuge' },
+  c4:  { name: 'Revelation' },
 };
 
 const state = JSON.parse(JSON.stringify(DEFAULTS));
 
 /* =====================================================================
-   2.  RENDERER / SCENE / CAMERA
+   POSITIONS
+   ===================================================================== */
+const H = 2.0;      // inner half-size
+const D = 4.8;      // outer half-size
+
+const POS = {
+  s1:  new THREE.Vector3(-H,  H, 0),
+  s2:  new THREE.Vector3( H,  H, 0),
+  ns1: new THREE.Vector3(-H, -H, 0),
+  ns2: new THREE.Vector3( H, -H, 0),
+  m1:  new THREE.Vector3( 0,  D, 0),
+  m2:  new THREE.Vector3( D,  0, 0),
+  m3:  new THREE.Vector3( 0, -D, 0),
+  m4:  new THREE.Vector3(-D,  0, 0),
+  c1:  new THREE.Vector3( D,  D, 0),
+  c2:  new THREE.Vector3( D, -D, 0),
+  c3:  new THREE.Vector3(-D, -D, 0),
+  c4:  new THREE.Vector3(-D,  D, 0),
+};
+
+/* =====================================================================
+   SCENE
    ===================================================================== */
 const app = document.getElementById('app');
-const DPR = Math.min(window.devicePixelRatio || 1, 1.75);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x05070d);
+
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 200);
+camera.position.set(1.2, 0.9, 13.8);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(DPR);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
-renderer.toneMapping = THREE.NoToneMapping;   // we tonemap in the composite pass
 app.appendChild(renderer.domElement);
 
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(innerWidth, innerHeight);
 Object.assign(labelRenderer.domElement.style, {
-  position: 'absolute', top: '0', left: '0', pointerEvents: 'none'
+  position: 'absolute',
+  top: '0', left: '0',
+  pointerEvents: 'none',
+  zIndex: '1'
 });
 app.appendChild(labelRenderer.domElement);
-
-const scene = new THREE.Scene();
-
-/* gradient sky (drawn in WebGL so the composite pass stays opaque) */
-scene.background = (() => {
-  const c = document.createElement('canvas');
-  c.width = c.height = 512;
-  const ctx = c.getContext('2d');
-  const g = ctx.createRadialGradient(256, 205, 0, 256, 205, 365);
-  g.addColorStop(0.00, '#18223c');
-  g.addColorStop(0.45, '#0a0e1c');
-  g.addColorStop(1.00, '#04050a');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 512, 512);
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-})();
-
-const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 200);
-camera.position.set(3.4, 2.2, 11.5);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping   = true;
 controls.dampingFactor   = 0.08;
 controls.rotateSpeed     = 0.85;
-controls.minDistance     = 4.5;
-controls.maxDistance     = 30;
+controls.minDistance     = 5;
+controls.maxDistance     = 32;
 controls.autoRotateSpeed = 0.9;
 
-/* no lights needed — everything is unlit / emissive */
+/* =====================================================================
+   GROUPS
+   ===================================================================== */
+const structureGroup = new THREE.Group();
+const fanGroup       = new THREE.Group();
+const labelGroup     = new THREE.Group();
+scene.add(structureGroup, fanGroup, labelGroup);
 
 /* =====================================================================
-   3.  SHARED HELPERS
+   HELPERS
    ===================================================================== */
 const glowTex = (() => {
-  const s = 128;
+  const s = 64;
   const cv = document.createElement('canvas');
   cv.width = cv.height = s;
   const ctx = cv.getContext('2d');
-  const g = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
-  g.addColorStop(0.00, 'rgba(255,255,255,0.95)');
-  g.addColorStop(0.16, 'rgba(255,255,255,0.40)');
-  g.addColorStop(0.42, 'rgba(255,255,255,0.10)');
+  const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
+  g.addColorStop(0.00, 'rgba(255,255,255,1.0)');
+  g.addColorStop(0.30, 'rgba(255,255,255,0.7)');
+  g.addColorStop(0.65, 'rgba(255,255,255,0.15)');
   g.addColorStop(1.00, 'rgba(255,255,255,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, s, s);
@@ -266,150 +434,191 @@ const glowTex = (() => {
   return t;
 })();
 
-/* --- fat line helper (Line2) --- */
-function makeLine(points, opts = {}) {
+const lineMaterials = [];
+
+function makeLine(p1, p2, opts = {}) {
   const {
     color = 0xffffff, width = 2, opacity = 1,
-    dashed = false, dash = 0.20, gap = 0.14
+    dashed = false, dash = 0.2, gap = 0.15
   } = opts;
 
-  const flat = [];
-  for (const p of points) flat.push(p.x, p.y, p.z);
-
   const geo = new LineGeometry();
-  geo.setPositions(flat);
+  geo.setPositions([p1.x, p1.y, p1.z, p2.x, p2.y, p2.z]);
 
   const mat = new LineMaterial({
     color, linewidth: width,
-    transparent: true, opacity, depthWrite: false,
-    dashed, dashSize: dash, gapSize: gap
+    transparent: opacity < 1, opacity,
+    dashed, dashSize: dash, gapSize: gap,
+    depthWrite: false
   });
   mat.resolution.set(innerWidth, innerHeight);
+  lineMaterials.push(mat);
 
   const line = new Line2(geo, mat);
   line.computeLineDistances();
   return line;
 }
 
-/* --- shared node resources (never disposed) --- */
-const sphereMain = new THREE.SphereGeometry(0.16, 20, 14);
-const sphereSub  = new THREE.SphereGeometry(0.07, 14, 10);
-
-const matMain = {}, matSub = {}, matHalo = {};
-for (const k of KEYS) {
-  matMain[k] = new THREE.MeshBasicMaterial({ color: COLORS[k] });
-  matSub[k]  = new THREE.MeshBasicMaterial({ color: COLORS[k] });
-  matHalo[k] = new THREE.SpriteMaterial({
-    map: glowTex, color: COLORS[k],
+function makeDot(pos, color, scale) {
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: glowTex,
+    color,
     blending: THREE.AdditiveBlending,
-    transparent: true, depthWrite: false, opacity: 0.85
-  });
+    transparent: true,
+    depthWrite: false,
+    opacity: 0.95
+  }));
+  sprite.position.copy(pos);
+  sprite.scale.setScalar(scale);
+  return sprite;
 }
 
-function makeNode(pos, key, small) {
-  const g = new THREE.Group();
-  g.position.copy(pos);
-  g.add(new THREE.Mesh(small ? sphereSub : sphereMain, small ? matSub[key] : matMain[key]));
-  const halo = new THREE.Sprite(matHalo[key]);
-  halo.scale.setScalar(small ? 0.62 : 1.30);
-  g.add(halo);
-  return g;
-}
-
-/* =====================================================================
-   4.  GEOMETRY CONSTANTS
-   ===================================================================== */
-const HALF       = 2.0;
-const SUB_RADIUS = 1.72;
-const SUB_SPREAD = THREE.MathUtils.degToRad(58);
-
-const POS = {
-  s1 : new THREE.Vector3(-HALF,  HALF, 0),
-  s2 : new THREE.Vector3( HALF,  HALF, 0),
-  ns1: new THREE.Vector3(-HALF, -HALF, 0),
-  ns2: new THREE.Vector3( HALF, -HALF, 0),
-};
-
-/* =====================================================================
-   5.  THE SQUARE  (built once — never rebuilt)
-   ===================================================================== */
-const squareGroup = new THREE.Group();
-scene.add(squareGroup);
-
-/* --- the six relations --- */
-const EDGES = [
-  ['s1',  's2',  { color: 0xa9b8d8, width: 2.8, opacity: 0.95 }],                    // contrariety
-  ['ns1', 'ns2', { color: 0xa9b8d8, width: 2.8, opacity: 0.95 }],                    // subcontrariety
-  ['s1',  'ns1', { color: 0x8f9dbe, width: 2.4, opacity: 0.85, dashed: true, dash: 0.22, gap: 0.16 }], // contradiction
-  ['s2',  'ns2', { color: 0x8f9dbe, width: 2.4, opacity: 0.85, dashed: true, dash: 0.22, gap: 0.16 }], // contradiction
-  ['s1',  'ns2', { color: 0x707d99, width: 2.4, opacity: 0.80, dashed: true, dash: 0.05, gap: 0.13 }], // implication
-  ['s2',  'ns1', { color: 0x707d99, width: 2.4, opacity: 0.80, dashed: true, dash: 0.05, gap: 0.13 }], // implication
-];
-
-for (const [a, b, style] of EDGES) {
-  squareGroup.add(makeLine([POS[a], POS[b]], style));
-}
-
-/* --- corner nodes --- */
-for (const k of KEYS) {
-  squareGroup.add(makeNode(POS[k], k, false));
-}
-
-/* --- main labels (created once, text updated later) --- */
-const labelGroup = new THREE.Group();
-scene.add(labelGroup);
-
-const mainLabels = {};   // key -> { el, obj }
-
-for (const k of KEYS) {
-  const p   = POS[k];
-  const out = new THREE.Vector3(p.x, p.y, 0).normalize();
-
+function makeLabel(symbol, name, textColor, cls) {
   const el = document.createElement('div');
-  el.className = 'lbl main';
-  el.style.color = TEXTC[k];
-
-  const obj = new CSS2DObject(el);
-  obj.position.copy(p).addScaledVector(out, 0.62);
-
-  labelGroup.add(obj);
-  mainLabels[k] = { el, obj };
+  el.className = 'lbl ' + cls;
+  el.style.color = textColor;
+  const b = document.createElement('b');
+  b.textContent = symbol;
+  el.append(b, document.createTextNode(name));
+  return new CSS2DObject(el);
 }
 
-function updateMainLabels() {
-  for (const k of KEYS) {
-    const { el } = mainLabels[k];
-    el.textContent = '';
-    const b = document.createElement('b');
-    b.textContent = SYM[k];
-    el.append(b, document.createTextNode(state[k].term));
-  }
+function makeSubLabel(text, textColor) {
+  const el = document.createElement('div');
+  el.className = 'lbl sub';
+  el.style.color = textColor;
+  el.textContent = text;
+  return new CSS2DObject(el);
 }
 
 /* =====================================================================
-   6.  SUBTERM FANS  (rebuilt whenever terms change)
+   CLEANUP
    ===================================================================== */
-const fanGroup = new THREE.Group();
-scene.add(fanGroup);
+function clearAll() {
+  [structureGroup, fanGroup, labelGroup].forEach(group => {
+    group.traverse(obj => {
+      if (obj.isLine2) {
+        obj.geometry.dispose();
+        obj.material.dispose();
+      }
+      if (obj.isSprite && obj.material) {
+        obj.material.dispose();
+      }
+    });
+    group.clear();
+  });
+  lineMaterials.length = 0;
+}
 
-let subLabelObjs = [];
+/* =====================================================================
+   BUILD
+   ===================================================================== */
+let mainLabels = [];
+let subLabels  = [];
+
+function build() {
+  clearAll();
+  mainLabels = [];
+  subLabels  = [];
+
+  /* ---- 1. Inner square ---- */
+  const innerEdges = [
+    // contrary + subcontrary (solid)
+    ['s1',  's2',  { color: 0xd6dff0, width: 2.4, opacity: 0.95 }],
+    ['ns1', 'ns2', { color: 0xd6dff0, width: 2.4, opacity: 0.95 }],
+    // contradictions (solid)
+    ['s1',  'ns1', { color: 0xb8c4da, width: 2.4, opacity: 0.95 }],
+    ['s2',  'ns2', { color: 0xb8c4da, width: 2.4, opacity: 0.95 }],
+    // implications (dashed)
+    ['s1',  'ns2', { color: 0x8a97b5, width: 2.2, opacity: 0.85, dashed: true, dash: 0.22, gap: 0.16 }],
+    ['s2',  'ns1', { color: 0x8a97b5, width: 2.2, opacity: 0.85, dashed: true, dash: 0.22, gap: 0.16 }],
+  ];
+
+  for (const [a, b, opts] of innerEdges) {
+    structureGroup.add(makeLine(POS[a], POS[b], opts));
+  }
+
+  /* ---- 2. Outer S → M dotted connectors ---- */
+  const outerConns = [
+    ['s1', 'm1'], ['s1', 'm4'],
+    ['s2', 'm1'], ['s2', 'm2'],
+    ['ns1', 'm4'], ['ns1', 'm3'],
+    ['ns2', 'm2'], ['ns2', 'm3'],
+  ];
+
+  for (const [a, b] of outerConns) {
+    structureGroup.add(makeLine(POS[a], POS[b], {
+      color: 0xc9a24a, width: 1.6, opacity: 0.6,
+      dashed: true, dash: 0.10, gap: 0.12
+    }));
+  }
+
+  /* ---- 3. Outer perimeter C4-C1-C2-C3-C4 (dotted) ---- */
+  const perimeter = [
+    ['c4', 'c1'], ['c1', 'c2'], ['c2', 'c3'], ['c3', 'c4'],
+  ];
+
+  for (const [a, b] of perimeter) {
+    structureGroup.add(makeLine(POS[a], POS[b], {
+      color: 0xd4a94f, width: 1.7, opacity: 0.7,
+      dashed: true, dash: 0.12, gap: 0.13
+    }));
+  }
+
+  /* ---- 4. Vertex dots ---- */
+  for (const k of ALL_KEYS) {
+    const isInner = INNER_KEYS.includes(k);
+    const isM     = M_KEYS.includes(k);
+    const scale   = isInner ? 0.72 : (isM ? 0.55 : 0.5);
+    structureGroup.add(makeDot(POS[k], COLORS[k], scale));
+  }
+
+  /* ---- 5. Labels ---- */
+  // S labels
+  for (const k of INNER_KEYS) {
+    const p = POS[k];
+    const dir = new THREE.Vector3(p.x, p.y, 0).normalize();
+    const label = makeLabel(SYMBOLS[k], state[k].name, TEXT_COLORS[k], 'main');
+    label.position.copy(p).addScaledVector(dir, 0.55);
+    labelGroup.add(label);
+    mainLabels.push(label);
+  }
+
+  // M labels
+  for (const k of M_KEYS) {
+    const p = POS[k];
+    const dir = new THREE.Vector3(p.x, p.y, 0).normalize();
+    const label = makeLabel(SYMBOLS[k], state[k].name, TEXT_COLORS[k], 'mid');
+    label.position.copy(p).addScaledVector(dir, 0.52);
+    labelGroup.add(label);
+    mainLabels.push(label);
+  }
+
+  // C labels
+  for (const k of C_KEYS) {
+    const p = POS[k];
+    const dir = new THREE.Vector3(p.x, p.y, 0).normalize();
+    const label = makeLabel(SYMBOLS[k], state[k].name, TEXT_COLORS[k], 'corner');
+    label.position.copy(p).addScaledVector(dir, 0.55);
+    labelGroup.add(label);
+    mainLabels.push(label);
+  }
+
+  /* ---- 6. Subterm fans ---- */
+  buildFans();
+
+  /* ---- 7. Visibility ---- */
+  applyVisibility();
+}
+
+const SUB_RADIUS = 1.55;
+const SUB_SPREAD = THREE.MathUtils.degToRad(52);
 
 function buildFans() {
-  /* dispose only the Line2 geometry/materials we created */
-  fanGroup.traverse(o => {
-    if (o.isLine2) {
-      o.geometry.dispose();
-      o.material.dispose();
-    }
-  });
-  fanGroup.clear();          // CSS2DObjects clean up their own DOM on 'removed'
-  subLabelObjs = [];
-
-  for (const k of KEYS) {
+  for (const k of INNER_KEYS) {
     const origin = POS[k];
     const color  = COLORS[k];
-
-    const subs = state[k].subs
+    const subs = (state[k].subs || '')
       .split(',')
       .map(s => s.trim())
       .filter(Boolean);
@@ -433,248 +642,139 @@ function buildFans() {
       const pos = origin.clone().addScaledVector(dir, SUB_RADIUS);
       positions.push(pos);
 
-      /* branch line */
-      fanGroup.add(makeLine([origin, pos], { color, width: 1.6, opacity: 0.42 }));
+      // branch line
+      fanGroup.add(makeLine(origin, pos, { color, width: 1.5, opacity: 0.42 }));
 
-      /* sub-node */
-      fanGroup.add(makeNode(pos, k, true));
+      // sub dot
+      fanGroup.add(makeDot(pos, color, 0.38));
 
-      /* sub-label */
-      const el = document.createElement('div');
-      el.className = 'lbl sub';
-      el.style.color = TEXTC[k];
-      el.textContent = text;
-
-      const obj = new CSS2DObject(el);
-      obj.position.copy(pos).addScaledVector(dir, 0.30);
-
-      fanGroup.add(obj);
-      subLabelObjs.push(obj);
+      // sub label
+      const lbl = makeSubLabel(text, TEXT_COLORS[k]);
+      lbl.position.copy(pos).addScaledVector(dir, 0.28);
+      fanGroup.add(lbl);
+      subLabels.push(lbl);
     });
 
-    /* faint arc threading the subterms */
+    // faint arc through subterms
     if (positions.length > 1) {
       const curve = new THREE.CatmullRomCurve3(positions);
-      fanGroup.add(makeLine(curve.getPoints(24), { color, width: 1.1, opacity: 0.24 }));
+      const pts = curve.getPoints(18);
+      for (let i = 0; i < pts.length - 1; i++) {
+        fanGroup.add(makeLine(pts[i], pts[i+1], {
+          color, width: 1.0, opacity: 0.22
+        }));
+      }
     }
   }
-
-  updateVisibility();
 }
 
 /* =====================================================================
-   7.  GROUND GRID
+   VISIBILITY
    ===================================================================== */
-const grid = new THREE.GridHelper(28, 28, 0x2b3550, 0x161d2e);
-grid.material.transparent = true;
-grid.material.opacity = 0.32;
-grid.position.y = -3.7;
-scene.add(grid);
-
-/* =====================================================================
-   8.  MOTION-BLUR COMPOSITE  (3 render targets, 2 full-screen passes)
-   ===================================================================== */
-const bufSize = renderer.getDrawingBufferSize(new THREE.Vector2());
-
-function makeRT(depth) {
-  return new THREE.WebGLRenderTarget(bufSize.x, bufSize.y, {
-    minFilter: THREE.LinearFilter,
-    magFilter: THREE.LinearFilter,
-    depthBuffer: depth,
-    stencilBuffer: false
-  });
-}
-
-const rtScene = makeRT(true);
-const rtA     = makeRT(false);
-const rtB     = makeRT(false);
-
-const quadCam  = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-const quadGeo  = new THREE.PlaneGeometry(2, 2);
-const quadScene = new THREE.Scene();
-
-const VERT = `
-  varying vec2 vUv;
-  void main(){
-    vUv = uv;
-    gl_Position = vec4(position.xy, 0.0, 1.0);
-  }
-`;
-
-/* pass 1 — accumulate: max(current, previous * decay) */
-const blurMat = new THREE.ShaderMaterial({
-  uniforms: {
-    tCur  : { value: null },
-    tPrev : { value: null },
-    decay : { value: 0.80 }
-  },
-  vertexShader: VERT,
-  fragmentShader: `
-    uniform sampler2D tCur;
-    uniform sampler2D tPrev;
-    uniform float decay;
-    varying vec2 vUv;
-    void main(){
-      vec3 c = texture2D(tCur,  vUv).rgb;
-      vec3 p = texture2D(tPrev, vUv).rgb;
-      gl_FragColor = vec4(max(c, p * decay), 1.0);
-    }
-  `,
-  depthTest: false, depthWrite: false
-});
-
-/* pass 2 — tonemap + gamma to the screen */
-const outMat = new THREE.ShaderMaterial({
-  uniforms: { tDiffuse: { value: null } },
-  vertexShader: VERT,
-  fragmentShader: `
-    uniform sampler2D tDiffuse;
-    varying vec2 vUv;
-    vec3 aces(vec3 x){
-      return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
-    }
-    void main(){
-      vec3 c = texture2D(tDiffuse, vUv).rgb;
-      gl_FragColor = vec4(pow(aces(c), vec3(1.0 / 2.2)), 1.0);
-    }
-  `,
-  depthTest: false, depthWrite: false
-});
-
-const quad = new THREE.Mesh(quadGeo, outMat);
-quad.frustumCulled = false;
-quadScene.add(quad);
-
-let accumIndex = 0;
-let blurOn = true;
-
-function renderFrame() {
-  /* 1 — scene into an offscreen buffer */
-  renderer.setRenderTarget(rtScene);
-  renderer.render(scene, camera);
-
-  /* 2 — accumulate with the previous frame */
-  const read  = accumIndex ? rtB : rtA;
-  const write = accumIndex ? rtA : rtB;
-
-  blurMat.uniforms.tCur.value  = rtScene.texture;
-  blurMat.uniforms.tPrev.value = read.texture;
-  blurMat.uniforms.decay.value = blurOn ? 0.80 : 0.0;
-
-  quad.material = blurMat;
-  renderer.setRenderTarget(write);
-  renderer.render(quadScene, quadCam);
-
-  /* 3 — tonemap that result to the canvas */
-  outMat.uniforms.tDiffuse.value = write.texture;
-  quad.material = outMat;
-  renderer.setRenderTarget(null);
-  renderer.render(quadScene, quadCam);
-
-  accumIndex = 1 - accumIndex;
-}
-
-/* =====================================================================
-   9.  UI WIRING
-   ===================================================================== */
-const inputsMain = {};
-const inputsSub  = {};
-
-document.querySelectorAll('input.t-main').forEach(el => inputsMain[el.dataset.k] = el);
-document.querySelectorAll('input.t-sub').forEach(el  => inputsSub[el.dataset.k]  = el);
-
 const toggleLabels = document.getElementById('t-labels');
 const toggleSubs   = document.getElementById('t-subs');
-const toggleBlur   = document.getElementById('t-blur');
 const toggleRotate = document.getElementById('t-rotate');
 
-function updateVisibility() {
+function applyVisibility() {
   const showLabels = toggleLabels.checked;
   const showSubs   = toggleSubs.checked;
 
-  for (const k of KEYS) mainLabels[k].obj.visible = showLabels;
-  for (const o of subLabelObjs) o.visible = showLabels && showSubs;
+  mainLabels.forEach(l => { l.visible = showLabels; });
+  subLabels.forEach(l  => { l.visible = showLabels && showSubs; });
   fanGroup.visible = showSubs;
 }
 
+/* =====================================================================
+   UI
+   ===================================================================== */
+const inputs = {};
+document.querySelectorAll('#ui input[data-k]').forEach(el => {
+  const k = el.dataset.k;
+  const f = el.dataset.f;
+  if (!inputs[k]) inputs[k] = {};
+  inputs[k][f] = el;
+});
+
 function syncInputsFromState() {
-  for (const k of KEYS) {
-    inputsMain[k].value = state[k].term;
-    inputsSub[k].value  = state[k].subs;
+  for (const k of ALL_KEYS) {
+    if (inputs[k] && inputs[k].name) {
+      inputs[k].name.value = state[k].name || '';
+    }
+    if (inputs[k] && inputs[k].subs && state[k].subs !== undefined) {
+      inputs[k].subs.value = state[k].subs || '';
+    }
   }
 }
 
 function applyInputs() {
-  for (const k of KEYS) {
-    const term = inputsMain[k].value.trim();
-    state[k].term = term || DEFAULTS[k].term;
-    state[k].subs = inputsSub[k].value.trim();
+  for (const k of ALL_KEYS) {
+    if (!inputs[k]) continue;
+    if (inputs[k].name) {
+      const v = inputs[k].name.value.trim();
+      state[k].name = v || DEFAULTS[k].name;
+    }
+    if (inputs[k].subs) {
+      state[k].subs = inputs[k].subs.value.trim();
+    }
   }
-  updateMainLabels();
-  buildFans();
-  updateVisibility();
+  build();
 }
 
 document.getElementById('apply').addEventListener('click', applyInputs);
 
 document.getElementById('reset').addEventListener('click', () => {
-  for (const k of KEYS) {
-    state[k].term = DEFAULTS[k].term;
-    state[k].subs = DEFAULTS[k].subs;
+  for (const k of ALL_KEYS) {
+    state[k].name = DEFAULTS[k].name;
+    if (DEFAULTS[k].subs !== undefined) state[k].subs = DEFAULTS[k].subs;
   }
   syncInputsFromState();
-  updateMainLabels();
-  buildFans();
-  updateVisibility();
+  build();
 });
 
-/* Enter key inside any field applies */
-[...Object.values(inputsMain), ...Object.values(inputsSub)].forEach(el => {
+document.querySelectorAll('#ui input[data-k]').forEach(el => {
   el.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); applyInputs(); el.blur(); }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      applyInputs();
+      el.blur();
+    }
   });
 });
 
-toggleLabels.addEventListener('change', updateVisibility);
-toggleSubs  .addEventListener('change', updateVisibility);
-toggleBlur  .addEventListener('change', () => blurOn = toggleBlur.checked);
-toggleRotate.addEventListener('change', () => controls.autoRotate = toggleRotate.checked);
+toggleLabels.addEventListener('change', applyVisibility);
+toggleSubs  .addEventListener('change', applyVisibility);
+toggleRotate.addEventListener('change', () => {
+  controls.autoRotate = toggleRotate.checked;
+});
 
 /* =====================================================================
-   10.  BOOT
-   ===================================================================== */
-syncInputsFromState();
-updateMainLabels();
-buildFans();
-
-/* =====================================================================
-   11.  RESIZE + LOOP
+   RESIZE
    ===================================================================== */
 function onResize() {
   const w = innerWidth, h = innerHeight;
-
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
-
   renderer.setSize(w, h);
   labelRenderer.setSize(w, h);
-
-  const s = renderer.getDrawingBufferSize(new THREE.Vector2());
-  rtScene.setSize(s.x, s.y);
-  rtA.setSize(s.x, s.y);
-  rtB.setSize(s.x, s.y);
-
-  scene.traverse(o => {
-    if (o.material && o.material.isLineMaterial) o.material.resolution.set(w, h);
-  });
+  lineMaterials.forEach(m => m.resolution.set(w, h));
 }
 addEventListener('resize', onResize);
 
+/* =====================================================================
+   LOOP
+   ===================================================================== */
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
-  renderFrame();
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
 }
+
+/* =====================================================================
+   BOOT
+   ===================================================================== */
+syncInputsFromState();
+build();
 animate();
 </script>
 </body>
