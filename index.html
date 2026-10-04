@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Greimas Square — 3D Explorer</title>
+<style>
+  :root{
+    --s1:  #ff9f43;
+    --s2:  #4ecdc4;
+    --ns1: #9aa6ff;
+    --ns2: #ff8cc4;
+    --ink: #e9edf7;
+    --dim: #8a96b4;
+  }
+  *{ box-sizing: border-box; }
+  html, body{
+    margin:0; height:100%; overflow:hidden;
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:
+      radial-gradient(1100px 800px at 50% 38%, #121a30 0%, #0a0e1c 45%, #04050a 100%);
+    background-attachment: fixed;
+  }
+  #app{ position: fixed; inset: 0; }
+  #app canvas{ display:block; }
+
+  /* ---------- 3D labels ---------- */
+  .lbl{
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+    font-size: 12.5px;
+    letter-spacing: .03em;
+    color:#fff;
+    text-shadow: 0 0 10px rgba(0,0,0,.95), 0 1px 3px rgba(0,0,0,.9);
+  }
+  .lbl.main{
+    font-size: 15px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(10,14,26,.55);
+    border: 1px solid rgba(255,255,255,.09);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .lbl.main b{
+    font-weight: 500;
+    font-size: 10.5px;
+    opacity: .55;
+    margin-right: 6px;
+    letter-spacing: .06em;
+  }
+  .lbl.sub{
+    font-size: 11px;
+    opacity: .8;
+    font-weight: 400;
+    letter-spacing: .05em;
+  }
+
+  /* ---------- UI panel ---------- */
+  #ui{
+    position: fixed;
+    top: 18px; left: 18px;
+    z-index: 10;
+    width: 252px;
+    padding: 15px 16px 13px;
+    border-radius: 15px;
+    background: rgba(11,15,27,.58);
+    border: 1px solid rgba(255,255,255,.075);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 18px 50px rgba(0,0,0,.45);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  #ui h1{
+    margin: 0 0 3px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+  }
+  #ui h1 span{
+    display:inline-block;
+    margin-left: 7px;
+    padding: 1px 6px;
+    font-size: 9.5px;
+    letter-spacing: .14em;
+    border-radius: 5px;
+    color: #0a0e1c;
+    background: linear-gradient(120deg, var(--s2), var(--ns2));
+    vertical-align: 2px;
+  }
+  .hint{
+    margin: 0 0 12px;
+    font-size: 10.5px;
+    color: var(--dim);
+    letter-spacing: .02em;
+  }
+  ul{ list-style:none; margin:0; padding:0; }
+  .legend{ margin-bottom: 11px; }
+  .legend li{
+    display:flex; align-items:center; gap:8px;
+    padding: 2.5px 0;
+  }
+  .legend i{
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--c);
+    box-shadow: 0 0 9px var(--c);
+    flex: 0 0 auto;
+  }
+  .legend span{ flex: 1 1 auto; }
+  .legend em{
+    font-style: normal;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: .08em;
+  }
+  .key{
+    padding-top: 10px;
+    margin-bottom: 11px;
+    border-top: 1px solid rgba(255,255,255,.07);
+    font-size: 10.5px;
+    color: var(--dim);
+  }
+  .key li{ display:flex; align-items:center; gap:9px; padding: 2.5px 0; }
+  .key b{
+    display:inline-block;
+    width: 26px; height: 0;
+    border-top-width: 2px;
+    border-top-color: #93a2c2;
+    flex: 0 0 auto;
+  }
+  .key b.solid { border-top-style: solid; }
+  .key b.dashed{ border-top-style: dashed; }
+  .key b.dotted{ border-top-style: dotted; border-top-width: 3px; }
+
+  .toggles{
+    display:flex; flex-wrap: wrap; gap: 6px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,.07);
+  }
+  .toggles label{
+    display:flex; align-items:center; gap:6px;
+    padding: 5px 9px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.06);
+    cursor: pointer;
+    font-size: 10.5px;
+    letter-spacing: .03em;
+    transition: background .18s, border-color .18s;
+    user-select: none;
+  }
+  .toggles label:hover{ background: rgba(255,255,255,.09); }
+  .toggles input{ display:none; }
+  .toggles label:has(input:checked){
+    background: rgba(126,160,255,.16);
+    border-color: rgba(126,160,255,.42);
+    color: #fff;
+  }
+  @media (max-width: 560px){
+    #ui{ width: 190px; padding: 12px; font-size: 11px; }
+    .hint{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<div id="ui">
+  <h1>Greimas Square<span>3D</span></h1>
+  <p class="hint">drag · rotate &nbsp;|&nbsp; scroll · zoom &nbsp;|&nbsp; right-drag · pan</p>
+
+  <ul class="legend">
+    <li><i style="--c:#ff9f43"></i><span>Life</span><em>S₁</em></li>
+    <li><i style="--c:#4ecdc4"></i><span>Death</span><em>S₂</em></li>
+    <li><i style="--c:#7b8cff"></i><span>Non-life</span><em>~S₁</em></li>
+    <li><i style="--c:#ff6fae"></i><span>Non-death</span><em>~S₂</em></li>
+  </ul>
+
+  <ul class="key">
+    <li><b class="solid"></b> contrariety / subcontrariety</li>
+    <li><b class="dashed"></b> contradiction</li>
+    <li><b class="dotted"></b> implication</li>
+  </ul>
+
+  <div class="toggles">
+    <label><input type="checkbox" id="t-labels" checked><span>Labels</span></label>
+    <label><input type="checkbox" id="t-subs" checked><span>Subterms</span></label>
+    <label><input type="checkbox" id="t-rotate"><span>Auto-rotate</span></label>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+
+/* =====================================================================
+   1.  DATA  —  edit freely.
+       s1  = S₁   (top-left)
+       s2  = S₂   (top-right)
+       ns1 = ~S₁  (bottom-left)
+       ns2 = ~S₂  (bottom-right)
+   ===================================================================== */
+const DATA = {
+  s1 : { term: 'Life',      subs: ['Flora',   'Fauna',   'Body']    },
+  s2 : { term: 'Death',     subs: ['Silence', 'Decay',   'Ghost']   },
+  ns1: { term: 'Non-life',  subs: ['Mineral', 'Machine', 'Crystal'] },
+  ns2: { term: 'Non-death', subs: ['Memory',  'Relic',   'Seed']    },
+};
+
+const COLORS = { s1: 0xff9f43, s2: 0x4ecdc4, ns1: 0x7b8cff, ns2: 0xff6fae };
+const TEXTC  = { s1: '#ffb86b', s2: '#6fe3da', ns1: '#a3adff', ns2: '#ffa0cd' };
+
+/* =====================================================================
+   2.  SCENE / RENDERER / CAMERA
+   ===================================================================== */
+const app = document.getElementById('app');
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 250);
+camera.position.set(3.2, 2.2, 11.5);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
+app.appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(innerWidth, innerHeight);
+Object.assign(labelRenderer.domElement.style, {
+  position: 'absolute', top: '0', left: '0', pointerEvents: 'none'
+});
+app.appendChild(labelRenderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping   = true;
+controls.dampingFactor   = 0.075;
+controls.rotateSpeed     = 0.85;
+controls.minDistance     = 4.5;
+controls.maxDistance     = 32;
+controls.autoRotateSpeed = 0.9;
+controls.target.set(0, 0, 0);
+
+/* =====================================================================
+   3.  LIGHTS
+   ===================================================================== */
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+
+const key = new THREE.DirectionalLight(0xffffff, 1.5);
+key.position.set(6, 10, 9);
+scene.add(key);
+
+const fill = new THREE.DirectionalLight(0x88aaff, 0.5);
+fill.position.set(-8, -4, 6);
+scene.add(fill);
+
+const rimA = new THREE.PointLight(0x4ecdc4, 90, 45, 2);
+rimA.position.set(-9, -7, -7);
+scene.add(rimA);
+
+const rimB = new THREE.PointLight(0xff6fae, 90, 45, 2);
+rimB.position.set(9, 7, -8);
+scene.add(rimB);
+
+/* =====================================================================
+   4.  SHARED HELPERS
+   ===================================================================== */
+const lineMaterials = [];
+
+function makeLine(points, opts = {}) {
+  const {
+    color = 0xffffff, width = 2, opacity = 1,
+    dashed = false, dashSize = 0.16, gapSize = 0.12
+  } = opts;
+
+  const flat = [];
+  for (const p of points) flat.push(p.x, p.y, p.z);
+
+  const geo = new LineGeometry();
+  geo.setPositions(flat);
+
+  const mat = new LineMaterial({
+    color, linewidth: width,
+    transparent: opacity < 1, opacity,
+    dashed, dashSize, gapSize,
+    worldUnits: false
+  });
+  mat.resolution.set(innerWidth, innerHeight);
+  lineMaterials.push(mat);
+
+  const line = new Line2(geo, mat);
+  line.computeLineDistances();
+  return line;
+}
+
+/* soft radial glow sprite texture */
+const glowTex = (() => {
+  const s = 128;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = s;
+  const ctx = cv.getContext('2d');
+  const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
+  g.addColorStop(0.00, 'rgba(255,255,255,0.95)');
+  g.addColorStop(0.16, 'rgba(255,255,255,0.42)');
+  g.addColorStop(0.42, 'rgba(255,255,255,0.11)');
+  g.addColorStop(1.00, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, s, s);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+
+function createNode(position, color, radius = 0.16, glowFactor = 6.5) {
+  const g = new THREE.Group();
+  g.position.copy(position);
+
+  const c = new THREE.Color(color);
+
+  const core = new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 32, 24),
+    new THREE.MeshStandardMaterial({
+      color: c, emissive: c, emissiveIntensity: 1.15,
+      roughness: 0.28, metalness: 0.05
+    })
+  );
+  g.add(core);
+
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: glowTex, color: c,
+    blending: THREE.AdditiveBlending,
+    transparent: true, depthWrite: false, opacity: 0.9
+  }));
+  halo.scale.setScalar(radius * glowFactor);
+  g.add(halo);
+
+  return g;
+}
+
+const mainLabels = [];
+const subLabels  = [];
+
+function createLabel(html, cls, color) {
+  const el = document.createElement('div');
+  el.className = 'lbl ' + cls;
+  el.innerHTML = html;
+  if (color) el.style.color = color;
+  return new CSS2DObject(el);
+}
+
+/* =====================================================================
+   5.  GEOMETRY OF THE SQUARE
+   ===================================================================== */
+const HALF = 2.0;
+
+const POS = {
+  s1 : new THREE.Vector3(-HALF,  HALF, 0),   // top-left
+  s2 : new THREE.Vector3( HALF,  HALF, 0),   // top-right
+  ns1: new THREE.Vector3(-HALF, -HALF, 0),   // bottom-left
+  ns2: new THREE.Vector3( HALF, -HALF, 0),   // bottom-right
+};
+
+const SYM = { s1: 'S₁', s2: 'S₂', ns1: '~S₁', ns2: '~S₂' };
+
+const world = new THREE.Group();
+scene.add(world);
+
+/* ---- the six relations of the square ---- */
+const EDGES = [
+  // contrariety (top) and subcontrariety (bottom)
+  { a: 's1',  b: 's2',  style: 'solid'  },
+  { a: 'ns1', b: 'ns2', style: 'solid'  },
+  // contradictions (verticals)
+  { a: 's1',  b: 'ns1', style: 'dashed' },
+  { a: 's2',  b: 'ns2', style: 'dashed' },
+  // implications (diagonals)
+  { a: 's1',  b: 'ns2', style: 'dotted' },
+  { a: 's2',  b: 'ns1', style: 'dotted' },
+];
+
+const EDGE_STYLE = {
+  solid : { color: 0xa9b8d8, width: 2.6, opacity: 0.9,  dashed: false, dashSize: 0,    gapSize: 0    },
+  dashed: { color: 0x8593b5, width: 2.2, opacity: 0.8,  dashed: true,  dashSize: 0.20, gapSize: 0.14 },
+  dotted: { color: 0x6d7a97, width: 2.4, opacity: 0.75, dashed: true,  dashSize: 0.05, gapSize: 0.13 },
+};
+
+for (const e of EDGES) {
+  const s = EDGE_STYLE[e.style];
+  world.add(makeLine([POS[e.a], POS[e.b]], s));
+}
+
+/* ---- the four main terms ---- */
+for (const key of ['s1', 's2', 'ns1', 'ns2']) {
+  const p = POS[key];
+
+  const node = createNode(p, COLORS[key], 0.165, 7.5);
+  world.add(node);
+
+  // label pushed slightly outward from the centre of the square
+  const out = new THREE.Vector3(p.x, p.y, 0).normalize();
+  const lbl = createLabel(
+    `<b>${SYM[key]}</b>${DATA[key].term}`,
+    'main',
+    TEXTC[key]
+  );
+  lbl.position.copy(p).add(out.clone().multiplyScalar(0.62));
+  world.add(lbl);
+  mainLabels.push(lbl);
+}
+
+/* =====================================================================
+   6.  SUBTERM FANS
+   Each corner sprouts a fan of lines into 3D, arcing through ±Z.
+   ===================================================================== */
+const SUB_RADIUS = 1.72;                 // how far subterms sit from their corner
+const SUB_SPREAD = THREE.MathUtils.degToRad(58);
+
+const fanGroup = new THREE.Group();
+world.add(fanGroup);
+
+for (const key of ['s1', 's2', 'ns1', 'ns2']) {
+  const origin = POS[key];
+  const color  = COLORS[key];
+  const subs   = DATA[key].subs;
+  const n      = subs.length;
+
+  // outward direction inside the square's plane
+  const u  = new THREE.Vector3(origin.x, origin.y, 0).normalize();
+  const zA = new THREE.Vector3(0, 0, 1);
+
+  const positions = [];
+
+  subs.forEach((text, i) => {
+    // t runs -1 .. +1 across the fan
+    const t     = n === 1 ? 0 : (i / (n - 1)) * 2 - 1;
+    const theta = SUB_SPREAD * t;
+
+    const dir = u.clone().multiplyScalar(Math.cos(theta))
+      .add(zA.clone().multiplyScalar(Math.sin(theta)))
+      .normalize();
+
+    const pos = origin.clone().add(dir.clone().multiplyScalar(SUB_RADIUS));
+    positions.push(pos);
+
+    // branch line
+    fanGroup.add(makeLine([origin, pos], {
+      color, width: 1.7, opacity: 0.45
+    }));
+
+    // sub-node
+    fanGroup.add(createNode(pos, color, 0.072, 8.5));
+
+    // sub-label
+    const lbl = createLabel(text, 'sub', TEXTC[key]);
+    lbl.position.copy(pos).add(dir.clone().multiplyScalar(0.34));
+    lbl.visible = true;
+    fanGroup.add(lbl);
+    subLabels.push(lbl);
+  });
+
+  // faint arc threading the subterms together
+  if (positions.length > 1) {
+    const curve = new THREE.CatmullRomCurve3(positions);
+    fanGroup.add(makeLine(curve.getPoints(28), {
+      color, width: 1.1, opacity: 0.28
+    }));
+  }
+}
+
+/* =====================================================================
+   7.  GROUND GRID  (subtle spatial reference)
+   ===================================================================== */
+const grid = new THREE.GridHelper(28, 28, 0x2b3category, 0x1a2236);
+</script>
+
+<script type="module">
+/* NOTE: the grid line above intentionally left out — see corrected build below */
+</script>
+
+<script type="module">
+/* =====================================================================
+   The module above is replaced by this single clean build.
+   ===================================================================== */
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+
+/* ---------------------------------------------------------------------
+   DATA — edit freely
+--------------------------------------------------------------------- */
+const DATA = {
+  s1 : { term: 'Life',      subs: ['Flora',   'Fauna',   'Body']    },
+  s2 : { term: 'Death',     subs: ['Silence', 'Decay',   'Ghost']   },
+  ns1: { term: 'Non-life',  subs: ['Mineral', 'Machine', 'Crystal'] },
+  ns2: { term: 'Non-death', subs: ['Memory',  'Relic',   'Seed']    },
+};
+
+const COLORS = { s1: 0xff9f43, s2: 0x4ecdc4, ns1: 0x7b8cff, ns2: 0xff6fae };
+const TEXTC  = { s1: '#ffb86b', s2: '#6fe3da', ns1: '#a3adff', ns2: '#ffa0cd' };
+const SYM    = { s1: 'S₁', s2: 'S₂', ns1: '~S₁', ns2: '~S₂' };
+
+/* ---------------------------------------------------------------------
+   Scene
+--------------------------------------------------------------------- */
+const app = document.getElementById('app');
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 250);
+camera.position.set(3.2, 2.2, 11.5);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
+app.appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(innerWidth, innerHeight);
+Object.assign(labelRenderer.domElement.style, {
+  position: 'absolute', top: '0', left: '0', pointerEvents: 'none'
+});
+app.appendChild(labelRenderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping   = true;
+controls.dampingFactor   = 0.075;
+controls.rotateSpeed     = 0.85;
+controls.minDistance     = 4.5;
+controls.maxDistance     = 32;
+controls.autoRotateSpeed = 0.9;
+
+/* ---------------------------------------------------------------------
+   Lights
+--------------------------------------------------------------------- */
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+
+const key = new THREE.DirectionalLight(0xffffff, 1.5);
+key.position.set(6, 10, 9);
+scene.add(key);
+
+const fill = new THREE.DirectionalLight(0x88aaff, 0.55);
+fill.position.set(-8, -4, 6);
+scene.add(fill);
+
+const rimA = new THREE.PointLight(0x4ecdc4, 90, 45, 2);
+rimA.position.set(-9, -7, -7);
+scene.add(rimA);
+
+const rimB = new THREE.PointLight(0xff6fae, 90, 45, 2);
+rimB.position.set(9, 7, -8);
+scene.add(rimB);
+
+/* ---------------------------------------------------------------------
+   Helpers
+--------------------------------------------------------------------- */
+const lineMaterials = [];
+
+function makeLine(points, opts = {}) {
+  const {
+    color = 0xffffff, width = 2, opacity = 1,
+    dashed = false, dashSize = 0.16, gapSize = 0.12
+  } = opts;
+
+  const flat = [];
+  for (const p of points) flat.push(p.x, p.y, p.z);
+
+  const geo = new LineGeometry();
+  geo.setPositions(flat);
+
+  const mat = new LineMaterial({
+    color, linewidth: width,
+    transparent: opacity < 1, opacity,
+    dashed, dashSize, gapSize,
+    worldUnits: false
+  });
+  mat.resolution.set(innerWidth, innerHeight);
+  lineMaterials.push(mat);
+
+  const line = new Line2(geo, mat);
+  line.computeLineDistances();
+  return line;
+}
+
+const glowTex = (() => {
+  const s = 128;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = s;
+  const ctx = cv.getContext('2d');
+  const g = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+  g.addColorStop(0.00, 'rgba(255,255,255,0.95)');
+  g.addColorStop(0.16, 'rgba(255,255,255,0.42)');
+  g.addColorStop(0.42, 'rgba(255,255,255,0.11)');
+  g.addColorStop(1.00, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, s, s);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+
+function createNode(position, color, radius = 0.16, glowFactor = 6.5) {
+  const g = new THREE.Group();
+  g.position.copy(position);
+  const c = new THREE.Color(color);
+
+  g.add(new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 32, 24),
+    new THREE.MeshStandardMaterial({
+      color: c, emissive: c, emissiveIntensity: 1.15,
+      roughness: 0.28, metalness: 0.05
+    })
+  ));
+
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: glowTex, color: c,
+    blending: THREE.AdditiveBlending,
+    transparent: true, depthWrite: false, opacity: 0.9
+  }));
+  halo.scale.setScalar(radius * glowFactor);
+  g.add(halo);
+
+  return g;
+}
+
+const mainLabels = [];
+const subLabels  = [];
+
+function createLabel(html, cls, color) {
+  const el = document.createElement('div');
+  el.className = 'lbl ' + cls;
+  el.innerHTML = html;
+  if (color) el.style.color = color;
+  return new CSS2DObject(el);
+}
+
+/* ---------------------------------------------------------------------
+   The square
+--------------------------------------------------------------------- */
+const HALF = 2.0;
+
+const POS = {
+  s1 : new THREE.Vector3(-HALF,  HALF, 0),
+  s2 : new THREE.Vector3( HALF,  HALF, 0),
+  ns1: new THREE.Vector3(-HALF, -HALF, 0),
+  ns2: new THREE.Vector3( HALF, -HALF, 0),
+};
+
+const world = new THREE.Group();
+scene.add(world);
+
+const EDGES = [
+  { a: 's1',  b: 's2',  style: 'solid'  },   // contrariety
+  { a: 'ns1', b: 'ns2', style: 'solid'  },   // subcontrariety
+  { a: 's1',  b: 'ns1', style: 'dashed' },   // contradiction
+  { a: 's2',  b: 'ns2', style: 'dashed' },   // contradiction
+  { a: 's1',  b: 'ns2', style: 'dotted' },   // implication
+  { a: 's2',  b: 'ns1', style: 'dotted' },   // implication
+];
+
+const EDGE_STYLE = {
+  solid : { color: 0xa9b8d8, width: 2.6, opacity: 0.90, dashed: false, dashSize: 0.00, gapSize: 0.00 },
+  dashed: { color: 0x8593b5, width: 2.2, opacity: 0.80, dashed: true,  dashSize: 0.20, gapSize: 0.14 },
+  dotted: { color: 0x6d7a97, width: 2.4, opacity: 0.75, dashed: true,  dashSize: 0.05, gapSize: 0.13 },
+};
+
+for (const e of EDGES) {
+  world.add(makeLine([POS[e.a], POS[e.b]], EDGE_STYLE[e.style]));
+}
+
+for (const k of ['s1', 's2', 'ns1', 'ns2']) {
+  const p = POS[k];
+
+  world.add(createNode(p, COLORS[k], 0.165, 7.5));
+
+  const out = new THREE.Vector3(p.x, p.y, 0).normalize();
+  const lbl = createLabel(`<b>${SYM[k]}</b>${DATA[k].term}`, 'main', TEXTC[k]);
+  lbl.position.copy(p).add(out.clone().multiplyScalar(0.62));
+  world.add(lbl);
+  mainLabels.push(lbl);
+}
+
+/* ---------------------------------------------------------------------
+   Subterm fans
+--------------------------------------------------------------------- */
+const SUB_RADIUS = 1.72;
+const SUB_SPREAD = THREE.MathUtils.degToRad(58);
+
+const fanGroup = new THREE.Group();
+world.add(fanGroup);
+
+for (const k of ['s1', 's2', 'ns1', 'ns2']) {
+  const origin = POS[k];
+  const color  = COLORS[k];
+  const subs   = DATA[k].subs;
+  const n      = subs.length;
+
+  const u  = new THREE.Vector3(origin.x, origin.y, 0).normalize();
+  const zA = new THREE.Vector3(0, 0, 1);
+
+  const positions = [];
+
+  subs.forEach((text, i) => {
+    const t     = n === 1 ? 0 : (i / (n - 1)) * 2 - 1;
+    const theta = SUB_SPREAD * t;
+
+    const dir = u.clone().multiplyScalar(Math.cos(theta))
+      .add(zA.clone().multiplyScalar(Math.sin(theta)))
+      .normalize();
+
+    const pos = origin.clone().add(dir.clone().multiplyScalar(SUB_RADIUS));
+    positions.push(pos);
+
+    fanGroup.add(makeLine([origin, pos], { color, width: 1.7, opacity: 0.45 }));
+    fanGroup.add(createNode(pos, color, 0.072, 8.5));
+
+    const lbl = createLabel(text, 'sub', TEXTC[k]);
+    lbl.position.copy(pos).add(dir.clone().multiplyScalar(0.34));
+    fanGroup.add(lbl);
+    subLabels.push(lbl);
+  });
+
+  if (positions.length > 1) {
+    const curve = new THREE.CatmullRomCurve3(positions);
+    fanGroup.add(makeLine(curve.getPoints(28), { color, width: 1.1, opacity: 0.28 }));
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Ground grid
+--------------------------------------------------------------------- */
+const grid = new THREE.GridHelper(28, 28, 0x2b3550, 0x161d2e);
+grid.material.transparent = true;
+grid.material.opacity = 0.35;
+grid.position.y = -3.7;
+scene.add(grid);
+
+/* ---------------------------------------------------------------------
+   UI
+--------------------------------------------------------------------- */
+const ui = {
+  labels: document.getElementById('t-labels'),
+  subs  : document.getElementById('t-subs'),
+  rotate: document.getElementById('t-rotate'),
+};
+
+function updateVisibility() {
+  const showLabels = ui.labels.checked;
+  const showSubs   = ui.subs.checked;
+
+  mainLabels.forEach(l => l.visible = showLabels);
+  subLabels.forEach(l  => l.visible = showLabels && showSubs);
+  fanGroup.visible = showSubs;
+}
+
+ui.labels.addEventListener('change', updateVisibility);
+ui.subs.addEventListener('change', updateVisibility);
+ui.rotate.addEventListener('change', () => controls.autoRotate = ui.rotate.checked);
+
+updateVisibility();
+
+/* ---------------------------------------------------------------------
+   Resize + loop
+--------------------------------------------------------------------- */
+function onResize() {
+  const w = innerWidth, h = innerHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+  labelRenderer.setSize(w, h);
+  lineMaterials.forEach(m => m.resolution.set(w, h));
+}
+addEventListener('resize', onResize);
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
