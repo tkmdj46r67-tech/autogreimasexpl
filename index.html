@@ -5,165 +5,113 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Greimas Square — 3D Explorer</title>
 <style>
-  :root{
-    --s1:  #ff9f43;
-    --s2:  #4ecdc4;
-    --ns1: #9aa6ff;
-    --ns2: #ff8cc4;
-    --ink: #e9edf7;
-    --dim: #8a96b4;
-  }
   *{ box-sizing: border-box; }
   html, body{
-    margin:0; height:100%; overflow:hidden;
-    color: var(--ink);
+    margin:0; height:100%; overflow:hidden; background:#05070d; color:#e9edf7;
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background:
-      radial-gradient(1100px 800px at 50% 38%, #121a30 0%, #0a0e1c 45%, #04050a 100%);
-    background-attachment: fixed;
   }
-  #app{ position: fixed; inset: 0; }
+  #app{ position:fixed; inset:0; }
   #app canvas{ display:block; }
 
   /* ---------- 3D labels ---------- */
   .lbl{
-    pointer-events: none;
-    user-select: none;
-    white-space: nowrap;
-    font-size: 12.5px;
-    letter-spacing: .03em;
-    color:#fff;
+    pointer-events:none; user-select:none; white-space:nowrap; color:#fff;
     text-shadow: 0 0 10px rgba(0,0,0,.95), 0 1px 3px rgba(0,0,0,.9);
   }
   .lbl.main{
-    font-size: 15px;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 999px;
-    background: rgba(10,14,26,.55);
-    border: 1px solid rgba(255,255,255,.09);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    font-size:15px; font-weight:600; padding:2px 10px; border-radius:999px;
+    background: rgba(8,11,20,.62); border:1px solid rgba(255,255,255,.08);
   }
   .lbl.main b{
-    font-weight: 500;
-    font-size: 10.5px;
-    opacity: .55;
-    margin-right: 6px;
-    letter-spacing: .06em;
+    font-weight:500; font-size:10.5px; opacity:.55; margin-right:6px; letter-spacing:.06em;
   }
-  .lbl.sub{
-    font-size: 11px;
-    opacity: .8;
-    font-weight: 400;
-    letter-spacing: .05em;
-  }
+  .lbl.sub{ font-size:11px; opacity:.85; letter-spacing:.05em; }
 
-  /* ---------- UI panel ---------- */
+  /* ---------- console ---------- */
   #ui{
-    position: fixed;
-    top: 18px; left: 18px;
-    z-index: 10;
-    width: 252px;
-    padding: 15px 16px 13px;
-    border-radius: 15px;
-    background: rgba(11,15,27,.58);
-    border: 1px solid rgba(255,255,255,.075);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 18px 50px rgba(0,0,0,.45);
-    font-size: 12px;
-    line-height: 1.45;
+    position:fixed; top:16px; left:16px; z-index:10;
+    width:280px; max-height:calc(100vh - 32px); overflow-y:auto;
+    padding:14px 15px 15px;
+    border-radius:14px;
+    background: rgba(10,14,24,.86);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow: 0 16px 44px rgba(0,0,0,.55);
+    font-size:12px; line-height:1.4;
   }
+  #ui::-webkit-scrollbar{ width:7px; }
+  #ui::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.13); border-radius:4px; }
+
   #ui h1{
-    margin: 0 0 3px;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: .09em;
-    text-transform: uppercase;
+    margin:0 0 2px; font-size:13px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
   }
   #ui h1 span{
-    display:inline-block;
-    margin-left: 7px;
-    padding: 1px 6px;
-    font-size: 9.5px;
-    letter-spacing: .14em;
-    border-radius: 5px;
-    color: #0a0e1c;
-    background: linear-gradient(120deg, var(--s2), var(--ns2));
-    vertical-align: 2px;
+    display:inline-block; margin-left:6px; padding:1px 6px; font-size:9px; letter-spacing:.14em;
+    border-radius:5px; color:#0a0e1c; vertical-align:2px;
+    background:linear-gradient(120deg,#4ecdc4,#ff6fae);
   }
-  .hint{
-    margin: 0 0 12px;
-    font-size: 10.5px;
-    color: var(--dim);
-    letter-spacing: .02em;
+  .hint{ margin:0 0 13px; font-size:10.5px; color:#8a96b4; letter-spacing:.02em; }
+
+  .term{ margin-bottom:9px; }
+  .term label{
+    display:flex; align-items:center; gap:6px; margin-bottom:4px;
+    font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:#9aa6c0;
   }
-  ul{ list-style:none; margin:0; padding:0; }
-  .legend{ margin-bottom: 11px; }
-  .legend li{
-    display:flex; align-items:center; gap:8px;
-    padding: 2.5px 0;
+  .term label i{
+    width:8px; height:8px; border-radius:50%; flex:0 0 auto;
+    background:var(--c); box-shadow:0 0 9px var(--c);
   }
-  .legend i{
-    width: 9px; height: 9px; border-radius: 50%;
-    background: var(--c);
-    box-shadow: 0 0 9px var(--c);
-    flex: 0 0 auto;
+  input[type=text]{
+    width:100%; padding:6px 9px; margin-bottom:4px; border-radius:8px;
+    font:inherit; font-size:12px; color:#e9edf7;
+    background:rgba(255,255,255,.055);
+    border:1px solid rgba(255,255,255,.09);
+    outline:none; transition:border-color .15s, background .15s;
   }
-  .legend span{ flex: 1 1 auto; }
-  .legend em{
-    font-style: normal;
-    font-size: 10px;
-    color: var(--dim);
-    letter-spacing: .08em;
+  input[type=text]:focus{
+    border-color:rgba(126,160,255,.55); background:rgba(126,160,255,.10);
   }
-  .key{
-    padding-top: 10px;
-    margin-bottom: 11px;
-    border-top: 1px solid rgba(255,255,255,.07);
-    font-size: 10.5px;
-    color: var(--dim);
+  input.t-sub{ font-size:11px; color:#a8b3cc; }
+
+  .buttons{ display:flex; gap:8px; margin:6px 0 12px; }
+  button{
+    flex:1; padding:8px 4px; border-radius:9px; cursor:pointer;
+    font:inherit; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:#e9edf7; background:rgba(126,160,255,.18);
+    border:1px solid rgba(126,160,255,.4);
+    transition:background .15s, border-color .15s;
   }
-  .key li{ display:flex; align-items:center; gap:9px; padding: 2.5px 0; }
-  .key b{
-    display:inline-block;
-    width: 26px; height: 0;
-    border-top-width: 2px;
-    border-top-color: #93a2c2;
-    flex: 0 0 auto;
+  button:hover{ background:rgba(126,160,255,.32); }
+  button:active{ transform:translateY(1px); }
+  button.ghost{
+    flex:0 0 76px; background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.11);
   }
-  .key b.solid { border-top-style: solid; }
-  .key b.dashed{ border-top-style: dashed; }
-  .key b.dotted{ border-top-style: dotted; border-top-width: 3px; }
+  button.ghost:hover{ background:rgba(255,255,255,.11); }
 
   .toggles{
-    display:flex; flex-wrap: wrap; gap: 6px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255,255,255,.07);
+    display:flex; flex-wrap:wrap; gap:6px;
+    padding-top:11px; border-top:1px solid rgba(255,255,255,.07);
   }
   .toggles label{
-    display:flex; align-items:center; gap:6px;
-    padding: 5px 9px;
-    border-radius: 8px;
-    background: rgba(255,255,255,.045);
-    border: 1px solid rgba(255,255,255,.06);
-    cursor: pointer;
-    font-size: 10.5px;
-    letter-spacing: .03em;
-    transition: background .18s, border-color .18s;
-    user-select: none;
+    display:flex; align-items:center; gap:5px;
+    padding:5px 9px; border-radius:8px; cursor:pointer; user-select:none;
+    font-size:10.5px; letter-spacing:.03em;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.06);
+    transition:background .15s, border-color .15s;
   }
-  .toggles label:hover{ background: rgba(255,255,255,.09); }
+  .toggles label:hover{ background:rgba(255,255,255,.09); }
   .toggles input{ display:none; }
   .toggles label:has(input:checked){
-    background: rgba(126,160,255,.16);
-    border-color: rgba(126,160,255,.42);
-    color: #fff;
+    background:rgba(126,160,255,.16);
+    border-color:rgba(126,160,255,.42);
+    color:#fff;
   }
-  @media (max-width: 560px){
-    #ui{ width: 190px; padding: 12px; font-size: 11px; }
+
+  @media (max-width:560px){
+    #ui{ width:206px; padding:11px; font-size:11px; }
     .hint{ display:none; }
+    #ui h1{ font-size:11.5px; }
+    .lbl.main{ font-size:13px; }
   }
 </style>
 </head>
@@ -171,26 +119,44 @@
 
 <div id="app"></div>
 
+<!-- ================= CONSOLE ================= -->
 <div id="ui">
   <h1>Greimas Square<span>3D</span></h1>
   <p class="hint">drag · rotate &nbsp;|&nbsp; scroll · zoom &nbsp;|&nbsp; right-drag · pan</p>
 
-  <ul class="legend">
-    <li><i style="--c:#ff9f43"></i><span>Life</span><em>S₁</em></li>
-    <li><i style="--c:#4ecdc4"></i><span>Death</span><em>S₂</em></li>
-    <li><i style="--c:#7b8cff"></i><span>Non-life</span><em>~S₁</em></li>
-    <li><i style="--c:#ff6fae"></i><span>Non-death</span><em>~S₂</em></li>
-  </ul>
+  <div class="term">
+    <label><i style="--c:#ff9f43"></i>S₁ &nbsp;·&nbsp; top-left</label>
+    <input class="t-main" data-k="s1" type="text" placeholder="term" />
+    <input class="t-sub"  data-k="s1" type="text" placeholder="subterms, comma separated" />
+  </div>
 
-  <ul class="key">
-    <li><b class="solid"></b> contrariety / subcontrariety</li>
-    <li><b class="dashed"></b> contradiction</li>
-    <li><b class="dotted"></b> implication</li>
-  </ul>
+  <div class="term">
+    <label><i style="--c:#4ecdc4"></i>S₂ &nbsp;·&nbsp; top-right</label>
+    <input class="t-main" data-k="s2" type="text" placeholder="term" />
+    <input class="t-sub"  data-k="s2" type="text" placeholder="subterms, comma separated" />
+  </div>
+
+  <div class="term">
+    <label><i style="--c:#7b8cff"></i>~S₁ &nbsp;·&nbsp; bottom-left</label>
+    <input class="t-main" data-k="ns1" type="text" placeholder="term" />
+    <input class="t-sub"  data-k="ns1" type="text" placeholder="subterms, comma separated" />
+  </div>
+
+  <div class="term">
+    <label><i style="--c:#ff6fae"></i>~S₂ &nbsp;·&nbsp; bottom-right</label>
+    <input class="t-main" data-k="ns2" type="text" placeholder="term" />
+    <input class="t-sub"  data-k="ns2" type="text" placeholder="subterms, comma separated" />
+  </div>
+
+  <div class="buttons">
+    <button id="apply">Update</button>
+    <button id="reset" class="ghost">Reset</button>
+  </div>
 
   <div class="toggles">
     <label><input type="checkbox" id="t-labels" checked><span>Labels</span></label>
     <label><input type="checkbox" id="t-subs" checked><span>Subterms</span></label>
+    <label><input type="checkbox" id="t-blur" checked><span>Motion blur</span></label>
     <label><input type="checkbox" id="t-rotate"><span>Auto-rotate</span></label>
   </div>
 </div>
@@ -213,333 +179,33 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 
 /* =====================================================================
-   1.  DATA  —  edit freely.
-       s1  = S₁   (top-left)
-       s2  = S₂   (top-right)
-       ns1 = ~S₁  (bottom-left)
-       ns2 = ~S₂  (bottom-right)
+   1.  DATA
    ===================================================================== */
-const DATA = {
-  s1 : { term: 'Life',      subs: ['Flora',   'Fauna',   'Body']    },
-  s2 : { term: 'Death',     subs: ['Silence', 'Decay',   'Ghost']   },
-  ns1: { term: 'Non-life',  subs: ['Mineral', 'Machine', 'Crystal'] },
-  ns2: { term: 'Non-death', subs: ['Memory',  'Relic',   'Seed']    },
-};
-
-const COLORS = { s1: 0xff9f43, s2: 0x4ecdc4, ns1: 0x7b8cff, ns2: 0xff6fae };
-const TEXTC  = { s1: '#ffb86b', s2: '#6fe3da', ns1: '#a3adff', ns2: '#ffa0cd' };
-
-/* =====================================================================
-   2.  SCENE / RENDERER / CAMERA
-   ===================================================================== */
-const app = document.getElementById('app');
-
-const scene = new THREE.Scene();
-
-const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 250);
-camera.position.set(3.2, 2.2, 11.5);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setSize(innerWidth, innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.12;
-app.appendChild(renderer.domElement);
-
-const labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize(innerWidth, innerHeight);
-Object.assign(labelRenderer.domElement.style, {
-  position: 'absolute', top: '0', left: '0', pointerEvents: 'none'
-});
-app.appendChild(labelRenderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping   = true;
-controls.dampingFactor   = 0.075;
-controls.rotateSpeed     = 0.85;
-controls.minDistance     = 4.5;
-controls.maxDistance     = 32;
-controls.autoRotateSpeed = 0.9;
-controls.target.set(0, 0, 0);
-
-/* =====================================================================
-   3.  LIGHTS
-   ===================================================================== */
-scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-
-const key = new THREE.DirectionalLight(0xffffff, 1.5);
-key.position.set(6, 10, 9);
-scene.add(key);
-
-const fill = new THREE.DirectionalLight(0x88aaff, 0.5);
-fill.position.set(-8, -4, 6);
-scene.add(fill);
-
-const rimA = new THREE.PointLight(0x4ecdc4, 90, 45, 2);
-rimA.position.set(-9, -7, -7);
-scene.add(rimA);
-
-const rimB = new THREE.PointLight(0xff6fae, 90, 45, 2);
-rimB.position.set(9, 7, -8);
-scene.add(rimB);
-
-/* =====================================================================
-   4.  SHARED HELPERS
-   ===================================================================== */
-const lineMaterials = [];
-
-function makeLine(points, opts = {}) {
-  const {
-    color = 0xffffff, width = 2, opacity = 1,
-    dashed = false, dashSize = 0.16, gapSize = 0.12
-  } = opts;
-
-  const flat = [];
-  for (const p of points) flat.push(p.x, p.y, p.z);
-
-  const geo = new LineGeometry();
-  geo.setPositions(flat);
-
-  const mat = new LineMaterial({
-    color, linewidth: width,
-    transparent: opacity < 1, opacity,
-    dashed, dashSize, gapSize,
-    worldUnits: false
-  });
-  mat.resolution.set(innerWidth, innerHeight);
-  lineMaterials.push(mat);
-
-  const line = new Line2(geo, mat);
-  line.computeLineDistances();
-  return line;
-}
-
-/* soft radial glow sprite texture */
-const glowTex = (() => {
-  const s = 128;
-  const cv = document.createElement('canvas');
-  cv.width = cv.height = s;
-  const ctx = cv.getContext('2d');
-  const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
-  g.addColorStop(0.00, 'rgba(255,255,255,0.95)');
-  g.addColorStop(0.16, 'rgba(255,255,255,0.42)');
-  g.addColorStop(0.42, 'rgba(255,255,255,0.11)');
-  g.addColorStop(1.00, 'rgba(255,255,255,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, s, s);
-  const t = new THREE.CanvasTexture(cv);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-})();
-
-function createNode(position, color, radius = 0.16, glowFactor = 6.5) {
-  const g = new THREE.Group();
-  g.position.copy(position);
-
-  const c = new THREE.Color(color);
-
-  const core = new THREE.Mesh(
-    new THREE.SphereGeometry(radius, 32, 24),
-    new THREE.MeshStandardMaterial({
-      color: c, emissive: c, emissiveIntensity: 1.15,
-      roughness: 0.28, metalness: 0.05
-    })
-  );
-  g.add(core);
-
-  const halo = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: glowTex, color: c,
-    blending: THREE.AdditiveBlending,
-    transparent: true, depthWrite: false, opacity: 0.9
-  }));
-  halo.scale.setScalar(radius * glowFactor);
-  g.add(halo);
-
-  return g;
-}
-
-const mainLabels = [];
-const subLabels  = [];
-
-function createLabel(html, cls, color) {
-  const el = document.createElement('div');
-  el.className = 'lbl ' + cls;
-  el.innerHTML = html;
-  if (color) el.style.color = color;
-  return new CSS2DObject(el);
-}
-
-/* =====================================================================
-   5.  GEOMETRY OF THE SQUARE
-   ===================================================================== */
-const HALF = 2.0;
-
-const POS = {
-  s1 : new THREE.Vector3(-HALF,  HALF, 0),   // top-left
-  s2 : new THREE.Vector3( HALF,  HALF, 0),   // top-right
-  ns1: new THREE.Vector3(-HALF, -HALF, 0),   // bottom-left
-  ns2: new THREE.Vector3( HALF, -HALF, 0),   // bottom-right
-};
-
-const SYM = { s1: 'S₁', s2: 'S₂', ns1: '~S₁', ns2: '~S₂' };
-
-const world = new THREE.Group();
-scene.add(world);
-
-/* ---- the six relations of the square ---- */
-const EDGES = [
-  // contrariety (top) and subcontrariety (bottom)
-  { a: 's1',  b: 's2',  style: 'solid'  },
-  { a: 'ns1', b: 'ns2', style: 'solid'  },
-  // contradictions (verticals)
-  { a: 's1',  b: 'ns1', style: 'dashed' },
-  { a: 's2',  b: 'ns2', style: 'dashed' },
-  // implications (diagonals)
-  { a: 's1',  b: 'ns2', style: 'dotted' },
-  { a: 's2',  b: 'ns1', style: 'dotted' },
-];
-
-const EDGE_STYLE = {
-  solid : { color: 0xa9b8d8, width: 2.6, opacity: 0.9,  dashed: false, dashSize: 0,    gapSize: 0    },
-  dashed: { color: 0x8593b5, width: 2.2, opacity: 0.8,  dashed: true,  dashSize: 0.20, gapSize: 0.14 },
-  dotted: { color: 0x6d7a97, width: 2.4, opacity: 0.75, dashed: true,  dashSize: 0.05, gapSize: 0.13 },
-};
-
-for (const e of EDGES) {
-  const s = EDGE_STYLE[e.style];
-  world.add(makeLine([POS[e.a], POS[e.b]], s));
-}
-
-/* ---- the four main terms ---- */
-for (const key of ['s1', 's2', 'ns1', 'ns2']) {
-  const p = POS[key];
-
-  const node = createNode(p, COLORS[key], 0.165, 7.5);
-  world.add(node);
-
-  // label pushed slightly outward from the centre of the square
-  const out = new THREE.Vector3(p.x, p.y, 0).normalize();
-  const lbl = createLabel(
-    `<b>${SYM[key]}</b>${DATA[key].term}`,
-    'main',
-    TEXTC[key]
-  );
-  lbl.position.copy(p).add(out.clone().multiplyScalar(0.62));
-  world.add(lbl);
-  mainLabels.push(lbl);
-}
-
-/* =====================================================================
-   6.  SUBTERM FANS
-   Each corner sprouts a fan of lines into 3D, arcing through ±Z.
-   ===================================================================== */
-const SUB_RADIUS = 1.72;                 // how far subterms sit from their corner
-const SUB_SPREAD = THREE.MathUtils.degToRad(58);
-
-const fanGroup = new THREE.Group();
-world.add(fanGroup);
-
-for (const key of ['s1', 's2', 'ns1', 'ns2']) {
-  const origin = POS[key];
-  const color  = COLORS[key];
-  const subs   = DATA[key].subs;
-  const n      = subs.length;
-
-  // outward direction inside the square's plane
-  const u  = new THREE.Vector3(origin.x, origin.y, 0).normalize();
-  const zA = new THREE.Vector3(0, 0, 1);
-
-  const positions = [];
-
-  subs.forEach((text, i) => {
-    // t runs -1 .. +1 across the fan
-    const t     = n === 1 ? 0 : (i / (n - 1)) * 2 - 1;
-    const theta = SUB_SPREAD * t;
-
-    const dir = u.clone().multiplyScalar(Math.cos(theta))
-      .add(zA.clone().multiplyScalar(Math.sin(theta)))
-      .normalize();
-
-    const pos = origin.clone().add(dir.clone().multiplyScalar(SUB_RADIUS));
-    positions.push(pos);
-
-    // branch line
-    fanGroup.add(makeLine([origin, pos], {
-      color, width: 1.7, opacity: 0.45
-    }));
-
-    // sub-node
-    fanGroup.add(createNode(pos, color, 0.072, 8.5));
-
-    // sub-label
-    const lbl = createLabel(text, 'sub', TEXTC[key]);
-    lbl.position.copy(pos).add(dir.clone().multiplyScalar(0.34));
-    lbl.visible = true;
-    fanGroup.add(lbl);
-    subLabels.push(lbl);
-  });
-
-  // faint arc threading the subterms together
-  if (positions.length > 1) {
-    const curve = new THREE.CatmullRomCurve3(positions);
-    fanGroup.add(makeLine(curve.getPoints(28), {
-      color, width: 1.1, opacity: 0.28
-    }));
-  }
-}
-
-/* =====================================================================
-   7.  GROUND GRID  (subtle spatial reference)
-   ===================================================================== */
-const grid = new THREE.GridHelper(28, 28, 0x2b3category, 0x1a2236);
-</script>
-
-<script type="module">
-/* NOTE: the grid line above intentionally left out — see corrected build below */
-</script>
-
-<script type="module">
-/* =====================================================================
-   The module above is replaced by this single clean build.
-   ===================================================================== */
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import { Line2 } from 'three/addons/lines/Line2.js';
-import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
-
-/* ---------------------------------------------------------------------
-   DATA — edit freely
---------------------------------------------------------------------- */
-const DATA = {
-  s1 : { term: 'Life',      subs: ['Flora',   'Fauna',   'Body']    },
-  s2 : { term: 'Death',     subs: ['Silence', 'Decay',   'Ghost']   },
-  ns1: { term: 'Non-life',  subs: ['Mineral', 'Machine', 'Crystal'] },
-  ns2: { term: 'Non-death', subs: ['Memory',  'Relic',   'Seed']    },
-};
+const KEYS = ['s1', 's2', 'ns1', 'ns2'];
 
 const COLORS = { s1: 0xff9f43, s2: 0x4ecdc4, ns1: 0x7b8cff, ns2: 0xff6fae };
 const TEXTC  = { s1: '#ffb86b', s2: '#6fe3da', ns1: '#a3adff', ns2: '#ffa0cd' };
 const SYM    = { s1: 'S₁', s2: 'S₂', ns1: '~S₁', ns2: '~S₂' };
 
-/* ---------------------------------------------------------------------
-   Scene
---------------------------------------------------------------------- */
+const DEFAULTS = {
+  s1 : { term: 'Life',      subs: 'Flora, Fauna, Body' },
+  s2 : { term: 'Death',     subs: 'Silence, Decay, Ghost' },
+  ns1: { term: 'Non-life',  subs: 'Mineral, Machine, Crystal' },
+  ns2: { term: 'Non-death', subs: 'Memory, Relic, Seed' },
+};
+
+const state = JSON.parse(JSON.stringify(DEFAULTS));
+
+/* =====================================================================
+   2.  RENDERER / SCENE / CAMERA
+   ===================================================================== */
 const app = document.getElementById('app');
+const DPR = Math.min(window.devicePixelRatio || 1, 1.75);
 
-const scene  = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 250);
-camera.position.set(3.2, 2.2, 11.5);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(DPR);
 renderer.setSize(innerWidth, innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.12;
+renderer.toneMapping = THREE.NoToneMapping;   // we tonemap in the composite pass
 app.appendChild(renderer.domElement);
 
 const labelRenderer = new CSS2DRenderer();
@@ -549,66 +215,40 @@ Object.assign(labelRenderer.domElement.style, {
 });
 app.appendChild(labelRenderer.domElement);
 
+const scene = new THREE.Scene();
+
+/* gradient sky (drawn in WebGL so the composite pass stays opaque) */
+scene.background = (() => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(256, 205, 0, 256, 205, 365);
+  g.addColorStop(0.00, '#18223c');
+  g.addColorStop(0.45, '#0a0e1c');
+  g.addColorStop(1.00, '#04050a');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 512, 512);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 200);
+camera.position.set(3.4, 2.2, 11.5);
+
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping   = true;
-controls.dampingFactor   = 0.075;
+controls.dampingFactor   = 0.08;
 controls.rotateSpeed     = 0.85;
 controls.minDistance     = 4.5;
-controls.maxDistance     = 32;
+controls.maxDistance     = 30;
 controls.autoRotateSpeed = 0.9;
 
-/* ---------------------------------------------------------------------
-   Lights
---------------------------------------------------------------------- */
-scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+/* no lights needed — everything is unlit / emissive */
 
-const key = new THREE.DirectionalLight(0xffffff, 1.5);
-key.position.set(6, 10, 9);
-scene.add(key);
-
-const fill = new THREE.DirectionalLight(0x88aaff, 0.55);
-fill.position.set(-8, -4, 6);
-scene.add(fill);
-
-const rimA = new THREE.PointLight(0x4ecdc4, 90, 45, 2);
-rimA.position.set(-9, -7, -7);
-scene.add(rimA);
-
-const rimB = new THREE.PointLight(0xff6fae, 90, 45, 2);
-rimB.position.set(9, 7, -8);
-scene.add(rimB);
-
-/* ---------------------------------------------------------------------
-   Helpers
---------------------------------------------------------------------- */
-const lineMaterials = [];
-
-function makeLine(points, opts = {}) {
-  const {
-    color = 0xffffff, width = 2, opacity = 1,
-    dashed = false, dashSize = 0.16, gapSize = 0.12
-  } = opts;
-
-  const flat = [];
-  for (const p of points) flat.push(p.x, p.y, p.z);
-
-  const geo = new LineGeometry();
-  geo.setPositions(flat);
-
-  const mat = new LineMaterial({
-    color, linewidth: width,
-    transparent: opacity < 1, opacity,
-    dashed, dashSize, gapSize,
-    worldUnits: false
-  });
-  mat.resolution.set(innerWidth, innerHeight);
-  lineMaterials.push(mat);
-
-  const line = new Line2(geo, mat);
-  line.computeLineDistances();
-  return line;
-}
-
+/* =====================================================================
+   3.  SHARED HELPERS
+   ===================================================================== */
 const glowTex = (() => {
   const s = 128;
   const cv = document.createElement('canvas');
@@ -616,8 +256,8 @@ const glowTex = (() => {
   const ctx = cv.getContext('2d');
   const g = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
   g.addColorStop(0.00, 'rgba(255,255,255,0.95)');
-  g.addColorStop(0.16, 'rgba(255,255,255,0.42)');
-  g.addColorStop(0.42, 'rgba(255,255,255,0.11)');
+  g.addColorStop(0.16, 'rgba(255,255,255,0.40)');
+  g.addColorStop(0.42, 'rgba(255,255,255,0.10)');
   g.addColorStop(1.00, 'rgba(255,255,255,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, s, s);
@@ -626,45 +266,62 @@ const glowTex = (() => {
   return t;
 })();
 
-function createNode(position, color, radius = 0.16, glowFactor = 6.5) {
-  const g = new THREE.Group();
-  g.position.copy(position);
-  const c = new THREE.Color(color);
+/* --- fat line helper (Line2) --- */
+function makeLine(points, opts = {}) {
+  const {
+    color = 0xffffff, width = 2, opacity = 1,
+    dashed = false, dash = 0.20, gap = 0.14
+  } = opts;
 
-  g.add(new THREE.Mesh(
-    new THREE.SphereGeometry(radius, 32, 24),
-    new THREE.MeshStandardMaterial({
-      color: c, emissive: c, emissiveIntensity: 1.15,
-      roughness: 0.28, metalness: 0.05
-    })
-  ));
+  const flat = [];
+  for (const p of points) flat.push(p.x, p.y, p.z);
 
-  const halo = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: glowTex, color: c,
+  const geo = new LineGeometry();
+  geo.setPositions(flat);
+
+  const mat = new LineMaterial({
+    color, linewidth: width,
+    transparent: true, opacity, depthWrite: false,
+    dashed, dashSize: dash, gapSize: gap
+  });
+  mat.resolution.set(innerWidth, innerHeight);
+
+  const line = new Line2(geo, mat);
+  line.computeLineDistances();
+  return line;
+}
+
+/* --- shared node resources (never disposed) --- */
+const sphereMain = new THREE.SphereGeometry(0.16, 20, 14);
+const sphereSub  = new THREE.SphereGeometry(0.07, 14, 10);
+
+const matMain = {}, matSub = {}, matHalo = {};
+for (const k of KEYS) {
+  matMain[k] = new THREE.MeshBasicMaterial({ color: COLORS[k] });
+  matSub[k]  = new THREE.MeshBasicMaterial({ color: COLORS[k] });
+  matHalo[k] = new THREE.SpriteMaterial({
+    map: glowTex, color: COLORS[k],
     blending: THREE.AdditiveBlending,
-    transparent: true, depthWrite: false, opacity: 0.9
-  }));
-  halo.scale.setScalar(radius * glowFactor);
-  g.add(halo);
+    transparent: true, depthWrite: false, opacity: 0.85
+  });
+}
 
+function makeNode(pos, key, small) {
+  const g = new THREE.Group();
+  g.position.copy(pos);
+  g.add(new THREE.Mesh(small ? sphereSub : sphereMain, small ? matSub[key] : matMain[key]));
+  const halo = new THREE.Sprite(matHalo[key]);
+  halo.scale.setScalar(small ? 0.62 : 1.30);
+  g.add(halo);
   return g;
 }
 
-const mainLabels = [];
-const subLabels  = [];
-
-function createLabel(html, cls, color) {
-  const el = document.createElement('div');
-  el.className = 'lbl ' + cls;
-  el.innerHTML = html;
-  if (color) el.style.color = color;
-  return new CSS2DObject(el);
-}
-
-/* ---------------------------------------------------------------------
-   The square
---------------------------------------------------------------------- */
-const HALF = 2.0;
+/* =====================================================================
+   4.  GEOMETRY CONSTANTS
+   ===================================================================== */
+const HALF       = 2.0;
+const SUB_RADIUS = 1.72;
+const SUB_SPREAD = THREE.MathUtils.degToRad(58);
 
 const POS = {
   s1 : new THREE.Vector3(-HALF,  HALF, 0),
@@ -673,137 +330,350 @@ const POS = {
   ns2: new THREE.Vector3( HALF, -HALF, 0),
 };
 
-const world = new THREE.Group();
-scene.add(world);
+/* =====================================================================
+   5.  THE SQUARE  (built once — never rebuilt)
+   ===================================================================== */
+const squareGroup = new THREE.Group();
+scene.add(squareGroup);
 
+/* --- the six relations --- */
 const EDGES = [
-  { a: 's1',  b: 's2',  style: 'solid'  },   // contrariety
-  { a: 'ns1', b: 'ns2', style: 'solid'  },   // subcontrariety
-  { a: 's1',  b: 'ns1', style: 'dashed' },   // contradiction
-  { a: 's2',  b: 'ns2', style: 'dashed' },   // contradiction
-  { a: 's1',  b: 'ns2', style: 'dotted' },   // implication
-  { a: 's2',  b: 'ns1', style: 'dotted' },   // implication
+  ['s1',  's2',  { color: 0xa9b8d8, width: 2.8, opacity: 0.95 }],                    // contrariety
+  ['ns1', 'ns2', { color: 0xa9b8d8, width: 2.8, opacity: 0.95 }],                    // subcontrariety
+  ['s1',  'ns1', { color: 0x8f9dbe, width: 2.4, opacity: 0.85, dashed: true, dash: 0.22, gap: 0.16 }], // contradiction
+  ['s2',  'ns2', { color: 0x8f9dbe, width: 2.4, opacity: 0.85, dashed: true, dash: 0.22, gap: 0.16 }], // contradiction
+  ['s1',  'ns2', { color: 0x707d99, width: 2.4, opacity: 0.80, dashed: true, dash: 0.05, gap: 0.13 }], // implication
+  ['s2',  'ns1', { color: 0x707d99, width: 2.4, opacity: 0.80, dashed: true, dash: 0.05, gap: 0.13 }], // implication
 ];
 
-const EDGE_STYLE = {
-  solid : { color: 0xa9b8d8, width: 2.6, opacity: 0.90, dashed: false, dashSize: 0.00, gapSize: 0.00 },
-  dashed: { color: 0x8593b5, width: 2.2, opacity: 0.80, dashed: true,  dashSize: 0.20, gapSize: 0.14 },
-  dotted: { color: 0x6d7a97, width: 2.4, opacity: 0.75, dashed: true,  dashSize: 0.05, gapSize: 0.13 },
-};
-
-for (const e of EDGES) {
-  world.add(makeLine([POS[e.a], POS[e.b]], EDGE_STYLE[e.style]));
+for (const [a, b, style] of EDGES) {
+  squareGroup.add(makeLine([POS[a], POS[b]], style));
 }
 
-for (const k of ['s1', 's2', 'ns1', 'ns2']) {
-  const p = POS[k];
+/* --- corner nodes --- */
+for (const k of KEYS) {
+  squareGroup.add(makeNode(POS[k], k, false));
+}
 
-  world.add(createNode(p, COLORS[k], 0.165, 7.5));
+/* --- main labels (created once, text updated later) --- */
+const labelGroup = new THREE.Group();
+scene.add(labelGroup);
 
+const mainLabels = {};   // key -> { el, obj }
+
+for (const k of KEYS) {
+  const p   = POS[k];
   const out = new THREE.Vector3(p.x, p.y, 0).normalize();
-  const lbl = createLabel(`<b>${SYM[k]}</b>${DATA[k].term}`, 'main', TEXTC[k]);
-  lbl.position.copy(p).add(out.clone().multiplyScalar(0.62));
-  world.add(lbl);
-  mainLabels.push(lbl);
+
+  const el = document.createElement('div');
+  el.className = 'lbl main';
+  el.style.color = TEXTC[k];
+
+  const obj = new CSS2DObject(el);
+  obj.position.copy(p).addScaledVector(out, 0.62);
+
+  labelGroup.add(obj);
+  mainLabels[k] = { el, obj };
 }
 
-/* ---------------------------------------------------------------------
-   Subterm fans
---------------------------------------------------------------------- */
-const SUB_RADIUS = 1.72;
-const SUB_SPREAD = THREE.MathUtils.degToRad(58);
-
-const fanGroup = new THREE.Group();
-world.add(fanGroup);
-
-for (const k of ['s1', 's2', 'ns1', 'ns2']) {
-  const origin = POS[k];
-  const color  = COLORS[k];
-  const subs   = DATA[k].subs;
-  const n      = subs.length;
-
-  const u  = new THREE.Vector3(origin.x, origin.y, 0).normalize();
-  const zA = new THREE.Vector3(0, 0, 1);
-
-  const positions = [];
-
-  subs.forEach((text, i) => {
-    const t     = n === 1 ? 0 : (i / (n - 1)) * 2 - 1;
-    const theta = SUB_SPREAD * t;
-
-    const dir = u.clone().multiplyScalar(Math.cos(theta))
-      .add(zA.clone().multiplyScalar(Math.sin(theta)))
-      .normalize();
-
-    const pos = origin.clone().add(dir.clone().multiplyScalar(SUB_RADIUS));
-    positions.push(pos);
-
-    fanGroup.add(makeLine([origin, pos], { color, width: 1.7, opacity: 0.45 }));
-    fanGroup.add(createNode(pos, color, 0.072, 8.5));
-
-    const lbl = createLabel(text, 'sub', TEXTC[k]);
-    lbl.position.copy(pos).add(dir.clone().multiplyScalar(0.34));
-    fanGroup.add(lbl);
-    subLabels.push(lbl);
-  });
-
-  if (positions.length > 1) {
-    const curve = new THREE.CatmullRomCurve3(positions);
-    fanGroup.add(makeLine(curve.getPoints(28), { color, width: 1.1, opacity: 0.28 }));
+function updateMainLabels() {
+  for (const k of KEYS) {
+    const { el } = mainLabels[k];
+    el.textContent = '';
+    const b = document.createElement('b');
+    b.textContent = SYM[k];
+    el.append(b, document.createTextNode(state[k].term));
   }
 }
 
-/* ---------------------------------------------------------------------
-   Ground grid
---------------------------------------------------------------------- */
+/* =====================================================================
+   6.  SUBTERM FANS  (rebuilt whenever terms change)
+   ===================================================================== */
+const fanGroup = new THREE.Group();
+scene.add(fanGroup);
+
+let subLabelObjs = [];
+
+function buildFans() {
+  /* dispose only the Line2 geometry/materials we created */
+  fanGroup.traverse(o => {
+    if (o.isLine2) {
+      o.geometry.dispose();
+      o.material.dispose();
+    }
+  });
+  fanGroup.clear();          // CSS2DObjects clean up their own DOM on 'removed'
+  subLabelObjs = [];
+
+  for (const k of KEYS) {
+    const origin = POS[k];
+    const color  = COLORS[k];
+
+    const subs = state[k].subs
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    if (!subs.length) continue;
+
+    const n  = subs.length;
+    const u  = new THREE.Vector3(origin.x, origin.y, 0).normalize();
+    const zA = new THREE.Vector3(0, 0, 1);
+
+    const positions = [];
+
+    subs.forEach((text, i) => {
+      const t     = n === 1 ? 0 : (i / (n - 1)) * 2 - 1;
+      const theta = SUB_SPREAD * t;
+
+      const dir = u.clone().multiplyScalar(Math.cos(theta))
+        .addScaledVector(zA, Math.sin(theta))
+        .normalize();
+
+      const pos = origin.clone().addScaledVector(dir, SUB_RADIUS);
+      positions.push(pos);
+
+      /* branch line */
+      fanGroup.add(makeLine([origin, pos], { color, width: 1.6, opacity: 0.42 }));
+
+      /* sub-node */
+      fanGroup.add(makeNode(pos, k, true));
+
+      /* sub-label */
+      const el = document.createElement('div');
+      el.className = 'lbl sub';
+      el.style.color = TEXTC[k];
+      el.textContent = text;
+
+      const obj = new CSS2DObject(el);
+      obj.position.copy(pos).addScaledVector(dir, 0.30);
+
+      fanGroup.add(obj);
+      subLabelObjs.push(obj);
+    });
+
+    /* faint arc threading the subterms */
+    if (positions.length > 1) {
+      const curve = new THREE.CatmullRomCurve3(positions);
+      fanGroup.add(makeLine(curve.getPoints(24), { color, width: 1.1, opacity: 0.24 }));
+    }
+  }
+
+  updateVisibility();
+}
+
+/* =====================================================================
+   7.  GROUND GRID
+   ===================================================================== */
 const grid = new THREE.GridHelper(28, 28, 0x2b3550, 0x161d2e);
 grid.material.transparent = true;
-grid.material.opacity = 0.35;
+grid.material.opacity = 0.32;
 grid.position.y = -3.7;
 scene.add(grid);
 
-/* ---------------------------------------------------------------------
-   UI
---------------------------------------------------------------------- */
-const ui = {
-  labels: document.getElementById('t-labels'),
-  subs  : document.getElementById('t-subs'),
-  rotate: document.getElementById('t-rotate'),
-};
+/* =====================================================================
+   8.  MOTION-BLUR COMPOSITE  (3 render targets, 2 full-screen passes)
+   ===================================================================== */
+const bufSize = renderer.getDrawingBufferSize(new THREE.Vector2());
+
+function makeRT(depth) {
+  return new THREE.WebGLRenderTarget(bufSize.x, bufSize.y, {
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
+    depthBuffer: depth,
+    stencilBuffer: false
+  });
+}
+
+const rtScene = makeRT(true);
+const rtA     = makeRT(false);
+const rtB     = makeRT(false);
+
+const quadCam  = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+const quadGeo  = new THREE.PlaneGeometry(2, 2);
+const quadScene = new THREE.Scene();
+
+const VERT = `
+  varying vec2 vUv;
+  void main(){
+    vUv = uv;
+    gl_Position = vec4(position.xy, 0.0, 1.0);
+  }
+`;
+
+/* pass 1 — accumulate: max(current, previous * decay) */
+const blurMat = new THREE.ShaderMaterial({
+  uniforms: {
+    tCur  : { value: null },
+    tPrev : { value: null },
+    decay : { value: 0.80 }
+  },
+  vertexShader: VERT,
+  fragmentShader: `
+    uniform sampler2D tCur;
+    uniform sampler2D tPrev;
+    uniform float decay;
+    varying vec2 vUv;
+    void main(){
+      vec3 c = texture2D(tCur,  vUv).rgb;
+      vec3 p = texture2D(tPrev, vUv).rgb;
+      gl_FragColor = vec4(max(c, p * decay), 1.0);
+    }
+  `,
+  depthTest: false, depthWrite: false
+});
+
+/* pass 2 — tonemap + gamma to the screen */
+const outMat = new THREE.ShaderMaterial({
+  uniforms: { tDiffuse: { value: null } },
+  vertexShader: VERT,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    varying vec2 vUv;
+    vec3 aces(vec3 x){
+      return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
+    }
+    void main(){
+      vec3 c = texture2D(tDiffuse, vUv).rgb;
+      gl_FragColor = vec4(pow(aces(c), vec3(1.0 / 2.2)), 1.0);
+    }
+  `,
+  depthTest: false, depthWrite: false
+});
+
+const quad = new THREE.Mesh(quadGeo, outMat);
+quad.frustumCulled = false;
+quadScene.add(quad);
+
+let accumIndex = 0;
+let blurOn = true;
+
+function renderFrame() {
+  /* 1 — scene into an offscreen buffer */
+  renderer.setRenderTarget(rtScene);
+  renderer.render(scene, camera);
+
+  /* 2 — accumulate with the previous frame */
+  const read  = accumIndex ? rtB : rtA;
+  const write = accumIndex ? rtA : rtB;
+
+  blurMat.uniforms.tCur.value  = rtScene.texture;
+  blurMat.uniforms.tPrev.value = read.texture;
+  blurMat.uniforms.decay.value = blurOn ? 0.80 : 0.0;
+
+  quad.material = blurMat;
+  renderer.setRenderTarget(write);
+  renderer.render(quadScene, quadCam);
+
+  /* 3 — tonemap that result to the canvas */
+  outMat.uniforms.tDiffuse.value = write.texture;
+  quad.material = outMat;
+  renderer.setRenderTarget(null);
+  renderer.render(quadScene, quadCam);
+
+  accumIndex = 1 - accumIndex;
+}
+
+/* =====================================================================
+   9.  UI WIRING
+   ===================================================================== */
+const inputsMain = {};
+const inputsSub  = {};
+
+document.querySelectorAll('input.t-main').forEach(el => inputsMain[el.dataset.k] = el);
+document.querySelectorAll('input.t-sub').forEach(el  => inputsSub[el.dataset.k]  = el);
+
+const toggleLabels = document.getElementById('t-labels');
+const toggleSubs   = document.getElementById('t-subs');
+const toggleBlur   = document.getElementById('t-blur');
+const toggleRotate = document.getElementById('t-rotate');
 
 function updateVisibility() {
-  const showLabels = ui.labels.checked;
-  const showSubs   = ui.subs.checked;
+  const showLabels = toggleLabels.checked;
+  const showSubs   = toggleSubs.checked;
 
-  mainLabels.forEach(l => l.visible = showLabels);
-  subLabels.forEach(l  => l.visible = showLabels && showSubs);
+  for (const k of KEYS) mainLabels[k].obj.visible = showLabels;
+  for (const o of subLabelObjs) o.visible = showLabels && showSubs;
   fanGroup.visible = showSubs;
 }
 
-ui.labels.addEventListener('change', updateVisibility);
-ui.subs.addEventListener('change', updateVisibility);
-ui.rotate.addEventListener('change', () => controls.autoRotate = ui.rotate.checked);
+function syncInputsFromState() {
+  for (const k of KEYS) {
+    inputsMain[k].value = state[k].term;
+    inputsSub[k].value  = state[k].subs;
+  }
+}
 
-updateVisibility();
+function applyInputs() {
+  for (const k of KEYS) {
+    const term = inputsMain[k].value.trim();
+    state[k].term = term || DEFAULTS[k].term;
+    state[k].subs = inputsSub[k].value.trim();
+  }
+  updateMainLabels();
+  buildFans();
+  updateVisibility();
+}
 
-/* ---------------------------------------------------------------------
-   Resize + loop
---------------------------------------------------------------------- */
+document.getElementById('apply').addEventListener('click', applyInputs);
+
+document.getElementById('reset').addEventListener('click', () => {
+  for (const k of KEYS) {
+    state[k].term = DEFAULTS[k].term;
+    state[k].subs = DEFAULTS[k].subs;
+  }
+  syncInputsFromState();
+  updateMainLabels();
+  buildFans();
+  updateVisibility();
+});
+
+/* Enter key inside any field applies */
+[...Object.values(inputsMain), ...Object.values(inputsSub)].forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); applyInputs(); el.blur(); }
+  });
+});
+
+toggleLabels.addEventListener('change', updateVisibility);
+toggleSubs  .addEventListener('change', updateVisibility);
+toggleBlur  .addEventListener('change', () => blurOn = toggleBlur.checked);
+toggleRotate.addEventListener('change', () => controls.autoRotate = toggleRotate.checked);
+
+/* =====================================================================
+   10.  BOOT
+   ===================================================================== */
+syncInputsFromState();
+updateMainLabels();
+buildFans();
+
+/* =====================================================================
+   11.  RESIZE + LOOP
+   ===================================================================== */
 function onResize() {
   const w = innerWidth, h = innerHeight;
+
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
+
   renderer.setSize(w, h);
   labelRenderer.setSize(w, h);
-  lineMaterials.forEach(m => m.resolution.set(w, h));
+
+  const s = renderer.getDrawingBufferSize(new THREE.Vector2());
+  rtScene.setSize(s.x, s.y);
+  rtA.setSize(s.x, s.y);
+  rtB.setSize(s.x, s.y);
+
+  scene.traverse(o => {
+    if (o.material && o.material.isLineMaterial) o.material.resolution.set(w, h);
+  });
 }
 addEventListener('resize', onResize);
 
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
-  renderer.render(scene, camera);
-  labelRenderer.render(scene, camera);
+  renderFrame();
 }
 animate();
 </script>
