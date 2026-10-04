@@ -14,7 +14,6 @@
   #app { position: fixed; inset: 0; }
   #app canvas { display: block; }
 
-  /* ---------- 3D labels ---------- */
   .lbl {
     pointer-events: none;
     user-select: none;
@@ -36,14 +35,13 @@
     font-weight: 400; font-size: 9px; opacity: 0.55;
     margin-right: 4px; letter-spacing: 0.06em;
   }
-  .lbl.sub { font-size: 10.5px; opacity: 0.85; letter-spacing: 0.04em; }
+  .lbl.sub { font-size: 10.5px; opacity: 0.88; letter-spacing: 0.04em; }
 
-  /* ---------- console ---------- */
   #ui {
     position: fixed;
     top: 14px; left: 14px;
     z-index: 10;
-    width: 262px;
+    width: 264px;
     max-height: calc(100vh - 28px);
     overflow-y: auto;
     padding: 12px;
@@ -206,78 +204,38 @@
 
   <div class="sec">
     <div class="sec-title">Inner Square</div>
-    <div class="row">
-      <span class="sym" style="color:#ffb86b">S₁</span>
-      <input type="text" data-k="s1" data-f="name">
-    </div>
-    <div class="row sub">
-      <span class="sym dot" style="color:#ff9f43"><i></i></span>
-      <input type="text" data-k="s1" data-f="subs" placeholder="subterms, comma separated">
-    </div>
-    <div class="row">
-      <span class="sym" style="color:#6fe3da">S₂</span>
-      <input type="text" data-k="s2" data-f="name">
-    </div>
-    <div class="row sub">
-      <span class="sym dot" style="color:#4ecdc4"><i></i></span>
-      <input type="text" data-k="s2" data-f="subs" placeholder="subterms, comma separated">
-    </div>
-    <div class="row">
-      <span class="sym" style="color:#a3adff">~S₁</span>
-      <input type="text" data-k="ns1" data-f="name">
-    </div>
-    <div class="row sub">
-      <span class="sym dot" style="color:#7b8cff"><i></i></span>
-      <input type="text" data-k="ns1" data-f="subs" placeholder="subterms, comma separated">
-    </div>
-    <div class="row">
-      <span class="sym" style="color:#ffa0cd">~S₂</span>
-      <input type="text" data-k="ns2" data-f="name">
-    </div>
-    <div class="row sub">
-      <span class="sym dot" style="color:#ff6fae"><i></i></span>
-      <input type="text" data-k="ns2" data-f="subs" placeholder="subterms, comma separated">
-    </div>
+    <div class="row"><span class="sym" style="color:#ffb86b">S₁</span><input type="text" data-k="s1" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#ff9f43"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="subterms, comma separated"></div>
+    <div class="row"><span class="sym" style="color:#6fe3da">S₂</span><input type="text" data-k="s2" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#4ecdc4"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="subterms, comma separated"></div>
+    <div class="row"><span class="sym" style="color:#a3adff">~S₁</span><input type="text" data-k="ns1" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#7b8cff"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="subterms, comma separated"></div>
+    <div class="row"><span class="sym" style="color:#ffa0cd">~S₂</span><input type="text" data-k="ns2" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#ff6fae"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="subterms, comma separated"></div>
   </div>
 
   <div class="sec">
     <div class="sec-title">Outer Midpoints</div>
-    <div class="row">
-      <span class="sym" style="color:#ffd166">M₁</span>
-      <input type="text" data-k="m1" data-f="name">
-    </div>
-    <div class="row">
-      <span class="sym" style="color:#ffd166">M₂</span>
-      <input type="text" data-k="m2" data-f="name">
-    </div>
-    <div class="row">
-      <span class="sym" style="color:#ffd166">M₃</span>
-      <input type="text" data-k="m3" data-f="name">
-    </div>
-    <div class="row">
-      <span class="sym" style="color:#ffd166">M₄</span>
-      <input type="text" data-k="m4" data-f="name">
-    </div>
+    <div class="row"><span class="sym" style="color:#ffd166">M₁</span><input type="text" data-k="m1" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#ffd166"><i></i></span><input type="text" data-k="m1" data-f="subs" placeholder="subterms, comma separated"></div>
+    <div class="row"><span class="sym" style="color:#ffd166">M₂</span><input type="text" data-k="m2" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#ffd166"><i></i></span><input type="text" data-k="m2" data-f="subs" placeholder="subterms, comma separated"></div>
+    <div class="row"><span class="sym" style="color:#ffd166">M₃</span><input type="text" data-k="m3" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#ffd166"><i></i></span><input type="text" data-k="m3" data-f="subs" placeholder="subterms, comma separated"></div>
+    <div class="row"><span class="sym" style="color:#ffd166">M₄</span><input type="text" data-k="m4" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#ffd166"><i></i></span><input type="text" data-k="m4" data-f="subs" placeholder="subterms, comma separated"></div>
   </div>
 
   <div class="sec">
     <div class="sec-title">Outer Corners</div>
-    <div class="row">
-      <span class="sym" style="color:#e8b64c">C₁</span>
-      <input type="text" data-k="c1" data-f="name">
-    </div>
-    <div class="row">
-      <span class="sym" style="color:#e8b64c">C₂</span>
-      <input type="text" data-k="c2" data-f="name">
-    </div>
-    <div class="row">
-      <span class="sym" style="color:#e8b64c">C₃</span>
-      <input type="text" data-k="c3" data-f="name">
-    </div>
-    <div class="row">
-      <span class="sym" style="color:#e8b64c">C₄</span>
-      <input type="text" data-k="c4" data-f="name">
-    </div>
+    <div class="row"><span class="sym" style="color:#e8b64c">C₁</span><input type="text" data-k="c1" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#e8b64c"><i></i></span><input type="text" data-k="c1" data-f="subs" placeholder="subterms, comma separated"></div>
+    <div class="row"><span class="sym" style="color:#e8b64c">C₂</span><input type="text" data-k="c2" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#e8b64c"><i></i></span><input type="text" data-k="c2" data-f="subs" placeholder="subterms, comma separated"></div>
+    <div class="row"><span class="sym" style="color:#e8b64c">C₃</span><input type="text" data-k="c3" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#e8b64c"><i></i></span><input type="text" data-k="c3" data-f="subs" placeholder="subterms, comma separated"></div>
+    <div class="row"><span class="sym" style="color:#e8b64c">C₄</span><input type="text" data-k="c4" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#e8b64c"><i></i></span><input type="text" data-k="c4" data-f="subs" placeholder="subterms, comma separated"></div>
   </div>
 
   <div class="buttons">
@@ -340,14 +298,14 @@ const DEFAULTS = {
   s2:  { name: 'Seeming',     subs: 'Silence, Decay, Ghost' },
   ns1: { name: 'Non-being',   subs: 'Mineral, Machine, Crystal' },
   ns2: { name: 'Non-seeming', subs: 'Memory, Relic, Seed' },
-  m1:  { name: 'Truth' },
-  m2:  { name: 'Lie' },
-  m3:  { name: 'Falsehood' },
-  m4:  { name: 'Secret' },
-  c1:  { name: 'Paradox' },
-  c2:  { name: 'Deception' },
-  c3:  { name: 'Subterfuge' },
-  c4:  { name: 'Revelation' },
+  m1:  { name: 'Truth',       subs: 'Verity, Fact, Authenticity' },
+  m2:  { name: 'Lie',         subs: 'Fabrication, Deceit, Perjury' },
+  m3:  { name: 'Falsehood',   subs: 'Error, Illusion, Mistake' },
+  m4:  { name: 'Secret',      subs: 'Concealment, Mystery, Silence' },
+  c1:  { name: 'Paradox',     subs: 'Contradiction, Aporia, Antinomy' },
+  c2:  { name: 'Deception',   subs: 'Trickery, Illusion, Fraud' },
+  c3:  { name: 'Subterfuge',  subs: 'Evasion, Ruse, Stratagem' },
+  c4:  { name: 'Revelation',  subs: 'Disclosure, Epiphany, Unveiling' },
 };
 
 const state = JSON.parse(JSON.stringify(DEFAULTS));
@@ -356,7 +314,7 @@ const state = JSON.parse(JSON.stringify(DEFAULTS));
    POSITIONS
    ===================================================================== */
 const H = 2.0;      // inner half-size
-const D = 4.8;      // outer half-size
+const D = 4.5;      // outer half-size
 
 const POS = {
   s1:  new THREE.Vector3(-H,  H, 0),
@@ -381,7 +339,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x05070d);
 
 const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 200);
-camera.position.set(1.2, 0.9, 13.8);
+camera.position.set(1.0, 0.5, 15.5);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -403,7 +361,7 @@ controls.enableDamping   = true;
 controls.dampingFactor   = 0.08;
 controls.rotateSpeed     = 0.85;
 controls.minDistance     = 5;
-controls.maxDistance     = 32;
+controls.maxDistance     = 34;
 controls.autoRotateSpeed = 0.9;
 
 /* =====================================================================
@@ -461,12 +419,9 @@ function makeLine(p1, p2, opts = {}) {
 
 function makeDot(pos, color, scale) {
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: glowTex,
-    color,
+    map: glowTex, color,
     blending: THREE.AdditiveBlending,
-    transparent: true,
-    depthWrite: false,
-    opacity: 0.95
+    transparent: true, depthWrite: false, opacity: 0.95
   }));
   sprite.position.copy(pos);
   sprite.scale.setScalar(scale);
@@ -491,9 +446,6 @@ function makeSubLabel(text, textColor) {
   return new CSS2DObject(el);
 }
 
-/* =====================================================================
-   CLEANUP
-   ===================================================================== */
 function clearAll() {
   [structureGroup, fanGroup, labelGroup].forEach(group => {
     group.traverse(obj => {
@@ -501,9 +453,7 @@ function clearAll() {
         obj.geometry.dispose();
         obj.material.dispose();
       }
-      if (obj.isSprite && obj.material) {
-        obj.material.dispose();
-      }
+      if (obj.isSprite && obj.material) obj.material.dispose();
     });
     group.clear();
   });
@@ -516,6 +466,9 @@ function clearAll() {
 let mainLabels = [];
 let subLabels  = [];
 
+/* Triangle geometry constants */
+const TRI_TILT = Math.PI / 4;   // tilt of the triangle plane (45° from the square's plane)
+
 function build() {
   clearAll();
   mainLabels = [];
@@ -523,29 +476,24 @@ function build() {
 
   /* ---- 1. Inner square ---- */
   const innerEdges = [
-    // contrary + subcontrary (solid)
     ['s1',  's2',  { color: 0xd6dff0, width: 2.4, opacity: 0.95 }],
     ['ns1', 'ns2', { color: 0xd6dff0, width: 2.4, opacity: 0.95 }],
-    // contradictions (solid)
     ['s1',  'ns1', { color: 0xb8c4da, width: 2.4, opacity: 0.95 }],
     ['s2',  'ns2', { color: 0xb8c4da, width: 2.4, opacity: 0.95 }],
-    // implications (dashed)
     ['s1',  'ns2', { color: 0x8a97b5, width: 2.2, opacity: 0.85, dashed: true, dash: 0.22, gap: 0.16 }],
     ['s2',  'ns1', { color: 0x8a97b5, width: 2.2, opacity: 0.85, dashed: true, dash: 0.22, gap: 0.16 }],
   ];
-
   for (const [a, b, opts] of innerEdges) {
     structureGroup.add(makeLine(POS[a], POS[b], opts));
   }
 
-  /* ---- 2. Outer S → M dotted connectors ---- */
+  /* ---- 2. Inner → outer midpoints (dotted) ---- */
   const outerConns = [
     ['s1', 'm1'], ['s1', 'm4'],
     ['s2', 'm1'], ['s2', 'm2'],
     ['ns1', 'm4'], ['ns1', 'm3'],
     ['ns2', 'm2'], ['ns2', 'm3'],
   ];
-
   for (const [a, b] of outerConns) {
     structureGroup.add(makeLine(POS[a], POS[b], {
       color: 0xc9a24a, width: 1.6, opacity: 0.6,
@@ -553,11 +501,8 @@ function build() {
     }));
   }
 
-  /* ---- 3. Outer perimeter C4-C1-C2-C3-C4 (dotted) ---- */
-  const perimeter = [
-    ['c4', 'c1'], ['c1', 'c2'], ['c2', 'c3'], ['c3', 'c4'],
-  ];
-
+  /* ---- 3. Outer perimeter (dotted) ---- */
+  const perimeter = [['c4', 'c1'], ['c1', 'c2'], ['c2', 'c3'], ['c3', 'c4']];
   for (const [a, b] of perimeter) {
     structureGroup.add(makeLine(POS[a], POS[b], {
       color: 0xd4a94f, width: 1.7, opacity: 0.7,
@@ -568,13 +513,12 @@ function build() {
   /* ---- 4. Vertex dots ---- */
   for (const k of ALL_KEYS) {
     const isInner = INNER_KEYS.includes(k);
-    const isM     = M_KEYS.includes(k);
-    const scale   = isInner ? 0.72 : (isM ? 0.55 : 0.5);
+    const scale = isInner ? 0.72 : 0.55;
     structureGroup.add(makeDot(POS[k], COLORS[k], scale));
   }
 
-  /* ---- 5. Labels ---- */
-  // S labels
+  /* ---- 5. Main labels ---- */
+  // Inner S: label pushed outward (away from origin)
   for (const k of INNER_KEYS) {
     const p = POS[k];
     const dir = new THREE.Vector3(p.x, p.y, 0).normalize();
@@ -583,87 +527,92 @@ function build() {
     labelGroup.add(label);
     mainLabels.push(label);
   }
-
-  // M labels
-  for (const k of M_KEYS) {
+  // M & C: label pushed inward (toward origin), so the triangle has clear space
+  for (const k of [...M_KEYS, ...C_KEYS]) {
     const p = POS[k];
-    const dir = new THREE.Vector3(p.x, p.y, 0).normalize();
-    const label = makeLabel(SYMBOLS[k], state[k].name, TEXT_COLORS[k], 'mid');
-    label.position.copy(p).addScaledVector(dir, 0.52);
+    const dir = new THREE.Vector3(-p.x, -p.y, 0).normalize();
+    const cls = M_KEYS.includes(k) ? 'mid' : 'corner';
+    const label = makeLabel(SYMBOLS[k], state[k].name, TEXT_COLORS[k], cls);
+    label.position.copy(p).addScaledVector(dir, 0.42);
     labelGroup.add(label);
     mainLabels.push(label);
   }
 
-  // C labels
-  for (const k of C_KEYS) {
-    const p = POS[k];
-    const dir = new THREE.Vector3(p.x, p.y, 0).normalize();
-    const label = makeLabel(SYMBOLS[k], state[k].name, TEXT_COLORS[k], 'corner');
-    label.position.copy(p).addScaledVector(dir, 0.55);
-    labelGroup.add(label);
-    mainLabels.push(label);
-  }
-
-  /* ---- 6. Subterm fans ---- */
+  /* ---- 6. Subterm triangles ---- */
   buildFans();
 
   /* ---- 7. Visibility ---- */
   applyVisibility();
 }
 
-const SUB_RADIUS = 1.55;
-const SUB_SPREAD = THREE.MathUtils.degToRad(52);
-
+/* ---------------------------------------------------------------------
+   TRIANGLE FANS
+   Each vertex sprouts a triangle of subterms. The triangle sits in a
+   plane tilted 45° from the square's plane so it reads well from any
+   viewing angle.
+   --------------------------------------------------------------------- */
 function buildFans() {
-  for (const k of INNER_KEYS) {
-    const origin = POS[k];
-    const color  = COLORS[k];
+  for (const k of ALL_KEYS) {
     const subs = (state[k].subs || '')
       .split(',')
       .map(s => s.trim())
       .filter(Boolean);
 
-    if (!subs.length) continue;
+    if (subs.length !== 3) continue;   // triangle requires exactly 3
 
-    const n  = subs.length;
-    const u  = new THREE.Vector3(origin.x, origin.y, 0).normalize();
-    const zA = new THREE.Vector3(0, 0, 1);
+    const origin  = POS[k];
+    const color   = COLORS[k];
+    const isInner = INNER_KEYS.includes(k);
 
-    const positions = [];
+    // Size: inner terms get bigger triangles, outer get slightly smaller
+    const dist    = isInner ? 1.25 : 0.70;
+    const r       = isInner ? 0.70 : 0.40;
+    const dotSize = isInner ? 0.38 : 0.30;
+    const lblPush = isInner ? 0.28 : 0.22;
 
-    subs.forEach((text, i) => {
-      const t     = n === 1 ? 0 : (i / (n - 1)) * 2 - 1;
-      const theta = SUB_SPREAD * t;
+    // Local frame at this vertex
+    const u = new THREE.Vector3(origin.x, origin.y, 0).normalize();   // outward
+    const z = new THREE.Vector3(0, 0, 1);
+    const v = new THREE.Vector3(u.y, -u.x, 0);                        // perpendicular in XY
+    const e2 = v.clone()
+      .multiplyScalar(Math.cos(TRI_TILT))
+      .addScaledVector(z, Math.sin(TRI_TILT));
 
-      const dir = u.clone().multiplyScalar(Math.cos(theta))
-        .addScaledVector(zA, Math.sin(theta))
-        .normalize();
+    // Triangle centroid
+    const center = origin.clone().addScaledVector(u, dist);
 
-      const pos = origin.clone().addScaledVector(dir, SUB_RADIUS);
-      positions.push(pos);
+    // Triangle vertices (equilateral: angles 0°, 120°, 240° in the (u, e2) plane)
+    const verts = [];
+    for (let i = 0; i < 3; i++) {
+      const angle = (i / 3) * 2 * Math.PI;
+      const p = center.clone()
+        .addScaledVector(u,  r * Math.cos(angle))
+        .addScaledVector(e2, r * Math.sin(angle));
+      verts.push(p);
+    }
 
-      // branch line
-      fanGroup.add(makeLine(origin, pos, { color, width: 1.5, opacity: 0.42 }));
+    // Branches: origin → each vertex
+    for (const vp of verts) {
+      fanGroup.add(makeLine(origin, vp, { color, width: 1.5, opacity: 0.42 }));
+    }
 
-      // sub dot
-      fanGroup.add(makeDot(pos, color, 0.38));
+    // Triangle edges: vertex → next vertex
+    for (let i = 0; i < 3; i++) {
+      fanGroup.add(makeLine(verts[i], verts[(i + 1) % 3], {
+        color, width: 1.5, opacity: 0.58
+      }));
+    }
 
-      // sub label
-      const lbl = makeSubLabel(text, TEXT_COLORS[k]);
-      lbl.position.copy(pos).addScaledVector(dir, 0.28);
+    // Dots + labels at each vertex
+    for (let i = 0; i < 3; i++) {
+      const vp = verts[i];
+      fanGroup.add(makeDot(vp, color, dotSize));
+
+      const dirOut = vp.clone().sub(center).normalize();
+      const lbl = makeSubLabel(subs[i], TEXT_COLORS[k]);
+      lbl.position.copy(vp).addScaledVector(dirOut, lblPush);
       fanGroup.add(lbl);
       subLabels.push(lbl);
-    });
-
-    // faint arc through subterms
-    if (positions.length > 1) {
-      const curve = new THREE.CatmullRomCurve3(positions);
-      const pts = curve.getPoints(18);
-      for (let i = 0; i < pts.length - 1; i++) {
-        fanGroup.add(makeLine(pts[i], pts[i+1], {
-          color, width: 1.0, opacity: 0.22
-        }));
-      }
     }
   }
 }
@@ -697,12 +646,8 @@ document.querySelectorAll('#ui input[data-k]').forEach(el => {
 
 function syncInputsFromState() {
   for (const k of ALL_KEYS) {
-    if (inputs[k] && inputs[k].name) {
-      inputs[k].name.value = state[k].name || '';
-    }
-    if (inputs[k] && inputs[k].subs && state[k].subs !== undefined) {
-      inputs[k].subs.value = state[k].subs || '';
-    }
+    if (inputs[k] && inputs[k].name) inputs[k].name.value = state[k].name || '';
+    if (inputs[k] && inputs[k].subs) inputs[k].subs.value = state[k].subs || '';
   }
 }
 
@@ -710,8 +655,8 @@ function applyInputs() {
   for (const k of ALL_KEYS) {
     if (!inputs[k]) continue;
     if (inputs[k].name) {
-      const v = inputs[k].name.value.trim();
-      state[k].name = v || DEFAULTS[k].name;
+      const val = inputs[k].name.value.trim();
+      state[k].name = val || DEFAULTS[k].name;
     }
     if (inputs[k].subs) {
       state[k].subs = inputs[k].subs.value.trim();
@@ -725,7 +670,7 @@ document.getElementById('apply').addEventListener('click', applyInputs);
 document.getElementById('reset').addEventListener('click', () => {
   for (const k of ALL_KEYS) {
     state[k].name = DEFAULTS[k].name;
-    if (DEFAULTS[k].subs !== undefined) state[k].subs = DEFAULTS[k].subs;
+    state[k].subs = DEFAULTS[k].subs;
   }
   syncInputsFromState();
   build();
