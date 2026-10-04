@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Greimas Square — 3-Layer 3D Wireframe</title>
+<title>Greimas Square — 3-Layer Viridis</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -25,21 +25,29 @@
     font-weight: 500; font-size: 10px; opacity: 0.55;
     margin-right: 5px; letter-spacing: 0.06em;
   }
-  .lbl.mid { font-size: 13px; font-weight: 600; color: #ffd166; }
+  .lbl.mid { font-size: 13px; font-weight: 600; }
   .lbl.mid b {
     font-weight: 500; font-size: 9.5px; opacity: 0.55;
     margin-right: 5px; letter-spacing: 0.06em;
   }
-  .lbl.corner { font-size: 12px; font-weight: 500; color: #e8b64c; opacity: 0.92; }
+  .lbl.corner { font-size: 12px; font-weight: 500; opacity: 0.92; }
   .lbl.corner b {
     font-weight: 400; font-size: 9px; opacity: 0.55;
     margin-right: 4px; letter-spacing: 0.06em;
   }
-  .lbl.sub {
-    font-size: 10.5px;
-    opacity: 0.82;
-    letter-spacing: 0.04em;
+  .lbl.layer {
+    font-size: 12px;
+    font-weight: 500;
     font-style: italic;
+    letter-spacing: 0.03em;
+  }
+  .lbl.layer b {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 10.5px;
+    margin-right: 5px;
+    opacity: 0.72;
+    letter-spacing: 0.06em;
   }
 
   #ui {
@@ -77,7 +85,7 @@
     border-radius: 4px;
     color: #0a0e1c;
     vertical-align: 2px;
-    background: linear-gradient(120deg, #4ecdc4, #ffd166);
+    background: linear-gradient(120deg, #22a884, #fde725);
   }
   .hint {
     margin: 0 0 10px;
@@ -163,6 +171,16 @@
   }
   button.ghost:hover { background: rgba(255, 255, 255, 0.11); }
 
+  .legend {
+    display: flex; gap: 10px; margin-bottom: 10px;
+    font-size: 10px; letter-spacing: 0.05em; color: #97a2be;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; box-shadow: 0 0 6px currentColor;
+  }
+
   .toggles {
     display: flex;
     flex-wrap: wrap;
@@ -194,7 +212,7 @@
 
   @media (max-width: 560px) {
     #ui { width: 200px; padding: 10px; font-size: 11px; }
-    .hint { display: none; }
+    .hint, .legend { display: none; }
     #ui h1 { font-size: 11px; }
   }
 </style>
@@ -207,40 +225,46 @@
   <h1>Greimas Square<span>3L</span></h1>
   <p class="hint">drag · rotate | scroll · zoom | right-drag · pan</p>
 
+  <div class="legend">
+    <span><i style="color:#fde725; background:#fde725"></i>front +</span>
+    <span><i style="color:#22a884; background:#22a884"></i>center</span>
+    <span><i style="color:#414487; background:#414487"></i>back −</span>
+  </div>
+
   <div class="sec">
     <div class="sec-title">Inner Square</div>
-    <div class="row"><span class="sym" style="color:#ffb86b">S₁</span><input type="text" data-k="s1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#ff9f43"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="front, back"></div>
-    <div class="row"><span class="sym" style="color:#6fe3da">S₂</span><input type="text" data-k="s2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#4ecdc4"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="front, back"></div>
-    <div class="row"><span class="sym" style="color:#a3adff">~S₁</span><input type="text" data-k="ns1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#7b8cff"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="front, back"></div>
-    <div class="row"><span class="sym" style="color:#ffa0cd">~S₂</span><input type="text" data-k="ns2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#ff6fae"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">S₁</span><input type="text" data-k="s1" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">S₂</span><input type="text" data-k="s2" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">~S₁</span><input type="text" data-k="ns1" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">~S₂</span><input type="text" data-k="ns2" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="front, back"></div>
   </div>
 
   <div class="sec">
     <div class="sec-title">Outer Midpoints</div>
-    <div class="row"><span class="sym" style="color:#ffd166">M₁</span><input type="text" data-k="m1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#ffd166"><i></i></span><input type="text" data-k="m1" data-f="subs" placeholder="front, back"></div>
-    <div class="row"><span class="sym" style="color:#ffd166">M₂</span><input type="text" data-k="m2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#ffd166"><i></i></span><input type="text" data-k="m2" data-f="subs" placeholder="front, back"></div>
-    <div class="row"><span class="sym" style="color:#ffd166">M₃</span><input type="text" data-k="m3" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#ffd166"><i></i></span><input type="text" data-k="m3" data-f="subs" placeholder="front, back"></div>
-    <div class="row"><span class="sym" style="color:#ffd166">M₄</span><input type="text" data-k="m4" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#ffd166"><i></i></span><input type="text" data-k="m4" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">M₁</span><input type="text" data-k="m1" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m1" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">M₂</span><input type="text" data-k="m2" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m2" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">M₃</span><input type="text" data-k="m3" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m3" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">M₄</span><input type="text" data-k="m4" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m4" data-f="subs" placeholder="front, back"></div>
   </div>
 
   <div class="sec">
     <div class="sec-title">Outer Corners</div>
-    <div class="row"><span class="sym" style="color:#e8b64c">C₁</span><input type="text" data-k="c1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#e8b64c"><i></i></span><input type="text" data-k="c1" data-f="subs" placeholder="front, back"></div>
-    <div class="row"><span class="sym" style="color:#e8b64c">C₂</span><input type="text" data-k="c2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#e8b64c"><i></i></span><input type="text" data-k="c2" data-f="subs" placeholder="front, back"></div>
-    <div class="row"><span class="sym" style="color:#e8b64c">C₃</span><input type="text" data-k="c3" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#e8b64c"><i></i></span><input type="text" data-k="c3" data-f="subs" placeholder="front, back"></div>
-    <div class="row"><span class="sym" style="color:#e8b64c">C₄</span><input type="text" data-k="c4" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#e8b64c"><i></i></span><input type="text" data-k="c4" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">C₁</span><input type="text" data-k="c1" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c1" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">C₂</span><input type="text" data-k="c2" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c2" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">C₃</span><input type="text" data-k="c3" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c3" data-f="subs" placeholder="front, back"></div>
+    <div class="row"><span class="sym" style="color:#5bcfa0">C₄</span><input type="text" data-k="c4" data-f="name"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c4" data-f="subs" placeholder="front, back"></div>
   </div>
 
   <div class="buttons">
@@ -286,18 +310,6 @@ const SYMBOLS = {
   c1: 'C₁', c2: 'C₂', c3: 'C₃', c4: 'C₄',
 };
 
-const COLORS = {
-  s1: 0xff9f43, s2: 0x4ecdc4, ns1: 0x7b8cff, ns2: 0xff6fae,
-  m1: 0xffd166, m2: 0xffd166, m3: 0xffd166, m4: 0xffd166,
-  c1: 0xe8b64c, c2: 0xe8b64c, c3: 0xe8b64c, c4: 0xe8b64c,
-};
-
-const TEXT_COLORS = {
-  s1: '#ffb86b', s2: '#6fe3da', ns1: '#a3adff', ns2: '#ffa0cd',
-  m1: '#ffd166', m2: '#ffd166', m3: '#ffd166', m4: '#ffd166',
-  c1: '#e8b64c', c2: '#e8b64c', c3: '#e8b64c', c4: '#e8b64c',
-};
-
 const DEFAULTS = {
   s1:  { name: 'Being',       subs: 'Phenomenon, Noumenon' },
   s2:  { name: 'Seeming',     subs: 'Appearance, Illusion' },
@@ -316,11 +328,21 @@ const DEFAULTS = {
 const state = JSON.parse(JSON.stringify(DEFAULTS));
 
 /* =====================================================================
+   LAYER CONFIG — Viridis progression
+   ===================================================================== */
+const Z_DEPTH = 4.2;   // deeper z-spacing between layers
+
+const LAYERS = [
+  { id: 'back',   z: -Z_DEPTH, hex: 0x414487, text: '#8a8fd4', dim: 0.58, prefix: '−' },
+  { id: 'center', z:  0,       hex: 0x22a884, text: '#5bcfa0', dim: 1.00, prefix: ''  },
+  { id: 'front',  z: +Z_DEPTH, hex: 0xfde725, text: '#fde725', dim: 0.78, prefix: '+' },
+];
+
+/* =====================================================================
    POSITIONS  (XY layout; Z handled per layer)
    ===================================================================== */
 const H = 2.0;      // inner half-size
 const D = 4.5;      // outer half-size
-const Z_DEPTH = 2.6; // front / back layer distance from center
 
 const POS = {
   s1:  new THREE.Vector3(-H,  H, 0),
@@ -349,8 +371,8 @@ const app = document.getElementById('app');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x05070d);
 
-const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 200);
-camera.position.set(4.5, 3.2, 16);
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 250);
+camera.position.set(5.5, 4.0, 18);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -372,14 +394,14 @@ controls.enableDamping   = true;
 controls.dampingFactor   = 0.08;
 controls.rotateSpeed     = 0.85;
 controls.minDistance     = 5;
-controls.maxDistance     = 40;
+controls.maxDistance     = 48;
 controls.autoRotateSpeed = 0.9;
 
 /* =====================================================================
    GROUPS
    ===================================================================== */
-const structureGroup = new THREE.Group();  // center layer edges + dots
-const subGroup       = new THREE.Group();  // front + back layers + cross-links + sub labels
+const structureGroup = new THREE.Group();  // center layer
+const subGroup       = new THREE.Group();  // front + back layers + cross-links
 const labelGroup     = new THREE.Group();  // center labels
 scene.add(structureGroup, subGroup, labelGroup);
 
@@ -428,11 +450,11 @@ function makeLine(p1, p2, opts = {}) {
   return line;
 }
 
-function makeDot(pos, color, scale) {
+function makeDot(pos, color, scale, opacity = 0.95) {
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
     map: glowTex, color,
     blending: THREE.AdditiveBlending,
-    transparent: true, depthWrite: false, opacity: 0.95
+    transparent: true, depthWrite: false, opacity
   }));
   sprite.position.copy(pos);
   sprite.scale.setScalar(scale);
@@ -446,14 +468,6 @@ function makeLabel(symbol, name, textColor, cls) {
   const b = document.createElement('b');
   b.textContent = symbol;
   el.append(b, document.createTextNode(name));
-  return new CSS2DObject(el);
-}
-
-function makeSubLabel(text, textColor) {
-  const el = document.createElement('div');
-  el.className = 'lbl sub';
-  el.style.color = textColor;
-  el.textContent = text;
   return new CSS2DObject(el);
 }
 
@@ -476,48 +490,46 @@ function clearAll() {
    ===================================================================== */
 const LAYER_EDGES = [
   // inner square: contrary + subcontrary (solid, brightest)
-  { a:'s1',  b:'s2',  color: 0xd6dff0, width: 2.2, opacity: 1.00, dashed: false },
-  { a:'ns1', b:'ns2', color: 0xd6dff0, width: 2.2, opacity: 1.00, dashed: false },
+  { a:'s1',  b:'s2',  width: 2.2, opacity: 1.00, dashed: false },
+  { a:'ns1', b:'ns2', width: 2.2, opacity: 1.00, dashed: false },
   // contradictions (solid)
-  { a:'s1',  b:'ns1', color: 0xb8c4da, width: 2.2, opacity: 1.00, dashed: false },
-  { a:'s2',  b:'ns2', color: 0xb8c4da, width: 2.2, opacity: 1.00, dashed: false },
+  { a:'s1',  b:'ns1', width: 2.2, opacity: 1.00, dashed: false },
+  { a:'s2',  b:'ns2', width: 2.2, opacity: 1.00, dashed: false },
   // implications (dashed)
-  { a:'s1',  b:'ns2', color: 0x8a97b5, width: 2.0, opacity: 0.90, dashed: true, dash: 0.22, gap: 0.16 },
-  { a:'s2',  b:'ns1', color: 0x8a97b5, width: 2.0, opacity: 0.90, dashed: true, dash: 0.22, gap: 0.16 },
+  { a:'s1',  b:'ns2', width: 2.0, opacity: 0.90, dashed: true, dash: 0.22, gap: 0.16 },
+  { a:'s2',  b:'ns1', width: 2.0, opacity: 0.90, dashed: true, dash: 0.22, gap: 0.16 },
   // inner → outer midpoints (dotted)
-  { a:'s1',  b:'m1',  color: 0xc9a24a, width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'s1',  b:'m4',  color: 0xc9a24a, width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'s2',  b:'m1',  color: 0xc9a24a, width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'s2',  b:'m2',  color: 0xc9a24a, width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'ns1', b:'m4',  color: 0xc9a24a, width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'ns1', b:'m3',  color: 0xc9a24a, width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'ns2', b:'m2',  color: 0xc9a24a, width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'ns2', b:'m3',  color: 0xc9a24a, width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'s1',  b:'m1',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'s1',  b:'m4',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'s2',  b:'m1',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'s2',  b:'m2',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'ns1', b:'m4',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'ns1', b:'m3',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'ns2', b:'m2',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'ns2', b:'m3',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
   // outer perimeter (dotted)
-  { a:'c4', b:'c1', color: 0xd4a94f, width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
-  { a:'c1', b:'c2', color: 0xd4a94f, width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
-  { a:'c2', b:'c3', color: 0xd4a94f, width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
-  { a:'c3', b:'c4', color: 0xd4a94f, width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
+  { a:'c4', b:'c1', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
+  { a:'c1', b:'c2', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
+  { a:'c2', b:'c3', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
+  { a:'c3', b:'c4', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
 ];
 
-function addLayerEdges(z, dim) {
+function addLayerEdges(z, color, dim) {
   for (const e of LAYER_EDGES) {
-    structureGroupLike(e, z, dim);
+    subGroupOrStructure().add(makeLine(posAt(e.a, z), posAt(e.b, z), {
+      color,
+      width: e.width * (dim < 1 ? 0.94 : 1),
+      opacity: e.opacity * dim,
+      dashed: e.dashed,
+      dash: e.dash || 0.2,
+      gap: e.gap || 0.15
+    }));
   }
 }
 
-/* structureGroupLike dispatches to the right group */
+/* dispatch helper */
 let currentGroup = structureGroup;
-function structureGroupLike(e, z, dim) {
-  currentGroup.add(makeLine(posAt(e.a, z), posAt(e.b, z), {
-    color: e.color,
-    width: e.width * (dim < 1 ? 0.92 : 1),
-    opacity: e.opacity * dim,
-    dashed: e.dashed,
-    dash: e.dash || 0.2,
-    gap: e.gap || 0.15
-  }));
-}
+function subGroupOrStructure() { return currentGroup; }
 
 /* =====================================================================
    BUILD
@@ -530,18 +542,21 @@ function build() {
   mainLabels = [];
   subLabels  = [];
 
-  /* --- Center layer --------------------------------------------- */
+  /* -------- CENTER LAYER -------- */
+  const center = LAYERS.find(L => L.id === 'center');
   currentGroup = structureGroup;
-  addLayerEdges(0, 1.0);
+
+  addLayerEdges(center.z, center.hex, center.dim);
 
   for (const k of ALL_KEYS) {
     const isInner = INNER_KEYS.includes(k);
-    structureGroup.add(makeDot(posAt(k, 0), COLORS[k], isInner ? 0.72 : 0.55));
+    structureGroup.add(makeDot(posAt(k, center.z), center.hex,
+      isInner ? 0.72 : 0.55, 0.95));
   }
 
-  /* Center labels */
+  /* Center labels — per-term class hierarchy preserved */
   for (const k of ALL_KEYS) {
-    const p = posAt(k, 0);
+    const p = posAt(k, center.z);
     let dir, cls;
     if (INNER_KEYS.includes(k)) {
       dir = new THREE.Vector3(p.x, p.y, 0).normalize();
@@ -550,20 +565,22 @@ function build() {
       dir = new THREE.Vector3(-p.x, -p.y, 0).normalize();
       cls = M_KEYS.includes(k) ? 'mid' : 'corner';
     }
-    const label = makeLabel(SYMBOLS[k], state[k].name, TEXT_COLORS[k], cls);
+    const label = makeLabel(SYMBOLS[k], state[k].name, center.text, cls);
     label.position.copy(p).addScaledVector(dir, 0.5);
     labelGroup.add(label);
     mainLabels.push(label);
   }
 
-  /* --- Front & back layers -------------------------------------- */
+  /* -------- FRONT & BACK LAYERS -------- */
   currentGroup = subGroup;
 
-  for (const zSign of [+1, -1]) {
-    const z = zSign * Z_DEPTH;
+  for (const layer of LAYERS) {
+    if (layer.id === 'center') continue;
+
+    const z = layer.z;
 
     // Full diagram topology replicated on this layer
-    addLayerEdges(z, 0.46);
+    addLayerEdges(z, layer.hex, layer.dim);
 
     for (const k of ALL_KEYS) {
       const isInner = INNER_KEYS.includes(k);
@@ -574,30 +591,35 @@ function build() {
         .split(',')
         .map(s => s.trim())
         .filter(Boolean);
-      const subName = zSign > 0 ? (subs[0] || '') : (subs[1] || '');
+      const subName = (layer.id === 'front') ? (subs[0] || '') : (subs[1] || '');
 
-      // vertex dot
-      subGroup.add(makeDot(p, COLORS[k], isInner ? 0.44 : 0.36));
+      // vertex dot (dimmer than center)
+      subGroup.add(makeDot(p, layer.hex, isInner ? 0.42 : 0.34, layer.dim));
 
-      // sub-label
+      // layer label with + / − prefix
       if (subName) {
-        const dir = INNER_KEYS.includes(k)
+        const dir = isInner
           ? new THREE.Vector3(p.x, p.y, 0).normalize()          // push outward
           : new THREE.Vector3(-p.x, -p.y, 0).normalize();       // push inward
-        const lbl = makeSubLabel(subName, TEXT_COLORS[k]);
-        lbl.position.copy(p).addScaledVector(dir, isInner ? 0.44 : 0.34);
-        subGroup.add(lbl);
-        subLabels.push(lbl);
+        const label = makeLabel(
+          layer.prefix + SYMBOLS[k],
+          subName,
+          layer.text,
+          'layer'
+        );
+        label.position.copy(p).addScaledVector(dir, isInner ? 0.5 : 0.4);
+        subGroup.add(label);
+        subLabels.push(label);
       }
 
       // cross-layer dotted connector: center ↔ this-layer
       subGroup.add(makeLine(posAt(k, 0), p, {
-        color: COLORS[k],
-        width: 1.2,
-        opacity: 0.34,
+        color: layer.hex,
+        width: 1.1,
+        opacity: 0.30 * layer.dim,
         dashed: true,
         dash: 0.08,
-        gap: 0.10
+        gap: 0.11
       }));
     }
   }
