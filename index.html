@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Greimas Square — 3-Layer Viridis</title>
+<title>Greimas Square — Hologram Layers</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -147,7 +147,7 @@
   .row.sub input { font-size: 10.5px; color: #a8b3cc; }
   .row.sub { margin-bottom: 7px; }
 
-  .buttons { display: flex; gap: 7px; margin: 8px 0 10px; }
+  .buttons { display: flex; gap: 7px; margin: 8px 0 6px; }
   button {
     flex: 1;
     padding: 7px 4px;
@@ -170,6 +170,51 @@
     border-color: rgba(255, 255, 255, 0.10);
   }
   button.ghost:hover { background: rgba(255, 255, 255, 0.11); }
+
+  /* ===== Expand / Collapse button ===== */
+  #expand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 12px;
+    margin: 0 0 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #fde725;
+    background: linear-gradient(135deg, rgba(34,168,132,0.18), rgba(253,231,37,0.10));
+    border: 1px solid rgba(253,231,37,0.35);
+    box-shadow: 0 0 0 0 rgba(253,231,37,0);
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, color 0.25s;
+  }
+  #expand:hover {
+    background: linear-gradient(135deg, rgba(34,168,132,0.32), rgba(253,231,37,0.22));
+    border-color: rgba(253,231,37,0.60);
+    box-shadow: 0 0 18px -4px rgba(253,231,37,0.5);
+  }
+  #expand.expanded {
+    color: #a3adff;
+    background: linear-gradient(135deg, rgba(65,68,135,0.30), rgba(34,168,132,0.14));
+    border-color: rgba(65,68,135,0.55);
+  }
+  #expand.expanded:hover {
+    background: linear-gradient(135deg, rgba(65,68,135,0.45), rgba(34,168,132,0.24));
+    border-color: rgba(65,68,135,0.75);
+    box-shadow: 0 0 18px -4px rgba(65,68,135,0.6);
+  }
+  #expand .chev {
+    display: inline-block;
+    width: 10px;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  #expand.expanded .chev { transform: rotate(180deg); }
 
   .legend {
     display: flex; gap: 10px; margin-bottom: 10px;
@@ -272,9 +317,10 @@
     <button id="reset" class="ghost">Reset</button>
   </div>
 
+  <button id="expand"><span class="chev">▸</span><span id="expand-label">Expand</span></button>
+
   <div class="toggles">
     <label><input type="checkbox" id="t-labels" checked><span>Labels</span></label>
-    <label><input type="checkbox" id="t-subs" checked><span>Layers</span></label>
     <label><input type="checkbox" id="t-rotate"><span>Auto-rotate</span></label>
   </div>
 </div>
@@ -328,21 +374,21 @@ const DEFAULTS = {
 const state = JSON.parse(JSON.stringify(DEFAULTS));
 
 /* =====================================================================
-   LAYER CONFIG — Viridis progression
+   LAYER CONFIG
    ===================================================================== */
-const Z_DEPTH = 4.2;   // deeper z-spacing between layers
+const Z_DEPTH = 4.2;
 
 const LAYERS = [
-  { id: 'back',   z: -Z_DEPTH, hex: 0x414487, text: '#8a8fd4', dim: 0.58, prefix: '−' },
-  { id: 'center', z:  0,       hex: 0x22a884, text: '#5bcfa0', dim: 1.00, prefix: ''  },
-  { id: 'front',  z: +Z_DEPTH, hex: 0xfde725, text: '#fde725', dim: 0.78, prefix: '+' },
+  { id: 'back',   sign: -1, hex: 0x414487, text: '#8a8fd4', dim: 0.58, prefix: '−' },
+  { id: 'center', sign:  0, hex: 0x22a884, text: '#5bcfa0', dim: 1.00, prefix: ''  },
+  { id: 'front',  sign: +1, hex: 0xfde725, text: '#fde725', dim: 0.78, prefix: '+' },
 ];
 
 /* =====================================================================
-   POSITIONS  (XY layout; Z handled per layer)
+   POSITIONS
    ===================================================================== */
-const H = 2.0;      // inner half-size
-const D = 4.5;      // outer half-size
+const H = 2.0;
+const D = 4.5;
 
 const POS = {
   s1:  new THREE.Vector3(-H,  H, 0),
@@ -401,9 +447,10 @@ controls.autoRotateSpeed = 0.9;
    GROUPS
    ===================================================================== */
 const structureGroup = new THREE.Group();  // center layer
-const subGroup       = new THREE.Group();  // front + back layers + cross-links
+const frontGroup     = new THREE.Group();
+const backGroup      = new THREE.Group();
 const labelGroup     = new THREE.Group();  // center labels
-scene.add(structureGroup, subGroup, labelGroup);
+scene.add(structureGroup, labelGroup, frontGroup, backGroup);
 
 /* =====================================================================
    HELPERS
@@ -438,7 +485,7 @@ function makeLine(p1, p2, opts = {}) {
 
   const mat = new LineMaterial({
     color, linewidth: width,
-    transparent: opacity < 1, opacity,
+    transparent: true, opacity,
     dashed, dashSize: dash, gapSize: gap,
     depthWrite: false
   });
@@ -471,34 +518,16 @@ function makeLabel(symbol, name, textColor, cls) {
   return new CSS2DObject(el);
 }
 
-function clearAll() {
-  [structureGroup, subGroup, labelGroup].forEach(group => {
-    group.traverse(obj => {
-      if (obj.isLine2) {
-        obj.geometry.dispose();
-        obj.material.dispose();
-      }
-      if (obj.isSprite && obj.material) obj.material.dispose();
-    });
-    group.clear();
-  });
-  lineMaterials.length = 0;
-}
-
 /* =====================================================================
-   EDGE TOPOLOGY (shared by all three layers)
+   EDGE TOPOLOGY
    ===================================================================== */
 const LAYER_EDGES = [
-  // inner square: contrary + subcontrary (solid, brightest)
   { a:'s1',  b:'s2',  width: 2.2, opacity: 1.00, dashed: false },
   { a:'ns1', b:'ns2', width: 2.2, opacity: 1.00, dashed: false },
-  // contradictions (solid)
   { a:'s1',  b:'ns1', width: 2.2, opacity: 1.00, dashed: false },
   { a:'s2',  b:'ns2', width: 2.2, opacity: 1.00, dashed: false },
-  // implications (dashed)
   { a:'s1',  b:'ns2', width: 2.0, opacity: 0.90, dashed: true, dash: 0.22, gap: 0.16 },
   { a:'s2',  b:'ns1', width: 2.0, opacity: 0.90, dashed: true, dash: 0.22, gap: 0.16 },
-  // inner → outer midpoints (dotted)
   { a:'s1',  b:'m1',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
   { a:'s1',  b:'m4',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
   { a:'s2',  b:'m1',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
@@ -507,56 +536,98 @@ const LAYER_EDGES = [
   { a:'ns1', b:'m3',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
   { a:'ns2', b:'m2',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
   { a:'ns2', b:'m3',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  // outer perimeter (dotted)
   { a:'c4', b:'c1', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
   { a:'c1', b:'c2', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
   { a:'c2', b:'c3', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
   { a:'c3', b:'c4', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
 ];
 
-function addLayerEdges(z, color, dim) {
-  for (const e of LAYER_EDGES) {
-    subGroupOrStructure().add(makeLine(posAt(e.a, z), posAt(e.b, z), {
-      color,
-      width: e.width * (dim < 1 ? 0.94 : 1),
-      opacity: e.opacity * dim,
-      dashed: e.dashed,
-      dash: e.dash || 0.2,
-      gap: e.gap || 0.15
-    }));
-  }
+/* =====================================================================
+   BUILD STATE
+   ===================================================================== */
+let mainLabels = [];   // center layer labels
+let subLabels  = [];   // front/back labels
+
+/* Animation targets, rebuilt whenever we rebuild the scene */
+const animTargets = {
+  front: { materials: [], baseOpacities: [], labels: [] },
+  back:  { materials: [], baseOpacities: [], labels: [] },
+  cross: [],   // { line, key, sign, baseOpacity }
+};
+
+/* Expand state */
+const anim = {
+  progress: 0,   // 0 = collapsed, 1 = expanded
+  target:   0,
+};
+
+/* UI mirrors */
+let labelsOn = true;
+
+/* =====================================================================
+   CLEAR
+   ===================================================================== */
+function clearGroup(g) {
+  g.traverse(obj => {
+    if (obj.isLine2) {
+      obj.geometry.dispose();
+      obj.material.dispose();
+    }
+    if (obj.isSprite && obj.material) obj.material.dispose();
+  });
+  g.clear();
 }
 
-/* dispatch helper */
-let currentGroup = structureGroup;
-function subGroupOrStructure() { return currentGroup; }
+function clearAll() {
+  clearGroup(structureGroup);
+  clearGroup(frontGroup);
+  clearGroup(backGroup);
+  clearGroup(labelGroup);
+  // Remove cross-connectors (added directly to the scene)
+  for (const c of animTargets.cross) {
+    scene.remove(c.line);
+    c.line.geometry.dispose();
+    c.line.material.dispose();
+  }
+  animTargets.cross.length = 0;
+  animTargets.front.materials.length = 0;
+  animTargets.front.baseOpacities.length = 0;
+  animTargets.front.labels.length = 0;
+  animTargets.back.materials.length = 0;
+  animTargets.back.baseOpacities.length = 0;
+  animTargets.back.labels.length = 0;
+  lineMaterials.length = 0;
+}
 
 /* =====================================================================
    BUILD
    ===================================================================== */
-let mainLabels = [];
-let subLabels  = [];
-
 function build() {
   clearAll();
   mainLabels = [];
   subLabels  = [];
 
-  /* -------- CENTER LAYER -------- */
+  /* ---------- CENTER LAYER ---------- */
   const center = LAYERS.find(L => L.id === 'center');
-  currentGroup = structureGroup;
 
-  addLayerEdges(center.z, center.hex, center.dim);
+  for (const e of LAYER_EDGES) {
+    structureGroup.add(makeLine(posAt(e.a, 0), posAt(e.b, 0), {
+      color: center.hex,
+      width: e.width,
+      opacity: e.opacity,
+      dashed: e.dashed,
+      dash: e.dash || 0.2,
+      gap: e.gap || 0.15
+    }));
+  }
 
   for (const k of ALL_KEYS) {
     const isInner = INNER_KEYS.includes(k);
-    structureGroup.add(makeDot(posAt(k, center.z), center.hex,
-      isInner ? 0.72 : 0.55, 0.95));
+    structureGroup.add(makeDot(posAt(k, 0), center.hex, isInner ? 0.72 : 0.55, 0.95));
   }
 
-  /* Center labels — per-term class hierarchy preserved */
   for (const k of ALL_KEYS) {
-    const p = posAt(k, center.z);
+    const p = posAt(k, 0);
     let dir, cls;
     if (INNER_KEYS.includes(k)) {
       dir = new THREE.Vector3(p.x, p.y, 0).normalize();
@@ -571,36 +642,51 @@ function build() {
     mainLabels.push(label);
   }
 
-  /* -------- FRONT & BACK LAYERS -------- */
-  currentGroup = subGroup;
-
+  /* ---------- FRONT + BACK LAYERS ---------- */
   for (const layer of LAYERS) {
     if (layer.id === 'center') continue;
 
-    const z = layer.z;
+    const group = layer.id === 'front' ? frontGroup : backGroup;
+    const slot  = animTargets[layer.id];
 
-    // Full diagram topology replicated on this layer
-    addLayerEdges(z, layer.hex, layer.dim);
+    // Reset the group transform — it will be animated
+    group.position.z = 0;
+    group.scale.setScalar(1);
 
+    // Layer edges (local z = 0; the group itself moves along z)
+    for (const e of LAYER_EDGES) {
+      const line = makeLine(posAt(e.a, 0), posAt(e.b, 0), {
+        color: layer.hex,
+        width: e.width * 0.94,
+        opacity: e.opacity * layer.dim,
+        dashed: e.dashed,
+        dash: e.dash || 0.2,
+        gap: e.gap || 0.15
+      });
+      group.add(line);
+      slot.materials.push(line.material);
+      slot.baseOpacities.push(e.opacity * layer.dim);
+    }
+
+    // Vertex dots + subterm labels
     for (const k of ALL_KEYS) {
       const isInner = INNER_KEYS.includes(k);
-      const p = posAt(k, z);
+      const p = posAt(k, 0);
 
-      // subterm name: subs[0] = front, subs[1] = back
+      const dot = makeDot(p, layer.hex, isInner ? 0.42 : 0.34, layer.dim);
+      group.add(dot);
+      slot.materials.push(dot.material);
+      slot.baseOpacities.push(layer.dim);
+
       const subs = (state[k].subs || '')
-        .split(',')
-        .map(s => s.trim())
-        .filter(Boolean);
-      const subName = (layer.id === 'front') ? (subs[0] || '') : (subs[1] || '');
+        .split(',').map(s => s.trim()).filter(Boolean);
+      const subName = layer.id === 'front' ? (subs[0] || '') : (subs[1] || '');
 
-      // vertex dot (dimmer than center)
-      subGroup.add(makeDot(p, layer.hex, isInner ? 0.42 : 0.34, layer.dim));
-
-      // layer label with + / − prefix
       if (subName) {
         const dir = isInner
-          ? new THREE.Vector3(p.x, p.y, 0).normalize()          // push outward
-          : new THREE.Vector3(-p.x, -p.y, 0).normalize();       // push inward
+          ? new THREE.Vector3(p.x, p.y, 0).normalize()
+          : new THREE.Vector3(-p.x, -p.y, 0).normalize();
+
         const label = makeLabel(
           layer.prefix + SYMBOLS[k],
           subName,
@@ -608,48 +694,147 @@ function build() {
           'layer'
         );
         label.position.copy(p).addScaledVector(dir, isInner ? 0.5 : 0.4);
-        subGroup.add(label);
+        group.add(label);
         subLabels.push(label);
+        slot.labels.push(label);
       }
 
-      // cross-layer dotted connector: center ↔ this-layer
-      subGroup.add(makeLine(posAt(k, 0), p, {
+      // Cross-layer connector — lives in scene space so it can span z
+      const pC = posAt(k, 0);
+      const line = makeLine(pC, pC, {   // degenerate initially
         color: layer.hex,
         width: 1.1,
         opacity: 0.30 * layer.dim,
         dashed: true,
         dash: 0.08,
         gap: 0.11
-      }));
+      });
+      scene.add(line);
+      animTargets.cross.push({
+        line, key: k, sign: layer.sign,
+        baseOpacity: 0.30 * layer.dim,
+        hex: layer.hex
+      });
     }
   }
 
+  /* Snap animation state to current values */
+  applyExpandState(1);
+
+  /* Reapply label visibility */
   applyVisibility();
+}
+
+/* =====================================================================
+   EXPAND / COLLAPSE ANIMATION
+   ===================================================================== */
+function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
+
+function applyExpandState(flickerFactor) {
+  const e = easeOutCubic(anim.progress);
+
+  /* Layer transforms */
+  frontGroup.position.z = e * Z_DEPTH;
+  backGroup.position.z  = -e * Z_DEPTH;
+
+  const scale = 0.86 + 0.14 * e;
+  frontGroup.scale.setScalar(scale);
+  backGroup.scale.setScalar(scale);
+
+  const layersVisible = e > 0.005;
+  frontGroup.visible = layersVisible;
+  backGroup.visible  = layersVisible;
+
+  /* Per-material opacity */
+  for (const id of ['front', 'back']) {
+    const slot = animTargets[id];
+    for (let i = 0; i < slot.materials.length; i++) {
+      slot.materials[i].opacity = slot.baseOpacities[i] * e * flickerFactor;
+    }
+    for (const lbl of slot.labels) {
+      const op = Math.min(1, e * flickerFactor);
+      lbl.element.style.opacity = op.toFixed(3);
+      lbl.visible = labelsOn && op > 0.06;
+    }
+  }
+
+  /* Cross-connectors: update endpoints + opacity */
+  for (const c of animTargets.cross) {
+    const pC = posAt(c.key, 0);
+    const pL = posAt(c.key, c.sign * e * Z_DEPTH);
+    c.line.geometry.setPositions([pC.x, pC.y, pC.z, pL.x, pL.y, pL.z]);
+    c.line.computeLineDistances();
+    c.line.material.opacity = c.baseOpacity * e * flickerFactor;
+    c.line.visible = layersVisible;
+  }
+}
+
+function updateExpandAnimation(dt) {
+  const delta = anim.target - anim.progress;
+  const transitioning = Math.abs(delta) > 0.001;
+
+  if (transitioning) {
+    const speed = 1.45;   // full transition ≈ 0.7 s
+    const step  = Math.sign(delta) * Math.min(Math.abs(delta), speed * dt);
+    anim.progress += step;
+  } else {
+    anim.progress = anim.target;
+  }
+
+  const stillTransitioning = Math.abs(anim.target - anim.progress) > 0.001;
+
+  /* Hologram flicker during transition */
+  let flicker = 1;
+  if (stillTransitioning) {
+    if (Math.random() < 0.08) {
+      flicker = 0;                       // full dropout
+    } else {
+      flicker = 0.5 + Math.random() * 0.7;
+    }
+    // As transition settles, reduce flicker amplitude
+    const settle = 1 - Math.min(1, Math.abs(delta) * 2.5);
+    flicker = 1 + (flicker - 1) * (1 - settle * 0.35);
+  }
+
+  applyExpandState(flicker);
 }
 
 /* =====================================================================
    VISIBILITY
    ===================================================================== */
 const toggleLabels = document.getElementById('t-labels');
-const toggleSubs   = document.getElementById('t-subs');
 const toggleRotate = document.getElementById('t-rotate');
+const expandBtn    = document.getElementById('expand');
+const expandLabel  = document.getElementById('expand-label');
 
 function applyVisibility() {
-  const showLabels = toggleLabels.checked;
-  const showSubs   = toggleSubs.checked;
-
-  mainLabels.forEach(l => { l.visible = showLabels; });
-  subLabels.forEach(l  => { l.visible = showLabels; });
-  subGroup.visible = showSubs;
+  labelsOn = toggleLabels.checked;
+  for (const l of mainLabels) l.visible = labelsOn;
+  // sub-labels are handled by the animation loop
 }
 
+function updateExpandButton() {
+  const expanded = anim.target === 1;
+  expandBtn.classList.toggle('expanded', expanded);
+  expandLabel.textContent = expanded ? 'Collapse' : 'Expand';
+}
+
+expandBtn.addEventListener('click', () => {
+  anim.target = anim.target === 1 ? 0 : 1;
+  updateExpandButton();
+});
+
+toggleLabels.addEventListener('change', applyVisibility);
+toggleRotate.addEventListener('change', () => {
+  controls.autoRotate = toggleRotate.checked;
+});
+
 /* =====================================================================
-   UI
+   UI — term inputs
    ===================================================================== */
 const inputs = {};
 document.querySelectorAll('#ui input[data-k]').forEach(el => {
-  const k = el.dataset.k;
-  const f = el.dataset.f;
+  const k = el.dataset.k, f = el.dataset.f;
   if (!inputs[k]) inputs[k] = {};
   inputs[k][f] = el;
 });
@@ -665,18 +850,15 @@ function applyInputs() {
   for (const k of ALL_KEYS) {
     if (!inputs[k]) continue;
     if (inputs[k].name) {
-      const val = inputs[k].name.value.trim();
-      state[k].name = val || DEFAULTS[k].name;
+      const v = inputs[k].name.value.trim();
+      state[k].name = v || DEFAULTS[k].name;
     }
-    if (inputs[k].subs) {
-      state[k].subs = inputs[k].subs.value.trim();
-    }
+    if (inputs[k].subs) state[k].subs = inputs[k].subs.value.trim();
   }
   build();
 }
 
 document.getElementById('apply').addEventListener('click', applyInputs);
-
 document.getElementById('reset').addEventListener('click', () => {
   for (const k of ALL_KEYS) {
     state[k].name = DEFAULTS[k].name;
@@ -688,18 +870,8 @@ document.getElementById('reset').addEventListener('click', () => {
 
 document.querySelectorAll('#ui input[data-k]').forEach(el => {
   el.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      applyInputs();
-      el.blur();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); applyInputs(); el.blur(); }
   });
-});
-
-toggleLabels.addEventListener('change', applyVisibility);
-toggleSubs  .addEventListener('change', applyVisibility);
-toggleRotate.addEventListener('change', () => {
-  controls.autoRotate = toggleRotate.checked;
 });
 
 /* =====================================================================
@@ -718,9 +890,15 @@ addEventListener('resize', onResize);
 /* =====================================================================
    LOOP
    ===================================================================== */
+const clock = new THREE.Clock();
+
 function animate() {
   requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.1);
+
+  updateExpandAnimation(dt);
   controls.update();
+
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 }
@@ -730,6 +908,7 @@ function animate() {
    ===================================================================== */
 syncInputsFromState();
 build();
+updateExpandButton();
 animate();
 </script>
 </body>
