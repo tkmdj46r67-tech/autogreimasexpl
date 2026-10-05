@@ -41,22 +41,27 @@
     margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em;
   }
   .lbl.cousin {
-    font-size: 9.5px; font-weight: 400; font-style: italic;
-    opacity: 0.72; letter-spacing: 0.02em;
+    font-size: 9.5px;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.02em;
+    filter: saturate(0.42) brightness(1.22);
   }
 
   #ui {
     position: fixed; top: 14px; left: 14px; z-index: 10;
-    width: 274px; max-height: calc(100vh - 28px); overflow-y: auto;
-    padding: 12px; border-radius: 12px;
+    width: 328px; max-height: calc(100vh - 28px); overflow-y: auto;
+    padding: 12px 14px; border-radius: 12px;
     background: rgba(9, 13, 22, 0.88);
     border: 1px solid rgba(255, 255, 255, 0.07);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 14px 40px rgba(0,0,0,0.5);
     font-size: 12px; line-height: 1.4;
   }
-  #ui::-webkit-scrollbar { width: 6px; }
-  #ui::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 3px; }
+  #ui::-webkit-scrollbar { width: 7px; }
+  #ui::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.14); border-radius: 4px;
+  }
   #ui h1 {
     margin: 0 0 2px; font-size: 12px; font-weight: 600;
     letter-spacing: 0.1em; text-transform: uppercase;
@@ -67,10 +72,12 @@
     color: #0a0e1c; vertical-align: 2px;
     background: linear-gradient(120deg, #22a884, #fde725);
   }
-  .hint { margin: 0 0 8px; font-size: 10px; color: #7e8aa8; letter-spacing: 0.02em; }
+  .hint {
+    margin: 0 0 10px; font-size: 10px; color: #7e8aa8; letter-spacing: 0.02em;
+  }
 
   .legend {
-    display: flex; gap: 10px; margin-bottom: 10px;
+    display: flex; gap: 12px; margin-bottom: 6px;
     font-size: 10px; letter-spacing: 0.05em; color: #97a2be;
   }
   .legend span { display: inline-flex; align-items: center; gap: 5px; }
@@ -79,30 +86,68 @@
     display: inline-block; box-shadow: 0 0 6px currentColor;
   }
 
-  .sec {
-    margin-bottom: 9px; padding-bottom: 7px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  }
-  .sec:last-of-type { border-bottom: none; margin-bottom: 4px; }
+  /* ============ Collapsible sections ============ */
+  .sec { margin-bottom: 4px; }
+
   .sec-title {
-    font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: #7e8aa8; margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 2px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #7e8aa8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transition: color 0.15s, border-color 0.2s;
+  }
+  .sec-title:hover { color: #a3adff; }
+  .sec-title:focus-visible {
+    outline: 1px solid rgba(126, 160, 255, 0.55);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .sec-title .chev {
+    display: inline-block;
+    font-size: 9px;
+    opacity: 0.65;
+    transition: transform 0.28s ease;
+  }
+  .sec.collapsed .sec-title .chev { transform: rotate(-90deg); }
+
+  .sec-body {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.28s ease;
+  }
+  .sec.collapsed .sec-body { grid-template-rows: 0fr; }
+
+  .sec-clip {
+    overflow: hidden;
+    min-height: 0;
+  }
+  .sec-content {
+    padding: 8px 0 6px;
   }
 
-  .row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  /* ============ Term rows ============ */
+  .row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
   .row .sym {
-    flex: 0 0 36px; font-size: 11px; font-weight: 600; text-align: right;
+    flex: 0 0 42px; font-size: 11px; font-weight: 600; text-align: right;
     letter-spacing: 0.02em;
   }
   .row .sym.dot {
-    flex: 0 0 36px; display: flex; justify-content: flex-end;
+    flex: 0 0 42px; display: flex; justify-content: flex-end;
   }
   .row .sym.dot i {
     display: block; width: 7px; height: 7px; border-radius: 50%;
     background: currentColor; box-shadow: 0 0 8px currentColor;
   }
   .row input {
-    flex: 1; min-width: 0; padding: 5px 8px; border-radius: 6px;
+    flex: 1; min-width: 0; padding: 6px 9px; border-radius: 6px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #e9edf7; font: inherit; font-size: 11.5px; outline: none;
@@ -119,11 +164,12 @@
     color: #97a2be;
   }
   .row.sub input { font-size: 10.5px; color: #a8b3cc; }
-  .row.sub { margin-bottom: 7px; }
+  .row.sub { margin-bottom: 8px; }
 
-  .buttons { display: flex; gap: 7px; margin: 8px 0 6px; }
+  /* ============ Buttons ============ */
+  .buttons { display: flex; gap: 7px; margin: 12px 0 6px; }
   button {
-    flex: 1; padding: 7px 4px; border-radius: 7px; cursor: pointer;
+    flex: 1; padding: 8px 4px; border-radius: 7px; cursor: pointer;
     font: inherit; font-size: 10.5px; letter-spacing: 0.1em;
     text-transform: uppercase; color: #e9edf7;
     background: rgba(126, 160, 255, 0.18);
@@ -134,7 +180,7 @@
   button:active:not(:disabled) { transform: translateY(1px); }
   button:disabled { opacity: 0.55; cursor: progress; }
   button.ghost {
-    flex: 0 0 72px;
+    flex: 0 0 78px;
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.10);
   }
@@ -178,16 +224,17 @@
   }
   #expand.expanded .chev { transform: rotate(180deg); }
 
+  /* ============ Toggles ============ */
   .toggles {
     display: flex; flex-wrap: wrap; gap: 5px;
-    padding-top: 9px;
+    padding-top: 10px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
   .toggles + .toggles { margin-top: 0; }
 
   .toggles label {
     display: flex; align-items: center; gap: 5px;
-    padding: 5px 8px; border-radius: 7px; cursor: pointer; user-select: none;
+    padding: 6px 9px; border-radius: 7px; cursor: pointer; user-select: none;
     font-size: 10px; letter-spacing: 0.03em;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -201,14 +248,12 @@
     color: #fff;
   }
 
-  /* Layer toggle dots */
   #layer-toggles label i {
     width: 7px; height: 7px; border-radius: 50%;
     display: inline-block; flex: 0 0 auto;
     font-style: normal;
   }
 
-  /* Disabled state for the layer row */
   #layer-toggles.is-disabled {
     opacity: 0.32;
     pointer-events: none;
@@ -221,7 +266,7 @@
   }
 
   .footer-link {
-    margin-top: 8px; font-size: 9.5px; letter-spacing: 0.04em;
+    margin-top: 10px; font-size: 9.5px; letter-spacing: 0.04em;
     color: #5f6a86; text-align: right;
   }
   .footer-link a {
@@ -230,10 +275,12 @@
   }
   .footer-link a:hover { color: #a3adff; }
 
-  @media (max-width: 560px) {
-    #ui { width: 206px; padding: 10px; font-size: 11px; }
+  @media (max-width: 620px) {
+    #ui { width: 240px; padding: 10px 11px; font-size: 11px; }
     .hint, .legend { display: none; }
     #ui h1 { font-size: 11px; }
+    .row .sym { flex: 0 0 34px; font-size: 10.5px; }
+    .row .sym.dot { flex: 0 0 34px; }
   }
 </style>
 </head>
@@ -251,40 +298,58 @@
     <span><i style="color:#414487; background:#414487"></i>back · antonyms</span>
   </div>
 
-  <div class="sec">
-    <div class="sec-title">Inner Square</div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">S₁</span><input type="text" data-k="s1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="syn, ant"></div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">S₂</span><input type="text" data-k="s2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="syn, ant"></div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">~S₁</span><input type="text" data-k="ns1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="syn, ant"></div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">~S₂</span><input type="text" data-k="ns2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="syn, ant"></div>
+  <!-- ============ INNER SQUARE ============ -->
+  <div class="sec" data-sec>
+    <div class="sec-title" role="button" tabindex="0" aria-expanded="true">
+      <span>Inner Square</span>
+      <span class="chev">▾</span>
+    </div>
+    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
+      <div class="row"><span class="sym" style="color:#5bcfa0">S₁</span><input type="text" data-k="s1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">S₂</span><input type="text" data-k="s2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">~S₁</span><input type="text" data-k="ns1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">~S₂</span><input type="text" data-k="ns2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="syn, ant"></div>
+    </div></div></div>
   </div>
 
-  <div class="sec">
-    <div class="sec-title">Outer Midpoints</div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">M₁</span><input type="text" data-k="m1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m1" data-f="subs" placeholder="syn, ant"></div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">M₂</span><input type="text" data-k="m2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m2" data-f="subs" placeholder="syn, ant"></div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">M₃</span><input type="text" data-k="m3" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m3" data-f="subs" placeholder="syn, ant"></div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">M₄</span><input type="text" data-k="m4" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m4" data-f="subs" placeholder="syn, ant"></div>
+  <!-- ============ OUTER MIDPOINTS ============ -->
+  <div class="sec" data-sec>
+    <div class="sec-title" role="button" tabindex="0" aria-expanded="true">
+      <span>Outer Midpoints</span>
+      <span class="chev">▾</span>
+    </div>
+    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
+      <div class="row"><span class="sym" style="color:#5bcfa0">M₁</span><input type="text" data-k="m1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m1" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">M₂</span><input type="text" data-k="m2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m2" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">M₃</span><input type="text" data-k="m3" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m3" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">M₄</span><input type="text" data-k="m4" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m4" data-f="subs" placeholder="syn, ant"></div>
+    </div></div></div>
   </div>
 
-  <div class="sec">
-    <div class="sec-title">Outer Corners</div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">C₁</span><input type="text" data-k="c1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c1" data-f="subs" placeholder="syn, ant"></div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">C₂</span><input type="text" data-k="c2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c2" data-f="subs" placeholder="syn, ant"></div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">C₃</span><input type="text" data-k="c3" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c3" data-f="subs" placeholder="syn, ant"></div>
-    <div class="row"><span class="sym" style="color:#5bcfa0">C₄</span><input type="text" data-k="c4" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c4" data-f="subs" placeholder="syn, ant"></div>
+  <!-- ============ OUTER CORNERS ============ -->
+  <div class="sec" data-sec>
+    <div class="sec-title" role="button" tabindex="0" aria-expanded="true">
+      <span>Outer Corners</span>
+      <span class="chev">▾</span>
+    </div>
+    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
+      <div class="row"><span class="sym" style="color:#5bcfa0">C₁</span><input type="text" data-k="c1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c1" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">C₂</span><input type="text" data-k="c2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c2" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">C₃</span><input type="text" data-k="c3" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c3" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">C₄</span><input type="text" data-k="c4" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c4" data-f="subs" placeholder="syn, ant"></div>
+    </div></div></div>
   </div>
 
   <div class="buttons">
@@ -389,6 +454,8 @@ const LAYERS = [
   { id: 'center', sign:  0, hex: 0x22a884, text: '#5bcfa0', dim: 1.00, prefix: ''  },
   { id: 'front',  sign: +1, hex: 0xfde725, text: '#fde725', dim: 0.78, prefix: '+' },
 ];
+
+const COUSIN_OPACITY_MULT = 0.62;
 
 /* =====================================================================
    POSITIONS
@@ -549,14 +616,11 @@ async function resolveAll(names, signal) {
   const anchors = [];
   for (const { name, key, syns, ants } of fetched) {
     if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
-
     const front = pickWord(syns, name, used);
     let back = pickWord(ants, name, used);
     if (!back) back = negationFallback(name, used);
-
     if (front) used.add(front.toLowerCase());
     if (back)  used.add(back.toLowerCase());
-
     anchors.push({ key, name, front, back });
   }
 
@@ -739,9 +803,10 @@ let subLabels    = [];
 let cousinLabels = [];
 
 const animTargets = {
-  front: { materials: [], baseOpacities: [], labels: [] },
-  back:  { materials: [], baseOpacities: [], labels: [] },
-  cross: [],
+  front:  { materials: [], baseOpacities: [], labels: [] },
+  center: { materials: [], baseOpacities: [], labels: [] },
+  back:   { materials: [], baseOpacities: [], labels: [] },
+  cross:  [],
   cousin: [],
 };
 
@@ -750,8 +815,9 @@ let labelsOn  = true;
 let cousinsOn = true;
 let currentAbort = null;
 
-/* Layer visibility preference (only matters when expanded) */
 const layerVisible = { front: true, center: true, back: true };
+const layerAlpha   = { front: 1, center: 1, back: 1 };
+const layerFlicker = { front: 1, center: 1, back: 1 };
 
 /* =====================================================================
    CLEAR
@@ -778,7 +844,7 @@ function clearAll() {
   animTargets.cross.length = 0;
   animTargets.cousin.length = 0;
 
-  for (const id of ['front', 'back']) {
+  for (const id of ['front', 'center', 'back']) {
     animTargets[id].materials.length = 0;
     animTargets[id].baseOpacities.length = 0;
     animTargets[id].labels.length = 0;
@@ -799,15 +865,21 @@ function build() {
 
   /* ---------- CENTER LAYER ---------- */
   for (const e of LAYER_EDGES) {
-    structureGroup.add(makeLine(posAt(e.a, 0), posAt(e.b, 0), {
+    const line = makeLine(posAt(e.a, 0), posAt(e.b, 0), {
       color: center.hex, width: e.width, opacity: e.opacity,
       dashed: e.dashed, dash: e.dash || 0.2, gap: e.gap || 0.15
-    }));
+    });
+    structureGroup.add(line);
+    animTargets.center.materials.push(line.material);
+    animTargets.center.baseOpacities.push(e.opacity);
   }
 
   for (const k of ALL_KEYS) {
     const isInner = INNER_KEYS.includes(k);
-    structureGroup.add(makeDot(posAt(k, 0), center.hex, isInner ? 0.72 : 0.55, 0.95));
+    const dot = makeDot(posAt(k, 0), center.hex, isInner ? 0.72 : 0.55, 0.95);
+    structureGroup.add(dot);
+    animTargets.center.materials.push(dot.material);
+    animTargets.center.baseOpacities.push(0.95);
   }
 
   for (const k of ALL_KEYS) {
@@ -882,7 +954,7 @@ function build() {
       });
       scene.add(cross);
       animTargets.cross.push({
-        line: cross, key: k, sign: layer.sign,
+        line: cross, key: k, sign: layer.sign, layerId: layer.id,
         baseOpacity: 0.30 * layer.dim,
       });
 
@@ -891,6 +963,7 @@ function build() {
       const ringR = isInner ? 0.60 : 0.46;
       const n = sideData.cousins.length;
       const cluster = {
+        layerId: layer.id,
         lines: [],  lineBase: [],
         dots: [],   dotBase: [],
         labels: [],
@@ -953,63 +1026,129 @@ function applyExpandState(flickerFactor) {
 
   const layersVisible = e > 0.005;
 
-  /* Center layer is always visible when collapsed; respects its toggle
-     only when the hologram is (or is heading) expanded. */
-  const centerOn = (anim.target === 0) || layerVisible.center;
-  structureGroup.visible = centerOn;
-  labelGroup.visible     = centerOn;
+  const alphaFront  = layerAlpha.front  * layerFlicker.front;
+  const alphaBack   = layerAlpha.back   * layerFlicker.back;
+  const alphaCenter = layerAlpha.center * layerFlicker.center;
 
-  /* Front / back layer groups */
-  const frontOn = layerVisible.front;
-  const backOn  = layerVisible.back;
-  frontGroup.visible = layersVisible && frontOn;
-  backGroup.visible  = layersVisible && backOn;
+  /* FRONT */
+  {
+    const slot = animTargets.front;
+    const layerOn = layerVisible.front;
+    frontGroup.visible = layersVisible && layerOn;
 
-  /* Per-layer materials */
-  for (const id of ['front', 'back']) {
-    const slot = animTargets[id];
-    const layerOn = layerVisible[id];
+    const f = alphaFront * e * flickerFactor;
     for (let i = 0; i < slot.materials.length; i++) {
-      slot.materials[i].opacity =
-        slot.baseOpacities[i] * e * flickerFactor * (layerOn ? 1 : 0);
+      slot.materials[i].opacity = slot.baseOpacities[i] * f;
     }
     for (const lbl of slot.labels) {
-      const op = Math.min(1, e * flickerFactor) * (layerOn ? 1 : 0);
+      const op = Math.min(1, f);
       lbl.element.style.opacity = op.toFixed(3);
-      lbl.visible = labelsOn && op > 0.06;
+      const vis = labelsOn && layerOn && op > 0.06;
+      lbl.visible = vis;
+      lbl.element.style.display = vis ? '' : 'none';
     }
   }
 
-  /* Cross-layer connectors */
+  /* BACK */
+  {
+    const slot = animTargets.back;
+    const layerOn = layerVisible.back;
+    backGroup.visible = layersVisible && layerOn;
+
+    const f = alphaBack * e * flickerFactor;
+    for (let i = 0; i < slot.materials.length; i++) {
+      slot.materials[i].opacity = slot.baseOpacities[i] * f;
+    }
+    for (const lbl of slot.labels) {
+      const op = Math.min(1, f);
+      lbl.element.style.opacity = op.toFixed(3);
+      const vis = labelsOn && layerOn && op > 0.06;
+      lbl.visible = vis;
+      lbl.element.style.display = vis ? '' : 'none';
+    }
+  }
+
+  /* CENTER */
+  {
+    const layerOn = layerVisible.center;
+    const f = alphaCenter * flickerFactor;
+
+    for (let i = 0; i < animTargets.center.materials.length; i++) {
+      animTargets.center.materials[i].opacity =
+        animTargets.center.baseOpacities[i] * f;
+    }
+    for (const lbl of mainLabels) {
+      const op = Math.min(1, f);
+      lbl.element.style.opacity = op.toFixed(3);
+      const vis = labelsOn && layerOn && op > 0.06;
+      lbl.visible = vis;
+      lbl.element.style.display = vis ? '' : 'none';
+    }
+  }
+
+  /* CROSS CONNECTORS */
   for (const c of animTargets.cross) {
-    const layerKey = c.sign > 0 ? 'front' : 'back';
-    const layerOn  = layerVisible[layerKey];
+    const layerOn = layerVisible[c.layerId];
+    const centerOn = layerVisible.center;
     const pC = posAt(c.key, 0);
     const pL = posAt(c.key, c.sign * e * Z_DEPTH);
     c.line.geometry.setPositions([pC.x, pC.y, pC.z, pL.x, pL.y, pL.z]);
     c.line.computeLineDistances();
+
+    const layerAlphaVal = (c.layerId === 'front' ? alphaFront : alphaBack);
     c.line.material.opacity =
-      c.baseOpacity * e * flickerFactor * (layerOn && centerOn ? 1 : 0);
+      c.baseOpacity * e * flickerFactor * layerAlphaVal * (centerOn ? 1 : 0);
     c.line.visible = layersVisible && layerOn && centerOn;
   }
 
-  /* Cousin clusters */
+  /* COUSIN CLUSTERS */
   const cousinAlpha = cousinsOn ? 1 : 0;
   for (const cluster of animTargets.cousin) {
-    /* Figure out which layer this cluster belongs to by its first spoke's colour */
-    /* (cheaper to store, but this is fine) */
+    const layerOn = layerVisible[cluster.layerId];
+    const layerAlphaVal = (cluster.layerId === 'front' ? alphaFront : alphaBack);
+    const f = e * flickerFactor * layerAlphaVal * (layerOn ? 1 : 0);
+
     for (let i = 0; i < cluster.lines.length; i++) {
-      cluster.lines[i].material.opacity =
-        cluster.lineBase[i] * e * flickerFactor * cousinAlpha;
+      cluster.lines[i].material.opacity = cluster.lineBase[i] * f;
     }
     for (let i = 0; i < cluster.dots.length; i++) {
-      cluster.dots[i].material.opacity =
-        cluster.dotBase[i] * e * flickerFactor * cousinAlpha;
+      cluster.dots[i].material.opacity = cluster.dotBase[i] * f;
     }
     for (const lbl of cluster.labels) {
-      const op = Math.min(1, e * flickerFactor) * cousinAlpha;
+      const op = Math.min(1, f) * cousinAlpha * COUSIN_OPACITY_MULT;
       lbl.element.style.opacity = op.toFixed(3);
-      lbl.visible = labelsOn && op > 0.06;
+      const vis = labelsOn && layerOn && op > 0.04;
+      lbl.visible = vis;
+      lbl.element.style.display = vis ? '' : 'none';
+    }
+  }
+}
+
+function updateLayerAnimations(dt) {
+  for (const k of ['front', 'center', 'back']) {
+    let target;
+    if (k === 'center') {
+      target = (anim.progress < 0.005) ? 1 : (layerVisible.center ? 1 : 0);
+    } else {
+      target = layerVisible[k] ? 1 : 0;
+    }
+
+    const current = layerAlpha[k];
+    const delta = target - current;
+
+    if (Math.abs(delta) > 0.001) {
+      const speed = 3.0;
+      const step = Math.sign(delta) * Math.min(Math.abs(delta), speed * dt);
+      layerAlpha[k] = current + step;
+
+      if (Math.random() < 0.18) {
+        layerFlicker[k] = 0;
+      } else {
+        layerFlicker[k] = 0.35 + Math.random() * 0.85;
+      }
+    } else {
+      layerAlpha[k] = target;
+      layerFlicker[k] = 1;
     }
   }
 }
@@ -1026,6 +1165,8 @@ function updateExpandAnimation(dt) {
     anim.progress = anim.target;
   }
 
+  updateLayerAnimations(dt);
+
   const stillTransitioning = Math.abs(anim.progress - anim.target) > 0.001;
 
   let flicker = 1;
@@ -1038,7 +1179,6 @@ function updateExpandAnimation(dt) {
 
   applyExpandState(flicker);
 
-  /* Refresh control enablement once the transition settles */
   if (!stillTransitioning) updateLayerControls();
 }
 
@@ -1062,7 +1202,6 @@ const layerTogglesWrap = document.getElementById('layer-toggles');
 
 function applyVisibility() {
   labelsOn = toggleLabels.checked;
-  for (const l of mainLabels) l.visible = labelsOn;
 }
 
 function applyCousinVisibility() {
@@ -1075,9 +1214,6 @@ function updateExpandButton() {
   expandLabel.textContent = expanded ? 'Collapse' : 'Expand';
 }
 
-/* Layer toggles only function when the hologram is fully expanded.
-   The Expand button is disabled whenever any layer is hidden, because
-   in that state expanding would not reveal the full structure. */
 function updateLayerControls() {
   const settled = Math.abs(anim.progress - anim.target) < 0.001;
   const isExpanded = anim.target === 1 && settled;
@@ -1101,15 +1237,32 @@ for (const k of ['front', 'center', 'back']) {
   layerToggleEls[k].addEventListener('change', () => {
     layerVisible[k] = layerToggleEls[k].checked;
     updateLayerControls();
-    /* Reapply right away so the change is visible on the next frame. */
-    applyExpandState(1);
   });
 }
 
-toggleLabels.addEventListener('change', () => { applyVisibility(); applyCousinVisibility(); });
+toggleLabels.addEventListener('change', applyVisibility);
 toggleCousins.addEventListener('change', applyCousinVisibility);
 toggleRotate.addEventListener('change', () => {
   controls.autoRotate = toggleRotate.checked;
+});
+
+/* =====================================================================
+   COLLAPSIBLE SECTIONS
+   ===================================================================== */
+document.querySelectorAll('.sec[data-sec]').forEach(sec => {
+  const title = sec.querySelector('.sec-title');
+  const toggle = () => {
+    sec.classList.toggle('collapsed');
+    const expanded = !sec.classList.contains('collapsed');
+    title.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  };
+  title.addEventListener('click', toggle);
+  title.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggle();
+    }
+  });
 });
 
 /* =====================================================================
