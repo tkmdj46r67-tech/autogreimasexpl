@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Greimas Square — Auto Subterms</title>
+<title>Greimas Square — Synonym/Antonym Orbits</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -15,9 +15,7 @@
   #app canvas { display: block; }
 
   .lbl {
-    pointer-events: none;
-    user-select: none;
-    white-space: nowrap;
+    pointer-events: none; user-select: none; white-space: nowrap;
     text-shadow: 0 0 8px rgba(0,0,0,0.92), 0 1px 2px rgba(0,0,0,0.9);
   }
   .lbl.main { font-size: 14px; font-weight: 600; }
@@ -42,32 +40,26 @@
     font-style: normal; font-weight: 600; font-size: 10.5px;
     margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em;
   }
+  .lbl.cousin {
+    font-size: 9.5px; font-weight: 400; font-style: italic;
+    opacity: 0.72; letter-spacing: 0.02em;
+  }
 
   #ui {
-    position: fixed;
-    top: 14px; left: 14px;
-    z-index: 10;
-    width: 272px;
-    max-height: calc(100vh - 28px);
-    overflow-y: auto;
-    padding: 12px;
-    border-radius: 12px;
+    position: fixed; top: 14px; left: 14px; z-index: 10;
+    width: 274px; max-height: calc(100vh - 28px); overflow-y: auto;
+    padding: 12px; border-radius: 12px;
     background: rgba(9, 13, 22, 0.88);
     border: 1px solid rgba(255, 255, 255, 0.07);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 14px 40px rgba(0,0,0,0.5);
-    font-size: 12px;
-    line-height: 1.4;
+    font-size: 12px; line-height: 1.4;
   }
   #ui::-webkit-scrollbar { width: 6px; }
   #ui::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 3px; }
   #ui h1 {
-    margin: 0 0 2px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    margin: 0 0 2px; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
   }
   #ui h1 span {
     display: inline-block; margin-left: 6px; padding: 1px 5px;
@@ -75,8 +67,16 @@
     color: #0a0e1c; vertical-align: 2px;
     background: linear-gradient(120deg, #22a884, #fde725);
   }
-  .hint {
-    margin: 0 0 10px; font-size: 10px; color: #7e8aa8; letter-spacing: 0.02em;
+  .hint { margin: 0 0 8px; font-size: 10px; color: #7e8aa8; letter-spacing: 0.02em; }
+
+  .legend {
+    display: flex; gap: 10px; margin-bottom: 10px;
+    font-size: 10px; letter-spacing: 0.05em; color: #97a2be;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; box-shadow: 0 0 6px currentColor;
   }
 
   .sec {
@@ -106,7 +106,7 @@
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #e9edf7; font: inherit; font-size: 11.5px; outline: none;
-    transition: border-color 0.15s, background 0.15s, opacity 0.15s;
+    transition: border-color 0.15s, background 0.15s;
   }
   .row input:focus {
     border-color: rgba(126, 160, 255, 0.5);
@@ -124,8 +124,8 @@
   .buttons { display: flex; gap: 7px; margin: 8px 0 6px; }
   button {
     flex: 1; padding: 7px 4px; border-radius: 7px; cursor: pointer;
-    font: inherit; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase;
-    color: #e9edf7;
+    font: inherit; font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #e9edf7;
     background: rgba(126, 160, 255, 0.18);
     border: 1px solid rgba(126, 160, 255, 0.4);
     transition: background 0.15s, border-color 0.15s;
@@ -149,7 +149,6 @@
     color: #fde725;
     background: linear-gradient(135deg, rgba(34,168,132,0.18), rgba(253,231,37,0.10));
     border: 1px solid rgba(253,231,37,0.35);
-    box-shadow: 0 0 0 0 rgba(253,231,37,0);
     transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, color 0.25s;
   }
   #expand:hover {
@@ -173,16 +172,6 @@
   }
   #expand.expanded .chev { transform: rotate(180deg); }
 
-  .legend {
-    display: flex; gap: 10px; margin-bottom: 10px;
-    font-size: 10px; letter-spacing: 0.05em; color: #97a2be;
-  }
-  .legend span { display: inline-flex; align-items: center; gap: 5px; }
-  .legend i {
-    width: 8px; height: 8px; border-radius: 50%;
-    display: inline-block; box-shadow: 0 0 6px currentColor;
-  }
-
   .toggles {
     display: flex; flex-wrap: wrap; gap: 5px;
     padding-top: 9px;
@@ -205,11 +194,8 @@
   }
 
   .footer-link {
-    margin-top: 8px;
-    font-size: 9.5px;
-    letter-spacing: 0.04em;
-    color: #5f6a86;
-    text-align: right;
+    margin-top: 8px; font-size: 9.5px; letter-spacing: 0.04em;
+    color: #5f6a86; text-align: right;
   }
   .footer-link a {
     color: #7e8aa8; cursor: pointer; text-decoration: none;
@@ -233,45 +219,45 @@
   <p class="hint">drag · rotate | scroll · zoom | right-drag · pan</p>
 
   <div class="legend">
-    <span><i style="color:#fde725; background:#fde725"></i>front +</span>
+    <span><i style="color:#fde725; background:#fde725"></i>front · synonyms</span>
     <span><i style="color:#22a884; background:#22a884"></i>center</span>
-    <span><i style="color:#414487; background:#414487"></i>back −</span>
+    <span><i style="color:#414487; background:#414487"></i>back · antonyms</span>
   </div>
 
   <div class="sec">
     <div class="sec-title">Inner Square</div>
     <div class="row"><span class="sym" style="color:#5bcfa0">S₁</span><input type="text" data-k="s1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="syn, ant"></div>
     <div class="row"><span class="sym" style="color:#5bcfa0">S₂</span><input type="text" data-k="s2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="syn, ant"></div>
     <div class="row"><span class="sym" style="color:#5bcfa0">~S₁</span><input type="text" data-k="ns1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="syn, ant"></div>
     <div class="row"><span class="sym" style="color:#5bcfa0">~S₂</span><input type="text" data-k="ns2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="syn, ant"></div>
   </div>
 
   <div class="sec">
     <div class="sec-title">Outer Midpoints</div>
     <div class="row"><span class="sym" style="color:#5bcfa0">M₁</span><input type="text" data-k="m1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m1" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m1" data-f="subs" placeholder="syn, ant"></div>
     <div class="row"><span class="sym" style="color:#5bcfa0">M₂</span><input type="text" data-k="m2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m2" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m2" data-f="subs" placeholder="syn, ant"></div>
     <div class="row"><span class="sym" style="color:#5bcfa0">M₃</span><input type="text" data-k="m3" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m3" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m3" data-f="subs" placeholder="syn, ant"></div>
     <div class="row"><span class="sym" style="color:#5bcfa0">M₄</span><input type="text" data-k="m4" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m4" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m4" data-f="subs" placeholder="syn, ant"></div>
   </div>
 
   <div class="sec">
     <div class="sec-title">Outer Corners</div>
     <div class="row"><span class="sym" style="color:#5bcfa0">C₁</span><input type="text" data-k="c1" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c1" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c1" data-f="subs" placeholder="syn, ant"></div>
     <div class="row"><span class="sym" style="color:#5bcfa0">C₂</span><input type="text" data-k="c2" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c2" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c2" data-f="subs" placeholder="syn, ant"></div>
     <div class="row"><span class="sym" style="color:#5bcfa0">C₃</span><input type="text" data-k="c3" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c3" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c3" data-f="subs" placeholder="syn, ant"></div>
     <div class="row"><span class="sym" style="color:#5bcfa0">C₄</span><input type="text" data-k="c4" data-f="name"></div>
-    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c4" data-f="subs" placeholder="front, back"></div>
+    <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c4" data-f="subs" placeholder="syn, ant"></div>
   </div>
 
   <div class="buttons">
@@ -282,12 +268,13 @@
   <button id="expand"><span class="chev">▸</span><span id="expand-label">Expand</span></button>
 
   <div class="toggles">
-    <label><input type="checkbox" id="t-auto" checked><span>Auto subterms</span></label>
+    <label><input type="checkbox" id="t-auto" checked><span>Auto anchors</span></label>
+    <label><input type="checkbox" id="t-cousins" checked><span>Cousins</span></label>
     <label><input type="checkbox" id="t-labels" checked><span>Labels</span></label>
-    <label><input type="checkbox" id="t-rotate"><span>Auto-rotate</span></label>
+    <label><input type="checkbox" id="t-rotate"><span>Rotate</span></label>
   </div>
 
-  <div class="footer-link"><a id="clear-cache">clear subterm cache</a></div>
+  <div class="footer-link"><a id="clear-cache">clear word cache</a></div>
 </div>
 
 <script type="importmap">
@@ -321,22 +308,33 @@ const SYMBOLS = {
   c1: 'C₁', c2: 'C₂', c3: 'C₃', c4: 'C₄',
 };
 
+/* Default diagram + pre-seeded anchor words */
 const DEFAULTS = {
-  s1:  { name: 'Being',       subs: 'Phenomenon, Noumenon' },
-  s2:  { name: 'Seeming',     subs: 'Appearance, Illusion' },
-  ns1: { name: 'Non-being',   subs: 'Void, Absence' },
-  ns2: { name: 'Non-seeming', subs: 'Invisibility, Latency' },
-  m1:  { name: 'Truth',       subs: 'Verity, Authenticity' },
-  m2:  { name: 'Lie',         subs: 'Fabrication, Perjury' },
-  m3:  { name: 'Falsehood',   subs: 'Error, Fallacy' },
-  m4:  { name: 'Secret',      subs: 'Concealment, Mystery' },
-  c1:  { name: 'Paradox',     subs: 'Contradiction, Antinomy' },
-  c2:  { name: 'Deception',   subs: 'Trickery, Fraud' },
-  c3:  { name: 'Subterfuge',  subs: 'Evasion, Stratagem' },
-  c4:  { name: 'Revelation',  subs: 'Disclosure, Epiphany' },
+  s1:  { name: 'Being',       anchors: 'Existence, Nothingness' },
+  s2:  { name: 'Seeming',     anchors: 'Appearance, Reality' },
+  ns1: { name: 'Non-being',   anchors: 'Absence, Presence' },
+  ns2: { name: 'Non-seeming', anchors: 'Invisibility, Visibility' },
+  m1:  { name: 'Truth',       anchors: 'Verity, Falsehood' },
+  m2:  { name: 'Lie',         anchors: 'Fabrication, Truth' },
+  m3:  { name: 'Falsehood',   anchors: 'Error, Truth' },
+  m4:  { name: 'Secret',      anchors: 'Concealment, Disclosure' },
+  c1:  { name: 'Paradox',     anchors: 'Contradiction, Consistency' },
+  c2:  { name: 'Deception',   anchors: 'Trickery, Honesty' },
+  c3:  { name: 'Subterfuge',  anchors: 'Evasion, Candor' },
+  c4:  { name: 'Revelation',  anchors: 'Disclosure, Concealment' },
 };
 
-const state = JSON.parse(JSON.stringify(DEFAULTS));
+/* state[k] = { name, front: {anchor, cousins}, back: {anchor, cousins} } */
+const state = {};
+for (const k of ALL_KEYS) {
+  const d = DEFAULTS[k];
+  const [f, b] = (d.anchors || '').split(',').map(s => s.trim());
+  state[k] = {
+    name: d.name,
+    front: { anchor: f || '', cousins: [] },
+    back:  { anchor: b || '', cousins: [] },
+  };
+}
 
 /* =====================================================================
    LAYER CONFIG
@@ -376,146 +374,177 @@ function posAt(k, z) {
 }
 
 /* =====================================================================
-   SUBTERM PROVIDER  —  Datamuse + cache + fallbacks
+   WORD PROVIDER
+   - synonyms + antonyms for the center term
+   - "means like" cousins for each anchor
    ===================================================================== */
-const CACHE_KEY = 'greimas-subterm-cache-v1';
-const subtermCache = new Map();
+const CACHE_KEY = 'greimas-words-v2';
+const cache = new Map();
 
 (function loadCache() {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return;
     const obj = JSON.parse(raw);
-    for (const k of Object.keys(obj)) {
-      const v = obj[k];
-      if (v && typeof v.front === 'string' && typeof v.back === 'string') {
-        subtermCache.set(k, v);
-      }
-    }
-  } catch (e) { /* ignore */ }
+    for (const k of Object.keys(obj)) cache.set(k, obj[k]);
+  } catch (e) {}
 })();
 
 function persistCache() {
   try {
     const obj = {};
-    for (const [k, v] of subtermCache) obj[k] = v;
+    for (const [k, v] of cache) obj[k] = v;
     localStorage.setItem(CACHE_KEY, JSON.stringify(obj));
-  } catch (e) { /* ignore */ }
+  } catch (e) {}
 }
 
-function normalizeTerm(term) {
-  return String(term || '').trim().toLowerCase()
+function normKey(s) {
+  return String(s || '').trim().toLowerCase()
     .replace(/[^\w\s-]/g, '').replace(/\s+/g, ' ').trim();
 }
 
 function titleCase(s) {
-  return s.split(/\s+/)
+  return String(s || '').split(/\s+/)
     .map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : w)
     .join(' ');
 }
 
-async function fetchDatamuse(rel, term, signal) {
+async function datamuse(rel, term, signal) {
+  if (!term) return [];
   const url = `https://api.datamuse.com/words?rel=${rel}=${encodeURIComponent(term)}&max=25`;
   const res = await fetch(url, { signal });
   if (!res.ok) throw new Error('datamuse ' + res.status);
   return res.json();
 }
 
-/* Pick a single-word, non-trivial, unused candidate. */
-function pickBest(candidates, query, used) {
-  if (!candidates || !candidates.length) return null;
-  const q = query.toLowerCase().trim();
-
-  const filtered = [];
+function pickWord(candidates, query, used) {
+  if (!candidates || !candidates.length) return '';
+  const q = String(query || '').toLowerCase().trim();
+  const scored = [];
   for (const c of candidates) {
     const w = String(c.word || '').toLowerCase().trim();
-    if (!w) continue;
+    if (!w || w.includes(' ')) continue;
     if (w === q) continue;
-    if (w.includes(' ')) continue;         // single words only
     if (w === q + 's' || w === q + "'s") continue;
-    if (w === q.replace(/s$/, '')) continue;
     if (used.has(w)) continue;
-    filtered.push({ word: w, score: c.score || 0 });
+    scored.push({ word: w, score: c.score || 0 });
   }
-  if (!filtered.length) return null;
-
-  filtered.sort((a, b) => {
-    if (b.score !== a.score) return b.score - a.score;
-    return a.word.localeCompare(b.word);
-  });
-  return filtered[0].word;
+  if (!scored.length) return '';
+  scored.sort((a, b) => (b.score - a.score) || a.word.localeCompare(b.word));
+  return scored[0].word;
 }
 
-/* Greimas-flavoured negation fallback for the back layer. */
-function fallbackBack(term, used) {
+function negationFallback(term, used) {
   const t = String(term || '').trim();
   const tries = [];
-  if (/^non-/i.test(t)) tries.push(t.replace(/^non-/i, ''));
-  if (/^un-/i.test(t))  tries.push(t.replace(/^un-/i, ''));
+  if (/^non-/i.test(t))  tries.push(t.replace(/^non-/i, ''));
+  if (/^un-/i.test(t))   tries.push(t.replace(/^un-/i, ''));
   tries.push('non-' + t.toLowerCase());
   tries.push('anti-' + t.toLowerCase());
   tries.push('un-' + t.toLowerCase());
   for (const c of tries) {
-    if (c && !used.has(c.toLowerCase())) return c;
+    const k = c.toLowerCase();
+    if (c && !used.has(k)) return c;
   }
   return '';
 }
 
-/* Resolve every term. Parallel fetches, sequential selection. */
-async function resolveAll(termNames, signal) {
-  const used = new Set(termNames.map(t => t.toLowerCase().trim()));
-  const results = new Map();          // normalized key -> {front, back}
+async function fetchCousins(anchor, signal, exclude) {
+  if (!anchor) return [];
+  let raw = [];
+  try {
+    raw = await datamuse('ml', anchor, signal);
+  } catch (e) {
+    if (e.name === 'AbortError') throw e;
+    return [];
+  }
+  const used = new Set([anchor.toLowerCase(), ...exclude].map(s => s.toLowerCase()));
+  const out = [];
+  for (const c of raw) {
+    const w = String(c.word || '').toLowerCase().trim();
+    if (!w || w.includes(' ')) continue;
+    if (used.has(w)) continue;
+    used.add(w);
+    out.push(titleCase(w));
+    if (out.length >= 4) break;
+  }
+  return out;
+}
 
-  // 1. Cache hits first
+/* Resolve every term. Parallel fetches, then per-anchor cousin round. */
+async function resolveAll(names, signal) {
+  const used = new Set(names.map(n => n.toLowerCase().trim()));
+  const results = new Map();
   const uncached = [];
-  const seen = new Set();
-  for (const t of termNames) {
-    const key = normalizeTerm(t);
-    if (!key) continue;
-    if (seen.has(key)) continue;
-    seen.add(key);
 
-    if (subtermCache.has(key)) {
-      const r = subtermCache.get(key);
+  for (const name of names) {
+    const key = normKey(name);
+    if (!key) continue;
+    if (results.has(key)) continue;
+    if (cache.has(key)) {
+      const r = cache.get(key);
       results.set(key, r);
-      if (r.front) used.add(r.front.toLowerCase());
-      if (r.back)  used.add(r.back.toLowerCase());
+      if (r.front?.anchor) used.add(r.front.anchor.toLowerCase());
+      if (r.back?.anchor)  used.add(r.back.anchor.toLowerCase());
     } else {
-      uncached.push(t);
+      uncached.push({ name, key });
     }
   }
 
-  // 2. Fetch uncached in parallel
-  const fetched = await Promise.all(uncached.map(async t => {
+  /* Round 1: synonym + antonym for each uncached term */
+  const fetched = await Promise.all(uncached.map(async ({ name, key }) => {
     try {
       const [syns, ants] = await Promise.all([
-        fetchDatamuse('syn', t, signal).catch(e => { if (e.name === 'AbortError') throw e; return []; }),
-        fetchDatamuse('ant', t, signal).catch(e => { if (e.name === 'AbortError') throw e; return []; }),
+        datamuse('syn', name, signal).catch(e => { if (e.name === 'AbortError') throw e; return []; }),
+        datamuse('ant', name, signal).catch(e => { if (e.name === 'AbortError') throw e; return []; }),
       ]);
-      return { term: t, syns, ants };
+      return { name, key, syns, ants };
     } catch (e) {
       if (e.name === 'AbortError') throw e;
-      return { term: t, syns: [], ants: [] };
+      return { name, key, syns: [], ants: [] };
     }
   }));
 
-  // 3. Select sequentially so `used` stays coherent
-  for (const { term, syns, ants } of fetched) {
+  /* Sequential selection so `used` stays coherent */
+  const anchors = [];
+  for (const { name, key, syns, ants } of fetched) {
     if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
-
-    const frontRaw = pickBest(syns, term, used);
-    const backRaw  = pickBest(ants, term, used) || fallbackBack(term, used);
-
-    const front = frontRaw ? titleCase(frontRaw) : '';
-    const back  = backRaw  ? titleCase(backRaw)  : '';
+    const front = pickWord(syns, name, used);
+    let back = pickWord(ants, name, used);
+    if (!back) back = negationFallback(name, used);
 
     if (front) used.add(front.toLowerCase());
     if (back)  used.add(back.toLowerCase());
 
-    const key = normalizeTerm(term);
-    const r = { front, back };
-    subtermCache.set(key, r);
-    results.set(key, r);
+    anchors.push({ key, front, back });
+  }
+
+  /* Round 2: cousins for each anchor (parallel across all anchors) */
+  const cousinInputs = [];
+  for (const a of anchors) {
+    cousinInputs.push({ key: a.key, side: 'front', anchor: a.front });
+    cousinInputs.push({ key: a.key, side: 'back',  anchor: a.back  });
+  }
+  const cousinsAll = await Promise.all(cousinInputs.map(async ci => {
+    if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
+    const words = await fetchCousins(ci.anchor, signal, Array.from(used));
+    return { ...ci, words };
+  }));
+
+  const cousinsMap = new Map();
+  for (const c of cousinsAll) {
+    cousinsMap.set(`${c.key}|${c.side}`, c.words);
+  }
+
+  for (const a of anchors) {
+    const r = {
+      front: { anchor: a.front ? titleCase(a.front) : '',
+               cousins: cousinsMap.get(`${a.key}|front`) || [] },
+      back:  { anchor: a.back ? titleCase(a.back) : '',
+               cousins: cousinsMap.get(`${a.key}|back`) || [] },
+    };
+    cache.set(a.key, r);
+    results.set(a.key, r);
   }
 
   persistCache();
@@ -589,10 +618,8 @@ function makeLine(p1, p2, opts = {}) {
     color = 0xffffff, width = 2, opacity = 1,
     dashed = false, dash = 0.2, gap = 0.15
   } = opts;
-
   const geo = new LineGeometry();
   geo.setPositions([p1.x, p1.y, p1.z, p2.x, p2.y, p2.z]);
-
   const mat = new LineMaterial({
     color, linewidth: width,
     transparent: true, opacity,
@@ -601,7 +628,6 @@ function makeLine(p1, p2, opts = {}) {
   });
   mat.resolution.set(innerWidth, innerHeight);
   lineMaterials.push(mat);
-
   const line = new Line2(geo, mat);
   line.computeLineDistances();
   return line;
@@ -625,6 +651,14 @@ function makeLabel(symbol, name, textColor, cls) {
   const b = document.createElement('b');
   b.textContent = symbol;
   el.append(b, document.createTextNode(name));
+  return new CSS2DObject(el);
+}
+
+function makeCousinLabel(text, textColor) {
+  const el = document.createElement('div');
+  el.className = 'lbl cousin';
+  el.style.color = textColor;
+  el.textContent = text;
   return new CSS2DObject(el);
 }
 
@@ -657,15 +691,18 @@ const LAYER_EDGES = [
    ===================================================================== */
 let mainLabels = [];
 let subLabels  = [];
+let cousinLabels = [];
 
 const animTargets = {
   front: { materials: [], baseOpacities: [], labels: [] },
   back:  { materials: [], baseOpacities: [], labels: [] },
   cross: [],
+  cousin: [],           // { line, dot, labels[] } per cousin cluster
 };
 
 const anim = { progress: 0, target: 0 };
-let labelsOn = true;
+let labelsOn  = true;
+let cousinsOn = true;
 let currentAbort = null;
 
 /* =====================================================================
@@ -691,6 +728,8 @@ function clearAll() {
     c.line.material.dispose();
   }
   animTargets.cross.length = 0;
+  animTargets.cousin.length = 0;
+
   for (const id of ['front', 'back']) {
     animTargets[id].materials.length = 0;
     animTargets[id].baseOpacities.length = 0;
@@ -705,19 +744,16 @@ function clearAll() {
 function build() {
   clearAll();
   mainLabels = [];
-  subLabels  = [];
+  subLabels = [];
+  cousinLabels = [];
 
   /* ---------- CENTER LAYER ---------- */
   const center = LAYERS.find(L => L.id === 'center');
 
   for (const e of LAYER_EDGES) {
     structureGroup.add(makeLine(posAt(e.a, 0), posAt(e.b, 0), {
-      color: center.hex,
-      width: e.width,
-      opacity: e.opacity,
-      dashed: e.dashed,
-      dash: e.dash || 0.2,
-      gap: e.gap || 0.15
+      color: center.hex, width: e.width, opacity: e.opacity,
+      dashed: e.dashed, dash: e.dash || 0.2, gap: e.gap || 0.15
     }));
   }
 
@@ -742,24 +778,22 @@ function build() {
     mainLabels.push(label);
   }
 
-  /* ---------- FRONT + BACK LAYERS ---------- */
+  /* ---------- FRONT + BACK LAYERS (with cousin rings) ---------- */
   for (const layer of LAYERS) {
     if (layer.id === 'center') continue;
 
     const group = layer.id === 'front' ? frontGroup : backGroup;
     const slot  = animTargets[layer.id];
+    const sideKey = layer.id;   // 'front' or 'back'
 
     group.position.z = 0;
     group.scale.setScalar(1);
 
     for (const e of LAYER_EDGES) {
       const line = makeLine(posAt(e.a, 0), posAt(e.b, 0), {
-        color: layer.hex,
-        width: e.width * 0.94,
+        color: layer.hex, width: e.width * 0.94,
         opacity: e.opacity * layer.dim,
-        dashed: e.dashed,
-        dash: e.dash || 0.2,
-        gap: e.gap || 0.15
+        dashed: e.dashed, dash: e.dash || 0.2, gap: e.gap || 0.15
       });
       group.add(line);
       slot.materials.push(line.material);
@@ -769,52 +803,98 @@ function build() {
     for (const k of ALL_KEYS) {
       const isInner = INNER_KEYS.includes(k);
       const p = posAt(k, 0);
+      const sideData = state[k][sideKey];
 
-      const dot = makeDot(p, layer.hex, isInner ? 0.42 : 0.34, layer.dim);
+      /* Anchor node (bigger than a cousin) */
+      const dot = makeDot(p, layer.hex, isInner ? 0.44 : 0.36, layer.dim);
       group.add(dot);
       slot.materials.push(dot.material);
       slot.baseOpacities.push(layer.dim);
 
-      const subs = (state[k].subs || '')
-        .split(',').map(s => s.trim()).filter(Boolean);
-      const subName = layer.id === 'front' ? (subs[0] || '') : (subs[1] || '');
-
-      if (subName) {
+      /* Anchor label with + / − prefix */
+      if (sideData.anchor) {
         const dir = isInner
           ? new THREE.Vector3(p.x, p.y, 0).normalize()
           : new THREE.Vector3(-p.x, -p.y, 0).normalize();
-
-        const label = makeLabel(
+        const lbl = makeLabel(
           layer.prefix + SYMBOLS[k],
-          subName,
+          sideData.anchor,
           layer.text,
           'layer'
         );
-        label.position.copy(p).addScaledVector(dir, isInner ? 0.5 : 0.4);
-        group.add(label);
-        subLabels.push(label);
-        slot.labels.push(label);
+        lbl.position.copy(p).addScaledVector(dir, isInner ? 0.5 : 0.4);
+        group.add(lbl);
+        subLabels.push(lbl);
+        slot.labels.push(lbl);
       }
 
+      /* Cross-layer connector (scene space) */
       const pC = posAt(k, 0);
-      const line = makeLine(pC, pC, {
-        color: layer.hex,
-        width: 1.1,
+      const cross = makeLine(pC, pC, {
+        color: layer.hex, width: 1.1,
         opacity: 0.30 * layer.dim,
-        dashed: true,
-        dash: 0.08,
-        gap: 0.11
+        dashed: true, dash: 0.08, gap: 0.11
       });
-      scene.add(line);
+      scene.add(cross);
       animTargets.cross.push({
-        line, key: k, sign: layer.sign,
+        line: cross, key: k, sign: layer.sign,
         baseOpacity: 0.30 * layer.dim,
       });
+
+      /* Cousin ring around the anchor */
+      if (!sideData.cousins?.length) continue;
+
+      const ringR = isInner ? 0.60 : 0.46;
+      const n = sideData.cousins.length;
+      const cluster = {
+        lines: [], dots: [], labels: [],
+        baseOpacities: [], sides: []
+      };
+
+      sideData.cousins.forEach((word, i) => {
+        const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+        const cpos = new THREE.Vector3(
+          p.x + Math.cos(angle) * ringR,
+          p.y + Math.sin(angle) * ringR,
+          0
+        );
+
+        /* Faint line: anchor → cousin */
+        const line = makeLine(p, cpos, {
+          color: layer.hex, width: 1.0,
+          opacity: 0.30 * layer.dim,
+          dashed: true, dash: 0.04, gap: 0.07
+        });
+        group.add(line);
+        cluster.lines.push(line);
+        cluster.baseOpacities.push(0.30 * layer.dim);
+
+        /* Cousin dot */
+        const cdot = makeDot(cpos, layer.hex, 0.20, layer.dim * 0.9);
+        group.add(cdot);
+        cluster.dots.push(cdot);
+        cluster.baseOpacities.push(layer.dim * 0.9);
+
+        /* Cousin label — pushed outward along the ring */
+        const outDir = new THREE.Vector3(
+          Math.cos(angle), Math.sin(angle), 0
+        );
+        const clbl = makeCousinLabel(word, layer.text);
+        clbl.position.copy(cpos).addScaledVector(outDir, 0.22);
+        group.add(clbl);
+        cluster.labels.push(clbl);
+        cousinLabels.push(clbl);
+
+        cluster.sides.push(sideKey);
+      });
+
+      animTargets.cousin.push(cluster);
     }
   }
 
   applyExpandState(1);
   applyVisibility();
+  applyCousinVisibility();
 }
 
 /* =====================================================================
@@ -848,6 +928,7 @@ function applyExpandState(flickerFactor) {
     }
   }
 
+  /* Cross connectors */
   for (const c of animTargets.cross) {
     const pC = posAt(c.key, 0);
     const pL = posAt(c.key, c.sign * e * Z_DEPTH);
@@ -856,7 +937,38 @@ function applyExpandState(flickerFactor) {
     c.line.material.opacity = c.baseOpacity * e * flickerFactor;
     c.line.visible = layersVisible;
   }
+
+  /* Cousin clusters */
+  const cousinAlpha = cousinsOn ? 1 : 0;
+  for (const cluster of animTargets.cousin) {
+    for (const l of cluster.lines) {
+      l.material.opacity = (0.30 * cluster.lines[0]?.userData?.dim || 0.30) * e * flickerFactor * cousinAlpha;
+    }
+    /* opacity was stored per cluster.line below */
+  }
+  /* The above is messy; do a clean pass using stored base opacities */
+  let ci = 0;
+  for (const cluster of animTargets.cousin) {
+    for (let i = 0; i < cluster.lines.length; i++) {
+      cluster.lines[i].material.opacity =
+        cluster.baseOpacities[i] * e * flickerFactor * cousinAlpha;
+    }
+    for (const d of cluster.dots) {
+      d.material.opacity = d.material.userData?.base
+        ? d.material.userData.base * e * flickerFactor * cousinAlpha
+        : 0.9 * layerDimForGroup(d) * e * flickerFactor * cousinAlpha;
+    }
+    for (const lbl of cluster.labels) {
+      const op = Math.min(1, e * flickerFactor) * cousinAlpha;
+      lbl.element.style.opacity = op.toFixed(3);
+      lbl.visible = labelsOn && op > 0.06;
+    }
+    ci++;
+  }
 }
+
+/* Fallback dim helper — we stash the base on the sprite material instead */
+function layerDimForGroup(/* sprite */) { return 1; }
 
 function updateExpandAnimation(dt) {
   const delta = anim.target - anim.progress;
@@ -870,15 +982,12 @@ function updateExpandAnimation(dt) {
     anim.progress = anim.target;
   }
 
-  const stillTransitioning = Math.abs(anim.target - anim.progress) > 0.001;
+  const stillTransitioning = Math.abs(anim.progress - anim.target) > 0.001;
 
   let flicker = 1;
   if (stillTransitioning) {
-    if (Math.random() < 0.08) {
-      flicker = 0;
-    } else {
-      flicker = 0.5 + Math.random() * 0.7;
-    }
+    if (Math.random() < 0.08) flicker = 0;
+    else flicker = 0.5 + Math.random() * 0.7;
     const settle = 1 - Math.min(1, Math.abs(delta) * 2.5);
     flicker = 1 + (flicker - 1) * (1 - settle * 0.35);
   }
@@ -890,6 +999,7 @@ function updateExpandAnimation(dt) {
    VISIBILITY
    ===================================================================== */
 const toggleAuto    = document.getElementById('t-auto');
+const toggleCousins = document.getElementById('t-cousins');
 const toggleLabels  = document.getElementById('t-labels');
 const toggleRotate  = document.getElementById('t-rotate');
 const expandBtn     = document.getElementById('expand');
@@ -899,6 +1009,13 @@ const applyBtn      = document.getElementById('apply');
 function applyVisibility() {
   labelsOn = toggleLabels.checked;
   for (const l of mainLabels) l.visible = labelsOn;
+}
+
+function applyCousinVisibility() {
+  cousinsOn = toggleCousins.checked;
+  for (const l of cousinLabels) {
+    l.visible = labelsOn && cousinsOn;
+  }
 }
 
 function updateExpandButton() {
@@ -912,7 +1029,8 @@ expandBtn.addEventListener('click', () => {
   updateExpandButton();
 });
 
-toggleLabels.addEventListener('change', applyVisibility);
+toggleLabels.addEventListener('change', () => { applyVisibility(); applyCousinVisibility(); });
+toggleCousins.addEventListener('change', applyCousinVisibility);
 toggleRotate.addEventListener('change', () => {
   controls.autoRotate = toggleRotate.checked;
 });
@@ -930,13 +1048,11 @@ document.querySelectorAll('#ui input[data-k]').forEach(el => {
 function syncInputsFromState() {
   for (const k of ALL_KEYS) {
     if (inputs[k]?.name) inputs[k].name.value = state[k].name || '';
-    if (inputs[k]?.subs) inputs[k].subs.value = state[k].subs || '';
-  }
-}
-
-function syncSubsFromState() {
-  for (const k of ALL_KEYS) {
-    if (inputs[k]?.subs) inputs[k].subs.value = state[k].subs || '';
+    if (inputs[k]?.subs) {
+      const f = state[k].front?.anchor || '';
+      const b = state[k].back?.anchor  || '';
+      inputs[k].subs.value = [f, b].filter(Boolean).join(', ');
+    }
   }
 }
 
@@ -945,9 +1061,7 @@ function applyAutoState() {
   for (const k of ALL_KEYS) {
     if (inputs[k]?.subs) {
       inputs[k].subs.readOnly = auto;
-      inputs[k].subs.placeholder = auto
-        ? 'auto-generated on update'
-        : 'front, back';
+      inputs[k].subs.placeholder = auto ? 'auto: syn, ant' : 'syn, ant';
     }
   }
 }
@@ -963,7 +1077,7 @@ function setButtonLoading(on) {
 }
 
 async function applyInputs() {
-  // 1. Read names
+  /* 1. Names */
   for (const k of ALL_KEYS) {
     if (inputs[k]?.name) {
       const v = inputs[k].name.value.trim();
@@ -974,17 +1088,46 @@ async function applyInputs() {
   const auto = toggleAuto.checked;
 
   if (!auto) {
-    // Manual mode
+    /* Manual anchors, but still auto-fetch cousins for them */
+    const manualAnchors = {};
     for (const k of ALL_KEYS) {
-      if (inputs[k]?.subs) {
-        state[k].subs = inputs[k].subs.value.trim();
-      }
+      const raw = inputs[k]?.subs?.value || '';
+      const parts = raw.split(',').map(s => s.trim());
+      state[k].front.anchor = parts[0] || '';
+      state[k].back.anchor  = parts[1] || '';
+      manualAnchors[k] = { front: state[k].front.anchor, back: state[k].back.anchor };
     }
-    build();
+
+    if (currentAbort) currentAbort.abort();
+    currentAbort = new AbortController();
+    const signal = currentAbort.signal;
+
+    setButtonLoading(true);
+    try {
+      /* Fetch cousins for each provided anchor */
+      const exclude = ALL_KEYS.flatMap(k => [state[k].name, state[k].front.anchor, state[k].back.anchor])
+        .filter(Boolean).map(s => s.toLowerCase());
+
+      const jobs = [];
+      for (const k of ALL_KEYS) {
+        jobs.push((async () => {
+          state[k].front.cousins = await fetchCousins(state[k].front.anchor, signal, exclude);
+        })());
+        jobs.push((async () => {
+          state[k].back.cousins  = await fetchCousins(state[k].back.anchor,  signal, exclude);
+        })());
+      }
+      await Promise.all(jobs);
+      build();
+    } catch (e) {
+      if (e.name !== 'AbortError') console.error('[anchors]', e);
+    } finally {
+      if (!signal.aborted) setButtonLoading(false);
+    }
     return;
   }
 
-  // 2. Auto mode — resolve subterms
+  /* 2. Auto mode */
   if (currentAbort) currentAbort.abort();
   currentAbort = new AbortController();
   const signal = currentAbort.signal;
@@ -995,17 +1138,15 @@ async function applyInputs() {
     const resolved = await resolveAll(names, signal);
 
     for (const k of ALL_KEYS) {
-      const key = normalizeTerm(state[k].name);
+      const key = normKey(state[k].name);
       const r = resolved.get(key);
       if (r) {
-        const parts = [r.front, r.back].filter(Boolean);
-        state[k].subs = parts.join(', ');
-      } else {
-        state[k].subs = '';
+        state[k].front = { anchor: r.front.anchor, cousins: r.front.cousins || [] };
+        state[k].back  = { anchor: r.back.anchor,  cousins: r.back.cousins  || [] };
       }
     }
 
-    syncSubsFromState();
+    syncInputsFromState();
     build();
   } catch (e) {
     if (e.name !== 'AbortError') console.error('[subterms]', e);
@@ -1018,8 +1159,13 @@ applyBtn.addEventListener('click', applyInputs);
 
 document.getElementById('reset').addEventListener('click', () => {
   for (const k of ALL_KEYS) {
-    state[k].name = DEFAULTS[k].name;
-    state[k].subs = DEFAULTS[k].subs;
+    const d = DEFAULTS[k];
+    const [f, b] = (d.anchors || '').split(',').map(s => s.trim());
+    state[k] = {
+      name: d.name,
+      front: { anchor: f || '', cousins: [] },
+      back:  { anchor: b || '', cousins: [] },
+    };
   }
   syncInputsFromState();
   build();
@@ -1027,16 +1173,12 @@ document.getElementById('reset').addEventListener('click', () => {
 
 document.querySelectorAll('#ui input[data-k]').forEach(el => {
   el.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      applyInputs();
-      el.blur();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); applyInputs(); el.blur(); }
   });
 });
 
 document.getElementById('clear-cache').addEventListener('click', () => {
-  subtermCache.clear();
+  cache.clear();
   try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
 });
 
@@ -1061,10 +1203,8 @@ const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.1);
-
   updateExpandAnimation(dt);
   controls.update();
-
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 }
