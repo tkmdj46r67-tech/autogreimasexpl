@@ -149,9 +149,9 @@
     color: #fde725;
     background: linear-gradient(135deg, rgba(34,168,132,0.18), rgba(253,231,37,0.10));
     border: 1px solid rgba(253,231,37,0.35);
-    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, color 0.25s;
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, color 0.25s, opacity 0.25s;
   }
-  #expand:hover {
+  #expand:hover:not(:disabled) {
     background: linear-gradient(135deg, rgba(34,168,132,0.32), rgba(253,231,37,0.22));
     border-color: rgba(253,231,37,0.60);
     box-shadow: 0 0 18px -4px rgba(253,231,37,0.5);
@@ -161,10 +161,16 @@
     background: linear-gradient(135deg, rgba(65,68,135,0.30), rgba(34,168,132,0.14));
     border-color: rgba(65,68,135,0.55);
   }
-  #expand.expanded:hover {
+  #expand.expanded:hover:not(:disabled) {
     background: linear-gradient(135deg, rgba(65,68,135,0.45), rgba(34,168,132,0.24));
     border-color: rgba(65,68,135,0.75);
     box-shadow: 0 0 18px -4px rgba(65,68,135,0.6);
+  }
+  #expand:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+    box-shadow: none;
   }
   #expand .chev {
     display: inline-block; width: 10px; text-align: center;
@@ -177,13 +183,15 @@
     padding-top: 9px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
+  .toggles + .toggles { margin-top: 0; }
+
   .toggles label {
     display: flex; align-items: center; gap: 5px;
     padding: 5px 8px; border-radius: 7px; cursor: pointer; user-select: none;
     font-size: 10px; letter-spacing: 0.03em;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: background 0.15s, border-color 0.15s;
+    transition: background 0.15s, border-color 0.15s, opacity 0.2s;
   }
   .toggles label:hover { background: rgba(255, 255, 255, 0.09); }
   .toggles input { display: none; }
@@ -191,6 +199,25 @@
     background: rgba(126, 160, 255, 0.16);
     border-color: rgba(126, 160, 255, 0.4);
     color: #fff;
+  }
+
+  /* Layer toggle dots */
+  #layer-toggles label i {
+    width: 7px; height: 7px; border-radius: 50%;
+    display: inline-block; flex: 0 0 auto;
+    font-style: normal;
+  }
+
+  /* Disabled state for the layer row */
+  #layer-toggles.is-disabled {
+    opacity: 0.32;
+    pointer-events: none;
+  }
+  #layer-toggles.is-disabled label {
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: #6b7794;
   }
 
   .footer-link {
@@ -274,6 +301,24 @@
     <label><input type="checkbox" id="t-rotate"><span>Rotate</span></label>
   </div>
 
+  <div class="toggles" id="layer-toggles">
+    <label>
+      <input type="checkbox" id="t-layer-front" checked>
+      <i style="background:#fde725; box-shadow:0 0 6px #fde725"></i>
+      <span>+ Front</span>
+    </label>
+    <label>
+      <input type="checkbox" id="t-layer-center" checked>
+      <i style="background:#22a884; box-shadow:0 0 6px #22a884"></i>
+      <span>Center</span>
+    </label>
+    <label>
+      <input type="checkbox" id="t-layer-back" checked>
+      <i style="background:#414487; box-shadow:0 0 6px #414487"></i>
+      <span>− Back</span>
+    </label>
+  </div>
+
   <div class="footer-link"><a id="clear-cache">clear word cache</a></div>
 </div>
 
@@ -323,7 +368,6 @@ const DEFAULTS = {
   c4:  { name: 'Revelation',  anchors: 'Disclosure, Concealment' },
 };
 
-/* state[k] = { name, front: {anchor, cousins}, back: {anchor, cousins} } */
 const state = {};
 for (const k of ALL_KEYS) {
   const d = DEFAULTS[k];
@@ -374,11 +418,6 @@ function posAt(k, z) {
 
 /* =====================================================================
    WORD PROVIDER  —  Datamuse
-   ----------------------------------------------------------------
-   Correct URL parameters:
-     rel_syn=word   → synonyms
-     rel_ant=word   → antonyms
-     ml=word        → "means like" (semantic neighbours, for cousins)
    ===================================================================== */
 const CACHE_KEY = 'greimas-words-v3';
 const cache = new Map();
@@ -411,7 +450,6 @@ function titleCase(s) {
     .join(' ');
 }
 
-/* Fetch from Datamuse. `param` is the full query key. */
 async function datamuse(param, term, signal) {
   if (!term) return [];
   const url = `https://api.datamuse.com/words?${param}=${encodeURIComponent(term)}&max=25`;
@@ -420,7 +458,6 @@ async function datamuse(param, term, signal) {
   return res.json();
 }
 
-/* Pick one clean single-word candidate that isn't already claimed. */
 function pickWord(candidates, query, used) {
   if (!candidates || !candidates.length) return '';
   const q = String(query || '').toLowerCase().trim();
@@ -438,7 +475,6 @@ function pickWord(candidates, query, used) {
   return scored[0].word;
 }
 
-/* Greimas-flavoured fallback if Datamuse has no antonym. */
 function negationFallback(term, used) {
   const t = String(term || '').trim();
   const tries = [];
@@ -454,7 +490,6 @@ function negationFallback(term, used) {
   return '';
 }
 
-/* Round 2 — cousins: use Datamuse `ml=` around an anchor word. */
 async function fetchCousins(anchor, signal, exclude) {
   if (!anchor) return [];
   let raw = [];
@@ -478,13 +513,11 @@ async function fetchCousins(anchor, signal, exclude) {
   return out;
 }
 
-/* Full pipeline: synonyms + antonyms, then cousins for each anchor. */
 async function resolveAll(names, signal) {
   const used = new Set(names.map(n => n.toLowerCase().trim()));
   const results = new Map();
   const uncached = [];
 
-  /* Cache pass */
   for (const name of names) {
     const key = normKey(name);
     if (!key) continue;
@@ -499,7 +532,6 @@ async function resolveAll(names, signal) {
     }
   }
 
-  /* Round 1: synonyms + antonyms, all terms in parallel */
   const fetched = await Promise.all(uncached.map(async ({ name, key }) => {
     try {
       const [syns, ants] = await Promise.all([
@@ -514,7 +546,6 @@ async function resolveAll(names, signal) {
     }
   }));
 
-  /* Pick anchors sequentially so `used` stays coherent */
   const anchors = [];
   for (const { name, key, syns, ants } of fetched) {
     if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
@@ -529,7 +560,6 @@ async function resolveAll(names, signal) {
     anchors.push({ key, name, front, back });
   }
 
-  /* Round 2: cousins for every anchor, in parallel */
   const excludeAll = Array.from(used);
   const cousinJobs = [];
   for (const a of anchors) {
@@ -547,7 +577,6 @@ async function resolveAll(names, signal) {
   const cousinMap = new Map();
   for (const c of cousinsAll) cousinMap.set(`${c.key}|${c.side}`, c.words);
 
-  /* Assemble results + write to cache */
   for (const a of anchors) {
     const r = {
       front: {
@@ -713,13 +742,16 @@ const animTargets = {
   front: { materials: [], baseOpacities: [], labels: [] },
   back:  { materials: [], baseOpacities: [], labels: [] },
   cross: [],
-  cousin: [],   // one cluster per (key, side)
+  cousin: [],
 };
 
 const anim = { progress: 0, target: 0 };
 let labelsOn  = true;
 let cousinsOn = true;
 let currentAbort = null;
+
+/* Layer visibility preference (only matters when expanded) */
+const layerVisible = { front: true, center: true, back: true };
 
 /* =====================================================================
    CLEAR
@@ -763,9 +795,9 @@ function build() {
   subLabels = [];
   cousinLabels = [];
 
-  /* ---------- CENTER LAYER ---------- */
   const center = LAYERS.find(L => L.id === 'center');
 
+  /* ---------- CENTER LAYER ---------- */
   for (const e of LAYER_EDGES) {
     structureGroup.add(makeLine(posAt(e.a, 0), posAt(e.b, 0), {
       color: center.hex, width: e.width, opacity: e.opacity,
@@ -805,7 +837,6 @@ function build() {
     group.position.z = 0;
     group.scale.setScalar(1);
 
-    /* Edges */
     for (const e of LAYER_EDGES) {
       const line = makeLine(posAt(e.a, 0), posAt(e.b, 0), {
         color: layer.hex, width: e.width * 0.94,
@@ -817,19 +848,16 @@ function build() {
       slot.baseOpacities.push(e.opacity * layer.dim);
     }
 
-    /* Vertices, anchors, cousin rings, cross connectors */
     for (const k of ALL_KEYS) {
       const isInner = INNER_KEYS.includes(k);
       const p = posAt(k, 0);
       const sideData = state[k][sideKey];
 
-      /* Anchor dot */
       const dot = makeDot(p, layer.hex, isInner ? 0.44 : 0.36, layer.dim);
       group.add(dot);
       slot.materials.push(dot.material);
       slot.baseOpacities.push(layer.dim);
 
-      /* Anchor label with +/− prefix */
       if (sideData.anchor) {
         const dir = isInner
           ? new THREE.Vector3(p.x, p.y, 0).normalize()
@@ -846,7 +874,6 @@ function build() {
         slot.labels.push(lbl);
       }
 
-      /* Cross-layer connector (scene space) */
       const pC = posAt(k, 0);
       const cross = makeLine(pC, pC, {
         color: layer.hex, width: 1.1,
@@ -859,7 +886,6 @@ function build() {
         baseOpacity: 0.30 * layer.dim,
       });
 
-      /* Cousin ring */
       if (!sideData.cousins || !sideData.cousins.length) continue;
 
       const ringR = isInner ? 0.60 : 0.46;
@@ -878,7 +904,6 @@ function build() {
           0
         );
 
-        /* Spoke: anchor → cousin */
         const spoke = makeLine(p, cpos, {
           color: layer.hex, width: 1.0,
           opacity: 0.30 * layer.dim,
@@ -888,13 +913,11 @@ function build() {
         cluster.lines.push(spoke);
         cluster.lineBase.push(0.30 * layer.dim);
 
-        /* Cousin dot */
         const cdot = makeDot(cpos, layer.hex, 0.20, layer.dim * 0.9);
         group.add(cdot);
         cluster.dots.push(cdot);
         cluster.dotBase.push(layer.dim * 0.9);
 
-        /* Cousin label, pushed outward on the ring */
         const outDir = new THREE.Vector3(Math.cos(angle), Math.sin(angle), 0);
         const clbl = makeCousinLabel(word, layer.text);
         clbl.position.copy(cpos).addScaledVector(outDir, 0.22);
@@ -910,6 +933,7 @@ function build() {
   applyExpandState(1);
   applyVisibility();
   applyCousinVisibility();
+  updateLayerControls();
 }
 
 /* =====================================================================
@@ -928,17 +952,29 @@ function applyExpandState(flickerFactor) {
   backGroup.scale.setScalar(scale);
 
   const layersVisible = e > 0.005;
-  frontGroup.visible = layersVisible;
-  backGroup.visible  = layersVisible;
 
-  /* Per-layer materials (edges + anchor dots) */
+  /* Center layer is always visible when collapsed; respects its toggle
+     only when the hologram is (or is heading) expanded. */
+  const centerOn = (anim.target === 0) || layerVisible.center;
+  structureGroup.visible = centerOn;
+  labelGroup.visible     = centerOn;
+
+  /* Front / back layer groups */
+  const frontOn = layerVisible.front;
+  const backOn  = layerVisible.back;
+  frontGroup.visible = layersVisible && frontOn;
+  backGroup.visible  = layersVisible && backOn;
+
+  /* Per-layer materials */
   for (const id of ['front', 'back']) {
     const slot = animTargets[id];
+    const layerOn = layerVisible[id];
     for (let i = 0; i < slot.materials.length; i++) {
-      slot.materials[i].opacity = slot.baseOpacities[i] * e * flickerFactor;
+      slot.materials[i].opacity =
+        slot.baseOpacities[i] * e * flickerFactor * (layerOn ? 1 : 0);
     }
     for (const lbl of slot.labels) {
-      const op = Math.min(1, e * flickerFactor);
+      const op = Math.min(1, e * flickerFactor) * (layerOn ? 1 : 0);
       lbl.element.style.opacity = op.toFixed(3);
       lbl.visible = labelsOn && op > 0.06;
     }
@@ -946,17 +982,22 @@ function applyExpandState(flickerFactor) {
 
   /* Cross-layer connectors */
   for (const c of animTargets.cross) {
+    const layerKey = c.sign > 0 ? 'front' : 'back';
+    const layerOn  = layerVisible[layerKey];
     const pC = posAt(c.key, 0);
     const pL = posAt(c.key, c.sign * e * Z_DEPTH);
     c.line.geometry.setPositions([pC.x, pC.y, pC.z, pL.x, pL.y, pL.z]);
     c.line.computeLineDistances();
-    c.line.material.opacity = c.baseOpacity * e * flickerFactor;
-    c.line.visible = layersVisible;
+    c.line.material.opacity =
+      c.baseOpacity * e * flickerFactor * (layerOn && centerOn ? 1 : 0);
+    c.line.visible = layersVisible && layerOn && centerOn;
   }
 
   /* Cousin clusters */
   const cousinAlpha = cousinsOn ? 1 : 0;
   for (const cluster of animTargets.cousin) {
+    /* Figure out which layer this cluster belongs to by its first spoke's colour */
+    /* (cheaper to store, but this is fine) */
     for (let i = 0; i < cluster.lines.length; i++) {
       cluster.lines[i].material.opacity =
         cluster.lineBase[i] * e * flickerFactor * cousinAlpha;
@@ -996,10 +1037,13 @@ function updateExpandAnimation(dt) {
   }
 
   applyExpandState(flicker);
+
+  /* Refresh control enablement once the transition settles */
+  if (!stillTransitioning) updateLayerControls();
 }
 
 /* =====================================================================
-   VISIBILITY
+   VISIBILITY / CONTROLS
    ===================================================================== */
 const toggleAuto    = document.getElementById('t-auto');
 const toggleCousins = document.getElementById('t-cousins');
@@ -1008,6 +1052,13 @@ const toggleRotate  = document.getElementById('t-rotate');
 const expandBtn     = document.getElementById('expand');
 const expandLabel   = document.getElementById('expand-label');
 const applyBtn      = document.getElementById('apply');
+
+const layerToggleEls = {
+  front:  document.getElementById('t-layer-front'),
+  center: document.getElementById('t-layer-center'),
+  back:   document.getElementById('t-layer-back'),
+};
+const layerTogglesWrap = document.getElementById('layer-toggles');
 
 function applyVisibility() {
   labelsOn = toggleLabels.checked;
@@ -1024,12 +1075,38 @@ function updateExpandButton() {
   expandLabel.textContent = expanded ? 'Collapse' : 'Expand';
 }
 
+/* Layer toggles only function when the hologram is fully expanded.
+   The Expand button is disabled whenever any layer is hidden, because
+   in that state expanding would not reveal the full structure. */
+function updateLayerControls() {
+  const settled = Math.abs(anim.progress - anim.target) < 0.001;
+  const isExpanded = anim.target === 1 && settled;
+
+  layerTogglesWrap.classList.toggle('is-disabled', !isExpanded);
+  for (const k of ['front', 'center', 'back']) {
+    layerToggleEls[k].disabled = !isExpanded;
+  }
+
+  const anyHidden = !layerVisible.front || !layerVisible.center || !layerVisible.back;
+  expandBtn.disabled = anyHidden;
+}
+
 expandBtn.addEventListener('click', () => {
   anim.target = anim.target === 1 ? 0 : 1;
   updateExpandButton();
+  updateLayerControls();
 });
 
-toggleLabels.addEventListener('change', applyVisibility);
+for (const k of ['front', 'center', 'back']) {
+  layerToggleEls[k].addEventListener('change', () => {
+    layerVisible[k] = layerToggleEls[k].checked;
+    updateLayerControls();
+    /* Reapply right away so the change is visible on the next frame. */
+    applyExpandState(1);
+  });
+}
+
+toggleLabels.addEventListener('change', () => { applyVisibility(); applyCousinVisibility(); });
 toggleCousins.addEventListener('change', applyCousinVisibility);
 toggleRotate.addEventListener('change', () => {
   controls.autoRotate = toggleRotate.checked;
@@ -1077,7 +1154,6 @@ function setButtonLoading(on) {
 }
 
 async function applyInputs() {
-  /* 1. Read names */
   for (const k of ALL_KEYS) {
     if (inputs[k]?.name) {
       const v = inputs[k].name.value.trim();
@@ -1088,7 +1164,6 @@ async function applyInputs() {
   const auto = toggleAuto.checked;
 
   if (!auto) {
-    /* Manual anchors + fresh cousin fetch */
     for (const k of ALL_KEYS) {
       const raw = inputs[k]?.subs?.value || '';
       const parts = raw.split(',').map(s => s.trim());
@@ -1126,7 +1201,6 @@ async function applyInputs() {
     return;
   }
 
-  /* 2. Auto mode */
   if (currentAbort) currentAbort.abort();
   currentAbort = new AbortController();
   const signal = currentAbort.signal;
@@ -1216,6 +1290,7 @@ syncInputsFromState();
 applyAutoState();
 build();
 updateExpandButton();
+updateLayerControls();
 animate();
 </script>
 </body>
