@@ -308,7 +308,6 @@ const SYMBOLS = {
   c1: 'C₁', c2: 'C₂', c3: 'C₃', c4: 'C₄',
 };
 
-/* Default diagram + pre-seeded anchor words */
 const DEFAULTS = {
   s1:  { name: 'Being',       anchors: 'Existence, Nothingness' },
   s2:  { name: 'Seeming',     anchors: 'Appearance, Reality' },
@@ -374,11 +373,14 @@ function posAt(k, z) {
 }
 
 /* =====================================================================
-   WORD PROVIDER
-   - synonyms + antonyms for the center term
-   - "means like" cousins for each anchor
+   WORD PROVIDER  —  Datamuse
+   ----------------------------------------------------------------
+   Correct URL parameters:
+     rel_syn=word   → synonyms
+     rel_ant=word   → antonyms
+     ml=word        → "means like" (semantic neighbours, for cousins)
    ===================================================================== */
-const CACHE_KEY = 'greimas-words-v2';
+const CACHE_KEY = 'greimas-words-v3';
 const cache = new Map();
 
 (function loadCache() {
@@ -409,14 +411,16 @@ function titleCase(s) {
     .join(' ');
 }
 
-async function datamuse(rel, term, signal) {
+/* Fetch from Datamuse. `param` is the full query key. */
+async function datamuse(param, term, signal) {
   if (!term) return [];
-  const url = `https://api.datamuse.com/words?rel=${rel}=${encodeURIComponent(term)}&max=25`;
+  const url = `https://api.datamuse.com/words?${param}=${encodeURIComponent(term)}&max=25`;
   const res = await fetch(url, { signal });
-  if (!res.ok) throw new Error('datamuse ' + res.status);
+  if (!res.ok) throw new Error('datamuse ' + res.status + ' for ' + param + '=' + term);
   return res.json();
 }
 
+/* Pick one clean single-word candidate that isn't already claimed. */
 function pickWord(candidates, query, used) {
   if (!candidates || !candidates.length) return '';
   const q = String(query || '').toLowerCase().trim();
@@ -434,6 +438,7 @@ function pickWord(candidates, query, used) {
   return scored[0].word;
 }
 
+/* Greimas-flavoured fallback if Datamuse has no antonym. */
 function negationFallback(term, used) {
   const t = String(term || '').trim();
   const tries = [];
@@ -449,6 +454,7 @@ function negationFallback(term, used) {
   return '';
 }
 
+/* Round 2 — cousins: use Datamuse `ml=` around an anchor word. */
 async function fetchCousins(anchor, signal, exclude) {
   if (!anchor) return [];
   let raw = [];
@@ -456,9 +462,10 @@ async function fetchCousins(anchor, signal, exclude) {
     raw = await datamuse('ml', anchor, signal);
   } catch (e) {
     if (e.name === 'AbortError') throw e;
+    console.warn('[cousins] failed for', anchor, e.message);
     return [];
   }
-  const used = new Set([anchor.toLowerCase(), ...exclude].map(s => s.toLowerCase()));
+  const used = new Set([anchor.toLowerCase(), ...exclude.map(s => s.toLowerCase())]);
   const out = [];
   for (const c of raw) {
     const w = String(c.word || '').toLowerCase().trim();
@@ -471,12 +478,13 @@ async function fetchCousins(anchor, signal, exclude) {
   return out;
 }
 
-/* Resolve every term. Parallel fetches, then per-anchor cousin round. */
+/* Full pipeline: synonyms + antonyms, then cousins for each anchor. */
 async function resolveAll(names, signal) {
   const used = new Set(names.map(n => n.toLowerCase().trim()));
   const results = new Map();
   const uncached = [];
 
+  /* Cache pass */
   for (const name of names) {
     const key = normKey(name);
     if (!key) continue;
@@ -491,13 +499,14 @@ async function resolveAll(names, signal) {
     }
   }
 
-  /* Round 1: synonym + antonym for each uncached term */
+  /* Round 1: synonyms + antonyms, all terms in parallel */
   const fetched = await Promise.all(uncached.map(async ({ name, key }) => {
     try {
       const [syns, ants] = await Promise.all([
-        datamuse('syn', name, signal).catch(e => { if (e.name === 'AbortError') throw e; return []; }),
-        datamuse('ant', name, signal).catch(e => { if (e.name === 'AbortError') throw e; return []; }),
+        datamuse('rel_syn', name, signal).catch(e => { if (e.name === 'AbortError') throw e; console.warn('[syn]', name, e.message); return []; }),
+        datamuse('rel_ant', name, signal).catch(e => { if (e.name === 'AbortError') throw e; console.warn('[ant]', name, e.message); return []; }),
       ]);
+      console.log(`[subterms] ${name}: ${syns.length} syn, ${ants.length} ant`);
       return { name, key, syns, ants };
     } catch (e) {
       if (e.name === 'AbortError') throw e;
@@ -505,10 +514,11 @@ async function resolveAll(names, signal) {
     }
   }));
 
-  /* Sequential selection so `used` stays coherent */
+  /* Pick anchors sequentially so `used` stays coherent */
   const anchors = [];
   for (const { name, key, syns, ants } of fetched) {
     if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
+
     const front = pickWord(syns, name, used);
     let back = pickWord(ants, name, used);
     if (!back) back = negationFallback(name, used);
@@ -516,32 +526,38 @@ async function resolveAll(names, signal) {
     if (front) used.add(front.toLowerCase());
     if (back)  used.add(back.toLowerCase());
 
-    anchors.push({ key, front, back });
+    anchors.push({ key, name, front, back });
   }
 
-  /* Round 2: cousins for each anchor (parallel across all anchors) */
-  const cousinInputs = [];
+  /* Round 2: cousins for every anchor, in parallel */
+  const excludeAll = Array.from(used);
+  const cousinJobs = [];
   for (const a of anchors) {
-    cousinInputs.push({ key: a.key, side: 'front', anchor: a.front });
-    cousinInputs.push({ key: a.key, side: 'back',  anchor: a.back  });
+    cousinJobs.push((async () => ({
+      key: a.key, side: 'front',
+      words: await fetchCousins(a.front, signal, excludeAll)
+    }))());
+    cousinJobs.push((async () => ({
+      key: a.key, side: 'back',
+      words: await fetchCousins(a.back, signal, excludeAll)
+    }))());
   }
-  const cousinsAll = await Promise.all(cousinInputs.map(async ci => {
-    if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
-    const words = await fetchCousins(ci.anchor, signal, Array.from(used));
-    return { ...ci, words };
-  }));
+  const cousinsAll = await Promise.all(cousinJobs);
 
-  const cousinsMap = new Map();
-  for (const c of cousinsAll) {
-    cousinsMap.set(`${c.key}|${c.side}`, c.words);
-  }
+  const cousinMap = new Map();
+  for (const c of cousinsAll) cousinMap.set(`${c.key}|${c.side}`, c.words);
 
+  /* Assemble results + write to cache */
   for (const a of anchors) {
     const r = {
-      front: { anchor: a.front ? titleCase(a.front) : '',
-               cousins: cousinsMap.get(`${a.key}|front`) || [] },
-      back:  { anchor: a.back ? titleCase(a.back) : '',
-               cousins: cousinsMap.get(`${a.key}|back`) || [] },
+      front: {
+        anchor: a.front ? titleCase(a.front) : '',
+        cousins: cousinMap.get(`${a.key}|front`) || []
+      },
+      back: {
+        anchor: a.back ? titleCase(a.back) : '',
+        cousins: cousinMap.get(`${a.key}|back`) || []
+      },
     };
     cache.set(a.key, r);
     results.set(a.key, r);
@@ -689,15 +705,15 @@ const LAYER_EDGES = [
 /* =====================================================================
    BUILD STATE
    ===================================================================== */
-let mainLabels = [];
-let subLabels  = [];
+let mainLabels   = [];
+let subLabels    = [];
 let cousinLabels = [];
 
 const animTargets = {
   front: { materials: [], baseOpacities: [], labels: [] },
   back:  { materials: [], baseOpacities: [], labels: [] },
   cross: [],
-  cousin: [],           // { line, dot, labels[] } per cousin cluster
+  cousin: [],   // one cluster per (key, side)
 };
 
 const anim = { progress: 0, target: 0 };
@@ -778,17 +794,18 @@ function build() {
     mainLabels.push(label);
   }
 
-  /* ---------- FRONT + BACK LAYERS (with cousin rings) ---------- */
+  /* ---------- FRONT + BACK LAYERS ---------- */
   for (const layer of LAYERS) {
     if (layer.id === 'center') continue;
 
-    const group = layer.id === 'front' ? frontGroup : backGroup;
-    const slot  = animTargets[layer.id];
-    const sideKey = layer.id;   // 'front' or 'back'
+    const group   = layer.id === 'front' ? frontGroup : backGroup;
+    const slot    = animTargets[layer.id];
+    const sideKey = layer.id;
 
     group.position.z = 0;
     group.scale.setScalar(1);
 
+    /* Edges */
     for (const e of LAYER_EDGES) {
       const line = makeLine(posAt(e.a, 0), posAt(e.b, 0), {
         color: layer.hex, width: e.width * 0.94,
@@ -800,18 +817,19 @@ function build() {
       slot.baseOpacities.push(e.opacity * layer.dim);
     }
 
+    /* Vertices, anchors, cousin rings, cross connectors */
     for (const k of ALL_KEYS) {
       const isInner = INNER_KEYS.includes(k);
       const p = posAt(k, 0);
       const sideData = state[k][sideKey];
 
-      /* Anchor node (bigger than a cousin) */
+      /* Anchor dot */
       const dot = makeDot(p, layer.hex, isInner ? 0.44 : 0.36, layer.dim);
       group.add(dot);
       slot.materials.push(dot.material);
       slot.baseOpacities.push(layer.dim);
 
-      /* Anchor label with + / − prefix */
+      /* Anchor label with +/− prefix */
       if (sideData.anchor) {
         const dir = isInner
           ? new THREE.Vector3(p.x, p.y, 0).normalize()
@@ -841,14 +859,15 @@ function build() {
         baseOpacity: 0.30 * layer.dim,
       });
 
-      /* Cousin ring around the anchor */
-      if (!sideData.cousins?.length) continue;
+      /* Cousin ring */
+      if (!sideData.cousins || !sideData.cousins.length) continue;
 
       const ringR = isInner ? 0.60 : 0.46;
       const n = sideData.cousins.length;
       const cluster = {
-        lines: [], dots: [], labels: [],
-        baseOpacities: [], sides: []
+        lines: [],  lineBase: [],
+        dots: [],   dotBase: [],
+        labels: [],
       };
 
       sideData.cousins.forEach((word, i) => {
@@ -859,33 +878,29 @@ function build() {
           0
         );
 
-        /* Faint line: anchor → cousin */
-        const line = makeLine(p, cpos, {
+        /* Spoke: anchor → cousin */
+        const spoke = makeLine(p, cpos, {
           color: layer.hex, width: 1.0,
           opacity: 0.30 * layer.dim,
           dashed: true, dash: 0.04, gap: 0.07
         });
-        group.add(line);
-        cluster.lines.push(line);
-        cluster.baseOpacities.push(0.30 * layer.dim);
+        group.add(spoke);
+        cluster.lines.push(spoke);
+        cluster.lineBase.push(0.30 * layer.dim);
 
         /* Cousin dot */
         const cdot = makeDot(cpos, layer.hex, 0.20, layer.dim * 0.9);
         group.add(cdot);
         cluster.dots.push(cdot);
-        cluster.baseOpacities.push(layer.dim * 0.9);
+        cluster.dotBase.push(layer.dim * 0.9);
 
-        /* Cousin label — pushed outward along the ring */
-        const outDir = new THREE.Vector3(
-          Math.cos(angle), Math.sin(angle), 0
-        );
+        /* Cousin label, pushed outward on the ring */
+        const outDir = new THREE.Vector3(Math.cos(angle), Math.sin(angle), 0);
         const clbl = makeCousinLabel(word, layer.text);
         clbl.position.copy(cpos).addScaledVector(outDir, 0.22);
         group.add(clbl);
         cluster.labels.push(clbl);
         cousinLabels.push(clbl);
-
-        cluster.sides.push(sideKey);
       });
 
       animTargets.cousin.push(cluster);
@@ -916,6 +931,7 @@ function applyExpandState(flickerFactor) {
   frontGroup.visible = layersVisible;
   backGroup.visible  = layersVisible;
 
+  /* Per-layer materials (edges + anchor dots) */
   for (const id of ['front', 'back']) {
     const slot = animTargets[id];
     for (let i = 0; i < slot.materials.length; i++) {
@@ -928,7 +944,7 @@ function applyExpandState(flickerFactor) {
     }
   }
 
-  /* Cross connectors */
+  /* Cross-layer connectors */
   for (const c of animTargets.cross) {
     const pC = posAt(c.key, 0);
     const pL = posAt(c.key, c.sign * e * Z_DEPTH);
@@ -941,34 +957,21 @@ function applyExpandState(flickerFactor) {
   /* Cousin clusters */
   const cousinAlpha = cousinsOn ? 1 : 0;
   for (const cluster of animTargets.cousin) {
-    for (const l of cluster.lines) {
-      l.material.opacity = (0.30 * cluster.lines[0]?.userData?.dim || 0.30) * e * flickerFactor * cousinAlpha;
-    }
-    /* opacity was stored per cluster.line below */
-  }
-  /* The above is messy; do a clean pass using stored base opacities */
-  let ci = 0;
-  for (const cluster of animTargets.cousin) {
     for (let i = 0; i < cluster.lines.length; i++) {
       cluster.lines[i].material.opacity =
-        cluster.baseOpacities[i] * e * flickerFactor * cousinAlpha;
+        cluster.lineBase[i] * e * flickerFactor * cousinAlpha;
     }
-    for (const d of cluster.dots) {
-      d.material.opacity = d.material.userData?.base
-        ? d.material.userData.base * e * flickerFactor * cousinAlpha
-        : 0.9 * layerDimForGroup(d) * e * flickerFactor * cousinAlpha;
+    for (let i = 0; i < cluster.dots.length; i++) {
+      cluster.dots[i].material.opacity =
+        cluster.dotBase[i] * e * flickerFactor * cousinAlpha;
     }
     for (const lbl of cluster.labels) {
       const op = Math.min(1, e * flickerFactor) * cousinAlpha;
       lbl.element.style.opacity = op.toFixed(3);
       lbl.visible = labelsOn && op > 0.06;
     }
-    ci++;
   }
 }
-
-/* Fallback dim helper — we stash the base on the sprite material instead */
-function layerDimForGroup(/* sprite */) { return 1; }
 
 function updateExpandAnimation(dt) {
   const delta = anim.target - anim.progress;
@@ -1013,9 +1016,6 @@ function applyVisibility() {
 
 function applyCousinVisibility() {
   cousinsOn = toggleCousins.checked;
-  for (const l of cousinLabels) {
-    l.visible = labelsOn && cousinsOn;
-  }
 }
 
 function updateExpandButton() {
@@ -1029,7 +1029,7 @@ expandBtn.addEventListener('click', () => {
   updateExpandButton();
 });
 
-toggleLabels.addEventListener('change', () => { applyVisibility(); applyCousinVisibility(); });
+toggleLabels.addEventListener('change', applyVisibility);
 toggleCousins.addEventListener('change', applyCousinVisibility);
 toggleRotate.addEventListener('change', () => {
   controls.autoRotate = toggleRotate.checked;
@@ -1077,7 +1077,7 @@ function setButtonLoading(on) {
 }
 
 async function applyInputs() {
-  /* 1. Names */
+  /* 1. Read names */
   for (const k of ALL_KEYS) {
     if (inputs[k]?.name) {
       const v = inputs[k].name.value.trim();
@@ -1088,14 +1088,12 @@ async function applyInputs() {
   const auto = toggleAuto.checked;
 
   if (!auto) {
-    /* Manual anchors, but still auto-fetch cousins for them */
-    const manualAnchors = {};
+    /* Manual anchors + fresh cousin fetch */
     for (const k of ALL_KEYS) {
       const raw = inputs[k]?.subs?.value || '';
       const parts = raw.split(',').map(s => s.trim());
       state[k].front.anchor = parts[0] || '';
       state[k].back.anchor  = parts[1] || '';
-      manualAnchors[k] = { front: state[k].front.anchor, back: state[k].back.anchor };
     }
 
     if (currentAbort) currentAbort.abort();
@@ -1104,17 +1102,18 @@ async function applyInputs() {
 
     setButtonLoading(true);
     try {
-      /* Fetch cousins for each provided anchor */
-      const exclude = ALL_KEYS.flatMap(k => [state[k].name, state[k].front.anchor, state[k].back.anchor])
+      const exclude = ALL_KEYS
+        .flatMap(k => [state[k].name, state[k].front.anchor, state[k].back.anchor])
         .filter(Boolean).map(s => s.toLowerCase());
 
       const jobs = [];
       for (const k of ALL_KEYS) {
+        const kk = k;
         jobs.push((async () => {
-          state[k].front.cousins = await fetchCousins(state[k].front.anchor, signal, exclude);
+          state[kk].front.cousins = await fetchCousins(state[kk].front.anchor, signal, exclude);
         })());
         jobs.push((async () => {
-          state[k].back.cousins  = await fetchCousins(state[k].back.anchor,  signal, exclude);
+          state[kk].back.cousins  = await fetchCousins(state[kk].back.anchor,  signal, exclude);
         })());
       }
       await Promise.all(jobs);
@@ -1180,6 +1179,7 @@ document.querySelectorAll('#ui input[data-k]').forEach(el => {
 document.getElementById('clear-cache').addEventListener('click', () => {
   cache.clear();
   try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
+  console.log('[cache] cleared');
 });
 
 /* =====================================================================
