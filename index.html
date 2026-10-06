@@ -16,7 +16,7 @@
 
   #ui {
     position: fixed; top: 14px; left: 14px; z-index: 10;
-    width: 300px; max-height: calc(100vh - 28px); overflow-y: auto;
+    width: 306px; max-height: calc(100vh - 28px); overflow-y: auto;
     padding: 14px 15px; border-radius: 12px;
     background: rgba(9, 13, 22, 0.9);
     border: 1px solid rgba(255,255,255,0.08);
@@ -78,7 +78,7 @@
   .btn-row:last-child { margin-bottom: 0; }
 
   .btn-row .indent {
-    flex: 0 0 34px;
+    flex: 0 0 36px;
     font-size: 9px;
     letter-spacing: 0.08em;
     color: #5f6a86;
@@ -100,7 +100,7 @@
     border: 1px solid rgba(255,255,255,0.08);
     transition: background 0.15s, border-color 0.15s, color 0.15s;
   }
-  .btn-row button:hover {
+  .btn-row button:hover:not(:disabled) {
     background: rgba(126,160,255,0.16);
     border-color: rgba(126,160,255,0.4);
     color: #fff;
@@ -110,6 +110,9 @@
     border-color: rgba(126,160,255,0.7);
     color: #fff;
     font-weight: 600;
+  }
+  .btn-row button:disabled {
+    opacity: 0.4; cursor: progress;
   }
 
   #overview {
@@ -127,9 +130,18 @@
     border: 1px solid rgba(56,189,248,0.42);
     transition: background 0.2s, border-color 0.2s;
   }
-  #overview:hover {
+  #overview:hover:not(:disabled) {
     background: linear-gradient(135deg, rgba(56,189,248,0.30), rgba(167,139,250,0.24));
     border-color: rgba(56,189,248,0.75);
+  }
+  #overview:disabled { opacity: 0.4; cursor: progress; }
+
+  .nav-note {
+    margin: 10px 0 0;
+    font-size: 10px;
+    color: #5f6a86;
+    letter-spacing: 0.03em;
+    line-height: 1.5;
   }
 </style>
 </head>
@@ -139,7 +151,7 @@
 
 <div id="ui">
   <h1>Nested Squares</h1>
-  <p class="hint">drag to orbit · scroll to zoom · right-drag to pan</p>
+  <p class="hint">drag to orbit · scroll to zoom</p>
 
   <div id="current"></div>
 
@@ -159,6 +171,8 @@
     <div class="group-label"><i style="background:#6DD4C4;color:#6DD4C4"></i>L1 · Proposition</div>
     <div id="l1-rows"></div>
   </div>
+
+  <p class="nav-note">Clicking a square flies you to it. On arrival, the view resets to the canonical orientation for that square.</p>
 </div>
 
 <script type="importmap">
@@ -175,25 +189,24 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 /* =====================================================================
-   CONSTANTS — three planes, stacked 200 apart
+   1. CONSTANTS
    ===================================================================== */
-const SQ3 = 120;   // side of the L3 square
-const SQ2 = 60;    // side of each L2 square
-const SQ1 = 30;    // side of each L1 square
+const SQ3 = 120, SQ2 = 60, SQ1 = 30;
+const Z3 = 400, Z2 = 200, Z1 = 0;
 
-const Z3 = 400;    // L3 plane height
-const Z2 = 200;    // L2 plane height
-const Z1 = 0;      // L1 plane height
+const LEVEL_COLORS = { 3: 0xFF7A45, 2: 0xFDE725, 1: 0x6DD4C4 };
+const LEVEL_NAMES  = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
 
-const LEVEL_COLORS = {
-  3: 0xFF7A45,     // orange  — Narrative
-  2: 0xFDE725,     // yellow  — Argument
-  1: 0x6DD4C4,     // teal    — Proposition
-};
-const LEVEL_NAMES = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
+// The canonical "state 0" view offset — same direction for every square.
+// Distance is derived from square size so the framing feels consistent.
+const STATE0_DIR = new THREE.Vector3(0.55, 0.42, 0.72).normalize();
+const STATE0_DIST_FACTOR = 2.6;
+
+const FLIGHT_DURATION = 1.6;   // seconds
+const FADE_RATE       = 1.6;   // opacity easing, per second
 
 /* =====================================================================
-   GEOMETRY — compute every square's position
+   2. GEOMETRY — three planes, one square at L3, four at L2, sixteen at L1
    ===================================================================== */
 function squareCorners(cx, cy, z, side) {
   const h = side / 2;
@@ -205,34 +218,28 @@ function squareCorners(cx, cy, z, side) {
   ];
 }
 
-// --- L3: one square, centred at origin on plane z = Z3 ---
 const L3 = {
-  level: 3,
-  index: 0,
+  level: 3, index: 0,
   center: new THREE.Vector3(0, 0, Z3),
   side: SQ3,
   corners: squareCorners(0, 0, Z3, SQ3),
 };
 
-// --- L2: one square at each L3 corner, on plane z = Z2 ---
 const L2 = L3.corners.map((c, i) => ({
-  level: 2,
-  index: i,
+  level: 2, index: i,
   center: new THREE.Vector3(c.x, c.y, Z2),
   side: SQ2,
   corners: squareCorners(c.x, c.y, Z2, SQ2),
 }));
 
-// --- L1: one square at each L2 corner, on plane z = Z1 ---
 const L1 = [];
 for (let i = 0; i < L2.length; i++) {
   for (let j = 0; j < 4; j++) {
     const c = L2[i].corners[j];
+    const idx = i * 4 + j;
     L1.push({
-      level: 1,
-      index: i * 4 + j,
-      parentIndex: i,
-      parentCornerIndex: j,
+      level: 1, index: idx,
+      parentIndex: i, parentCornerIndex: j,
       center: new THREE.Vector3(c.x, c.y, Z1),
       side: SQ1,
       corners: squareCorners(c.x, c.y, Z1, SQ1),
@@ -240,21 +247,17 @@ for (let i = 0; i < L2.length; i++) {
   }
 }
 
-// Index every square by a stable string key: "3-0", "2-2", "1-7" etc.
 const ALL_SQUARES = {};
-for (const s of [L3, ...L2, ...L1]) {
-  ALL_SQUARES[`${s.level}-${s.index}`] = s;
-}
+for (const s of [L3, ...L2, ...L1]) ALL_SQUARES[`${s.level}-${s.index}`] = s;
 
 /* =====================================================================
-   SCENE
+   3. SCENE
    ===================================================================== */
 const app = document.getElementById('app');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x05070d);
 
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.5, 8000);
-camera.position.set(400, 350, 900);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -266,13 +269,12 @@ controls.enableDamping   = true;
 controls.dampingFactor   = 0.08;
 controls.rotateSpeed     = 0.85;
 controls.zoomSpeed       = 0.9;
-controls.panSpeed        = 0.8;
-controls.target.set(0, 0, 200);
-controls.minDistance     = 20;
-controls.maxDistance     = 3000;
+controls.enablePan       = false;   // rotation always orbits the centroid
+controls.minDistance     = 4;
+controls.maxDistance     = 4000;
 
 /* =====================================================================
-   VISUAL HELPERS
+   4. VISUAL HELPERS
    ===================================================================== */
 const glowTex = (() => {
   const s = 64;
@@ -290,24 +292,16 @@ const glowTex = (() => {
   return t;
 })();
 
-// Track everything so we can dim / highlight per square later.
-const squareObjects = {};   // key -> { line, dots: [Sprite], connectors: [Line] }
-
 function makeSquareObject(sq) {
   const color = LEVEL_COLORS[sq.level];
   const group = new THREE.Group();
   scene.add(group);
 
-  // The square outline
+  // Outline
   const pts = [...sq.corners, sq.corners[0]];
-  const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
-  const lineMat = new THREE.LineBasicMaterial({
-    color,
-    transparent: true,
-    opacity: 1,
-    linewidth: 1,   // ignored on most platforms, but harmless
-  });
-  const line = new THREE.Line(lineGeo, lineMat);
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  const mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 1 });
+  const line = new THREE.Line(geo, mat);
   group.add(line);
 
   // Corner dots
@@ -327,20 +321,24 @@ function makeSquareObject(sq) {
 
   return {
     key: `${sq.level}-${sq.index}`,
-    group,
-    line,
-    dots,
-    connectors: [],   // filled in a second pass
+    level: sq.level,
+    index: sq.index,
+    group, line, dots,
+    opacity: 0,   // animated; starts invisible
   };
 }
 
-// Build every square
+const squareObjects = {};
 for (const sq of [L3, ...L2, ...L1]) {
   squareObjects[`${sq.level}-${sq.index}`] = makeSquareObject(sq);
 }
 
-// --- Connectors: dashed verticals linking each parent corner to its child centre ---
-function makeDashedConnector(a, b, color, opacity = 0.4) {
+/* =====================================================================
+   5. CONNECTORS — dashed verticals linking parent corners to child centres
+   ===================================================================== */
+const connectors = [];
+
+function makeDashedConnector(a, b, color, opacity) {
   const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
   const mat = new THREE.LineDashedMaterial({
     color, transparent: true, opacity,
@@ -351,86 +349,201 @@ function makeDashedConnector(a, b, color, opacity = 0.4) {
   return line;
 }
 
-// L3 corner -> L2 square centre
+// L3 corner -> L2 centre
 for (let i = 0; i < L2.length; i++) {
-  const a = L3.corners[i];               // corner on L3 plane
-  const b = L2[i].center;                // same XY, lower plane
-  const conn = makeDashedConnector(a, b, LEVEL_COLORS[3], 0.35);
-  scene.add(conn);
-  squareObjects[`2-${i}`].connectors.push(conn);
-  squareObjects[`3-0`].connectors.push(conn);
+  const line = makeDashedConnector(L3.corners[i], L2[i].center, LEVEL_COLORS[3], 0);
+  scene.add(line);
+  connectors.push({
+    line,
+    ownerA: { level: 3, index: 0 },
+    ownerB: { level: 2, index: i },
+    baseOpacity: 0.55,
+  });
 }
 
-// L2 corner -> L1 square centre
+// L2 corner -> L1 centre
 for (let i = 0; i < L2.length; i++) {
   for (let j = 0; j < 4; j++) {
-    const a = L2[i].corners[j];          // corner on L2 plane
     const l1idx = i * 4 + j;
-    const b = L1[l1idx].center;          // same XY, lower plane
-    const conn = makeDashedConnector(a, b, LEVEL_COLORS[2], 0.3);
-    scene.add(conn);
-    squareObjects[`1-${l1idx}`].connectors.push(conn);
-    squareObjects[`2-${i}`].connectors.push(conn);
+    const line = makeDashedConnector(L2[i].corners[j], L1[l1idx].center, LEVEL_COLORS[2], 0);
+    scene.add(line);
+    connectors.push({
+      line,
+      ownerA: { level: 2, index: i },
+      ownerB: { level: 1, index: l1idx },
+      baseOpacity: 0.45,
+    });
   }
 }
 
 /* =====================================================================
-   CAMERA FLIGHT
-   ===================================================================== */
-const VIEW_DIR = new THREE.Vector3(0.55, 0.35, 0.75).normalize();
-
-let flying = false;
-
-function easeInOutCubic(x) {
-  return x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
-}
-
-function flyTo(targetPos, lookAt, duration = 1.6) {
-  const startPos    = camera.position.clone();
-  const startTarget = controls.target.clone();
-  const startTime   = performance.now();
-  flying = true;
-
-  function tick() {
-    const t = Math.min(1, (performance.now() - startTime) / (duration * 1000));
-    const e = easeInOutCubic(t);
-    camera.position.lerpVectors(startPos, targetPos, e);
-    controls.target.lerpVectors(startTarget, lookAt, e);
-    if (t < 1) {
-      requestAnimationFrame(tick);
-    } else {
-      flying = false;
-    }
-  }
-  tick();
-}
-
-function flyToSquare(level, index, duration = 1.6) {
-  const sq = ALL_SQUARES[`${level}-${index}`];
-  if (!sq) return;
-  const dist      = sq.side * 2.6;
-  const targetPos = sq.center.clone().add(VIEW_DIR.clone().multiplyScalar(dist));
-  flyTo(targetPos, sq.center.clone(), duration);
-}
-
-/* =====================================================================
-   STATE + UI
+   6. STATE
    ===================================================================== */
 let current = { level: 3, index: 0 };
 
-function goTo(level, index, duration = 1.6) {
-  current = { level, index };
-  flyToSquare(level, index, duration);
-  updateUI();
+// 'steady'    — only the current square is visible
+// 'navigating'— everything is visible during the flight
+// 'overview'  — everything stays visible
+let fadeState = 'steady';
+
+let flight = null;
+
+/* =====================================================================
+   7. STATE-0 OFFSET
+   ===================================================================== */
+function state0Offset(sq) {
+  return STATE0_DIR.clone().multiplyScalar(sq.side * STATE0_DIST_FACTOR);
 }
 
+/* =====================================================================
+   8. CAMERA FLIGHT
+   ---------------------------------------------------------------------
+   The camera travels along an arc:
+     • the target lerps linearly from the old centroid to the new one
+     • the offset from the target interpolates in spherical coordinates
+       from its current state to the state-0 offset for the new square
+     • a mid-flight arc boost pushes the camera outward, so it "lifts"
+       like a drone rather than sliding through the structure
+   ===================================================================== */
+function easeInOutCubic(x) {
+  return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+}
+
+function startFlight(endTarget, endOffset, duration, onArrive) {
+  const startTarget = controls.target.clone();
+  const startOffset = camera.position.clone().sub(startTarget);
+
+  const s0 = new THREE.Spherical().setFromVector3(startOffset);
+  const s1 = new THREE.Spherical().setFromVector3(endOffset);
+
+  // Take the shortest angular route around the vertical axis.
+  let dTheta = s1.theta - s0.theta;
+  while (dTheta >  Math.PI) dTheta -= 2 * Math.PI;
+  while (dTheta < -Math.PI) dTheta += 2 * Math.PI;
+
+  flight = {
+    startTarget, endTarget,
+    s0: { r: s0.radius, phi: s0.phi, theta: s0.theta },
+    s1: { r: s1.radius, phi: s1.phi, theta: s0.theta + dTheta },
+    startTime: performance.now(),
+    duration: duration * 1000,
+    onArrive,
+  };
+
+  controls.enabled = false;
+}
+
+function updateFlight(now) {
+  if (!flight) return;
+
+  const t = Math.min(1, (now - flight.startTime) / flight.duration);
+  const e = easeInOutCubic(t);
+
+  // Target slides linearly between the two centroids.
+  const targetNow = flight.startTarget.clone().lerp(flight.endTarget, e);
+
+  // Offset interpolates in spherical coordinates.
+  const r     = flight.s0.r     + (flight.s1.r     - flight.s0.r)     * e;
+  const phi   = flight.s0.phi   + (flight.s1.phi   - flight.s0.phi)   * e;
+  const theta = flight.s0.theta + (flight.s1.theta - flight.s0.theta) * e;
+
+  // Arc boost — lift the camera outward mid-flight.
+  const arcBoost = 1 + 0.45 * Math.sin(Math.PI * t);
+
+  const off = new THREE.Vector3().setFromSphericalCoords(r * arcBoost, phi, theta);
+  camera.position.copy(targetNow).add(off);
+  controls.target.copy(targetNow);
+  camera.lookAt(targetNow);
+
+  if (t >= 1) {
+    const cb = flight.onArrive;
+    flight = null;
+    controls.enabled = true;
+    controls.update();
+    if (cb) cb();
+  }
+}
+
+/* =====================================================================
+   9. NAVIGATION ACTIONS
+   ===================================================================== */
+function goToSquare(level, index) {
+  if (flight) return;
+
+  const sq = ALL_SQUARES[`${level}-${index}`];
+  if (!sq) return;
+
+  current = { level, index };
+  fadeState = 'navigating';   // reveal the whole diagram for the journey
+  updateUI();
+
+  startFlight(
+    sq.center.clone(),
+    state0Offset(sq),
+    FLIGHT_DURATION,
+    () => {
+      // On arrival, we are in state 0 for the new square. Fold back down.
+      fadeState = 'steady';
+    }
+  );
+}
+
+function goToOverview() {
+  if (flight) return;
+
+  fadeState = 'overview';
+  updateUI();
+
+  const overviewTarget = new THREE.Vector3(0, 0, 200);
+  const overviewPos    = new THREE.Vector3(500, 420, 1180);
+
+  startFlight(
+    overviewTarget,
+    overviewPos.clone().sub(overviewTarget),
+    1.8,
+    () => { /* stay in overview */ }
+  );
+}
+
+/* =====================================================================
+   10. OPACITY ANIMATION
+   ===================================================================== */
+function targetOpacityFor(sq) {
+  if (fadeState === 'overview' || fadeState === 'navigating') return 1;
+  // steady: only the current square is visible
+  return (sq.level === current.level && sq.index === current.index) ? 1 : 0;
+}
+
+function updateOpacities(dt) {
+  const k = 1 - Math.exp(-FADE_RATE * dt);
+
+  for (const key of Object.keys(squareObjects)) {
+    const obj = squareObjects[key];
+    const target = targetOpacityFor(obj);
+    obj.opacity += (target - obj.opacity) * k;
+    if (Math.abs(obj.opacity - target) < 0.004) obj.opacity = target;
+
+    obj.line.material.opacity = obj.opacity;
+    for (const d of obj.dots) d.material.opacity = obj.opacity;
+  }
+
+  for (const c of connectors) {
+    const a = squareObjects[`${c.ownerA.level}-${c.ownerA.index}`].opacity;
+    const b = squareObjects[`${c.ownerB.level}-${c.ownerB.index}`].opacity;
+    c.line.material.opacity = Math.max(a, b) * c.baseOpacity;
+  }
+}
+
+/* =====================================================================
+   11. UI
+   ===================================================================== */
 function buildUI() {
   const rowL3 = document.getElementById('row-L3');
   rowL3.innerHTML = '';
   const b3 = document.createElement('button');
   b3.textContent = 'D1';
   b3.dataset.key = '3-0';
-  b3.addEventListener('click', () => goTo(3, 0));
+  b3.addEventListener('click', () => goToSquare(3, 0));
   rowL3.appendChild(b3);
 
   const rowL2 = document.getElementById('row-L2');
@@ -439,7 +552,7 @@ function buildUI() {
     const b = document.createElement('button');
     b.textContent = `D${i + 1}`;
     b.dataset.key = `2-${i}`;
-    b.addEventListener('click', () => goTo(2, i));
+    b.addEventListener('click', () => goToSquare(2, i));
     rowL2.appendChild(b);
   }
 
@@ -459,7 +572,7 @@ function buildUI() {
       const b = document.createElement('button');
       b.textContent = `D${idx + 1}`;
       b.dataset.key = `1-${idx}`;
-      b.addEventListener('click', () => goTo(1, idx));
+      b.addEventListener('click', () => goToSquare(1, idx));
       row.appendChild(b);
     }
     l1rows.appendChild(row);
@@ -467,49 +580,29 @@ function buildUI() {
 }
 
 function updateUI() {
-  // Current-square card
   const card = document.getElementById('current');
-  const name = LEVEL_NAMES[current.level];
-  card.innerHTML = `L${current.level} · D${current.index + 1}`
-    + `<span class="sub">${name} level</span>`;
+  if (fadeState === 'overview') {
+    card.innerHTML = `Overview<span class="sub">all squares visible</span>`;
+  } else {
+    const name = LEVEL_NAMES[current.level];
+    card.innerHTML = `L${current.level} · D${current.index + 1}`
+      + `<span class="sub">${name} level</span>`;
+  }
 
-  // Highlight the active button in every group
   document.querySelectorAll('#ui button[data-key]').forEach(b => {
-    b.classList.toggle('active', b.dataset.key === `${current.level}-${current.index}`);
+    const active = (fadeState !== 'overview')
+                && b.dataset.key === `${current.level}-${current.index}`;
+    b.classList.toggle('active', active);
+    b.disabled = !!flight;
   });
 
-  // Dim / brighten the 3D squares
-  const currentKey = `${current.level}-${current.index}`;
-  for (const key of Object.keys(squareObjects)) {
-    const obj = squareObjects[key];
-    const isCurrent = key === currentKey;
-
-    // For non-current squares, dim gently — but keep squares on the same
-    // parent line slightly brighter so the hierarchy reads.
-    let op = 1;
-    if (!isCurrent) {
-      // Squares on the same level as the current one stay a bit brighter.
-      const lvl = parseInt(key.split('-')[0], 10);
-      op = (lvl === current.level) ? 0.55 : 0.28;
-    }
-
-    obj.line.material.opacity = op;
-    for (const d of obj.dots) d.material.opacity = op;
-    for (const c of obj.connectors) c.material.opacity = op * 0.5;
-  }
+  document.getElementById('overview').disabled = !!flight;
 }
 
-/* =====================================================================
-   OVERVIEW BUTTON
-   ===================================================================== */
-document.getElementById('overview').addEventListener('click', () => {
-  const pos    = new THREE.Vector3(420, 360, 940);
-  const lookAt = new THREE.Vector3(0, 0, 200);
-  flyTo(pos, lookAt, 1.9);
-});
+document.getElementById('overview').addEventListener('click', goToOverview);
 
 /* =====================================================================
-   RESIZE + RENDER LOOP
+   12. RESIZE + RENDER LOOP
    ===================================================================== */
 function onResize() {
   camera.aspect = innerWidth / innerHeight;
@@ -518,16 +611,43 @@ function onResize() {
 }
 addEventListener('resize', onResize);
 
+let lastTime = performance.now();
+let uiDirty = true;   // refresh button disabled state when flights start/end
+
 function animate() {
   requestAnimationFrame(animate);
-  if (!flying) controls.update();
+  const now = performance.now();
+  const dt  = Math.min(0.1, (now - lastTime) / 1000);
+  lastTime = now;
+
+  updateFlight(now);
+  updateOpacities(dt);
+
+  if (!flight) controls.update();
+
+  // Cheap re-enable/disable of buttons on flight start/end
+  const flightActive = !!flight;
+  if (flightActive !== uiDirty) {
+    uiDirty = flightActive;
+    updateUI();
+  }
+
   renderer.render(scene, camera);
 }
 
 /* =====================================================================
-   BOOT
+   13. BOOT
    ===================================================================== */
 buildUI();
+
+// Snap camera to state 0 for L3 D1 at load.
+{
+  const sq = ALL_SQUARES['3-0'];
+  controls.target.copy(sq.center);
+  camera.position.copy(sq.center).add(state0Offset(sq));
+  camera.lookAt(sq.center);
+}
+
 updateUI();
 animate();
 </script>
