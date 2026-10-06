@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Greimas Square — Nested Levels</title>
+<title>Nested Squares — 3D Structure</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -14,260 +14,122 @@
   #app { position: fixed; inset: 0; }
   #app canvas { display: block; }
 
-  .lbl {
-    pointer-events: none; user-select: none; white-space: nowrap;
-    text-shadow: 0 0 8px rgba(0,0,0,0.92), 0 1px 2px rgba(0,0,0,0.9);
-  }
-  .lbl.main { font-size: 14px; font-weight: 600; }
-  .lbl.main b { font-weight: 500; font-size: 10px; opacity: 0.55; margin-right: 5px; letter-spacing: 0.06em; }
-  .lbl.mid { font-size: 13px; font-weight: 600; }
-  .lbl.mid b { font-weight: 500; font-size: 9.5px; opacity: 0.55; margin-right: 5px; letter-spacing: 0.06em; }
-  .lbl.corner { font-size: 12px; font-weight: 500; opacity: 0.92; }
-  .lbl.corner b { font-weight: 400; font-size: 9px; opacity: 0.55; margin-right: 4px; letter-spacing: 0.06em; }
-  .lbl.layer { font-size: 12px; font-weight: 500; font-style: italic; letter-spacing: 0.03em; }
-  .lbl.layer b { font-style: normal; font-weight: 600; font-size: 10.5px; margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em; }
-  .lbl.cousin {
-    font-size: 9.5px; font-weight: 400; font-style: italic; letter-spacing: 0.02em;
-    filter: saturate(0.42) brightness(1.22);
-  }
-
   #ui {
-    position: fixed; top: 14px; right: 14px; z-index: 10;
-    width: 384px; max-height: calc(100vh - 28px); overflow-y: auto;
-    padding: 14px 16px; border-radius: 12px;
-    background: rgba(9, 13, 22, 0.90);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    position: fixed; top: 14px; left: 14px; z-index: 10;
+    width: 300px; max-height: calc(100vh - 28px); overflow-y: auto;
+    padding: 14px 15px; border-radius: 12px;
+    background: rgba(9, 13, 22, 0.9);
+    border: 1px solid rgba(255,255,255,0.08);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.55);
     font-size: 12px; line-height: 1.4;
   }
-  #ui::-webkit-scrollbar { width: 7px; }
-  #ui::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 4px; }
-  #ui h1 { margin: 0 0 2px; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
-  #ui h1 span {
-    display: inline-block; margin-left: 6px; padding: 1px 5px;
-    font-size: 9px; letter-spacing: 0.12em; border-radius: 4px;
-    color: #0a0e1c; vertical-align: 2px;
-    background: linear-gradient(120deg, #4C8A8A, #A9D583);
-  }
-  .hint { margin: 0 0 12px; font-size: 10px; color: #7e8aa8; letter-spacing: 0.02em; }
+  #ui::-webkit-scrollbar { width: 6px; }
+  #ui::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
 
-  #location {
-    margin: 0 0 12px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.035);
-    border: 1px solid rgba(255,255,255,0.07);
-    overflow: hidden;
+  #ui h1 {
+    margin: 0 0 3px; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
   }
-  .loc-row {
-    display: flex; align-items: center; gap: 9px;
-    padding: 9px 11px;
-    font-size: 11px;
-    border-bottom: 1px solid rgba(255,255,255,0.045);
-    transition: background 0.15s;
+  .hint {
+    margin: 0 0 12px; font-size: 10px; color: #7e8aa8;
   }
-  .loc-row:last-child { border-bottom: none; }
-  .loc-swatch {
-    width: 9px; height: 9px; border-radius: 50%;
-    flex: 0 0 auto; box-shadow: 0 0 7px currentColor;
-  }
-  .loc-lvl { flex: 0 0 auto; font-weight: 600; letter-spacing: 0.05em; color: #8a96b4; min-width: 22px; }
-  .loc-name { flex: 1 1 auto; color: #8a96b4; letter-spacing: 0.02em; }
-  .loc-pos { flex: 0 0 auto; font-size: 10.5px; letter-spacing: 0.04em; color: #5f6a86; font-weight: 600; }
-  .loc-row.current { background: rgba(253,231,37,0.07); }
-  .loc-row.current .loc-lvl, .loc-row.current .loc-name { color: #fde725; font-weight: 600; }
-  .loc-row.current .loc-pos { color: #fde725; }
-  .loc-row.ancestor { cursor: pointer; }
-  .loc-row.ancestor:hover { background: rgba(126,160,255,0.10); }
-  .loc-row.ancestor:hover .loc-lvl, .loc-row.ancestor:hover .loc-name { color: #a3adff; }
 
-  .nav-block { margin: 0 0 12px; }
-  .nav-label {
+  #current {
+    margin: 0 0 12px; padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(126,160,255,0.10);
+    border: 1px solid rgba(126,160,255,0.25);
+    font-size: 13px; font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #cfe0ff;
+  }
+  #current .sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 10.5px; font-weight: 400;
+    color: #8a96b4;
+    letter-spacing: 0.04em;
+  }
+
+  .group {
+    margin: 0 0 10px;
+    padding: 0 0 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .group:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .group-label {
+    display: flex; align-items: center; gap: 6px;
     font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
     color: #7e8aa8; margin: 0 0 6px 2px;
   }
-  .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .nav-btn {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 2px; padding: 9px 6px; border-radius: 8px; cursor: pointer; font: inherit;
+  .group-label i {
+    display: inline-block;
+    width: 8px; height: 8px; border-radius: 50%;
+    flex: 0 0 auto;
+    box-shadow: 0 0 6px currentColor;
+  }
+
+  .btn-row {
+    display: flex; gap: 4px;
+    margin-bottom: 4px;
+  }
+  .btn-row:last-child { margin-bottom: 0; }
+
+  .btn-row .indent {
+    flex: 0 0 34px;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: #5f6a86;
+    display: flex; align-items: center;
+    padding-right: 4px;
+    justify-content: flex-end;
+  }
+
+  .btn-row button {
+    flex: 1;
+    padding: 6px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: #c8d0e6;
     background: rgba(255,255,255,0.045);
     border: 1px solid rgba(255,255,255,0.08);
-    color: #e9edf7;
-    transition: background 0.15s, border-color 0.15s;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
   }
-  .nav-btn:hover:not(:disabled) {
+  .btn-row button:hover {
     background: rgba(126,160,255,0.16);
-    border-color: rgba(126,160,255,0.45);
+    border-color: rgba(126,160,255,0.4);
+    color: #fff;
   }
-  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .nav-btn .nav-btn-main { font-size: 13px; font-weight: 700; letter-spacing: 0.05em; }
-  .nav-btn .nav-btn-sub { font-size: 10px; letter-spacing: 0.06em; color: #8a96b4; }
-  .nav-btn:hover:not(:disabled) .nav-btn-sub { color: #c8d0e6; }
+  .btn-row button.active {
+    background: rgba(126,160,255,0.28);
+    border-color: rgba(126,160,255,0.7);
+    color: #fff;
+    font-weight: 600;
+  }
 
-  .zoom-out-btn {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 11px 12px; margin: 0 0 8px;
-    border-radius: 8px; cursor: pointer;
-    font: inherit; font-size: 11px; font-weight: 600;
-    letter-spacing: 0.16em; text-transform: uppercase;
+  #overview {
+    width: 100%;
+    padding: 9px 10px;
+    margin: 8px 0 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     color: #b6f0ff;
     background: linear-gradient(135deg, rgba(56,189,248,0.16), rgba(167,139,250,0.14));
     border: 1px solid rgba(56,189,248,0.42);
-    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, opacity 0.25s;
+    transition: background 0.2s, border-color 0.2s;
   }
-  .zoom-out-btn:hover:not(:disabled) {
+  #overview:hover {
     background: linear-gradient(135deg, rgba(56,189,248,0.30), rgba(167,139,250,0.24));
     border-color: rgba(56,189,248,0.75);
-    box-shadow: 0 0 20px -4px rgba(56,189,248,0.55);
-  }
-  .zoom-out-btn:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
-  .zoom-out-btn .icon { display: inline-block; font-size: 13px; opacity: 0.9; }
-
-  .sec { margin-bottom: 4px; }
-  .sec-title {
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 8px; padding: 9px 2px; cursor: pointer; user-select: none;
-    font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: #7e8aa8;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    transition: color 0.15s;
-  }
-  .sec-title:hover { color: #a3adff; }
-  .sec-title .chev {
-    display: inline-block; font-size: 9px; opacity: 0.65;
-    transition: transform 0.28s ease;
-  }
-  .sec.collapsed .sec-title .chev { transform: rotate(-90deg); }
-  .sec-body {
-    display: grid; grid-template-rows: 1fr;
-    transition: grid-template-rows 0.28s ease;
-  }
-  .sec.collapsed .sec-body { grid-template-rows: 0fr; }
-  .sec-clip { overflow: hidden; min-height: 0; }
-  .sec-content { padding: 8px 0 6px; }
-
-  .row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-  .row .sym {
-    flex: 0 0 42px; font-size: 11px; font-weight: 600; text-align: right;
-    letter-spacing: 0.02em;
-  }
-  .row .sym.dot { flex: 0 0 42px; display: flex; justify-content: flex-end; }
-  .row .sym.dot i {
-    display: block; width: 7px; height: 7px; border-radius: 50%;
-    background: currentColor; box-shadow: 0 0 8px currentColor;
-  }
-  .row input {
-    flex: 1; min-width: 0; padding: 6px 9px; border-radius: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #e9edf7; font: inherit; font-size: 11.5px; outline: none;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .row input:focus {
-    border-color: rgba(126, 160, 255, 0.5);
-    background: rgba(126, 160, 255, 0.10);
-  }
-  .row input[readonly] {
-    cursor: default;
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.05);
-    color: #97a2be;
-  }
-  .row.sub input { font-size: 10.5px; color: #a8b3cc; }
-  .row.sub { margin-bottom: 8px; }
-
-  .buttons { display: flex; gap: 7px; margin: 12px 0 6px; }
-  button {
-    flex: 1; padding: 8px 4px; border-radius: 7px; cursor: pointer;
-    font: inherit; font-size: 10.5px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: #e9edf7;
-    background: rgba(126, 160, 255, 0.18);
-    border: 1px solid rgba(126, 160, 255, 0.4);
-    transition: background 0.15s, border-color 0.15s, opacity 0.15s;
-  }
-  button:hover:not(:disabled) { background: rgba(126, 160, 255, 0.32); }
-  button:active:not(:disabled) { transform: translateY(1px); }
-  button:disabled { opacity: 0.55; cursor: progress; }
-  button.ghost {
-    flex: 0 0 84px;
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.10);
-  }
-  button.ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.11); }
-
-  #expand {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 10px 12px; margin: 0 0 8px;
-    border-radius: 8px; cursor: pointer;
-    font: inherit; font-size: 11px; font-weight: 600;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: #fde725;
-    background: linear-gradient(135deg, rgba(34,168,132,0.18), rgba(253,231,37,0.10));
-    border: 1px solid rgba(253,231,37,0.35);
-    transition: background 0.25s, border-color 0.25s, color 0.25s, opacity 0.25s;
-  }
-  #expand:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(34,168,132,0.32), rgba(253,231,37,0.22));
-    border-color: rgba(253,231,37,0.60);
-  }
-  #expand.expanded {
-    color: #a3adff;
-    background: linear-gradient(135deg, rgba(65,68,135,0.30), rgba(34,168,132,0.14));
-    border-color: rgba(65,68,135,0.55);
-  }
-  #expand:disabled { opacity: 0.35; cursor: not-allowed; filter: grayscale(0.5); }
-  #expand .chev { display: inline-block; width: 10px; text-align: center; transition: transform 0.3s ease; }
-  #expand.expanded .chev { transform: rotate(180deg); }
-
-  .toggles {
-    display: flex; flex-wrap: wrap; gap: 5px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-  }
-  .toggles label {
-    display: flex; align-items: center; gap: 5px;
-    padding: 6px 9px; border-radius: 7px; cursor: pointer; user-select: none;
-    font-size: 10px; letter-spacing: 0.03em;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: background 0.15s, border-color 0.15s, opacity 0.2s;
-  }
-  .toggles label:hover { background: rgba(255, 255, 255, 0.09); }
-  .toggles input { display: none; }
-  .toggles label:has(input:checked) {
-    background: rgba(126, 160, 255, 0.16);
-    border-color: rgba(126, 160, 255, 0.4);
-    color: #fff;
-  }
-  #layer-toggles label i {
-    width: 7px; height: 7px; border-radius: 50%;
-    display: inline-block; flex: 0 0 auto; font-style: normal;
-    transition: background 0.4s ease, box-shadow 0.4s ease;
-  }
-  #layer-toggles.is-disabled { opacity: 0.32; pointer-events: none; }
-  #layer-toggles.is-disabled label {
-    cursor: not-allowed;
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.05);
-    color: #6b7794;
-  }
-
-  .footer-link {
-    margin-top: 10px; font-size: 9.5px; letter-spacing: 0.04em;
-    color: #5f6a86; text-align: right;
-  }
-  .footer-link a {
-    color: #7e8aa8; cursor: pointer; text-decoration: none;
-    border-bottom: 1px dotted rgba(126,138,168,0.4);
-  }
-  .footer-link a:hover { color: #a3adff; }
-
-  @media (max-width: 780px) {
-    #ui { width: 268px; padding: 10px 11px; font-size: 11px; }
-    .hint { display: none; }
-    .row .sym { flex: 0 0 34px; font-size: 10.5px; }
-    .row .sym.dot { flex: 0 0 34px; }
-    .nav-btn .nav-btn-sub { display: none; }
   }
 </style>
 </head>
@@ -276,83 +138,27 @@
 <div id="app"></div>
 
 <div id="ui">
-  <h1>Greimas Square<span>Nested</span></h1>
-  <p class="hint">drag · rotate | scroll · zoom | right-drag · pan</p>
+  <h1>Nested Squares</h1>
+  <p class="hint">drag to orbit · scroll to zoom · right-drag to pan</p>
 
-  <div id="location"></div>
+  <div id="current"></div>
 
-  <div class="nav-block" id="nav-block">
-    <div class="nav-label" id="nav-label">Navigate</div>
-    <button class="zoom-out-btn" id="zoom-out">
-      <span class="icon">⬆</span>
-      <span id="zoom-out-label">Zoom Out</span>
-    </button>
-    <div class="nav-grid" id="zoom-in-grid"></div>
+  <button id="overview">Overview</button>
+
+  <div class="group">
+    <div class="group-label"><i style="background:#FF7A45;color:#FF7A45"></i>L3 · Narrative</div>
+    <div class="btn-row" id="row-L3"></div>
   </div>
 
-  <div class="sec collapsed" data-sec>
-    <div class="sec-title"><span>Inner Square</span><span class="chev">▾</span></div>
-    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
-      <div class="row"><span class="sym" style="color:#5bcfa0">S₁</span><input type="text" data-k="s1" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">S₂</span><input type="text" data-k="s2" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">~S₁</span><input type="text" data-k="ns1" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">~S₂</span><input type="text" data-k="ns2" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="syn, ant"></div>
-    </div></div></div>
+  <div class="group">
+    <div class="group-label"><i style="background:#FDE725;color:#FDE725"></i>L2 · Argument</div>
+    <div class="btn-row" id="row-L2"></div>
   </div>
 
-  <div class="sec collapsed" data-sec>
-    <div class="sec-title"><span>Outer Midpoints</span><span class="chev">▾</span></div>
-    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
-      <div class="row"><span class="sym" style="color:#5bcfa0">M₁</span><input type="text" data-k="m1" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m1" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">M₂</span><input type="text" data-k="m2" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m2" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">M₃</span><input type="text" data-k="m3" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m3" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">M₄</span><input type="text" data-k="m4" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m4" data-f="subs" placeholder="syn, ant"></div>
-    </div></div></div>
+  <div class="group">
+    <div class="group-label"><i style="background:#6DD4C4;color:#6DD4C4"></i>L1 · Proposition</div>
+    <div id="l1-rows"></div>
   </div>
-
-  <div class="sec collapsed" data-sec>
-    <div class="sec-title"><span>Outer Corners</span><span class="chev">▾</span></div>
-    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
-      <div class="row"><span class="sym" style="color:#5bcfa0">C₁</span><input type="text" data-k="c1" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c1" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">C₂</span><input type="text" data-k="c2" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c2" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">C₃</span><input type="text" data-k="c3" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c3" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">C₄</span><input type="text" data-k="c4" data-f="name"></div>
-      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c4" data-f="subs" placeholder="syn, ant"></div>
-    </div></div></div>
-  </div>
-
-  <div class="buttons">
-    <button id="apply">Update</button>
-    <button id="reset" class="ghost">Reset</button>
-  </div>
-
-  <button id="expand"><span class="chev">▸</span><span id="expand-label">Expand</span></button>
-
-  <div class="toggles">
-    <label><input type="checkbox" id="t-auto" checked><span>Auto anchors</span></label>
-    <label><input type="checkbox" id="t-cousins" checked><span>Cousins</span></label>
-    <label><input type="checkbox" id="t-labels" checked><span>Labels</span></label>
-    <label><input type="checkbox" id="t-rotate"><span>Rotate</span></label>
-  </div>
-
-  <div class="toggles" id="layer-toggles">
-    <label><input type="checkbox" id="t-layer-front" checked><i id="dot-front"></i><span>+ Front</span></label>
-    <label><input type="checkbox" id="t-layer-center" checked><i id="dot-center"></i><span>Center</span></label>
-    <label><input type="checkbox" id="t-layer-back" checked><i id="dot-back"></i><span>− Back</span></label>
-  </div>
-
-  <div class="footer-link"><a id="clear-cache">clear word cache</a></div>
 </div>
 
 <script type="importmap">
@@ -367,279 +173,77 @@
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import { Line2 } from 'three/addons/lines/Line2.js';
-import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 
 /* =====================================================================
-   TERMINOLOGY
-   L1 Proposition (mako) · L2 Argument (cividis) · L3 Narrative (inferno)
-   Diagrams D1–D4 per level (L3 has only D1)
-   Positions P1=S₁, P2=S₂, P3=~S₁, P4=~S₂
-   (L, D) sits at P_D of (L+1, 1)
+   CONSTANTS — three planes, stacked 200 apart
    ===================================================================== */
-const INNER_KEYS = ['s1', 's2', 'ns1', 'ns2'];
-const M_KEYS     = ['m1', 'm2', 'm3', 'm4'];
-const C_KEYS     = ['c1', 'c2', 'c3', 'c4'];
-const ALL_KEYS   = [...INNER_KEYS, ...M_KEYS, ...C_KEYS];
+const SQ3 = 120;   // side of the L3 square
+const SQ2 = 60;    // side of each L2 square
+const SQ1 = 30;    // side of each L1 square
 
-const SYMBOLS = {
-  s1: 'S₁', s2: 'S₂', ns1: '~S₁', ns2: '~S₂',
-  m1: 'M₁', m2: 'M₂', m3: 'M₃', m4: 'M₄',
-  c1: 'C₁', c2: 'C₂', c3: 'C₃', c4: 'C₄',
+const Z3 = 400;    // L3 plane height
+const Z2 = 200;    // L2 plane height
+const Z1 = 0;      // L1 plane height
+
+const LEVEL_COLORS = {
+  3: 0xFF7A45,     // orange  — Narrative
+  2: 0xFDE725,     // yellow  — Argument
+  1: 0x6DD4C4,     // teal    — Proposition
 };
-
-const POSITIONS = [
-  { p: 'P1', key: 's1',  name: 'S₁'  },
-  { p: 'P2', key: 's2',  name: 'S₂'  },
-  { p: 'P3', key: 'ns1', name: '~S₁' },
-  { p: 'P4', key: 'ns2', name: '~S₂' },
-];
-
-const LEVEL_META = {
-  1: { name: 'Proposition', palette: 'mako'    },
-  2: { name: 'Argument',    palette: 'cividis' },
-  3: { name: 'Narrative',   palette: 'inferno' },
-};
-
-const DEFAULTS = {
-  s1:  { name: 'Being',       anchors: 'Existence, Nothingness' },
-  s2:  { name: 'Seeming',     anchors: 'Appearance, Reality' },
-  ns1: { name: 'Non-being',   anchors: 'Absence, Presence' },
-  ns2: { name: 'Non-seeming', anchors: 'Invisibility, Visibility' },
-  m1:  { name: 'Truth',       anchors: 'Verity, Falsehood' },
-  m2:  { name: 'Lie',         anchors: 'Fabrication, Truth' },
-  m3:  { name: 'Falsehood',   anchors: 'Error, Truth' },
-  m4:  { name: 'Secret',      anchors: 'Concealment, Disclosure' },
-  c1:  { name: 'Paradox',     anchors: 'Contradiction, Consistency' },
-  c2:  { name: 'Deception',   anchors: 'Trickery, Honesty' },
-  c3:  { name: 'Subterfuge',  anchors: 'Evasion, Candor' },
-  c4:  { name: 'Revelation',  anchors: 'Disclosure, Concealment' },
-};
-
-function blankDiagram() {
-  const d = {};
-  for (const k of ALL_KEYS) {
-    d[k] = { name: '', front: { anchor: '', cousins: [] }, back: { anchor: '', cousins: [] } };
-  }
-  return d;
-}
-
-function defaultDiagram() {
-  const d = blankDiagram();
-  for (const k of ALL_KEYS) {
-    const def = DEFAULTS[k];
-    const [f, b] = (def.anchors || '').split(',').map(s => s.trim());
-    d[k].name = def.name;
-    d[k].front.anchor = f || '';
-    d[k].back.anchor  = b || '';
-  }
-  return d;
-}
-
-const PALETTES = {
-  mako: [
-    { id: 'back',   sign: -1, hex: 0x2A3F5E, text: '#8ca3c8', dim: 0.58, prefix: '−' },
-    { id: 'center', sign:  0, hex: 0x4C8A8A, text: '#a5d8d8', dim: 1.00, prefix: ''  },
-    { id: 'front',  sign: +1, hex: 0xA9D583, text: '#cdeab4', dim: 0.78, prefix: '+' },
-  ],
-  cividis: [
-    { id: 'back',   sign: -1, hex: 0x124E7C, text: '#7ab5e0', dim: 0.58, prefix: '−' },
-    { id: 'center', sign:  0, hex: 0x85837A, text: '#c4c2b6', dim: 1.00, prefix: ''  },
-    { id: 'front',  sign: +1, hex: 0xFDE725, text: '#fde725', dim: 0.78, prefix: '+' },
-  ],
-  inferno: [
-    { id: 'back',   sign: -1, hex: 0x2C115F, text: '#a58dc9', dim: 0.58, prefix: '−' },
-    { id: 'center', sign:  0, hex: 0xB73779, text: '#eaa4c0', dim: 1.00, prefix: ''  },
-    { id: 'front',  sign: +1, hex: 0xFCA50A, text: '#fdd49a', dim: 0.78, prefix: '+' },
-  ],
-};
-
-function paletteForLevel(L) { return PALETTES[LEVEL_META[L].palette]; }
+const LEVEL_NAMES = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
 
 /* =====================================================================
-   STATE
+   GEOMETRY — compute every square's position
    ===================================================================== */
-const diagrams = {};
-function diagKey(L, D) { return `${L}-${D}`; }
-
-for (let L = 1; L <= 3; L++) {
-  const maxD = (L === 3) ? 1 : 4;
-  for (let D = 1; D <= maxD; D++) {
-    diagrams[diagKey(L, D)] = (L === 1 && D === 1) ? defaultDiagram() : blankDiagram();
-  }
+function squareCorners(cx, cy, z, side) {
+  const h = side / 2;
+  return [
+    new THREE.Vector3(cx - h, cy - h, z),
+    new THREE.Vector3(cx + h, cy - h, z),
+    new THREE.Vector3(cx + h, cy + h, z),
+    new THREE.Vector3(cx - h, cy + h, z),
+  ];
 }
 
-let currentL = 1;
-let currentD = 1;
-let state = diagrams[diagKey(currentL, currentD)];
-
-/* =====================================================================
-   LAYOUT
-   ===================================================================== */
-const Z_DEPTH = 4.2;
-const COUSIN_OPACITY_MULT = 0.62;
-const H = 2.0;
-const D = 4.5;
-
-const POS_VEC = {
-  s1:  new THREE.Vector3(-H,  H, 0),
-  s2:  new THREE.Vector3( H,  H, 0),
-  ns1: new THREE.Vector3(-H, -H, 0),
-  ns2: new THREE.Vector3( H, -H, 0),
-  m1:  new THREE.Vector3( 0,  D, 0),
-  m2:  new THREE.Vector3( D,  0, 0),
-  m3:  new THREE.Vector3( 0, -D, 0),
-  m4:  new THREE.Vector3(-D,  0, 0),
-  c1:  new THREE.Vector3( D,  D, 0),
-  c2:  new THREE.Vector3( D, -D, 0),
-  c3:  new THREE.Vector3(-D, -D, 0),
-  c4:  new THREE.Vector3(-D,  D, 0),
+// --- L3: one square, centred at origin on plane z = Z3 ---
+const L3 = {
+  level: 3,
+  index: 0,
+  center: new THREE.Vector3(0, 0, Z3),
+  side: SQ3,
+  corners: squareCorners(0, 0, Z3, SQ3),
 };
 
-function posAt(k, z) {
-  const p = POS_VEC[k];
-  return new THREE.Vector3(p.x, p.y, z);
-}
+// --- L2: one square at each L3 corner, on plane z = Z2 ---
+const L2 = L3.corners.map((c, i) => ({
+  level: 2,
+  index: i,
+  center: new THREE.Vector3(c.x, c.y, Z2),
+  side: SQ2,
+  corners: squareCorners(c.x, c.y, Z2, SQ2),
+}));
 
-/* =====================================================================
-   WORD PROVIDER — Datamuse
-   ===================================================================== */
-const CACHE_KEY = 'greimas-words-v3';
-const cache = new Map();
-
-(function loadCache() {
-  try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    if (!raw) return;
-    const obj = JSON.parse(raw);
-    for (const k of Object.keys(obj)) cache.set(k, obj[k]);
-  } catch (e) {}
-})();
-
-function persistCache() {
-  try {
-    const obj = {};
-    for (const [k, v] of cache) obj[k] = v;
-    localStorage.setItem(CACHE_KEY, JSON.stringify(obj));
-  } catch (e) {}
-}
-
-function normKey(s) {
-  return String(s || '').trim().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, ' ').trim();
-}
-
-function titleCase(s) {
-  return String(s || '').split(/\s+/).map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : w).join(' ');
-}
-
-async function datamuse(param, term, signal) {
-  if (!term) return [];
-  const url = `https://api.datamuse.com/words?${param}=${encodeURIComponent(term)}&max=25`;
-  const res = await fetch(url, { signal });
-  if (!res.ok) throw new Error('datamuse ' + res.status);
-  return res.json();
-}
-
-function pickWord(candidates, query, used) {
-  if (!candidates || !candidates.length) return '';
-  const q = String(query || '').toLowerCase().trim();
-  const scored = [];
-  for (const c of candidates) {
-    const w = String(c.word || '').toLowerCase().trim();
-    if (!w || w.includes(' ')) continue;
-    if (w === q || w === q + 's' || w === q + "'s") continue;
-    if (used.has(w)) continue;
-    scored.push({ word: w, score: c.score || 0 });
+// --- L1: one square at each L2 corner, on plane z = Z1 ---
+const L1 = [];
+for (let i = 0; i < L2.length; i++) {
+  for (let j = 0; j < 4; j++) {
+    const c = L2[i].corners[j];
+    L1.push({
+      level: 1,
+      index: i * 4 + j,
+      parentIndex: i,
+      parentCornerIndex: j,
+      center: new THREE.Vector3(c.x, c.y, Z1),
+      side: SQ1,
+      corners: squareCorners(c.x, c.y, Z1, SQ1),
+    });
   }
-  if (!scored.length) return '';
-  scored.sort((a, b) => (b.score - a.score) || a.word.localeCompare(b.word));
-  return scored[0].word;
 }
 
-function negationFallback(term, used) {
-  const t = String(term || '').trim();
-  if (!t) return '';
-  const tries = [];
-  if (/^non-/i.test(t)) tries.push(t.replace(/^non-/i, ''));
-  if (/^un-/i.test(t))  tries.push(t.replace(/^un-/i, ''));
-  tries.push('non-' + t.toLowerCase(), 'anti-' + t.toLowerCase(), 'un-' + t.toLowerCase());
-  for (const c of tries) if (c && !used.has(c.toLowerCase())) return c;
-  return '';
-}
-
-async function fetchCousins(anchor, signal, exclude) {
-  if (!anchor) return [];
-  let raw = [];
-  try { raw = await datamuse('ml', anchor, signal); }
-  catch (e) { if (e.name === 'AbortError') throw e; return []; }
-  const used = new Set([anchor.toLowerCase(), ...exclude.map(s => s.toLowerCase())]);
-  const out = [];
-  for (const c of raw) {
-    const w = String(c.word || '').toLowerCase().trim();
-    if (!w || w.includes(' ')) continue;
-    if (used.has(w)) continue;
-    used.add(w);
-    out.push(titleCase(w));
-    if (out.length >= 4) break;
-  }
-  return out;
-}
-
-async function resolveAll(names, signal) {
-  const used = new Set(names.map(n => n.toLowerCase().trim()).filter(Boolean));
-  const results = new Map();
-  const uncached = [];
-  for (const name of names) {
-    const key = normKey(name);
-    if (!key) continue;
-    if (results.has(key)) continue;
-    if (cache.has(key)) {
-      const r = cache.get(key);
-      results.set(key, r);
-      if (r.front?.anchor) used.add(r.front.anchor.toLowerCase());
-      if (r.back?.anchor)  used.add(r.back.anchor.toLowerCase());
-    } else uncached.push({ name, key });
-  }
-  const fetched = await Promise.all(uncached.map(async ({ name, key }) => {
-    try {
-      const [syns, ants] = await Promise.all([
-        datamuse('rel_syn', name, signal).catch(e => { if (e.name === 'AbortError') throw e; return []; }),
-        datamuse('rel_ant', name, signal).catch(e => { if (e.name === 'AbortError') throw e; return []; }),
-      ]);
-      return { name, key, syns, ants };
-    } catch (e) { if (e.name === 'AbortError') throw e; return { name, key, syns: [], ants: [] }; }
-  }));
-  const anchors = [];
-  for (const { name, key, syns, ants } of fetched) {
-    if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
-    const front = pickWord(syns, name, used);
-    let back = pickWord(ants, name, used);
-    if (!back) back = negationFallback(name, used);
-    if (front) used.add(front.toLowerCase());
-    if (back) used.add(back.toLowerCase());
-    anchors.push({ key, name, front, back });
-  }
-  const excludeAll = Array.from(used);
-  const jobs = [];
-  for (const a of anchors) {
-    jobs.push((async () => ({ key: a.key, side: 'front', words: await fetchCousins(a.front, signal, excludeAll) }))());
-    jobs.push((async () => ({ key: a.key, side: 'back',  words: await fetchCousins(a.back,  signal, excludeAll) }))());
-  }
-  const results2 = await Promise.all(jobs);
-  const cousinMap = new Map();
-  for (const c of results2) cousinMap.set(`${c.key}|${c.side}`, c.words);
-  for (const a of anchors) {
-    const r = {
-      front: { anchor: a.front ? titleCase(a.front) : '', cousins: cousinMap.get(`${a.key}|front`) || [] },
-      back:  { anchor: a.back  ? titleCase(a.back)  : '', cousins: cousinMap.get(`${a.key}|back`)  || [] },
-    };
-    cache.set(a.key, r);
-    results.set(a.key, r);
-  }
-  persistCache();
-  return results;
+// Index every square by a stable string key: "3-0", "2-2", "1-7" etc.
+const ALL_SQUARES = {};
+for (const s of [L3, ...L2, ...L1]) {
+  ALL_SQUARES[`${s.level}-${s.index}`] = s;
 }
 
 /* =====================================================================
@@ -649,44 +253,26 @@ const app = document.getElementById('app');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x05070d);
 
-const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 250);
-camera.position.set(5.5, 4.0, 18);
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.5, 8000);
+camera.position.set(400, 350, 900);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 app.appendChild(renderer.domElement);
-
-const labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize(innerWidth, innerHeight);
-Object.assign(labelRenderer.domElement.style, {
-  position: 'absolute', top: '0', left: '0',
-  pointerEvents: 'none', zIndex: '1'
-});
-app.appendChild(labelRenderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping   = true;
 controls.dampingFactor   = 0.08;
 controls.rotateSpeed     = 0.85;
-controls.minDistance     = 5;
-controls.maxDistance     = 48;
-controls.autoRotateSpeed = 0.9;
+controls.zoomSpeed       = 0.9;
+controls.panSpeed        = 0.8;
+controls.target.set(0, 0, 200);
+controls.minDistance     = 20;
+controls.maxDistance     = 3000;
 
 /* =====================================================================
-   GROUPS
-   ===================================================================== */
-const diagramRoot = new THREE.Group();
-scene.add(diagramRoot);
-
-const structureGroup = new THREE.Group();
-const frontGroup     = new THREE.Group();
-const backGroup      = new THREE.Group();
-const labelGroup     = new THREE.Group();
-diagramRoot.add(structureGroup, labelGroup, frontGroup, backGroup);
-
-/* =====================================================================
-   HELPERS
+   VISUAL HELPERS
    ===================================================================== */
 const glowTex = (() => {
   const s = 64;
@@ -695,8 +281,7 @@ const glowTex = (() => {
   const ctx = cv.getContext('2d');
   const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
   g.addColorStop(0.00, 'rgba(255,255,255,1.0)');
-  g.addColorStop(0.30, 'rgba(255,255,255,0.7)');
-  g.addColorStop(0.65, 'rgba(255,255,255,0.15)');
+  g.addColorStop(0.35, 'rgba(255,255,255,0.55)');
   g.addColorStop(1.00, 'rgba(255,255,255,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, s, s);
@@ -705,929 +290,245 @@ const glowTex = (() => {
   return t;
 })();
 
-const lineMaterials = [];
+// Track everything so we can dim / highlight per square later.
+const squareObjects = {};   // key -> { line, dots: [Sprite], connectors: [Line] }
 
-function makeLine(p1, p2, opts = {}) {
-  const { color = 0xffffff, width = 2, opacity = 1,
-          dashed = false, dash = 0.2, gap = 0.15 } = opts;
-  const geo = new LineGeometry();
-  geo.setPositions([p1.x, p1.y, p1.z, p2.x, p2.y, p2.z]);
-  const mat = new LineMaterial({
-    color, linewidth: width,
-    transparent: true, opacity,
-    dashed, dashSize: dash, gapSize: gap, depthWrite: false
+function makeSquareObject(sq) {
+  const color = LEVEL_COLORS[sq.level];
+  const group = new THREE.Group();
+  scene.add(group);
+
+  // The square outline
+  const pts = [...sq.corners, sq.corners[0]];
+  const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+  const lineMat = new THREE.LineBasicMaterial({
+    color,
+    transparent: true,
+    opacity: 1,
+    linewidth: 1,   // ignored on most platforms, but harmless
   });
-  mat.resolution.set(innerWidth, innerHeight);
-  lineMaterials.push(mat);
-  const line = new Line2(geo, mat);
+  const line = new THREE.Line(lineGeo, lineMat);
+  group.add(line);
+
+  // Corner dots
+  const dots = [];
+  const dotScale = sq.level === 3 ? 11 : sq.level === 2 ? 6.5 : 4;
+  for (const c of sq.corners) {
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: glowTex, color,
+      blending: THREE.AdditiveBlending,
+      transparent: true, depthWrite: false, opacity: 1,
+    }));
+    sprite.position.copy(c);
+    sprite.scale.setScalar(dotScale);
+    group.add(sprite);
+    dots.push(sprite);
+  }
+
+  return {
+    key: `${sq.level}-${sq.index}`,
+    group,
+    line,
+    dots,
+    connectors: [],   // filled in a second pass
+  };
+}
+
+// Build every square
+for (const sq of [L3, ...L2, ...L1]) {
+  squareObjects[`${sq.level}-${sq.index}`] = makeSquareObject(sq);
+}
+
+// --- Connectors: dashed verticals linking each parent corner to its child centre ---
+function makeDashedConnector(a, b, color, opacity = 0.4) {
+  const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
+  const mat = new THREE.LineDashedMaterial({
+    color, transparent: true, opacity,
+    dashSize: 6, gapSize: 6,
+  });
+  const line = new THREE.Line(geo, mat);
   line.computeLineDistances();
   return line;
 }
 
-function makeDot(pos, color, scale, opacity = 0.95) {
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: glowTex, color,
-    blending: THREE.AdditiveBlending,
-    transparent: true, depthWrite: false, opacity
-  }));
-  sprite.position.copy(pos);
-  sprite.scale.setScalar(scale);
-  return sprite;
+// L3 corner -> L2 square centre
+for (let i = 0; i < L2.length; i++) {
+  const a = L3.corners[i];               // corner on L3 plane
+  const b = L2[i].center;                // same XY, lower plane
+  const conn = makeDashedConnector(a, b, LEVEL_COLORS[3], 0.35);
+  scene.add(conn);
+  squareObjects[`2-${i}`].connectors.push(conn);
+  squareObjects[`3-0`].connectors.push(conn);
 }
 
-function makeLabel(symbol, name, textColor, cls) {
-  const el = document.createElement('div');
-  el.className = 'lbl ' + cls;
-  el.style.color = textColor;
-  const b = document.createElement('b');
-  b.textContent = symbol;
-  el.append(b, document.createTextNode(name));
-  return new CSS2DObject(el);
-}
-
-function makeCousinLabel(text, textColor) {
-  const el = document.createElement('div');
-  el.className = 'lbl cousin';
-  el.style.color = textColor;
-  el.textContent = text;
-  return new CSS2DObject(el);
-}
-
-/* =====================================================================
-   EDGE TOPOLOGY
-   ===================================================================== */
-const LAYER_EDGES = [
-  { a:'s1',  b:'s2',  width: 2.2, opacity: 1.00, dashed: false },
-  { a:'ns1', b:'ns2', width: 2.2, opacity: 1.00, dashed: false },
-  { a:'s1',  b:'ns1', width: 2.2, opacity: 1.00, dashed: false },
-  { a:'s2',  b:'ns2', width: 2.2, opacity: 1.00, dashed: false },
-  { a:'s1',  b:'ns2', width: 2.0, opacity: 0.90, dashed: true, dash: 0.22, gap: 0.16 },
-  { a:'s2',  b:'ns1', width: 2.0, opacity: 0.90, dashed: true, dash: 0.22, gap: 0.16 },
-  { a:'s1',  b:'m1',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'s1',  b:'m4',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'s2',  b:'m1',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'s2',  b:'m2',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'ns1', b:'m4',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'ns1', b:'m3',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'ns2', b:'m2',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'ns2', b:'m3',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
-  { a:'c4', b:'c1', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
-  { a:'c1', b:'c2', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
-  { a:'c2', b:'c3', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
-  { a:'c3', b:'c4', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
-];
-
-/* =====================================================================
-   BUILD STATE
-   ===================================================================== */
-let mainLabels   = [];
-let subLabels    = [];
-let cousinLabels = [];
-
-const animTargets = {
-  front:  { materials: [], baseOpacities: [], labels: [] },
-  center: { materials: [], baseOpacities: [], labels: [] },
-  back:   { materials: [], baseOpacities: [], labels: [] },
-  cross:  [],
-  cousin: [],
-};
-
-const anim = { progress: 0, target: 0 };
-let labelsOn  = true;
-let cousinsOn = true;
-let currentAbort = null;
-
-const layerVisible = { front: true, center: true, back: true };
-const layerAlpha   = { front: 1, center: 1, back: 1 };
-const layerFlicker = { front: 1, center: 1, back: 1 };
-
-/* =====================================================================
-   TRANSITION — the solar-system zoom
-   ---------------------------------------------------------------------
-   S_MIN is the "dot" scale. S_BIG is how far we zoom into the parent
-   on the way to a specific position. Both phases run through the same
-   screen-center point so the diagram-to-dot-to-parent-to-dot-to-child
-   chain reads continuously.
-   ===================================================================== */
-const S_MIN = 0.04;
-const S_BIG = 12.0;
-
-const transition = {
-  active: false,
-  phase: 'out',        // 'out' then 'in'
-  progress: 0,
-  direction: 'up',     // 'up' = zoom out (rise a level), 'down' = zoom in
-  posKey: 's1',        // which P_i we target
-  targetL: null,
-  targetD: null,
-  outDuration: 1.4,
-  inDuration:  1.4,
-  alpha: 1,
-  onSwap: null,
-};
-
-/* =====================================================================
-   CLEAR
-   ===================================================================== */
-function clearGroup(g) {
-  g.traverse(obj => {
-    if (obj.isLine2) { obj.geometry.dispose(); obj.material.dispose(); }
-    if (obj.isSprite && obj.material) obj.material.dispose();
-  });
-  g.clear();
-}
-
-function clearAll() {
-  clearGroup(structureGroup);
-  clearGroup(frontGroup);
-  clearGroup(backGroup);
-  clearGroup(labelGroup);
-  for (const c of animTargets.cross) {
-    diagramRoot.remove(c.line);
-    c.line.geometry.dispose();
-    c.line.material.dispose();
-  }
-  animTargets.cross.length = 0;
-  animTargets.cousin.length = 0;
-  for (const id of ['front', 'center', 'back']) {
-    animTargets[id].materials.length = 0;
-    animTargets[id].baseOpacities.length = 0;
-    animTargets[id].labels.length = 0;
-  }
-  lineMaterials.length = 0;
-}
-
-/* =====================================================================
-   BUILD
-   ===================================================================== */
-function build() {
-  clearAll();
-  mainLabels = []; subLabels = []; cousinLabels = [];
-
-  const layers = paletteForLevel(currentL);
-  const center = layers.find(L => L.id === 'center');
-
-  for (const e of LAYER_EDGES) {
-    const line = makeLine(posAt(e.a, 0), posAt(e.b, 0), {
-      color: center.hex, width: e.width, opacity: e.opacity,
-      dashed: e.dashed, dash: e.dash || 0.2, gap: e.gap || 0.15
-    });
-    structureGroup.add(line);
-    animTargets.center.materials.push(line.material);
-    animTargets.center.baseOpacities.push(e.opacity);
-  }
-
-  for (const k of ALL_KEYS) {
-    const isInner = INNER_KEYS.includes(k);
-    const dot = makeDot(posAt(k, 0), center.hex, isInner ? 0.72 : 0.55, 0.95);
-    structureGroup.add(dot);
-    animTargets.center.materials.push(dot.material);
-    animTargets.center.baseOpacities.push(0.95);
-  }
-
-  for (const k of ALL_KEYS) {
-    const p = posAt(k, 0);
-    let dir, cls;
-    if (INNER_KEYS.includes(k)) { dir = new THREE.Vector3(p.x, p.y, 0).normalize(); cls = 'main'; }
-    else { dir = new THREE.Vector3(-p.x, -p.y, 0).normalize(); cls = M_KEYS.includes(k) ? 'mid' : 'corner'; }
-    const label = makeLabel(SYMBOLS[k], state[k].name, center.text, cls);
-    label.position.copy(p).addScaledVector(dir, 0.5);
-    labelGroup.add(label);
-    mainLabels.push(label);
-  }
-
-  for (const layer of layers) {
-    if (layer.id === 'center') continue;
-    const group   = layer.id === 'front' ? frontGroup : backGroup;
-    const slot    = animTargets[layer.id];
-    const sideKey = layer.id;
-
-    group.position.z = 0;
-    group.scale.setScalar(1);
-
-    for (const e of LAYER_EDGES) {
-      const line = makeLine(posAt(e.a, 0), posAt(e.b, 0), {
-        color: layer.hex, width: e.width * 0.94,
-        opacity: e.opacity * layer.dim,
-        dashed: e.dashed, dash: e.dash || 0.2, gap: e.gap || 0.15
-      });
-      group.add(line);
-      slot.materials.push(line.material);
-      slot.baseOpacities.push(e.opacity * layer.dim);
-    }
-
-    for (const k of ALL_KEYS) {
-      const isInner = INNER_KEYS.includes(k);
-      const p = posAt(k, 0);
-      const sideData = state[k][sideKey];
-
-      const dot = makeDot(p, layer.hex, isInner ? 0.44 : 0.36, layer.dim);
-      group.add(dot);
-      slot.materials.push(dot.material);
-      slot.baseOpacities.push(layer.dim);
-
-      if (sideData.anchor) {
-        const dir = isInner
-          ? new THREE.Vector3(p.x, p.y, 0).normalize()
-          : new THREE.Vector3(-p.x, -p.y, 0).normalize();
-        const lbl = makeLabel(layer.prefix + SYMBOLS[k], sideData.anchor, layer.text, 'layer');
-        lbl.position.copy(p).addScaledVector(dir, isInner ? 0.5 : 0.4);
-        group.add(lbl);
-        subLabels.push(lbl);
-        slot.labels.push(lbl);
-      }
-
-      const pC = posAt(k, 0);
-      const cross = makeLine(pC, pC, {
-        color: layer.hex, width: 1.1, opacity: 0.30 * layer.dim,
-        dashed: true, dash: 0.08, gap: 0.11
-      });
-      diagramRoot.add(cross);
-      animTargets.cross.push({
-        line: cross, key: k, sign: layer.sign, layerId: layer.id,
-        baseOpacity: 0.30 * layer.dim,
-      });
-
-      if (!sideData.cousins || !sideData.cousins.length) continue;
-      const ringR = isInner ? 0.60 : 0.46;
-      const n = sideData.cousins.length;
-      const cluster = { layerId: layer.id, lines: [], lineBase: [], dots: [], dotBase: [], labels: [] };
-
-      sideData.cousins.forEach((word, i) => {
-        const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-        const cpos = new THREE.Vector3(
-          p.x + Math.cos(angle) * ringR,
-          p.y + Math.sin(angle) * ringR, 0
-        );
-
-        const spoke = makeLine(p, cpos, {
-          color: layer.hex, width: 1.0, opacity: 0.30 * layer.dim,
-          dashed: true, dash: 0.04, gap: 0.07
-        });
-        group.add(spoke);
-        cluster.lines.push(spoke);
-        cluster.lineBase.push(0.30 * layer.dim);
-
-        const cdot = makeDot(cpos, layer.hex, 0.20, layer.dim * 0.9);
-        group.add(cdot);
-        cluster.dots.push(cdot);
-        cluster.dotBase.push(layer.dim * 0.9);
-
-        const outDir = new THREE.Vector3(Math.cos(angle), Math.sin(angle), 0);
-        const clbl = makeCousinLabel(word, layer.text);
-        clbl.position.copy(cpos).addScaledVector(outDir, 0.22);
-        group.add(clbl);
-        cluster.labels.push(clbl);
-        cousinLabels.push(clbl);
-      });
-
-      animTargets.cousin.push(cluster);
-    }
-  }
-
-  applyPaletteToUI();
-  applyExpandState(1);
-  applyVisibility();
-  applyCousinVisibility();
-  updateLayerControls();
-}
-
-/* =====================================================================
-   PALETTE → UI
-   ===================================================================== */
-function hexStr(hex) { return '#' + hex.toString(16).padStart(6, '0'); }
-
-function applyPaletteToUI() {
-  const layers = paletteForLevel(currentL);
-  for (const layer of layers) {
-    const dot = document.getElementById('dot-' + layer.id);
-    if (dot) {
-      dot.style.background = hexStr(layer.hex);
-      dot.style.boxShadow = `0 0 6px ${hexStr(layer.hex)}`;
-    }
+// L2 corner -> L1 square centre
+for (let i = 0; i < L2.length; i++) {
+  for (let j = 0; j < 4; j++) {
+    const a = L2[i].corners[j];          // corner on L2 plane
+    const l1idx = i * 4 + j;
+    const b = L1[l1idx].center;          // same XY, lower plane
+    const conn = makeDashedConnector(a, b, LEVEL_COLORS[2], 0.3);
+    scene.add(conn);
+    squareObjects[`1-${l1idx}`].connectors.push(conn);
+    squareObjects[`2-${i}`].connectors.push(conn);
   }
 }
 
 /* =====================================================================
-   EXPAND / COLLAPSE
+   CAMERA FLIGHT
    ===================================================================== */
-function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
-function easeInCubic(x)  { return x * x * x; }
+const VIEW_DIR = new THREE.Vector3(0.55, 0.35, 0.75).normalize();
 
-function applyExpandState(flickerFactor) {
-  const e = easeOutCubic(anim.progress);
-  const gAlpha = transition.alpha;
+let flying = false;
 
-  frontGroup.position.z = e * Z_DEPTH;
-  backGroup.position.z  = -e * Z_DEPTH;
-  const scale = 0.86 + 0.14 * e;
-  frontGroup.scale.setScalar(scale);
-  backGroup.scale.setScalar(scale);
-
-  const layersVisible = e > 0.005;
-  const alphaFront  = layerAlpha.front  * layerFlicker.front;
-  const alphaBack   = layerAlpha.back   * layerFlicker.back;
-  const alphaCenter = layerAlpha.center * layerFlicker.center;
-
-  {
-    const slot = animTargets.front;
-    const layerOn = layerVisible.front;
-    frontGroup.visible = layersVisible && layerOn;
-    const f = alphaFront * e * flickerFactor * gAlpha;
-    for (let i = 0; i < slot.materials.length; i++) slot.materials[i].opacity = slot.baseOpacities[i] * f;
-    for (const lbl of slot.labels) {
-      const op = Math.min(1, f);
-      lbl.element.style.opacity = op.toFixed(3);
-      const vis = labelsOn && layerOn && op > 0.06;
-      lbl.visible = vis;
-      lbl.element.style.display = vis ? '' : 'none';
-    }
-  }
-
-  {
-    const slot = animTargets.back;
-    const layerOn = layerVisible.back;
-    backGroup.visible = layersVisible && layerOn;
-    const f = alphaBack * e * flickerFactor * gAlpha;
-    for (let i = 0; i < slot.materials.length; i++) slot.materials[i].opacity = slot.baseOpacities[i] * f;
-    for (const lbl of slot.labels) {
-      const op = Math.min(1, f);
-      lbl.element.style.opacity = op.toFixed(3);
-      const vis = labelsOn && layerOn && op > 0.06;
-      lbl.visible = vis;
-      lbl.element.style.display = vis ? '' : 'none';
-    }
-  }
-
-  {
-    const layerOn = layerVisible.center;
-    const f = alphaCenter * flickerFactor * gAlpha;
-    for (let i = 0; i < animTargets.center.materials.length; i++)
-      animTargets.center.materials[i].opacity = animTargets.center.baseOpacities[i] * f;
-    for (const lbl of mainLabels) {
-      const op = Math.min(1, f);
-      lbl.element.style.opacity = op.toFixed(3);
-      const vis = labelsOn && layerOn && op > 0.06;
-      lbl.visible = vis;
-      lbl.element.style.display = vis ? '' : 'none';
-    }
-  }
-
-  for (const c of animTargets.cross) {
-    const layerOn = layerVisible[c.layerId];
-    const centerOn = layerVisible.center;
-    const pC = posAt(c.key, 0);
-    const pL = posAt(c.key, c.sign * e * Z_DEPTH);
-    c.line.geometry.setPositions([pC.x, pC.y, pC.z, pL.x, pL.y, pL.z]);
-    c.line.computeLineDistances();
-    const layerAlphaVal = (c.layerId === 'front' ? alphaFront : alphaBack);
-    c.line.material.opacity =
-      c.baseOpacity * e * flickerFactor * layerAlphaVal * (centerOn ? 1 : 0) * gAlpha;
-    c.line.visible = layersVisible && layerOn && centerOn;
-  }
-
-  const cousinAlpha = cousinsOn ? 1 : 0;
-  for (const cluster of animTargets.cousin) {
-    const layerOn = layerVisible[cluster.layerId];
-    const layerAlphaVal = (cluster.layerId === 'front' ? alphaFront : alphaBack);
-    const f = e * flickerFactor * layerAlphaVal * (layerOn ? 1 : 0) * gAlpha;
-    for (let i = 0; i < cluster.lines.length; i++) cluster.lines[i].material.opacity = cluster.lineBase[i] * f;
-    for (let i = 0; i < cluster.dots.length; i++)  cluster.dots[i].material.opacity  = cluster.dotBase[i] * f;
-    for (const lbl of cluster.labels) {
-      const op = Math.min(1, f) * cousinAlpha * COUSIN_OPACITY_MULT;
-      lbl.element.style.opacity = op.toFixed(3);
-      const vis = labelsOn && layerOn && op > 0.04;
-      lbl.visible = vis;
-      lbl.element.style.display = vis ? '' : 'none';
-    }
-  }
+function easeInOutCubic(x) {
+  return x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
 }
 
-function updateLayerAnimations(dt) {
-  for (const k of ['front', 'center', 'back']) {
-    let target;
-    if (k === 'center') target = (anim.progress < 0.005) ? 1 : (layerVisible.center ? 1 : 0);
-    else target = layerVisible[k] ? 1 : 0;
-    const current = layerAlpha[k];
-    const delta = target - current;
-    if (Math.abs(delta) > 0.001) {
-      const speed = 3.0;
-      const step = Math.sign(delta) * Math.min(Math.abs(delta), speed * dt);
-      layerAlpha[k] = current + step;
-      if (Math.random() < 0.18) layerFlicker[k] = 0;
-      else layerFlicker[k] = 0.35 + Math.random() * 0.85;
-    } else { layerAlpha[k] = target; layerFlicker[k] = 1; }
-  }
-}
+function flyTo(targetPos, lookAt, duration = 1.6) {
+  const startPos    = camera.position.clone();
+  const startTarget = controls.target.clone();
+  const startTime   = performance.now();
+  flying = true;
 
-function updateExpandAnimation(dt) {
-  const delta = anim.target - anim.progress;
-  if (Math.abs(delta) > 0.001) {
-    const speed = 1.45;
-    const step = Math.sign(delta) * Math.min(Math.abs(delta), speed * dt);
-    anim.progress += step;
-  } else anim.progress = anim.target;
-  updateLayerAnimations(dt);
-  const still = Math.abs(anim.progress - anim.target) > 0.001;
-  let flicker = 1;
-  if (still) {
-    if (Math.random() < 0.08) flicker = 0;
-    else flicker = 0.5 + Math.random() * 0.7;
-    const settle = 1 - Math.min(1, Math.abs(delta) * 2.5);
-    flicker = 1 + (flicker - 1) * (1 - settle * 0.35);
-  }
-  applyExpandState(flicker);
-  if (!still) updateLayerControls();
-}
-
-/* =====================================================================
-   TRANSITION UPDATE
-   ---------------------------------------------------------------------
-   Zoom-out (direction 'up'):
-     out: current diagram shrinks in place, centred on screen
-     swap: build the parent
-     in:  parent blooms in place; its P_D point starts at screen centre
-          and drifts outward to its final position as the parent grows
-
-   Zoom-in (direction 'down'):
-     out: parent grows so the target position P_i drifts to screen centre
-     swap: build the child
-     in:  child blooms in place from a dot
-
-   No flicker, no dropout — clean scale motion only.
-   ===================================================================== */
-function updateTransition(dt) {
-  if (!transition.active) {
-    diagramRoot.scale.setScalar(1);
-    diagramRoot.position.set(0, 0, 0);
-    transition.alpha = 1;
-    return;
-  }
-
-  const isOut = transition.phase === 'out';
-  const dur = isOut ? transition.outDuration : transition.inDuration;
-  transition.progress += dt / dur;
-  const t = Math.min(1, transition.progress);
-  const pv = POS_VEC[transition.posKey];
-
-  if (transition.direction === 'up') {
-    /* ===== ZOOM OUT ===== */
-    if (isOut) {
-      /* Current diagram shrinks in place. */
-      const e = easeInCubic(t);
-      const s = 1 - e * (1 - S_MIN);
-      diagramRoot.scale.setScalar(s);
-      diagramRoot.position.set(0, 0, 0);
-      transition.alpha = 1;   // hold fully visible; dot is self-effacing at S_MIN
-      if (t >= 1) {
-        if (transition.onSwap) transition.onSwap();
-        transition.phase = 'in';
-        transition.progress = 0;
-        transition.alpha = 0;
-      }
+  function tick() {
+    const t = Math.min(1, (performance.now() - startTime) / (duration * 1000));
+    const e = easeInOutCubic(t);
+    camera.position.lerpVectors(startPos, targetPos, e);
+    controls.target.lerpVectors(startTarget, lookAt, e);
+    if (t < 1) {
+      requestAnimationFrame(tick);
     } else {
-      /* Parent blooms in place. Its P_D point emerges from centre. */
-      const e = easeOutCubic(t);
-      const s = S_MIN + e * (1 - S_MIN);
-      diagramRoot.scale.setScalar(s);
-      /* Want P_D world = pv * e (0 at start, pv at end).
-         P_D world = position + pv * s. So position = pv * (e - s). */
-      diagramRoot.position.copy(pv).multiplyScalar(e - s);
-      /* Quick fade-in over the first 18%. */
-      transition.alpha = t < 0.18 ? (t / 0.18) : 1;
-      if (t >= 1) {
-        transition.active = false;
-        diagramRoot.scale.setScalar(1);
-        diagramRoot.position.set(0, 0, 0);
-        transition.alpha = 1;
-        updateLayerControls();
-      }
-    }
-  } else {
-    /* ===== ZOOM IN ===== */
-    if (isOut) {
-      /* Parent grows and P_i drifts to centre. */
-      const e = easeInCubic(t);
-      const s = 1 + e * (S_BIG - 1);
-      diagramRoot.scale.setScalar(s);
-      /* Want P_i world = pv * (1 - e). position = pv * (1 - e - s).
-         Since 1 - e - s = -e * S_BIG, this simplifies. */
-      diagramRoot.position.copy(pv).multiplyScalar(-S_BIG * e);
-      /* Hold full, then fade the last 18%. */
-      transition.alpha = t < 0.82 ? 1 : Math.max(0, 1 - (t - 0.82) / 0.18);
-      if (t >= 1) {
-        if (transition.onSwap) transition.onSwap();
-        transition.phase = 'in';
-        transition.progress = 0;
-        transition.alpha = 0;
-      }
-    } else {
-      /* Child blooms in place from a dot. */
-      const e = easeOutCubic(t);
-      const s = S_MIN + e * (1 - S_MIN);
-      diagramRoot.scale.setScalar(s);
-      diagramRoot.position.set(0, 0, 0);
-      transition.alpha = t < 0.18 ? (t / 0.18) : 1;
-      if (t >= 1) {
-        transition.active = false;
-        diagramRoot.scale.setScalar(1);
-        diagramRoot.position.set(0, 0, 0);
-        transition.alpha = 1;
-        updateLayerControls();
-      }
+      flying = false;
     }
   }
+  tick();
+}
+
+function flyToSquare(level, index, duration = 1.6) {
+  const sq = ALL_SQUARES[`${level}-${index}`];
+  if (!sq) return;
+  const dist      = sq.side * 2.6;
+  const targetPos = sq.center.clone().add(VIEW_DIR.clone().multiplyScalar(dist));
+  flyTo(targetPos, sq.center.clone(), duration);
 }
 
 /* =====================================================================
-   NAVIGATION
+   STATE + UI
    ===================================================================== */
-function canZoomOut() { return currentL < 3; }
-function canZoomIn()  { return currentL > 1; }
+let current = { level: 3, index: 0 };
 
-function startZoomOut() {
-  if (transition.active || !canZoomOut()) return;
-
-  const targetL = currentL + 1;
-  const targetD = 1;
-  const posKey = POSITIONS[currentD - 1].key;
-
-  transition.active = true;
-  transition.phase = 'out';
-  transition.progress = 0;
-  transition.direction = 'up';
-  transition.posKey = posKey;
-  transition.targetL = targetL;
-  transition.targetD = targetD;
-  transition.outDuration = 1.45;
-  transition.inDuration  = 1.45;
-  transition.alpha = 1;
-
-  transition.onSwap = () => {
-    /* Sync: parent's P_D gets the child's S₁ name. */
-    const child  = diagrams[diagKey(currentL, currentD)];
-    const parent = diagrams[diagKey(targetL, targetD)];
-    const parentKey = POSITIONS[currentD - 1].key;
-    parent[parentKey].name = child.s1.name || '';
-
-    currentL = targetL;
-    currentD = targetD;
-    state = diagrams[diagKey(currentL, currentD)];
-    syncInputsFromState();
-    build();
-    updateLocationUI();
-  };
+function goTo(level, index, duration = 1.6) {
+  current = { level, index };
+  flyToSquare(level, index, duration);
+  updateUI();
 }
 
-function startZoomIn(positionIndex) {
-  if (transition.active || !canZoomIn()) return;
+function buildUI() {
+  const rowL3 = document.getElementById('row-L3');
+  rowL3.innerHTML = '';
+  const b3 = document.createElement('button');
+  b3.textContent = 'D1';
+  b3.dataset.key = '3-0';
+  b3.addEventListener('click', () => goTo(3, 0));
+  rowL3.appendChild(b3);
 
-  const targetL = currentL - 1;
-  const targetD = positionIndex;
-  const posKey = POSITIONS[positionIndex - 1].key;
+  const rowL2 = document.getElementById('row-L2');
+  rowL2.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const b = document.createElement('button');
+    b.textContent = `D${i + 1}`;
+    b.dataset.key = `2-${i}`;
+    b.addEventListener('click', () => goTo(2, i));
+    rowL2.appendChild(b);
+  }
 
-  transition.active = true;
-  transition.phase = 'out';
-  transition.progress = 0;
-  transition.direction = 'down';
-  transition.posKey = posKey;
-  transition.targetL = targetL;
-  transition.targetD = targetD;
-  transition.outDuration = 1.2;
-  transition.inDuration  = 1.2;
-  transition.alpha = 1;
-
-  transition.onSwap = () => {
-    currentL = targetL;
-    currentD = targetD;
-    state = diagrams[diagKey(currentL, currentD)];
-    syncInputsFromState();
-    build();
-    updateLocationUI();
-  };
-}
-
-/* =====================================================================
-   LOCATION UI
-   ===================================================================== */
-const locationEl = document.getElementById('location');
-const zoomOutBtn = document.getElementById('zoom-out');
-const zoomOutLabel = document.getElementById('zoom-out-label');
-const zoomInGrid  = document.getElementById('zoom-in-grid');
-const navLabel    = document.getElementById('nav-label');
-
-function updateLocationUI() {
-  locationEl.innerHTML = '';
-
-  for (let L = 3; L >= 1; L--) {
-    const meta = LEVEL_META[L];
-    const palette = PALETTES[meta.palette];
-    const centerHex = palette.find(p => p.id === 'center').hex;
-
+  const l1rows = document.getElementById('l1-rows');
+  l1rows.innerHTML = '';
+  for (let g = 0; g < 4; g++) {
     const row = document.createElement('div');
-    row.className = 'loc-row';
+    row.className = 'btn-row';
 
-    const swatch = document.createElement('span');
-    swatch.className = 'loc-swatch';
-    swatch.style.color = hexStr(centerHex);
-    swatch.style.background = hexStr(centerHex);
+    const indent = document.createElement('span');
+    indent.className = 'indent';
+    indent.textContent = `L2·${g + 1}`;
+    row.appendChild(indent);
 
-    const lvl = document.createElement('span');
-    lvl.className = 'loc-lvl';
-    lvl.textContent = `L${L}`;
-
-    const name = document.createElement('span');
-    name.className = 'loc-name';
-    name.textContent = meta.name;
-
-    const pos = document.createElement('span');
-    pos.className = 'loc-pos';
-
-    if (L === currentL) {
-      row.classList.add('current');
-      pos.textContent = `D${currentD}`;
-    } else if (L > currentL) {
-      row.classList.add('ancestor');
-      pos.textContent = `at P${currentD}`;
-      if (L === currentL + 1) {
-        row.addEventListener('click', startZoomOut);
-      }
-    } else {
-      pos.textContent = '—';
+    for (let j = 0; j < 4; j++) {
+      const idx = g * 4 + j;
+      const b = document.createElement('button');
+      b.textContent = `D${idx + 1}`;
+      b.dataset.key = `1-${idx}`;
+      b.addEventListener('click', () => goTo(1, idx));
+      row.appendChild(b);
     }
-
-    row.append(swatch, lvl, name, pos);
-    locationEl.appendChild(row);
+    l1rows.appendChild(row);
   }
-
-  if (!canZoomOut()) {
-    zoomOutBtn.style.display = 'none';
-  } else {
-    zoomOutBtn.style.display = '';
-    const parentMeta = LEVEL_META[currentL + 1];
-    zoomOutLabel.textContent = `Zoom Out · ${parentMeta.name}`;
-  }
-
-  zoomInGrid.innerHTML = '';
-  if (!canZoomIn()) {
-    zoomInGrid.style.display = 'none';
-  } else {
-    zoomInGrid.style.display = '';
-    for (let i = 0; i < 4; i++) {
-      const p = POSITIONS[i];
-      const btn = document.createElement('button');
-      btn.className = 'nav-btn';
-      const main = document.createElement('span');
-      main.className = 'nav-btn-main';
-      main.textContent = p.p;
-      const sub = document.createElement('span');
-      sub.className = 'nav-btn-sub';
-      sub.textContent = `D${i+1} · ${p.name}`;
-      btn.append(main, sub);
-      btn.addEventListener('click', () => startZoomIn(i + 1));
-      zoomInGrid.appendChild(btn);
-    }
-  }
-
-  if (canZoomOut() && canZoomIn()) navLabel.textContent = 'Navigate';
-  else if (canZoomOut()) navLabel.textContent = 'Zoom out only (bottom level)';
-  else navLabel.textContent = 'Zoom in only (top level)';
 }
 
-zoomOutBtn.addEventListener('click', startZoomOut);
+function updateUI() {
+  // Current-square card
+  const card = document.getElementById('current');
+  const name = LEVEL_NAMES[current.level];
+  card.innerHTML = `L${current.level} · D${current.index + 1}`
+    + `<span class="sub">${name} level</span>`;
 
-/* =====================================================================
-   VISIBILITY / CONTROLS
-   ===================================================================== */
-const toggleAuto    = document.getElementById('t-auto');
-const toggleCousins = document.getElementById('t-cousins');
-const toggleLabels  = document.getElementById('t-labels');
-const toggleRotate  = document.getElementById('t-rotate');
-const expandBtn     = document.getElementById('expand');
-const expandLabel   = document.getElementById('expand-label');
-const applyBtn      = document.getElementById('apply');
-
-const layerToggleEls = {
-  front:  document.getElementById('t-layer-front'),
-  center: document.getElementById('t-layer-center'),
-  back:   document.getElementById('t-layer-back'),
-};
-const layerTogglesWrap = document.getElementById('layer-toggles');
-
-function applyVisibility() { labelsOn = toggleLabels.checked; }
-function applyCousinVisibility() { cousinsOn = toggleCousins.checked; }
-
-function updateExpandButton() {
-  const expanded = anim.target === 1;
-  expandBtn.classList.toggle('expanded', expanded);
-  expandLabel.textContent = expanded ? 'Collapse' : 'Expand';
-}
-
-function updateLayerControls() {
-  const settled = Math.abs(anim.progress - anim.target) < 0.001;
-  const isExpanded = anim.target === 1 && settled;
-  layerTogglesWrap.classList.toggle('is-disabled', !isExpanded);
-  for (const k of ['front', 'center', 'back']) layerToggleEls[k].disabled = !isExpanded;
-  const anyHidden = !layerVisible.front || !layerVisible.center || !layerVisible.back;
-  expandBtn.disabled = anyHidden;
-}
-
-expandBtn.addEventListener('click', () => {
-  if (transition.active) return;
-  anim.target = anim.target === 1 ? 0 : 1;
-  updateExpandButton();
-  updateLayerControls();
-});
-
-for (const k of ['front', 'center', 'back']) {
-  layerToggleEls[k].addEventListener('change', () => {
-    layerVisible[k] = layerToggleEls[k].checked;
-    updateLayerControls();
+  // Highlight the active button in every group
+  document.querySelectorAll('#ui button[data-key]').forEach(b => {
+    b.classList.toggle('active', b.dataset.key === `${current.level}-${current.index}`);
   });
+
+  // Dim / brighten the 3D squares
+  const currentKey = `${current.level}-${current.index}`;
+  for (const key of Object.keys(squareObjects)) {
+    const obj = squareObjects[key];
+    const isCurrent = key === currentKey;
+
+    // For non-current squares, dim gently — but keep squares on the same
+    // parent line slightly brighter so the hierarchy reads.
+    let op = 1;
+    if (!isCurrent) {
+      // Squares on the same level as the current one stay a bit brighter.
+      const lvl = parseInt(key.split('-')[0], 10);
+      op = (lvl === current.level) ? 0.55 : 0.28;
+    }
+
+    obj.line.material.opacity = op;
+    for (const d of obj.dots) d.material.opacity = op;
+    for (const c of obj.connectors) c.material.opacity = op * 0.5;
+  }
 }
 
-toggleLabels.addEventListener('change', applyVisibility);
-toggleCousins.addEventListener('change', applyCousinVisibility);
-toggleRotate.addEventListener('change', () => {
-  controls.autoRotate = toggleRotate.checked;
-});
-
 /* =====================================================================
-   COLLAPSIBLE SECTIONS
+   OVERVIEW BUTTON
    ===================================================================== */
-document.querySelectorAll('.sec[data-sec]').forEach(sec => {
-  const title = sec.querySelector('.sec-title');
-  title.addEventListener('click', () => sec.classList.toggle('collapsed'));
+document.getElementById('overview').addEventListener('click', () => {
+  const pos    = new THREE.Vector3(420, 360, 940);
+  const lookAt = new THREE.Vector3(0, 0, 200);
+  flyTo(pos, lookAt, 1.9);
 });
 
 /* =====================================================================
-   INPUTS
-   ===================================================================== */
-const inputs = {};
-document.querySelectorAll('#ui input[data-k]').forEach(el => {
-  const k = el.dataset.k, f = el.dataset.f;
-  if (!inputs[k]) inputs[k] = {};
-  inputs[k][f] = el;
-});
-
-function syncInputsFromState() {
-  for (const k of ALL_KEYS) {
-    if (inputs[k]?.name) inputs[k].name.value = state[k].name || '';
-    if (inputs[k]?.subs) {
-      const f = state[k].front?.anchor || '';
-      const b = state[k].back?.anchor  || '';
-      inputs[k].subs.value = [f, b].filter(Boolean).join(', ');
-    }
-  }
-}
-
-function applyAutoState() {
-  const auto = toggleAuto.checked;
-  for (const k of ALL_KEYS) {
-    if (inputs[k]?.subs) {
-      inputs[k].subs.readOnly = auto;
-      inputs[k].subs.placeholder = auto ? 'auto: syn, ant' : 'syn, ant';
-    }
-  }
-}
-
-toggleAuto.addEventListener('change', applyAutoState);
-
-/* =====================================================================
-   APPLY
-   ===================================================================== */
-function setButtonLoading(on) {
-  applyBtn.disabled = on;
-  applyBtn.textContent = on ? 'Resolving…' : 'Update';
-}
-
-async function applyInputs() {
-  if (transition.active) return;
-
-  for (const k of ALL_KEYS) {
-    if (inputs[k]?.name) {
-      const v = inputs[k].name.value.trim();
-      state[k].name = v || '';
-    }
-  }
-
-  const auto = toggleAuto.checked;
-
-  if (!auto) {
-    for (const k of ALL_KEYS) {
-      const raw = inputs[k]?.subs?.value || '';
-      const parts = raw.split(',').map(s => s.trim());
-      state[k].front.anchor = parts[0] || '';
-      state[k].back.anchor  = parts[1] || '';
-    }
-    if (currentAbort) currentAbort.abort();
-    currentAbort = new AbortController();
-    const signal = currentAbort.signal;
-    setButtonLoading(true);
-    try {
-      const exclude = ALL_KEYS
-        .flatMap(k => [state[k].name, state[k].front.anchor, state[k].back.anchor])
-        .filter(Boolean).map(s => s.toLowerCase());
-      const jobs = [];
-      for (const k of ALL_KEYS) {
-        const kk = k;
-        jobs.push((async () => { state[kk].front.cousins = await fetchCousins(state[kk].front.anchor, signal, exclude); })());
-        jobs.push((async () => { state[kk].back.cousins  = await fetchCousins(state[kk].back.anchor,  signal, exclude); })());
-      }
-      await Promise.all(jobs);
-      build();
-    } catch (e) { if (e.name !== 'AbortError') console.error(e); }
-    finally { if (!signal.aborted) setButtonLoading(false); }
-    return;
-  }
-
-  if (currentAbort) currentAbort.abort();
-  currentAbort = new AbortController();
-  const signal = currentAbort.signal;
-  setButtonLoading(true);
-  try {
-    const names = ALL_KEYS.map(k => state[k].name);
-    const resolved = await resolveAll(names, signal);
-    for (const k of ALL_KEYS) {
-      const key = normKey(state[k].name);
-      const r = resolved.get(key);
-      if (r) {
-        state[k].front = { anchor: r.front.anchor, cousins: r.front.cousins || [] };
-        state[k].back  = { anchor: r.back.anchor,  cousins: r.back.cousins  || [] };
-      } else if (!state[k].name) {
-        state[k].front = { anchor: '', cousins: [] };
-        state[k].back  = { anchor: '', cousins: [] };
-      }
-    }
-    syncInputsFromState();
-    build();
-  } catch (e) { if (e.name !== 'AbortError') console.error(e); }
-  finally { if (!signal.aborted) setButtonLoading(false); }
-}
-
-applyBtn.addEventListener('click', applyInputs);
-
-document.getElementById('reset').addEventListener('click', () => {
-  if (transition.active) return;
-  for (let L = 1; L <= 3; L++) {
-    const maxD = (L === 3) ? 1 : 4;
-    for (let D = 1; D <= maxD; D++) {
-      diagrams[diagKey(L, D)] = (L === 1 && D === 1) ? defaultDiagram() : blankDiagram();
-    }
-  }
-  currentL = 1; currentD = 1;
-  state = diagrams[diagKey(currentL, currentD)];
-  anim.progress = 0; anim.target = 0;
-  updateExpandButton(); updateLayerControls();
-  syncInputsFromState();
-  build();
-  updateLocationUI();
-});
-
-document.querySelectorAll('#ui input[data-k]').forEach(el => {
-  el.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); applyInputs(); el.blur(); }
-  });
-});
-
-document.getElementById('clear-cache').addEventListener('click', () => {
-  cache.clear();
-  try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
-});
-
-/* =====================================================================
-   RESIZE / LOOP
+   RESIZE + RENDER LOOP
    ===================================================================== */
 function onResize() {
-  const w = innerWidth, h = innerHeight;
-  camera.aspect = w / h;
+  camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(w, h);
-  labelRenderer.setSize(w, h);
-  lineMaterials.forEach(m => m.resolution.set(w, h));
+  renderer.setSize(innerWidth, innerHeight);
 }
 addEventListener('resize', onResize);
 
-const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
-  const dt = Math.min(clock.getDelta(), 0.1);
-  updateTransition(dt);
-  updateExpandAnimation(dt);
-  controls.update();
+  if (!flying) controls.update();
   renderer.render(scene, camera);
-  labelRenderer.render(scene, camera);
 }
 
 /* =====================================================================
    BOOT
    ===================================================================== */
-syncInputsFromState();
-applyAutoState();
-build();
-updateExpandButton();
-updateLayerControls();
-updateLocationUI();
+buildUI();
+updateUI();
 animate();
 </script>
 </body>
