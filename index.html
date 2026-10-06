@@ -100,6 +100,15 @@
   }
   .btn-row button:disabled { opacity: 0.4; cursor: progress; }
 
+  /* Swatch dot inside the L1 buttons, colored by group */
+  .btn-row button .grp {
+    display: inline-block;
+    width: 6px; height: 6px; border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: 1px;
+    box-shadow: 0 0 5px currentColor;
+  }
+
   #overview {
     width: 100%; padding: 9px 10px; margin: 6px 0 10px;
     border-radius: 8px; cursor: pointer;
@@ -340,16 +349,68 @@ const SYMBOLS = {
 };
 
 const DIAGRAM_P = { s1:'P1', s2:'P2', ns1:'P3', ns2:'P4' };
+/* Order of corner keys by P index — used for tree-link targets */
+const P_CORNER_KEYS = ['s1', 's2', 'ns1', 'ns2'];
 
 const SIDE    = { 3: 120, 2: 60, 1: 30 };
 const Z_PLANE = { 3: 400, 2: 200, 1: 0 };
 
-/* Each level has three distinct colors — one per internal layer. */
-const LEVEL_COLORS = {
-  3: { center: 0xFF7A45, front: 0xFFBB7A, back: 0xC7477A },
-  2: { center: 0xFDE725, front: 0xFF9A3D, back: 0x7ECB65 },
-  1: { center: 0x6DD4C4, front: 0xA4E8FF, back: 0x5578CC },
-};
+/* ---------------------------------------------------------------------
+   Colors
+   ---------------------------------------------------------------------
+   L3 and L2 use a single fixed triple (center/front/back).
+   L1 diagrams are color-coded by their L2 parent group:
+     D1–D4   → group 0   (children of L2 D1)
+     D5–D8   → group 1   (children of L2 D2)
+     D9–D12  → group 2   (children of L2 D3)
+     D13–D16 → group 3   (children of L2 D4)
+   Each group has a distinct center color sampled from the mako family
+   (blue → teal → green → yellow-green). Front and back layers are
+   derived as lighter / darker variants of that same hue.
+   --------------------------------------------------------------------- */
+const L3_COLORS = { center: 0xFF7A45, front: 0xFFBB7A, back: 0xC7477A };
+const L2_COLORS = { center: 0xFDE725, front: 0xFF9A3D, back: 0x7ECB65 };
+
+const L1_GROUP_CENTERS = [
+  0x4C6EAF,   // group 0 — medium blue
+  0x4C9BA5,   // group 1 — teal
+  0x70C89A,   // group 2 — green-teal
+  0xA9D583,   // group 3 — yellow-green
+];
+
+function l1TripleFor(index) {
+  const group = Math.floor(index / 4);
+  const center = L1_GROUP_CENTERS[group];
+  const c = new THREE.Color(center);
+  const hsl = {};
+  c.getHSL(hsl);
+  const front = new THREE.Color().setHSL(
+    hsl.h + 0.03,
+    Math.max(0, hsl.s - 0.15),
+    Math.min(0.88, hsl.l + 0.22)
+  );
+  const back = new THREE.Color().setHSL(
+    hsl.h - 0.06,
+    Math.min(1, hsl.s + 0.05),
+    Math.max(0.18, hsl.l - 0.20)
+  );
+  return { center, front: front.getHex(), back: back.getHex() };
+}
+
+function layerTripleFor(level, index) {
+  if (level === 1) return l1TripleFor(index);
+  if (level === 2) return L2_COLORS;
+  return L3_COLORS;
+}
+
+function centerColorFor(level, index) {
+  return layerTripleFor(level, index).center;
+}
+
+function l1GroupColor(index) {
+  return L1_GROUP_CENTERS[Math.floor(index / 4)];
+}
+
 const LEVEL_NAMES = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
 
 function hexOf(c) { return '#' + c.toString(16).padStart(6, '0'); }
@@ -397,8 +458,6 @@ const EDGES = [
 ];
 const OPACITY = { solid: 0.95, dashed: 0.55, faint: 0.32 };
 
-/* Precompute merged position buffers per edge kind — shared across
-   every diagram and every layer. */
 const EDGE_POSITIONS_BY_KIND = {};
 const EDGE_KINDS = ['solid','dashed','faint'];
 for (const kind of EDGE_KINDS) {
@@ -531,14 +590,6 @@ controls.maxDistance     = 6000;
 /* =====================================================================
    HELPERS
    ===================================================================== */
-function makeLine(p1, p2, color, opacity) {
-  const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
-  const mat = new THREE.LineBasicMaterial({
-    color, transparent: true, opacity, depthWrite: false,
-  });
-  return new THREE.Line(geo, mat);
-}
-
 function makePoint(pos, color, radius) {
   const geo = new THREE.SphereGeometry(radius, 10, 6);
   const mat = new THREE.MeshBasicMaterial({
@@ -564,7 +615,7 @@ function makeLabel(symbol, name, textColor, cls) {
    ===================================================================== */
 function buildDiagram(layout) {
   const { level, index, center, scale } = layout;
-  const colors = LEVEL_COLORS[level];
+  const colors = layerTripleFor(level, index);
 
   const group = new THREE.Group();
   group.position.copy(center);
@@ -635,6 +686,10 @@ for (const key of Object.keys(LAYOUT)) {
 
 /* =====================================================================
    TREE LINKS
+   ---------------------------------------------------------------------
+   Each child diagram connects from its own P4 corner to the P-corner
+   of its parent where it is anchored. So L1 D1 → from L1 D1's P4 to
+   L2 D1's P1; L1 D2 → from L1 D2's P4 to L2 D1's P2; etc.
    ===================================================================== */
 const treeGroup = new THREE.Group();
 scene.add(treeGroup);
@@ -644,11 +699,28 @@ for (const key of Object.keys(LAYOUT)) {
   const lo = LAYOUT[key];
   if (!lo.parentKey) continue;
 
-  const a = lo.center.clone();
-  const b = LAYOUT[lo.parentKey].center.clone();
-  const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
+  const parent = LAYOUT[lo.parentKey];
+
+  /* Child source point — its own P4 corner, in world coords */
+  const childLocal = GREIMAS_LOCAL.ns2;
+  const startWorld = new THREE.Vector3(
+    lo.center.x + childLocal.x * lo.scale,
+    lo.center.y + childLocal.y * lo.scale,
+    lo.center.z + childLocal.z * lo.scale
+  );
+
+  /* Parent target — the P-corner it anchors to, in world coords */
+  const parentCornerKey = P_CORNER_KEYS[lo.parentCorner];
+  const parentLocal = GREIMAS_LOCAL[parentCornerKey];
+  const endWorld = new THREE.Vector3(
+    parent.center.x + parentLocal.x * parent.scale,
+    parent.center.y + parentLocal.y * parent.scale,
+    parent.center.z + parentLocal.z * parent.scale
+  );
+
+  const geo = new THREE.BufferGeometry().setFromPoints([startWorld, endWorld]);
   const mat = new THREE.LineBasicMaterial({
-    color: LEVEL_COLORS[lo.level].center,
+    color: centerColorFor(lo.level, lo.index),
     transparent: true, opacity: 0, depthWrite: false,
   });
   const line = new THREE.Line(geo, mat);
@@ -735,11 +807,22 @@ function goToDiagram(L, D) {
   const key = `${L}-${D}`;
   if (!diagrams[key]) return;
 
+  const isSame = (key === currentKey);
+
   saveInputsToCurrentDiagram();
+
+  /* Collapse any expanded diagram — expansion state is not preserved
+     across navigation. */
+  if (!isSame) {
+    for (const k of Object.keys(diagrams)) {
+      diagrams[k].expansionTarget = 0;
+    }
+  }
 
   currentKey = key;
   fadeState = 'navigating';
   updateUI();
+  updateExpandButton();
   rebuildLabels();
 
   const targetWorld = diagrams[key].center.clone();
@@ -754,6 +837,13 @@ function goToDiagram(L, D) {
 function goToOverview() {
   if (flight) return;
   saveInputsToCurrentDiagram();
+
+  /* Also collapse everything when entering overview */
+  for (const k of Object.keys(diagrams)) {
+    diagrams[k].expansionTarget = 0;
+  }
+  updateExpandButton();
+
   fadeState = 'overview';
   updateUI();
 
@@ -888,7 +978,7 @@ function rebuildLabels() {
   clearLabels();
   const inst = diagrams[currentKey];
   const data = diagramData[currentKey];
-  const colors = LEVEL_COLORS[inst.level];
+  const colors = layerTripleFor(inst.level, inst.index);
 
   const centerHex = hexOf(colors.center);
   const frontHex  = hexOf(colors.front);
@@ -1064,8 +1154,19 @@ function buildUI() {
     for (let j = 0; j < 4; j++) {
       const idx = g * 4 + j;
       const b = document.createElement('button');
-      b.textContent = `D${idx + 1}`;
       b.dataset.key = `1-${idx}`;
+
+      /* Tiny color swatch on the button showing the group color */
+      const grp = document.createElement('span');
+      grp.className = 'grp';
+      const c = '#' + L1_GROUP_CENTERS[g].toString(16).padStart(6, '0');
+      grp.style.background = c;
+      grp.style.color = c;
+      b.appendChild(grp);
+
+      const txt = document.createTextNode(`D${idx + 1}`);
+      b.appendChild(txt);
+
       b.addEventListener('click', () => goToDiagram(1, idx));
       row.appendChild(b);
     }
