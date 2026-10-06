@@ -25,8 +25,6 @@
   .lbl.mid b { font-weight: 500; font-size: 9px; opacity: 0.55; margin-right: 5px; letter-spacing: 0.06em; }
   .lbl.corner { font-size: 11px; font-weight: 500; opacity: 0.92; }
   .lbl.corner b { font-weight: 400; font-size: 8.5px; opacity: 0.55; margin-right: 4px; letter-spacing: 0.06em; }
-  .lbl.layer { font-size: 11px; font-weight: 500; font-style: italic; letter-spacing: 0.03em; }
-  .lbl.layer b { font-style: normal; font-weight: 600; font-size: 10px; margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em; }
 
   #ui {
     position: fixed; top: 14px; right: 14px; z-index: 10;
@@ -59,6 +57,10 @@
   #current .sub {
     display: block; margin-top: 2px; font-size: 10.5px; font-weight: 400;
     color: #8a96b4; letter-spacing: 0.04em;
+  }
+  #current .anchor-note {
+    display: block; margin-top: 4px; font-size: 10px; font-weight: 400;
+    color: #6fa8ff; letter-spacing: 0.04em;
   }
 
   .group { margin: 0 0 8px; padding: 0 0 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
@@ -276,18 +278,14 @@ const SYMBOLS = {
   c1:'C₁', c2:'C₂', c3:'C₃', c4:'C₄',
 };
 
-/* Level sizes and plane heights */
 const SIDE    = { 3: 120, 2: 60, 1: 30 };
 const Z_PLANE = { 3: 400, 2: 200, 1: 0 };
 const LEVEL_COLORS = { 3: 0xFF7A45, 2: 0xFDE725, 1: 0x6DD4C4 };
 const LEVEL_NAMES  = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
 
-/* SPREAD: multiplier on child offsets. 1.0 puts children exactly on
-   their parent's inner corners; >1 pushes them outward for breathing
-   room. 2.2 gives a generous gap between adjacent diagrams. */
 const SPREAD = 2.2;
 
-/* Greimas local geometry — inner square 4 units across, outer 9 units */
+/* Local Greimas geometry */
 const GREIMAS_LOCAL = {
   s1:  new THREE.Vector3(-2,  2, 0),
   s2:  new THREE.Vector3( 2,  2, 0),
@@ -325,7 +323,6 @@ const EDGES = [
   { a:'c2', b:'c3', kind:'faint' },
   { a:'c3', b:'c4', kind:'faint' },
 ];
-
 const OPACITY = { solid: 0.95, dashed: 0.55, faint: 0.32 };
 
 /* =====================================================================
@@ -363,10 +360,10 @@ function scaleFor(L) { return SIDE[L] / GREIMAS_EXTENT; }
 function innerHalf(L) { return (GREIMAS_INNER * scaleFor(L)) / 2; }
 
 const P_LOCAL = [
-  { x: -1, y:  1 },  // P1 (top-left)
-  { x:  1, y:  1 },  // P2 (top-right)
-  { x: -1, y: -1 },  // P3 (bottom-left)
-  { x:  1, y: -1 },  // P4 (bottom-right)
+  { x: -1, y:  1, label: 'P1' },  // P1 (top-left)
+  { x:  1, y:  1, label: 'P2' },  // P2 (top-right)
+  { x: -1, y: -1, label: 'P3' },  // P3 (bottom-left)
+  { x:  1, y: -1, label: 'P4' },  // P4 (bottom-right)
 ];
 
 const LAYOUT = {};
@@ -376,9 +373,10 @@ LAYOUT['3-0'] = {
   level: 3, index: 0,
   center: new THREE.Vector3(0, 0, Z_PLANE[3]),
   scale: scaleFor(3),
+  // no parent
 };
 
-/* L2 children — placed at L3's inner corners, multiplied by SPREAD */
+/* L2 children — placed at L3's inner corners */
 for (let i = 0; i < 4; i++) {
   const p = P_LOCAL[i];
   const off = innerHalf(3) * SPREAD;
@@ -390,7 +388,7 @@ for (let i = 0; i < 4; i++) {
   };
 }
 
-/* L1 grandchildren — placed at L2 inner corners, times SPREAD */
+/* L1 grandchildren */
 for (let i = 0; i < 4; i++) {
   for (let j = 0; j < 4; j++) {
     const p = P_LOCAL[j];
@@ -449,10 +447,29 @@ const glowTex = (() => {
   cv.width = cv.height = s;
   const ctx = cv.getContext('2d');
   const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
-  /* Softer alpha ramp — the glow falls off faster */
   g.addColorStop(0.00, 'rgba(255,255,255,1.0)');
   g.addColorStop(0.22, 'rgba(255,255,255,0.55)');
   g.addColorStop(0.55, 'rgba(255,255,255,0.10)');
+  g.addColorStop(1.00, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, s, s);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+
+/* Beacon ring texture — a sharper, ring-like glow for anchors */
+const beaconTex = (() => {
+  const s = 128;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = s;
+  const ctx = cv.getContext('2d');
+  const cx = s/2, cy = s/2;
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, s/2);
+  g.addColorStop(0.00, 'rgba(255,255,255,0.0)');
+  g.addColorStop(0.35, 'rgba(255,255,255,0.0)');
+  g.addColorStop(0.55, 'rgba(255,255,255,0.85)');
+  g.addColorStop(0.70, 'rgba(255,255,255,0.15)');
   g.addColorStop(1.00, 'rgba(255,255,255,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, s, s);
@@ -474,6 +491,18 @@ function makeDot(pos, color, scale, opacity) {
     map: glowTex, color,
     blending: THREE.AdditiveBlending,
     transparent: true, depthWrite: false, opacity,
+  }));
+  sprite.position.copy(pos);
+  sprite.scale.setScalar(scale);
+  return sprite;
+}
+
+function makeBeacon(pos, color, scale) {
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: beaconTex, color,
+    blending: THREE.AdditiveBlending,
+    transparent: true, depthWrite: false, depthTest: false,
+    opacity: 0,
   }));
   sprite.position.copy(pos);
   sprite.scale.setScalar(scale);
@@ -512,7 +541,6 @@ function buildDiagram(layout) {
     edgeLines.push({ line, baseOpacity: op });
   }
 
-  /* Dot size reduced ~30% from before; opacity lowered for softer glow */
   const dotSize = level === 3 ? 1.5 : level === 2 ? 1.1 : 0.85;
   const dotSprites = [];
   for (const k of ALL_KEYS) {
@@ -539,8 +567,37 @@ for (const key of Object.keys(LAYOUT)) {
 }
 
 /* =====================================================================
+   BEACONS — anchor points on the parent showing where each child sits
+   ===================================================================== */
+const links = [];    // { childKey, parentKey, parentCorner, beacon, opacity }
+
+for (const key of Object.keys(LAYOUT)) {
+  const lo = LAYOUT[key];
+  if (!lo.parentKey) continue;
+
+  const parent = LAYOUT[lo.parentKey];
+  /* Beacon world position: same XY as child's center, but on the parent's plane */
+  const anchorPos = new THREE.Vector3(
+    lo.center.x,
+    lo.center.y,
+    parent.center.z
+  );
+
+  const beaconSize = parent.scale * 1.1;   // scales with parent size
+  const beacon = makeBeacon(anchorPos, LEVEL_COLORS[lo.level], beaconSize);
+  scene.add(beacon);
+
+  links.push({
+    childKey: key,
+    parentKey: lo.parentKey,
+    parentCorner: lo.parentCorner,
+    beacon,
+    opacity: 0,
+  });
+}
+
+/* =====================================================================
    DATA PER DIAGRAM
-   L1 D1 is the starting diagram and carries the default Greimas content.
    ===================================================================== */
 const diagramData = {};
 for (const key of Object.keys(LAYOUT)) {
@@ -553,6 +610,7 @@ for (const key of Object.keys(LAYOUT)) {
 let currentKey = '1-0';
 let fadeState  = 'steady';
 let flight     = null;
+let labelFade  = 1;
 
 const STATE0_DIR = new THREE.Vector3(0.55, 0.42, 0.72).normalize();
 
@@ -639,7 +697,6 @@ function goToOverview() {
   fadeState = 'overview';
   updateUI();
 
-  /* Overview camera pulled further back to accommodate the wider spread */
   const overviewTarget = new THREE.Vector3(0, 0, 200);
   const overviewPos    = new THREE.Vector3(650, 520, 1500);
 
@@ -647,20 +704,79 @@ function goToOverview() {
 }
 
 /* =====================================================================
-   OUTER ALPHA
+   ALPHA TARGETS
+   ---------------------------------------------------------------------
+   In steady state we show the current diagram in full, and the current
+   diagram's parent as a soft ghost so its beacon sits in context.
    ===================================================================== */
+function targetAlphaFor(key) {
+  if (fadeState === 'overview' || fadeState === 'navigating') return 1;
+  if (key === currentKey) return 1;
+  const lo = LAYOUT[currentKey];
+  if (lo.parentKey === key) return 0.20;      // parent ghost
+  return 0;
+}
+
 function updateOuterAlphas(dt) {
   const k = 1 - Math.exp(-1.5 * dt);
   for (const key of Object.keys(diagrams)) {
     const inst = diagrams[key];
-    let target;
-    if (fadeState === 'steady') target = (key === currentKey) ? 1 : 0;
-    else target = 1;
+    const target = targetAlphaFor(key);
     inst.outerAlpha += (target - inst.outerAlpha) * k;
     if (Math.abs(inst.outerAlpha - target) < 0.004) inst.outerAlpha = target;
   }
 }
 
+/* =====================================================================
+   BEACON ANIMATION
+   ---------------------------------------------------------------------
+   • steady:     bright for current diagram's anchor, dim for the four
+                 anchors of the current diagram's children, off otherwise
+   • navigating: moderate, all visible
+   • overview:   all visible, moderately bright
+   ===================================================================== */
+function updateLinks(dt) {
+  const k = 1 - Math.exp(-3.0 * dt);
+
+  for (const link of links) {
+    let target;
+
+    if (fadeState === 'overview') {
+      target = 0.75;
+    } else if (fadeState === 'navigating') {
+      target = 0.55;
+    } else {
+      if (link.childKey === currentKey) {
+        // The current diagram's anchor on its parent — brightest
+        target = 1.0;
+      } else if (link.parentKey === currentKey) {
+        // One of the four children anchors sitting on the current diagram
+        target = 0.55;
+      } else {
+        target = 0;
+      }
+    }
+
+    link.opacity += (target - link.opacity) * k;
+    if (Math.abs(link.opacity - target) < 0.004) link.opacity = target;
+
+    link.beacon.material.opacity = link.opacity;
+    link.beacon.visible = link.opacity > 0.004;
+  }
+}
+
+/* =====================================================================
+   LABEL FADE (for overview)
+   ===================================================================== */
+function updateLabelFade(dt) {
+  const target = fadeState === 'overview' ? 0 : 1;
+  labelFade += (target - labelFade) * (1 - Math.exp(-2.5 * dt));
+  if (Math.abs(labelFade - target) < 0.004) labelFade = target;
+}
+
+/* =====================================================================
+   OPACITY APPLICATION
+   ===================================================================== */
 function applyOpacities() {
   for (const key of Object.keys(diagrams)) {
     const inst = diagrams[key];
@@ -674,7 +790,7 @@ function applyOpacities() {
       d.sprite.material.opacity = d.baseOpacity * a;
     }
     for (const lbl of inst.labels) {
-      const op = a;
+      const op = a * labelFade;
       lbl.element.style.opacity = op.toFixed(3);
       const vis = labelsOn && op > 0.03;
       lbl.visible = vis;
@@ -788,12 +904,25 @@ function buildUI() {
 
 function updateUI() {
   const card = document.getElementById('current');
+
   if (fadeState === 'overview') {
     card.innerHTML = `Overview<span class="sub">all diagrams visible</span>`;
   } else {
     const inst = diagrams[currentKey];
+    const lo = LAYOUT[currentKey];
+
+    let anchorNote = '';
+    if (lo.parentKey) {
+      const parent = LAYOUT[lo.parentKey];
+      const corner = P_LOCAL[lo.parentCorner].label;
+      anchorNote = `<span class="anchor-note">sits at ${corner} of L${parent.level}·D${parent.index + 1}</span>`;
+    } else {
+      anchorNote = `<span class="anchor-note">root — no parent</span>`;
+    }
+
     card.innerHTML = `L${inst.level} · D${inst.index + 1}`
-      + `<span class="sub">${LEVEL_NAMES[inst.level]} level</span>`;
+      + `<span class="sub">${LEVEL_NAMES[inst.level]} level</span>`
+      + anchorNote;
   }
 
   document.querySelectorAll('#ui button[data-key]').forEach(b => {
@@ -865,6 +994,8 @@ function animate() {
 
   updateFlight(now);
   updateOuterAlphas(dt);
+  updateLinks(dt);
+  updateLabelFade(dt);
   applyOpacities();
 
   if (!flight) controls.update();
@@ -877,16 +1008,19 @@ function animate() {
    BOOT
    ===================================================================== */
 buildUI();
-
-/* Start at L1 D1 */
 currentKey = '1-0';
 syncInputsFromState();
 rebuildLabels();
 
+/* Initialize alphas and beacons */
 for (const key of Object.keys(diagrams)) {
   diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
 }
+for (const link of links) {
+  link.opacity = 0;
+}
 
+/* Snap camera to L1 D1 */
 {
   const inst = diagrams['1-0'];
   controls.target.copy(inst.center);
