@@ -25,6 +25,8 @@
   .lbl.mid b { font-weight: 500; font-size: 9px; opacity: 0.55; margin-right: 5px; letter-spacing: 0.06em; }
   .lbl.corner { font-size: 11px; font-weight: 500; opacity: 0.92; }
   .lbl.corner b { font-weight: 400; font-size: 8.5px; opacity: 0.55; margin-right: 4px; letter-spacing: 0.06em; }
+  .lbl.layer { font-size: 11px; font-weight: 500; font-style: italic; letter-spacing: 0.03em; }
+  .lbl.layer b { font-style: normal; font-weight: 600; font-size: 10px; margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em; }
 
   #ui {
     position: fixed; top: 14px; right: 14px; z-index: 10;
@@ -130,6 +132,11 @@
 
   .row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
   .row .sym { flex: 0 0 42px; font-size: 11px; font-weight: 600; text-align: right; }
+  .row .sym.dot { flex: 0 0 42px; display: flex; justify-content: flex-end; }
+  .row .sym.dot i {
+    display: block; width: 7px; height: 7px; border-radius: 50%;
+    background: currentColor; box-shadow: 0 0 6px currentColor;
+  }
   .row input {
     flex: 1; min-width: 0; padding: 5px 9px; border-radius: 6px;
     background: rgba(255, 255, 255, 0.05);
@@ -137,6 +144,8 @@
     color: #e9edf7; font: inherit; font-size: 11.5px; outline: none;
   }
   .row input:focus { border-color: rgba(126, 160, 255, 0.5); background: rgba(126, 160, 255, 0.10); }
+  .row.sub input { font-size: 10.5px; color: #a8b3cc; }
+  .row.sub { margin-bottom: 7px; }
 
   .buttons { display: flex; gap: 7px; margin: 10px 0 6px; }
   button {
@@ -154,6 +163,23 @@
     border-color: rgba(255, 255, 255, 0.10);
   }
   button.ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.11); }
+
+  #expand {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 9px 12px; margin: 0 0 8px;
+    border-radius: 8px; cursor: pointer;
+    font: inherit; font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #fde725;
+    background: linear-gradient(135deg, rgba(34,168,132,0.18), rgba(253,231,37,0.10));
+    border: 1px solid rgba(253,231,37,0.35);
+  }
+  #expand.expanded {
+    color: #a3adff;
+    background: linear-gradient(135deg, rgba(65,68,135,0.30), rgba(34,168,132,0.14));
+    border-color: rgba(65,68,135,0.55);
+  }
+  #expand:disabled { opacity: 0.35; cursor: not-allowed; }
 
   .toggles {
     display: flex; flex-wrap: wrap; gap: 5px;
@@ -212,13 +238,19 @@
     <button id="reset" class="ghost">Reset All</button>
   </div>
 
+  <button id="expand"><span class="chev">▸</span><span id="expand-label">Expand</span></button>
+
   <div class="sec collapsed" data-sec>
     <div class="sec-title"><span>Inner Square</span><span class="chev">▾</span></div>
     <div class="sec-body"><div class="sec-clip"><div class="sec-content">
       <div class="row"><span class="sym" style="color:#5bcfa0">S₁</span><input type="text" data-k="s1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="syn, ant"></div>
       <div class="row"><span class="sym" style="color:#5bcfa0">S₂</span><input type="text" data-k="s2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="syn, ant"></div>
       <div class="row"><span class="sym" style="color:#5bcfa0">~S₁</span><input type="text" data-k="ns1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="syn, ant"></div>
       <div class="row"><span class="sym" style="color:#5bcfa0">~S₂</span><input type="text" data-k="ns2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="syn, ant"></div>
     </div></div></div>
   </div>
 
@@ -226,9 +258,13 @@
     <div class="sec-title"><span>Outer Midpoints</span><span class="chev">▾</span></div>
     <div class="sec-body"><div class="sec-clip"><div class="sec-content">
       <div class="row"><span class="sym" style="color:#5bcfa0">M₁</span><input type="text" data-k="m1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m1" data-f="subs" placeholder="syn, ant"></div>
       <div class="row"><span class="sym" style="color:#5bcfa0">M₂</span><input type="text" data-k="m2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m2" data-f="subs" placeholder="syn, ant"></div>
       <div class="row"><span class="sym" style="color:#5bcfa0">M₃</span><input type="text" data-k="m3" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m3" data-f="subs" placeholder="syn, ant"></div>
       <div class="row"><span class="sym" style="color:#5bcfa0">M₄</span><input type="text" data-k="m4" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m4" data-f="subs" placeholder="syn, ant"></div>
     </div></div></div>
   </div>
 
@@ -236,9 +272,13 @@
     <div class="sec-title"><span>Outer Corners</span><span class="chev">▾</span></div>
     <div class="sec-body"><div class="sec-clip"><div class="sec-content">
       <div class="row"><span class="sym" style="color:#5bcfa0">C₁</span><input type="text" data-k="c1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c1" data-f="subs" placeholder="syn, ant"></div>
       <div class="row"><span class="sym" style="color:#5bcfa0">C₂</span><input type="text" data-k="c2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c2" data-f="subs" placeholder="syn, ant"></div>
       <div class="row"><span class="sym" style="color:#5bcfa0">C₃</span><input type="text" data-k="c3" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c3" data-f="subs" placeholder="syn, ant"></div>
       <div class="row"><span class="sym" style="color:#5bcfa0">C₄</span><input type="text" data-k="c4" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c4" data-f="subs" placeholder="syn, ant"></div>
     </div></div></div>
   </div>
 
@@ -285,7 +325,7 @@ const LEVEL_NAMES  = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
 
 const SPREAD = 2.2;
 
-/* Local Greimas geometry */
+/* Greimas local geometry */
 const GREIMAS_LOCAL = {
   s1:  new THREE.Vector3(-2,  2, 0),
   s2:  new THREE.Vector3( 2,  2, 0),
@@ -302,6 +342,8 @@ const GREIMAS_LOCAL = {
 };
 const GREIMAS_EXTENT = 9;
 const GREIMAS_INNER  = 4;
+
+const LAYER_Z = 2.7;   // local-space z offset for front / back layers
 
 const EDGES = [
   { a:'s1',  b:'s2',  kind:'solid' },
@@ -329,27 +371,30 @@ const OPACITY = { solid: 0.95, dashed: 0.55, faint: 0.32 };
    DATA
    ===================================================================== */
 const DEFAULTS = {
-  s1:  { name:'Being' },
-  s2:  { name:'Seeming' },
-  ns1: { name:'Non-being' },
-  ns2: { name:'Non-seeming' },
-  m1:  { name:'Truth' },
-  m2:  { name:'Lie' },
-  m3:  { name:'Falsehood' },
-  m4:  { name:'Secret' },
-  c1:  { name:'Paradox' },
-  c2:  { name:'Deception' },
-  c3:  { name:'Subterfuge' },
-  c4:  { name:'Revelation' },
+  s1:  { name:'Being',       syn:'Existence',    ant:'Nothingness' },
+  s2:  { name:'Seeming',     syn:'Appearance',   ant:'Reality' },
+  ns1: { name:'Non-being',   syn:'Absence',      ant:'Presence' },
+  ns2: { name:'Non-seeming', syn:'Invisibility', ant:'Visibility' },
+  m1:  { name:'Truth',       syn:'Verity',       ant:'Falsehood' },
+  m2:  { name:'Lie',         syn:'Fabrication',  ant:'Truth' },
+  m3:  { name:'Falsehood',   syn:'Error',        ant:'Truth' },
+  m4:  { name:'Secret',      syn:'Concealment',  ant:'Disclosure' },
+  c1:  { name:'Paradox',     syn:'Contradiction',ant:'Consistency' },
+  c2:  { name:'Deception',   syn:'Trickery',     ant:'Honesty' },
+  c3:  { name:'Subterfuge',  syn:'Evasion',      ant:'Candor' },
+  c4:  { name:'Revelation',  syn:'Disclosure',   ant:'Concealment' },
 };
+
 function blankDiagram() {
   const d = {};
-  for (const k of ALL_KEYS) d[k] = { name: '' };
+  for (const k of ALL_KEYS) d[k] = { name:'', syn:'', ant:'' };
   return d;
 }
 function defaultDiagram() {
   const d = {};
-  for (const k of ALL_KEYS) d[k] = { name: DEFAULTS[k].name };
+  for (const k of ALL_KEYS) d[k] = {
+    name: DEFAULTS[k].name, syn: DEFAULTS[k].syn, ant: DEFAULTS[k].ant,
+  };
   return d;
 }
 
@@ -360,23 +405,20 @@ function scaleFor(L) { return SIDE[L] / GREIMAS_EXTENT; }
 function innerHalf(L) { return (GREIMAS_INNER * scaleFor(L)) / 2; }
 
 const P_LOCAL = [
-  { x: -1, y:  1, label: 'P1' },  // P1 (top-left)
-  { x:  1, y:  1, label: 'P2' },  // P2 (top-right)
-  { x: -1, y: -1, label: 'P3' },  // P3 (bottom-left)
-  { x:  1, y: -1, label: 'P4' },  // P4 (bottom-right)
+  { x: -1, y:  1, label: 'P1' },
+  { x:  1, y:  1, label: 'P2' },
+  { x: -1, y: -1, label: 'P3' },
+  { x:  1, y: -1, label: 'P4' },
 ];
 
 const LAYOUT = {};
 
-/* L3 (root) */
 LAYOUT['3-0'] = {
   level: 3, index: 0,
   center: new THREE.Vector3(0, 0, Z_PLANE[3]),
   scale: scaleFor(3),
-  // no parent
 };
 
-/* L2 children — placed at L3's inner corners */
 for (let i = 0; i < 4; i++) {
   const p = P_LOCAL[i];
   const off = innerHalf(3) * SPREAD;
@@ -388,7 +430,6 @@ for (let i = 0; i < 4; i++) {
   };
 }
 
-/* L1 grandchildren */
 for (let i = 0; i < 4; i++) {
   for (let j = 0; j < 4; j++) {
     const p = P_LOCAL[j];
@@ -441,43 +482,6 @@ controls.maxDistance     = 6000;
 /* =====================================================================
    HELPERS
    ===================================================================== */
-const glowTex = (() => {
-  const s = 64;
-  const cv = document.createElement('canvas');
-  cv.width = cv.height = s;
-  const ctx = cv.getContext('2d');
-  const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
-  g.addColorStop(0.00, 'rgba(255,255,255,1.0)');
-  g.addColorStop(0.22, 'rgba(255,255,255,0.55)');
-  g.addColorStop(0.55, 'rgba(255,255,255,0.10)');
-  g.addColorStop(1.00, 'rgba(255,255,255,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, s, s);
-  const t = new THREE.CanvasTexture(cv);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-})();
-
-/* Beacon ring texture — a sharper, ring-like glow for anchors */
-const beaconTex = (() => {
-  const s = 128;
-  const cv = document.createElement('canvas');
-  cv.width = cv.height = s;
-  const ctx = cv.getContext('2d');
-  const cx = s/2, cy = s/2;
-  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, s/2);
-  g.addColorStop(0.00, 'rgba(255,255,255,0.0)');
-  g.addColorStop(0.35, 'rgba(255,255,255,0.0)');
-  g.addColorStop(0.55, 'rgba(255,255,255,0.85)');
-  g.addColorStop(0.70, 'rgba(255,255,255,0.15)');
-  g.addColorStop(1.00, 'rgba(255,255,255,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, s, s);
-  const t = new THREE.CanvasTexture(cv);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-})();
-
 function makeLine(p1, p2, color, opacity) {
   const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
   const mat = new THREE.LineBasicMaterial({
@@ -486,27 +490,14 @@ function makeLine(p1, p2, color, opacity) {
   return new THREE.Line(geo, mat);
 }
 
-function makeDot(pos, color, scale, opacity) {
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: glowTex, color,
-    blending: THREE.AdditiveBlending,
-    transparent: true, depthWrite: false, opacity,
-  }));
-  sprite.position.copy(pos);
-  sprite.scale.setScalar(scale);
-  return sprite;
-}
-
-function makeBeacon(pos, color, scale) {
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: beaconTex, color,
-    blending: THREE.AdditiveBlending,
-    transparent: true, depthWrite: false, depthTest: false,
-    opacity: 0,
-  }));
-  sprite.position.copy(pos);
-  sprite.scale.setScalar(scale);
-  return sprite;
+function makePoint(pos, color, radius) {
+  const geo = new THREE.SphereGeometry(radius, 12, 8);
+  const mat = new THREE.MeshBasicMaterial({
+    color, transparent: true, opacity: 1, depthWrite: false,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(pos);
+  return mesh;
 }
 
 function makeLabel(symbol, name, textColor, cls) {
@@ -521,6 +512,12 @@ function makeLabel(symbol, name, textColor, cls) {
 
 /* =====================================================================
    DIAGRAM BUILDER
+   ---------------------------------------------------------------------
+   Each diagram has three internal groups:
+     centerGroup — always visible
+     frontGroup  — offset +LAYER_Z when expanded
+     backGroup   — offset -LAYER_Z when expanded
+   Only the center participates in the level hierarchy.
    ===================================================================== */
 function buildDiagram(layout) {
   const { level, index, center, scale } = layout;
@@ -531,33 +528,56 @@ function buildDiagram(layout) {
   group.scale.setScalar(scale);
   scene.add(group);
 
-  const edgeLines = [];
-  for (const e of EDGES) {
-    const a = GREIMAS_LOCAL[e.a].clone();
-    const b = GREIMAS_LOCAL[e.b].clone();
-    const op = OPACITY[e.kind];
-    const line = makeLine(a, b, color, op);
-    group.add(line);
-    edgeLines.push({ line, baseOpacity: op });
+  const centerGroup = new THREE.Group();
+  const frontGroup  = new THREE.Group();
+  const backGroup   = new THREE.Group();
+  group.add(centerGroup, frontGroup, backGroup);
+
+  /* radius of point markers, in local units */
+  const dotR = level === 3 ? 0.30 : level === 2 ? 0.24 : 0.20;
+
+  function fillLayer(g) {
+    const edgeMats = [];
+    for (const e of EDGES) {
+      const a = GREIMAS_LOCAL[e.a].clone();
+      const b = GREIMAS_LOCAL[e.b].clone();
+      const op = OPACITY[e.kind];
+      const line = makeLine(a, b, color, op);
+      g.add(line);
+      edgeMats.push({ mat: line.material, base: op });
+    }
+    const pointMats = [];
+    for (const k of ALL_KEYS) {
+      const isInner = INNER_KEYS.includes(k);
+      const pos = GREIMAS_LOCAL[k].clone();
+      const mesh = makePoint(pos, color, isInner ? dotR : dotR * 0.75);
+      g.add(mesh);
+      pointMats.push({ mat: mesh.material, base: 1 });
+    }
+    return { edgeMats, pointMats };
   }
 
-  const dotSize = level === 3 ? 1.5 : level === 2 ? 1.1 : 0.85;
-  const dotSprites = [];
-  for (const k of ALL_KEYS) {
-    const isInner = INNER_KEYS.includes(k);
-    const pos = GREIMAS_LOCAL[k].clone();
-    const s = makeDot(pos, color, isInner ? dotSize : dotSize * 0.7, 0.55);
-    group.add(s);
-    dotSprites.push({ sprite: s, baseOpacity: 0.55 });
-  }
+  const centerMats = fillLayer(centerGroup);
+  const frontMats  = fillLayer(frontGroup);
+  const backMats   = fillLayer(backGroup);
+
+  // front / back start collapsed: at z=0 and invisible
+  frontGroup.position.z = 0;
+  backGroup.position.z  = 0;
 
   return {
     key: `${level}-${index}`,
+    layout,
     level, index,
     group, scale, center: center.clone(),
-    edgeLines, dotSprites,
+    centerGroup, frontGroup, backGroup,
+    centerMats, frontMats, backMats,
     outerAlpha: 0,
-    labels: [],
+    expansion: 0,
+    expansionTarget: 0,
+    centerLabels: [],
+    frontLabels:  [],
+    backLabels:   [],
   };
 }
 
@@ -567,33 +587,93 @@ for (const key of Object.keys(LAYOUT)) {
 }
 
 /* =====================================================================
-   BEACONS — anchor points on the parent showing where each child sits
+   BEACONS — anchor markers on parent showing where each child sits
    ===================================================================== */
-const links = [];    // { childKey, parentKey, parentCorner, beacon, opacity }
+const glowTex = (() => {
+  const s = 64;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = s;
+  const ctx = cv.getContext('2d');
+  const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
+  g.addColorStop(0.00, 'rgba(255,255,255,1.0)');
+  g.addColorStop(0.30, 'rgba(255,255,255,0.6)');
+  g.addColorStop(0.65, 'rgba(255,255,255,0.15)');
+  g.addColorStop(1.00, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, s, s);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
 
+const beaconRingTex = (() => {
+  const s = 128;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = s;
+  const ctx = cv.getContext('2d');
+  const cx = s/2, cy = s/2;
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, s/2);
+  g.addColorStop(0.00, 'rgba(255,255,255,0.0)');
+  g.addColorStop(0.35, 'rgba(255,255,255,0.0)');
+  g.addColorStop(0.55, 'rgba(255,255,255,0.85)');
+  g.addColorStop(0.72, 'rgba(255,255,255,0.15)');
+  g.addColorStop(1.00, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, s, s);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+
+const links = [];
 for (const key of Object.keys(LAYOUT)) {
   const lo = LAYOUT[key];
   if (!lo.parentKey) continue;
 
   const parent = LAYOUT[lo.parentKey];
-  /* Beacon world position: same XY as child's center, but on the parent's plane */
-  const anchorPos = new THREE.Vector3(
-    lo.center.x,
-    lo.center.y,
-    parent.center.z
-  );
+  const anchorPos = new THREE.Vector3(lo.center.x, lo.center.y, parent.center.z);
+  const size = parent.scale * 1.1;
 
-  const beaconSize = parent.scale * 1.1;   // scales with parent size
-  const beacon = makeBeacon(anchorPos, LEVEL_COLORS[lo.level], beaconSize);
-  scene.add(beacon);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: beaconRingTex, color: LEVEL_COLORS[lo.level],
+    blending: THREE.AdditiveBlending,
+    transparent: true, depthWrite: false, depthTest: false,
+    opacity: 0,
+  }));
+  sprite.position.copy(anchorPos);
+  sprite.scale.setScalar(size);
+  scene.add(sprite);
 
   links.push({
     childKey: key,
     parentKey: lo.parentKey,
     parentCorner: lo.parentCorner,
-    beacon,
+    beacon: sprite,
     opacity: 0,
   });
+}
+
+/* =====================================================================
+   TREE LINKS — centroid-to-centroid lines between parent and child
+   ===================================================================== */
+const treeGroup = new THREE.Group();
+scene.add(treeGroup);
+const treeLinks = [];
+
+for (const key of Object.keys(LAYOUT)) {
+  const lo = LAYOUT[key];
+  if (!lo.parentKey) continue;
+
+  const a = lo.center.clone();
+  const b = LAYOUT[lo.parentKey].center.clone();
+  const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
+  const mat = new THREE.LineBasicMaterial({
+    color: LEVEL_COLORS[lo.level],
+    transparent: true, opacity: 0, depthWrite: false,
+  });
+  const line = new THREE.Line(geo, mat);
+  treeGroup.add(line);
+  treeLinks.push({ line, opacity: 0 });
 }
 
 /* =====================================================================
@@ -705,15 +785,12 @@ function goToOverview() {
 
 /* =====================================================================
    ALPHA TARGETS
-   ---------------------------------------------------------------------
-   In steady state we show the current diagram in full, and the current
-   diagram's parent as a soft ghost so its beacon sits in context.
    ===================================================================== */
 function targetAlphaFor(key) {
   if (fadeState === 'overview' || fadeState === 'navigating') return 1;
   if (key === currentKey) return 1;
   const lo = LAYOUT[currentKey];
-  if (lo.parentKey === key) return 0.20;      // parent ghost
+  if (lo.parentKey === key) return 0.20;    // parent ghost
   return 0;
 }
 
@@ -727,46 +804,52 @@ function updateOuterAlphas(dt) {
   }
 }
 
-/* =====================================================================
-   BEACON ANIMATION
-   ---------------------------------------------------------------------
-   • steady:     bright for current diagram's anchor, dim for the four
-                 anchors of the current diagram's children, off otherwise
-   • navigating: moderate, all visible
-   • overview:   all visible, moderately bright
-   ===================================================================== */
-function updateLinks(dt) {
-  const k = 1 - Math.exp(-3.0 * dt);
+function updateExpansions(dt) {
+  const k = 1 - Math.exp(-3.5 * dt);
+  for (const key of Object.keys(diagrams)) {
+    const inst = diagrams[key];
+    const t = inst.expansionTarget;
+    inst.expansion += (t - inst.expansion) * k;
+    if (Math.abs(inst.expansion - t) < 0.004) inst.expansion = t;
 
-  for (const link of links) {
-    let target;
-
-    if (fadeState === 'overview') {
-      target = 0.75;
-    } else if (fadeState === 'navigating') {
-      target = 0.55;
-    } else {
-      if (link.childKey === currentKey) {
-        // The current diagram's anchor on its parent — brightest
-        target = 1.0;
-      } else if (link.parentKey === currentKey) {
-        // One of the four children anchors sitting on the current diagram
-        target = 0.55;
-      } else {
-        target = 0;
-      }
-    }
-
-    link.opacity += (target - link.opacity) * k;
-    if (Math.abs(link.opacity - target) < 0.004) link.opacity = target;
-
-    link.beacon.material.opacity = link.opacity;
-    link.beacon.visible = link.opacity > 0.004;
+    inst.frontGroup.position.z =  inst.expansion * LAYER_Z;
+    inst.backGroup.position.z  = -inst.expansion * LAYER_Z;
   }
 }
 
 /* =====================================================================
-   LABEL FADE (for overview)
+   BEACONS + TREE LINKS
+   ===================================================================== */
+function updateLinks(dt) {
+  const k = 1 - Math.exp(-3.0 * dt);
+  const ov = (fadeState === 'overview' || fadeState === 'navigating');
+
+  for (const link of links) {
+    let target;
+    if (fadeState === 'overview')          target = 0.75;
+    else if (fadeState === 'navigating')   target = 0.55;
+    else if (link.childKey === currentKey) target = 1.0;
+    else if (link.parentKey === currentKey) target = 0.55;
+    else target = 0;
+
+    link.opacity += (target - link.opacity) * k;
+    if (Math.abs(link.opacity - target) < 0.004) link.opacity = target;
+    link.beacon.material.opacity = link.opacity;
+    link.beacon.visible = link.opacity > 0.004;
+  }
+
+  /* tree lines: only during overview / navigating */
+  for (const t of treeLinks) {
+    const target = ov ? (fadeState === 'overview' ? 0.55 : 0.35) : 0;
+    t.opacity += (target - t.opacity) * k;
+    if (Math.abs(t.opacity - target) < 0.004) t.opacity = target;
+    t.line.material.opacity = t.opacity;
+    t.line.visible = t.opacity > 0.004;
+  }
+}
+
+/* =====================================================================
+   LABEL FADE
    ===================================================================== */
 function updateLabelFade(dt) {
   const target = fadeState === 'overview' ? 0 : 1;
@@ -781,16 +864,45 @@ function applyOpacities() {
   for (const key of Object.keys(diagrams)) {
     const inst = diagrams[key];
     const a = inst.outerAlpha;
+    const e = inst.expansion;
+
     inst.group.visible = a > 0.004;
 
-    for (const el of inst.edgeLines) {
-      el.line.material.opacity = el.baseOpacity * a;
-    }
-    for (const d of inst.dotSprites) {
-      d.sprite.material.opacity = d.baseOpacity * a;
-    }
-    for (const lbl of inst.labels) {
+    // center
+    for (const em of inst.centerMats.edgeMats)
+      em.mat.opacity = em.base * a;
+    for (const pm of inst.centerMats.pointMats)
+      pm.mat.opacity = pm.base * a;
+
+    // front
+    for (const em of inst.frontMats.edgeMats)
+      em.mat.opacity = em.base * a * e;
+    for (const pm of inst.frontMats.pointMats)
+      pm.mat.opacity = pm.base * a * e;
+
+    // back
+    for (const em of inst.backMats.edgeMats)
+      em.mat.opacity = em.base * a * e;
+    for (const pm of inst.backMats.pointMats)
+      pm.mat.opacity = pm.base * a * e;
+
+    // labels
+    for (const lbl of inst.centerLabels) {
       const op = a * labelFade;
+      lbl.element.style.opacity = op.toFixed(3);
+      const vis = labelsOn && op > 0.03;
+      lbl.visible = vis;
+      lbl.element.style.display = vis ? '' : 'none';
+    }
+    for (const lbl of inst.frontLabels) {
+      const op = a * e * labelFade;
+      lbl.element.style.opacity = op.toFixed(3);
+      const vis = labelsOn && op > 0.03;
+      lbl.visible = vis;
+      lbl.element.style.display = vis ? '' : 'none';
+    }
+    for (const lbl of inst.backLabels) {
+      const op = a * e * labelFade;
       lbl.element.style.opacity = op.toFixed(3);
       const vis = labelsOn && op > 0.03;
       lbl.visible = vis;
@@ -800,15 +912,19 @@ function applyOpacities() {
 }
 
 /* =====================================================================
-   LABELS (current diagram only)
+   LABELS — only for the current diagram
    ===================================================================== */
 let labelsOn = true;
 
 function clearLabels() {
   for (const key of Object.keys(diagrams)) {
     const inst = diagrams[key];
-    for (const lbl of inst.labels) inst.group.remove(lbl);
-    inst.labels = [];
+    for (const l of inst.centerLabels) inst.centerGroup.remove(l);
+    for (const l of inst.frontLabels)  inst.frontGroup.remove(l);
+    for (const l of inst.backLabels)   inst.backGroup.remove(l);
+    inst.centerLabels = [];
+    inst.frontLabels = [];
+    inst.backLabels = [];
   }
 }
 
@@ -829,10 +945,24 @@ function rebuildLabels() {
       dir = new THREE.Vector3(-pos.x, -pos.y, 0).normalize();
       cls = M_KEYS.includes(k) ? 'mid' : 'corner';
     }
-    const lbl = makeLabel(SYMBOLS[k], data[k].name, colorHex, cls);
-    lbl.position.copy(pos).addScaledVector(dir, 0.7);
-    inst.group.add(lbl);
-    inst.labels.push(lbl);
+
+    // center label
+    const centerLbl = makeLabel(SYMBOLS[k], data[k].name, colorHex, cls);
+    centerLbl.position.copy(pos).addScaledVector(dir, 0.7);
+    inst.centerGroup.add(centerLbl);
+    inst.centerLabels.push(centerLbl);
+
+    // front label (+ prefix, syn)
+    const frontLbl = makeLabel('+' + SYMBOLS[k], data[k].syn, colorHex, 'layer');
+    frontLbl.position.copy(pos).addScaledVector(dir, 0.7);
+    inst.frontGroup.add(frontLbl);
+    inst.frontLabels.push(frontLbl);
+
+    // back label (− prefix, ant)
+    const backLbl = makeLabel('−' + SYMBOLS[k], data[k].ant, colorHex, 'layer');
+    backLbl.position.copy(pos).addScaledVector(dir, 0.7);
+    inst.backGroup.add(backLbl);
+    inst.backLabels.push(backLbl);
   }
 }
 
@@ -850,12 +980,23 @@ function syncInputsFromState() {
   const data = diagramData[currentKey];
   for (const k of ALL_KEYS) {
     if (inputs[k]?.name) inputs[k].name.value = data[k].name || '';
+    if (inputs[k]?.subs) {
+      const syn = data[k].syn || '';
+      const ant = data[k].ant || '';
+      inputs[k].subs.value = [syn, ant].filter(Boolean).join(', ');
+    }
   }
 }
+
 function saveInputsToCurrentDiagram() {
   const data = diagramData[currentKey];
   for (const k of ALL_KEYS) {
     if (inputs[k]?.name) data[k].name = inputs[k].name.value;
+    if (inputs[k]?.subs) {
+      const parts = (inputs[k].subs.value || '').split(',').map(x => x.trim());
+      data[k].syn = parts[0] || '';
+      data[k].ant = parts[1] || '';
+    }
   }
 }
 
@@ -933,6 +1074,8 @@ function updateUI() {
   document.getElementById('overview').disabled = !!flight;
   document.getElementById('apply').disabled = !!flight;
   document.getElementById('reset').disabled = !!flight;
+  document.getElementById('expand').disabled = !!flight
+    || fadeState === 'overview';
 }
 
 document.getElementById('t-labels').addEventListener('change', e => {
@@ -957,9 +1100,30 @@ document.getElementById('reset').addEventListener('click', () => {
   for (const key of Object.keys(diagramData)) {
     diagramData[key] = (key === '1-0') ? defaultDiagram() : blankDiagram();
   }
+  for (const key of Object.keys(diagrams)) {
+    diagrams[key].expansionTarget = 0;
+  }
   syncInputsFromState();
   rebuildLabels();
+  updateExpandButton();
 });
+
+/* expand/collapse */
+function updateExpandButton() {
+  const inst = diagrams[currentKey];
+  const expanded = inst.expansionTarget === 1;
+  const btn = document.getElementById('expand');
+  btn.classList.toggle('expanded', expanded);
+  document.getElementById('expand-label').textContent = expanded ? 'Collapse' : 'Expand';
+}
+
+document.getElementById('expand').addEventListener('click', () => {
+  if (flight || fadeState === 'overview') return;
+  const inst = diagrams[currentKey];
+  inst.expansionTarget = inst.expansionTarget === 1 ? 0 : 1;
+  updateExpandButton();
+});
+
 document.getElementById('overview').addEventListener('click', goToOverview);
 document.getElementById('clear-cache').addEventListener('click', () => {
   try { localStorage.removeItem('greimas-words-v3'); } catch (e) {}
@@ -994,6 +1158,7 @@ function animate() {
 
   updateFlight(now);
   updateOuterAlphas(dt);
+  updateExpansions(dt);
   updateLinks(dt);
   updateLabelFade(dt);
   applyOpacities();
@@ -1012,15 +1177,12 @@ currentKey = '1-0';
 syncInputsFromState();
 rebuildLabels();
 
-/* Initialize alphas and beacons */
 for (const key of Object.keys(diagrams)) {
   diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
 }
-for (const link of links) {
-  link.opacity = 0;
-}
+for (const link of links) link.opacity = 0;
+for (const t of treeLinks) t.opacity = 0;
 
-/* Snap camera to L1 D1 */
 {
   const inst = diagrams['1-0'];
   controls.target.copy(inst.center);
@@ -1028,6 +1190,7 @@ for (const link of links) {
   camera.lookAt(inst.center);
 }
 
+updateExpandButton();
 updateUI();
 animate();
 </script>
