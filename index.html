@@ -344,16 +344,11 @@ const DIAGRAM_P = { s1:'P1', s2:'P2', ns1:'P3', ns2:'P4' };
 const SIDE    = { 3: 120, 2: 60, 1: 30 };
 const Z_PLANE = { 3: 400, 2: 200, 1: 0 };
 
-/* Each level now has three distinct colors — one per internal layer.
-   Center = the diagram's identity color.
-   Front  = a lighter/warmer sibling of center.
-   Back   = a cooler/more distant sibling of center.
-   No two of the twenty-one diagrams share all three, and no two share
-   even one — each level's trio is unique. */
+/* Each level has three distinct colors — one per internal layer. */
 const LEVEL_COLORS = {
-  3: { center: 0xFF7A45, front: 0xFFBB7A, back: 0xC7477A },   // orange / amber / magenta
-  2: { center: 0xFDE725, front: 0xFF9A3D, back: 0x7ECB65 },   // yellow / orange / green
-  1: { center: 0x6DD4C4, front: 0xA4E8FF, back: 0x5578CC },   // teal   / sky    / blue
+  3: { center: 0xFF7A45, front: 0xFFBB7A, back: 0xC7477A },
+  2: { center: 0xFDE725, front: 0xFF9A3D, back: 0x7ECB65 },
+  1: { center: 0x6DD4C4, front: 0xA4E8FF, back: 0x5578CC },
 };
 const LEVEL_NAMES = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
 
@@ -402,8 +397,8 @@ const EDGES = [
 ];
 const OPACITY = { solid: 0.95, dashed: 0.55, faint: 0.32 };
 
-/* Precompute merged position buffers per edge kind — done once, shared
-   across every diagram and every layer that uses the same geometry. */
+/* Precompute merged position buffers per edge kind — shared across
+   every diagram and every layer. */
 const EDGE_POSITIONS_BY_KIND = {};
 const EDGE_KINDS = ['solid','dashed','faint'];
 for (const kind of EDGE_KINDS) {
@@ -534,48 +529,6 @@ controls.minDistance     = 4;
 controls.maxDistance     = 6000;
 
 /* =====================================================================
-   STARFIELD — Fibonacci sphere, ~5000 points, single draw call
-   ---------------------------------------------------------------------
-   A Fibonacci distribution gives an even point spread without any
-   deduplication or subdivision overhead. 5000 points in a single
-   BufferGeometry costs essentially nothing at draw time.
-   ===================================================================== */
-(function createStarfield() {
-  const NUM = 5000;
-  const R   = 3200;
-
-  const positions = new Float32Array(NUM * 3);
-  const golden = Math.PI * (3 - Math.sqrt(5));
-
-  for (let i = 0; i < NUM; i++) {
-    const y = 1 - (i / (NUM - 1)) * 2;         // -1 .. 1
-    const r = Math.sqrt(Math.max(0, 1 - y * y));
-    const theta = golden * i;
-    positions[i*3    ] = Math.cos(theta) * r * R;
-    positions[i*3 + 1] = y * R;
-    positions[i*3 + 2] = Math.sin(theta) * r * R;
-  }
-
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-  const mat = new THREE.PointsMaterial({
-    color: 0x8c8c8c,
-    size: 2.6,
-    sizeAttenuation: false,
-    transparent: true,
-    opacity: 0.62,
-    depthWrite: false,
-  });
-
-  const pts = new THREE.Points(geo, mat);
-  pts.position.set(0, 0, 200);
-  pts.frustumCulled = false;
-  pts.renderOrder = -1;
-  scene.add(pts);
-})();
-
-/* =====================================================================
    HELPERS
    ===================================================================== */
 function makeLine(p1, p2, color, opacity) {
@@ -608,12 +561,6 @@ function makeLabel(symbol, name, textColor, cls) {
 
 /* =====================================================================
    DIAGRAM BUILDER
-   ---------------------------------------------------------------------
-   Each layer within a diagram:
-     - three merged LineSegments objects (one per edge kind)
-     - twelve small sphere meshes (one per Greimas vertex)
-   The edge geometry buffers are shared across every layer of every
-   diagram, so building 21 * 3 = 63 layers costs almost nothing.
    ===================================================================== */
 function buildDiagram(layout) {
   const { level, index, center, scale } = layout;
@@ -871,8 +818,6 @@ function updateLabelFade(dt) {
 
 /* =====================================================================
    OPACITY APPLICATION
-   ---------------------------------------------------------------------
-   Skip the per-diagram loop entirely if nothing has changed this frame.
    ===================================================================== */
 const lastApply = { labelFade: -1, states: {} };
 
