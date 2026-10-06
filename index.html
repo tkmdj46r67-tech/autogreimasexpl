@@ -100,7 +100,6 @@
   }
   .btn-row button:disabled { opacity: 0.4; cursor: progress; }
 
-  /* Swatch dot inside the L1 buttons, colored by group */
   .btn-row button .grp {
     display: inline-block;
     width: 6px; height: 6px; border-radius: 50%;
@@ -264,7 +263,7 @@
   </div>
 
   <div class="export-row">
-    <button id="export-current">Export current diagram</button>
+    <button id="export-current">Export Current Diagram</button>
     <button id="export-all">Export all</button>
   </div>
 
@@ -349,33 +348,19 @@ const SYMBOLS = {
 };
 
 const DIAGRAM_P = { s1:'P1', s2:'P2', ns1:'P3', ns2:'P4' };
-/* Order of corner keys by P index — used for tree-link targets */
 const P_CORNER_KEYS = ['s1', 's2', 'ns1', 'ns2'];
 
 const SIDE    = { 3: 120, 2: 60, 1: 30 };
 const Z_PLANE = { 3: 400, 2: 200, 1: 0 };
 
-/* ---------------------------------------------------------------------
-   Colors
-   ---------------------------------------------------------------------
-   L3 and L2 use a single fixed triple (center/front/back).
-   L1 diagrams are color-coded by their L2 parent group:
-     D1–D4   → group 0   (children of L2 D1)
-     D5–D8   → group 1   (children of L2 D2)
-     D9–D12  → group 2   (children of L2 D3)
-     D13–D16 → group 3   (children of L2 D4)
-   Each group has a distinct center color sampled from the mako family
-   (blue → teal → green → yellow-green). Front and back layers are
-   derived as lighter / darker variants of that same hue.
-   --------------------------------------------------------------------- */
 const L3_COLORS = { center: 0xFF7A45, front: 0xFFBB7A, back: 0xC7477A };
 const L2_COLORS = { center: 0xFDE725, front: 0xFF9A3D, back: 0x7ECB65 };
 
 const L1_GROUP_CENTERS = [
-  0x4C6EAF,   // group 0 — medium blue
-  0x4C9BA5,   // group 1 — teal
-  0x70C89A,   // group 2 — green-teal
-  0xA9D583,   // group 3 — yellow-green
+  0x4C6EAF,
+  0x4C9BA5,
+  0x70C89A,
+  0xA9D583,
 ];
 
 function l1TripleFor(index) {
@@ -588,6 +573,33 @@ controls.minDistance     = 4;
 controls.maxDistance     = 6000;
 
 /* =====================================================================
+   VIEW OFFSET — recenter the diagram in the free area left of the panel
+   ---------------------------------------------------------------------
+   setViewOffset() shifts the projection so the camera's forward axis
+   lands at a chosen pixel of the render target, rather than the window
+   center. We aim it at the horizontal center of the "free" strip that
+   runs from the left edge of the window to the left edge of the panel.
+   Recomputed on every resize so it follows the responsive breakpoint.
+   ===================================================================== */
+function updateViewOffset() {
+  const panel = document.getElementById('ui');
+  const rect = panel.getBoundingClientRect();
+
+  /* Horizontal center of the free area, in pixels from the window's left */
+  const freeCenterX = rect.left / 2;
+
+  /* Offsets we need to apply: aim the projection at freeCenterX, not
+     innerWidth / 2. The result is innerWidth/2 - offsetX = freeCenterX. */
+  const offsetX = (innerWidth / 2) - freeCenterX;
+
+  camera.setViewOffset(
+    innerWidth, innerHeight,
+    offsetX, 0,
+    innerWidth, innerHeight
+  );
+}
+
+/* =====================================================================
    HELPERS
    ===================================================================== */
 function makePoint(pos, color, radius) {
@@ -686,10 +698,6 @@ for (const key of Object.keys(LAYOUT)) {
 
 /* =====================================================================
    TREE LINKS
-   ---------------------------------------------------------------------
-   Each child diagram connects from its own P4 corner to the P-corner
-   of its parent where it is anchored. So L1 D1 → from L1 D1's P4 to
-   L2 D1's P1; L1 D2 → from L1 D2's P4 to L2 D1's P2; etc.
    ===================================================================== */
 const treeGroup = new THREE.Group();
 scene.add(treeGroup);
@@ -701,7 +709,6 @@ for (const key of Object.keys(LAYOUT)) {
 
   const parent = LAYOUT[lo.parentKey];
 
-  /* Child source point — its own P4 corner, in world coords */
   const childLocal = GREIMAS_LOCAL.ns2;
   const startWorld = new THREE.Vector3(
     lo.center.x + childLocal.x * lo.scale,
@@ -709,7 +716,6 @@ for (const key of Object.keys(LAYOUT)) {
     lo.center.z + childLocal.z * lo.scale
   );
 
-  /* Parent target — the P-corner it anchors to, in world coords */
   const parentCornerKey = P_CORNER_KEYS[lo.parentCorner];
   const parentLocal = GREIMAS_LOCAL[parentCornerKey];
   const endWorld = new THREE.Vector3(
@@ -811,8 +817,6 @@ function goToDiagram(L, D) {
 
   saveInputsToCurrentDiagram();
 
-  /* Collapse any expanded diagram — expansion state is not preserved
-     across navigation. */
   if (!isSame) {
     for (const k of Object.keys(diagrams)) {
       diagrams[k].expansionTarget = 0;
@@ -838,7 +842,6 @@ function goToOverview() {
   if (flight) return;
   saveInputsToCurrentDiagram();
 
-  /* Also collapse everything when entering overview */
   for (const k of Object.keys(diagrams)) {
     diagrams[k].expansionTarget = 0;
   }
@@ -1156,7 +1159,6 @@ function buildUI() {
       const b = document.createElement('button');
       b.dataset.key = `1-${idx}`;
 
-      /* Tiny color swatch on the button showing the group color */
       const grp = document.createElement('span');
       grp.className = 'grp';
       const c = '#' + L1_GROUP_CENTERS[g].toString(16).padStart(6, '0');
@@ -1287,6 +1289,7 @@ function onResize() {
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
   labelRenderer.setSize(innerWidth, innerHeight);
+  updateViewOffset();
 }
 addEventListener('resize', onResize);
 
@@ -1328,6 +1331,10 @@ for (const t of treeLinks) t.opacity = 0;
   camera.position.copy(inst.center).add(state0Offset('1-0'));
   camera.lookAt(inst.center);
 }
+
+/* Apply the view offset once the DOM is laid out so the panel's
+   rect.left reads correctly. */
+updateViewOffset();
 
 updateExpandButton();
 updateUI();
