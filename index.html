@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nested Squares — 3D Structure</title>
+<title>Greimas Squares — Nested</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -14,117 +14,95 @@
   #app { position: fixed; inset: 0; }
   #app canvas { display: block; }
 
+  .lbl {
+    pointer-events: none; user-select: none; white-space: nowrap;
+    text-shadow: 0 0 8px rgba(0,0,0,0.92), 0 1px 2px rgba(0,0,0,0.9);
+  }
+  .lbl.main { font-size: 13px; font-weight: 600; }
+  .lbl.main b { font-weight: 500; font-size: 9.5px; opacity: 0.55; margin-right: 5px; letter-spacing: 0.06em; }
+  .lbl.mid { font-size: 12px; font-weight: 600; }
+  .lbl.mid b { font-weight: 500; font-size: 9px; opacity: 0.55; margin-right: 5px; letter-spacing: 0.06em; }
+  .lbl.corner { font-size: 11px; font-weight: 500; opacity: 0.92; }
+  .lbl.corner b { font-weight: 400; font-size: 8.5px; opacity: 0.55; margin-right: 4px; letter-spacing: 0.06em; }
+  .lbl.layer { font-size: 11px; font-weight: 500; font-style: italic; letter-spacing: 0.03em; }
+  .lbl.layer b { font-style: normal; font-weight: 600; font-size: 10px; margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em; }
+  .lbl.cousin {
+    font-size: 9px; font-weight: 400; font-style: italic; letter-spacing: 0.02em;
+    filter: saturate(0.42) brightness(1.22);
+  }
+
   #ui {
-    position: fixed; top: 14px; left: 14px; z-index: 10;
-    width: 306px; max-height: calc(100vh - 28px); overflow-y: auto;
-    padding: 14px 15px; border-radius: 12px;
-    background: rgba(9, 13, 22, 0.9);
-    border: 1px solid rgba(255,255,255,0.08);
+    position: fixed; top: 14px; right: 14px; z-index: 10;
+    width: 372px; max-height: calc(100vh - 28px); overflow-y: auto;
+    padding: 14px 16px; border-radius: 12px;
+    background: rgba(9, 13, 22, 0.90);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 14px 40px rgba(0,0,0,0.55);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.5);
     font-size: 12px; line-height: 1.4;
   }
-  #ui::-webkit-scrollbar { width: 6px; }
-  #ui::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
-
-  #ui h1 {
-    margin: 0 0 3px; font-size: 12px; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase;
+  #ui::-webkit-scrollbar { width: 7px; }
+  #ui::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 4px; }
+  #ui h1 { margin: 0 0 2px; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+  #ui h1 span {
+    display: inline-block; margin-left: 6px; padding: 1px 5px;
+    font-size: 9px; letter-spacing: 0.12em; border-radius: 4px;
+    color: #0a0e1c; vertical-align: 2px;
+    background: linear-gradient(120deg, #4C8A8A, #A9D583);
   }
-  .hint {
-    margin: 0 0 12px; font-size: 10px; color: #7e8aa8;
-  }
+  .hint { margin: 0 0 12px; font-size: 10px; color: #7e8aa8; }
 
   #current {
-    margin: 0 0 12px; padding: 10px 12px;
+    margin: 0 0 10px; padding: 10px 12px;
     border-radius: 8px;
     background: rgba(126,160,255,0.10);
     border: 1px solid rgba(126,160,255,0.25);
-    font-size: 13px; font-weight: 600;
-    letter-spacing: 0.05em;
-    color: #cfe0ff;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.05em; color: #cfe0ff;
   }
   #current .sub {
-    display: block;
-    margin-top: 2px;
-    font-size: 10.5px; font-weight: 400;
-    color: #8a96b4;
-    letter-spacing: 0.04em;
+    display: block; margin-top: 2px; font-size: 10.5px; font-weight: 400;
+    color: #8a96b4; letter-spacing: 0.04em;
   }
 
-  .group {
-    margin: 0 0 10px;
-    padding: 0 0 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  .group:last-child { border-bottom: none; padding-bottom: 0; }
-
+  .group { margin: 0 0 8px; padding: 0 0 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .group:last-of-type { border-bottom: none; padding-bottom: 0; }
   .group-label {
     display: flex; align-items: center; gap: 6px;
     font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
     color: #7e8aa8; margin: 0 0 6px 2px;
   }
   .group-label i {
-    display: inline-block;
-    width: 8px; height: 8px; border-radius: 50%;
-    flex: 0 0 auto;
-    box-shadow: 0 0 6px currentColor;
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    flex: 0 0 auto; box-shadow: 0 0 6px currentColor;
   }
-
-  .btn-row {
-    display: flex; gap: 4px;
-    margin-bottom: 4px;
-  }
+  .btn-row { display: flex; gap: 4px; margin-bottom: 4px; }
   .btn-row:last-child { margin-bottom: 0; }
-
   .btn-row .indent {
-    flex: 0 0 36px;
-    font-size: 9px;
-    letter-spacing: 0.08em;
-    color: #5f6a86;
-    display: flex; align-items: center;
-    padding-right: 4px;
-    justify-content: flex-end;
+    flex: 0 0 36px; font-size: 9px; letter-spacing: 0.08em; color: #5f6a86;
+    display: flex; align-items: center; padding-right: 4px; justify-content: flex-end;
   }
-
   .btn-row button {
-    flex: 1;
-    padding: 6px 4px;
-    border-radius: 6px;
-    cursor: pointer;
-    font: inherit;
-    font-size: 10.5px;
-    letter-spacing: 0.04em;
-    color: #c8d0e6;
+    flex: 1; padding: 6px 4px; border-radius: 6px; cursor: pointer;
+    font: inherit; font-size: 10.5px; letter-spacing: 0.04em; color: #c8d0e6;
     background: rgba(255,255,255,0.045);
     border: 1px solid rgba(255,255,255,0.08);
     transition: background 0.15s, border-color 0.15s, color 0.15s;
   }
   .btn-row button:hover:not(:disabled) {
     background: rgba(126,160,255,0.16);
-    border-color: rgba(126,160,255,0.4);
-    color: #fff;
+    border-color: rgba(126,160,255,0.4); color: #fff;
   }
   .btn-row button.active {
     background: rgba(126,160,255,0.28);
     border-color: rgba(126,160,255,0.7);
-    color: #fff;
-    font-weight: 600;
+    color: #fff; font-weight: 600;
   }
-  .btn-row button:disabled {
-    opacity: 0.4; cursor: progress;
-  }
+  .btn-row button:disabled { opacity: 0.4; cursor: progress; }
 
   #overview {
-    width: 100%;
-    padding: 9px 10px;
-    margin: 8px 0 4px;
-    border-radius: 8px;
-    cursor: pointer;
-    font: inherit;
-    font-size: 10.5px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    width: 100%; padding: 9px 10px; margin: 6px 0 10px;
+    border-radius: 8px; cursor: pointer;
+    font: inherit; font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
     color: #b6f0ff;
     background: linear-gradient(135deg, rgba(56,189,248,0.16), rgba(167,139,250,0.14));
     border: 1px solid rgba(56,189,248,0.42);
@@ -136,12 +114,118 @@
   }
   #overview:disabled { opacity: 0.4; cursor: progress; }
 
-  .nav-note {
-    margin: 10px 0 0;
-    font-size: 10px;
-    color: #5f6a86;
-    letter-spacing: 0.03em;
-    line-height: 1.5;
+  .sec { margin-bottom: 4px; }
+  .sec-title {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px; padding: 8px 2px; cursor: pointer; user-select: none;
+    font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #7e8aa8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .sec-title:hover { color: #a3adff; }
+  .sec-title .chev { display: inline-block; font-size: 9px; opacity: 0.65; transition: transform 0.28s ease; }
+  .sec.collapsed .sec-title .chev { transform: rotate(-90deg); }
+  .sec-body {
+    display: grid; grid-template-rows: 1fr;
+    transition: grid-template-rows 0.28s ease;
+  }
+  .sec.collapsed .sec-body { grid-template-rows: 0fr; }
+  .sec-clip { overflow: hidden; min-height: 0; }
+  .sec-content { padding: 6px 0 4px; }
+
+  .row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .row .sym {
+    flex: 0 0 42px; font-size: 11px; font-weight: 600; text-align: right;
+  }
+  .row .sym.dot { flex: 0 0 42px; display: flex; justify-content: flex-end; }
+  .row .sym.dot i {
+    display: block; width: 7px; height: 7px; border-radius: 50%;
+    background: currentColor; box-shadow: 0 0 8px currentColor;
+  }
+  .row input {
+    flex: 1; min-width: 0; padding: 5px 9px; border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e9edf7; font: inherit; font-size: 11.5px; outline: none;
+  }
+  .row input:focus { border-color: rgba(126, 160, 255, 0.5); background: rgba(126, 160, 255, 0.10); }
+  .row input[readonly] {
+    cursor: default; background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.05); color: #97a2be;
+  }
+  .row.sub input { font-size: 10.5px; color: #a8b3cc; }
+  .row.sub { margin-bottom: 7px; }
+
+  .buttons { display: flex; gap: 7px; margin: 10px 0 6px; }
+  button {
+    flex: 1; padding: 8px 4px; border-radius: 7px; cursor: pointer;
+    font: inherit; font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #e9edf7;
+    background: rgba(126, 160, 255, 0.18);
+    border: 1px solid rgba(126, 160, 255, 0.4);
+  }
+  button:hover:not(:disabled) { background: rgba(126, 160, 255, 0.32); }
+  button:disabled { opacity: 0.55; cursor: progress; }
+  button.ghost {
+    flex: 0 0 78px;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.10);
+  }
+  button.ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.11); }
+
+  #expand {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 9px 12px; margin: 0 0 8px;
+    border-radius: 8px; cursor: pointer;
+    font: inherit; font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #fde725;
+    background: linear-gradient(135deg, rgba(34,168,132,0.18), rgba(253,231,37,0.10));
+    border: 1px solid rgba(253,231,37,0.35);
+  }
+  #expand.expanded {
+    color: #a3adff;
+    background: linear-gradient(135deg, rgba(65,68,135,0.30), rgba(34,168,132,0.14));
+    border-color: rgba(65,68,135,0.55);
+  }
+  #expand:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .toggles {
+    display: flex; flex-wrap: wrap; gap: 5px;
+    padding-top: 9px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .toggles label {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 8px; border-radius: 7px; cursor: pointer; user-select: none;
+    font-size: 10px; letter-spacing: 0.03em;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .toggles label:hover { background: rgba(255, 255, 255, 0.09); }
+  .toggles input { display: none; }
+  .toggles label:has(input:checked) {
+    background: rgba(126, 160, 255, 0.16);
+    border-color: rgba(126, 160, 255, 0.4);
+    color: #fff;
+  }
+  #layer-toggles label i {
+    width: 7px; height: 7px; border-radius: 50%;
+    display: inline-block; flex: 0 0 auto; font-style: normal;
+  }
+  #layer-toggles.is-disabled { opacity: 0.32; pointer-events: none; }
+
+  .footer-link {
+    margin-top: 8px; font-size: 9.5px; letter-spacing: 0.04em;
+    color: #5f6a86; text-align: right;
+  }
+  .footer-link a { color: #7e8aa8; cursor: pointer; text-decoration: none; border-bottom: 1px dotted rgba(126,138,168,0.4); }
+  .footer-link a:hover { color: #a3adff; }
+
+  @media (max-width: 780px) {
+    #ui { width: 268px; padding: 10px 11px; font-size: 11px; }
+    .hint { display: none; }
+    .nav-btn .nav-btn-sub { display: none; }
   }
 </style>
 </head>
@@ -150,7 +234,7 @@
 <div id="app"></div>
 
 <div id="ui">
-  <h1>Nested Squares</h1>
+  <h1>Greimas Squares<span>Nested</span></h1>
   <p class="hint">drag to orbit · scroll to zoom</p>
 
   <div id="current"></div>
@@ -158,21 +242,81 @@
   <button id="overview">Overview</button>
 
   <div class="group">
-    <div class="group-label"><i style="background:#FF7A45;color:#FF7A45"></i>L3 · Narrative</div>
+    <div class="group-label"><i id="leg-L3"></i>L3 · Narrative</div>
     <div class="btn-row" id="row-L3"></div>
   </div>
-
   <div class="group">
-    <div class="group-label"><i style="background:#FDE725;color:#FDE725"></i>L2 · Argument</div>
+    <div class="group-label"><i id="leg-L2"></i>L2 · Argument</div>
     <div class="btn-row" id="row-L2"></div>
   </div>
-
   <div class="group">
-    <div class="group-label"><i style="background:#6DD4C4;color:#6DD4C4"></i>L1 · Proposition</div>
+    <div class="group-label"><i id="leg-L1"></i>L1 · Proposition</div>
     <div id="l1-rows"></div>
   </div>
 
-  <p class="nav-note">Clicking a square flies you to it. On arrival, the view resets to the canonical orientation for that square.</p>
+  <div class="buttons">
+    <button id="apply">Update</button>
+    <button id="reset" class="ghost">Reset All</button>
+  </div>
+
+  <button id="expand"><span class="chev">▸</span><span id="expand-label">Expand</span></button>
+
+  <div class="sec collapsed" data-sec>
+    <div class="sec-title"><span>Inner Square</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
+      <div class="row"><span class="sym" style="color:#5bcfa0">S₁</span><input type="text" data-k="s1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">S₂</span><input type="text" data-k="s2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">~S₁</span><input type="text" data-k="ns1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">~S₂</span><input type="text" data-k="ns2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="syn, ant"></div>
+    </div></div></div>
+  </div>
+
+  <div class="sec collapsed" data-sec>
+    <div class="sec-title"><span>Outer Midpoints</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
+      <div class="row"><span class="sym" style="color:#5bcfa0">M₁</span><input type="text" data-k="m1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m1" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">M₂</span><input type="text" data-k="m2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m2" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">M₃</span><input type="text" data-k="m3" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m3" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">M₄</span><input type="text" data-k="m4" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="m4" data-f="subs" placeholder="syn, ant"></div>
+    </div></div></div>
+  </div>
+
+  <div class="sec collapsed" data-sec>
+    <div class="sec-title"><span>Outer Corners</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
+      <div class="row"><span class="sym" style="color:#5bcfa0">C₁</span><input type="text" data-k="c1" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c1" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">C₂</span><input type="text" data-k="c2" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c2" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">C₃</span><input type="text" data-k="c3" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c3" data-f="subs" placeholder="syn, ant"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">C₄</span><input type="text" data-k="c4" data-f="name"></div>
+      <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="c4" data-f="subs" placeholder="syn, ant"></div>
+    </div></div></div>
+  </div>
+
+  <div class="toggles">
+    <label><input type="checkbox" id="t-auto" checked><span>Auto anchors</span></label>
+    <label><input type="checkbox" id="t-cousins" checked><span>Cousins</span></label>
+    <label><input type="checkbox" id="t-labels" checked><span>Labels</span></label>
+    <label><input type="checkbox" id="t-rotate"><span>Rotate</span></label>
+  </div>
+
+  <div class="toggles" id="layer-toggles">
+    <label><input type="checkbox" id="t-layer-front" checked><i id="dot-front"></i><span>+ Front</span></label>
+    <label><input type="checkbox" id="t-layer-center" checked><i id="dot-center"></i><span>Center</span></label>
+    <label><input type="checkbox" id="t-layer-back" checked><i id="dot-back"></i><span>− Back</span></label>
+  </div>
+
+  <div class="footer-link"><a id="clear-cache">clear word cache</a></div>
 </div>
 
 <script type="importmap">
@@ -187,94 +331,194 @@
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 
 /* =====================================================================
-   1. CONSTANTS
+   CONSTANTS
    ===================================================================== */
-const SQ3 = 120, SQ2 = 60, SQ1 = 30;
-const Z3 = 400, Z2 = 200, Z1 = 0;
+const INNER_KEYS = ['s1','s2','ns1','ns2'];
+const M_KEYS     = ['m1','m2','m3','m4'];
+const C_KEYS     = ['c1','c2','c3','c4'];
+const ALL_KEYS   = [...INNER_KEYS, ...M_KEYS, ...C_KEYS];
 
-const LEVEL_COLORS = { 3: 0xFF7A45, 2: 0xFDE725, 1: 0x6DD4C4 };
-const LEVEL_NAMES  = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
-
-// The canonical "state 0" view offset — same direction for every square.
-// Distance is derived from square size so the framing feels consistent.
-const STATE0_DIR = new THREE.Vector3(0.55, 0.42, 0.72).normalize();
-const STATE0_DIST_FACTOR = 2.6;
-
-const FLIGHT_DURATION = 1.6;   // seconds
-const FADE_RATE       = 1.6;   // opacity easing, per second
-
-/* =====================================================================
-   2. GEOMETRY — three planes, one square at L3, four at L2, sixteen at L1
-   ===================================================================== */
-function squareCorners(cx, cy, z, side) {
-  const h = side / 2;
-  return [
-    new THREE.Vector3(cx - h, cy - h, z),
-    new THREE.Vector3(cx + h, cy - h, z),
-    new THREE.Vector3(cx + h, cy + h, z),
-    new THREE.Vector3(cx - h, cy + h, z),
-  ];
-}
-
-const L3 = {
-  level: 3, index: 0,
-  center: new THREE.Vector3(0, 0, Z3),
-  side: SQ3,
-  corners: squareCorners(0, 0, Z3, SQ3),
+const SYMBOLS = {
+  s1:'S₁', s2:'S₂', ns1:'~S₁', ns2:'~S₂',
+  m1:'M₁', m2:'M₂', m3:'M₃', m4:'M₄',
+  c1:'C₁', c2:'C₂', c3:'C₃', c4:'C₄',
 };
 
-const L2 = L3.corners.map((c, i) => ({
-  level: 2, index: i,
-  center: new THREE.Vector3(c.x, c.y, Z2),
-  side: SQ2,
-  corners: squareCorners(c.x, c.y, Z2, SQ2),
-}));
+const POSITIONS = [
+  { p:'P1', key:'s1',  name:'S₁'  },
+  { p:'P2', key:'s2',  name:'S₂'  },
+  { p:'P3', key:'ns1', name:'~S₁' },
+  { p:'P4', key:'ns2', name:'~S₂' },
+];
 
-const L1 = [];
-for (let i = 0; i < L2.length; i++) {
+const LEVEL_META = {
+  1: { name:'Proposition', palette:'mako'    },
+  2: { name:'Argument',    palette:'cividis' },
+  3: { name:'Narrative',   palette:'inferno' },
+};
+
+const DEFAULTS = {
+  s1:  { name:'Being',       anchors:'Existence, Nothingness' },
+  s2:  { name:'Seeming',     anchors:'Appearance, Reality' },
+  ns1: { name:'Non-being',   anchors:'Absence, Presence' },
+  ns2: { name:'Non-seeming', anchors:'Invisibility, Visibility' },
+  m1:  { name:'Truth',       anchors:'Verity, Falsehood' },
+  m2:  { name:'Lie',         anchors:'Fabrication, Truth' },
+  m3:  { name:'Falsehood',   anchors:'Error, Truth' },
+  m4:  { name:'Secret',      anchors:'Concealment, Disclosure' },
+  c1:  { name:'Paradox',     anchors:'Contradiction, Consistency' },
+  c2:  { name:'Deception',   anchors:'Trickery, Honesty' },
+  c3:  { name:'Subterfuge',  anchors:'Evasion, Candor' },
+  c4:  { name:'Revelation',  anchors:'Disclosure, Concealment' },
+};
+
+const PALETTES = {
+  mako: [
+    { id:'back',   sign:-1, hex:0x2A3F5E, text:'#8ca3c8', dim:0.58, prefix:'−' },
+    { id:'center', sign: 0, hex:0x4C8A8A, text:'#a5d8d8', dim:1.00, prefix:''  },
+    { id:'front',  sign:+1, hex:0xA9D583, text:'#cdeab4', dim:0.78, prefix:'+' },
+  ],
+  cividis: [
+    { id:'back',   sign:-1, hex:0x124E7C, text:'#7ab5e0', dim:0.58, prefix:'−' },
+    { id:'center', sign: 0, hex:0x85837A, text:'#c4c2b6', dim:1.00, prefix:''  },
+    { id:'front',  sign:+1, hex:0xFDE725, text:'#fde725', dim:0.78, prefix:'+' },
+  ],
+  inferno: [
+    { id:'back',   sign:-1, hex:0x2C115F, text:'#a58dc9', dim:0.58, prefix:'−' },
+    { id:'center', sign: 0, hex:0xB73779, text:'#eaa4c0', dim:1.00, prefix:''  },
+    { id:'front',  sign:+1, hex:0xFCA50A, text:'#fdd49a', dim:0.78, prefix:'+' },
+  ],
+};
+function paletteForLevel(L) { return PALETTES[LEVEL_META[L].palette]; }
+
+/* Diagram-local layout (unchanged from the Greimas project) */
+const H = 2.0;
+const D_OUT = 4.5;
+const Z_DEPTH = 4.2;
+const COUSIN_OPACITY_MULT = 0.62;
+
+const POS_VEC = {
+  s1:  new THREE.Vector3(-H,  H, 0),
+  s2:  new THREE.Vector3( H,  H, 0),
+  ns1: new THREE.Vector3(-H, -H, 0),
+  ns2: new THREE.Vector3( H, -H, 0),
+  m1:  new THREE.Vector3( 0,  D_OUT, 0),
+  m2:  new THREE.Vector3( D_OUT,  0, 0),
+  m3:  new THREE.Vector3( 0, -D_OUT, 0),
+  m4:  new THREE.Vector3(-D_OUT,  0, 0),
+  c1:  new THREE.Vector3( D_OUT,  D_OUT, 0),
+  c2:  new THREE.Vector3( D_OUT, -D_OUT, 0),
+  c3:  new THREE.Vector3(-D_OUT, -D_OUT, 0),
+  c4:  new THREE.Vector3(-D_OUT,  D_OUT, 0),
+};
+function localPos(k, z) {
+  const p = POS_VEC[k];
+  return new THREE.Vector3(p.x, p.y, z);
+}
+
+/* =====================================================================
+   3D LAYOUT — three stacked planes
+   ===================================================================== */
+const Z_L3 = 40;
+const Z_L2 = 20;
+const Z_L1 = 0;
+
+const SCALE_L3 = 1.0;
+const SCALE_L2 = 0.35;
+const SCALE_L1 = 0.12;
+
+// Local corner offsets in a diagram's own plane (P1..P4)
+const P_LOCAL = [
+  new THREE.Vector3(-H,  H, 0),
+  new THREE.Vector3( H,  H, 0),
+  new THREE.Vector3(-H, -H, 0),
+  new THREE.Vector3( H, -H, 0),
+];
+
+// Compute world positions of each diagram in the nested structure
+const LAYOUT = {};
+LAYOUT['3-0'] = {
+  position: new THREE.Vector3(0, 0, Z_L3),
+  scale: SCALE_L3,
+};
+
+for (let i = 0; i < 4; i++) {
+  const p = LAYOUT['3-0'].position.clone()
+    .addScaledVector(P_LOCAL[i], SCALE_L3);
+  p.z = Z_L2;
+  LAYOUT[`2-${i}`] = { position: p, scale: SCALE_L2 };
+}
+
+for (let i = 0; i < 4; i++) {
   for (let j = 0; j < 4; j++) {
-    const c = L2[i].corners[j];
-    const idx = i * 4 + j;
-    L1.push({
-      level: 1, index: idx,
-      parentIndex: i, parentCornerIndex: j,
-      center: new THREE.Vector3(c.x, c.y, Z1),
-      side: SQ1,
-      corners: squareCorners(c.x, c.y, Z1, SQ1),
-    });
+    const parent = LAYOUT[`2-${i}`];
+    const p = parent.position.clone()
+      .addScaledVector(P_LOCAL[j], parent.scale);
+    p.z = Z_L1;
+    LAYOUT[`1-${i*4+j}`] = { position: p, scale: SCALE_L1 };
   }
 }
 
-const ALL_SQUARES = {};
-for (const s of [L3, ...L2, ...L1]) ALL_SQUARES[`${s.level}-${s.index}`] = s;
+/* =====================================================================
+   STATE & DATA
+   ===================================================================== */
+function blankDiagram() {
+  const d = {};
+  for (const k of ALL_KEYS) {
+    d[k] = { name:'', front:{ anchor:'', cousins:[] }, back:{ anchor:'', cousins:[] } };
+  }
+  return d;
+}
+function defaultDiagram() {
+  const d = blankDiagram();
+  for (const k of ALL_KEYS) {
+    const def = DEFAULTS[k];
+    const [f, b] = (def.anchors || '').split(',').map(s => s.trim());
+    d[k].name = def.name;
+    d[k].front.anchor = f || '';
+    d[k].back.anchor  = b || '';
+  }
+  return d;
+}
 
 /* =====================================================================
-   3. SCENE
+   SCENE
    ===================================================================== */
 const app = document.getElementById('app');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x05070d);
 
-const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.5, 8000);
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.05, 4000);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 app.appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(innerWidth, innerHeight);
+Object.assign(labelRenderer.domElement.style, {
+  position:'absolute', top:'0', left:'0', pointerEvents:'none', zIndex:'1'
+});
+app.appendChild(labelRenderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping   = true;
 controls.dampingFactor   = 0.08;
 controls.rotateSpeed     = 0.85;
 controls.zoomSpeed       = 0.9;
-controls.enablePan       = false;   // rotation always orbits the centroid
-controls.minDistance     = 4;
-controls.maxDistance     = 4000;
+controls.enablePan       = false;
+controls.minDistance     = 0.5;
+controls.maxDistance     = 400;
 
 /* =====================================================================
-   4. VISUAL HELPERS
+   HELPERS
    ===================================================================== */
 const glowTex = (() => {
   const s = 64;
@@ -283,7 +527,8 @@ const glowTex = (() => {
   const ctx = cv.getContext('2d');
   const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
   g.addColorStop(0.00, 'rgba(255,255,255,1.0)');
-  g.addColorStop(0.35, 'rgba(255,255,255,0.55)');
+  g.addColorStop(0.30, 'rgba(255,255,255,0.7)');
+  g.addColorStop(0.65, 'rgba(255,255,255,0.15)');
   g.addColorStop(1.00, 'rgba(255,255,255,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, s, s);
@@ -292,162 +537,552 @@ const glowTex = (() => {
   return t;
 })();
 
-function makeSquareObject(sq) {
-  const color = LEVEL_COLORS[sq.level];
-  const group = new THREE.Group();
-  scene.add(group);
+const lineMaterials = [];
 
-  // Outline
-  const pts = [...sq.corners, sq.corners[0]];
-  const geo = new THREE.BufferGeometry().setFromPoints(pts);
-  const mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 1 });
-  const line = new THREE.Line(geo, mat);
-  group.add(line);
-
-  // Corner dots
-  const dots = [];
-  const dotScale = sq.level === 3 ? 11 : sq.level === 2 ? 6.5 : 4;
-  for (const c of sq.corners) {
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: glowTex, color,
-      blending: THREE.AdditiveBlending,
-      transparent: true, depthWrite: false, opacity: 1,
-    }));
-    sprite.position.copy(c);
-    sprite.scale.setScalar(dotScale);
-    group.add(sprite);
-    dots.push(sprite);
-  }
-
-  return {
-    key: `${sq.level}-${sq.index}`,
-    level: sq.level,
-    index: sq.index,
-    group, line, dots,
-    opacity: 0,   // animated; starts invisible
-  };
-}
-
-const squareObjects = {};
-for (const sq of [L3, ...L2, ...L1]) {
-  squareObjects[`${sq.level}-${sq.index}`] = makeSquareObject(sq);
-}
-
-/* =====================================================================
-   5. CONNECTORS — dashed verticals linking parent corners to child centres
-   ===================================================================== */
-const connectors = [];
-
-function makeDashedConnector(a, b, color, opacity) {
-  const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
-  const mat = new THREE.LineDashedMaterial({
-    color, transparent: true, opacity,
-    dashSize: 6, gapSize: 6,
+function makeLine(p1, p2, opts = {}) {
+  const { color = 0xffffff, width = 2, opacity = 1,
+          dashed = false, dash = 0.2, gap = 0.15 } = opts;
+  const geo = new LineGeometry();
+  geo.setPositions([p1.x, p1.y, p1.z, p2.x, p2.y, p2.z]);
+  const mat = new LineMaterial({
+    color, linewidth: width, transparent: true, opacity,
+    dashed, dashSize: dash, gapSize: gap, depthWrite: false
   });
-  const line = new THREE.Line(geo, mat);
+  mat.resolution.set(innerWidth, innerHeight);
+  lineMaterials.push(mat);
+  const line = new Line2(geo, mat);
   line.computeLineDistances();
   return line;
 }
 
-// L3 corner -> L2 centre
-for (let i = 0; i < L2.length; i++) {
-  const line = makeDashedConnector(L3.corners[i], L2[i].center, LEVEL_COLORS[3], 0);
-  scene.add(line);
-  connectors.push({
-    line,
-    ownerA: { level: 3, index: 0 },
-    ownerB: { level: 2, index: i },
-    baseOpacity: 0.55,
-  });
+function makeDot(pos, color, scale, opacity = 0.95) {
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: glowTex, color,
+    blending: THREE.AdditiveBlending,
+    transparent: true, depthWrite: false, opacity
+  }));
+  sprite.position.copy(pos);
+  sprite.scale.setScalar(scale);
+  return sprite;
 }
 
-// L2 corner -> L1 centre
-for (let i = 0; i < L2.length; i++) {
-  for (let j = 0; j < 4; j++) {
-    const l1idx = i * 4 + j;
-    const line = makeDashedConnector(L2[i].corners[j], L1[l1idx].center, LEVEL_COLORS[2], 0);
-    scene.add(line);
-    connectors.push({
-      line,
-      ownerA: { level: 2, index: i },
-      ownerB: { level: 1, index: l1idx },
-      baseOpacity: 0.45,
+function makeLabel(symbol, name, textColor, cls) {
+  const el = document.createElement('div');
+  el.className = 'lbl ' + cls;
+  el.style.color = textColor;
+  const b = document.createElement('b');
+  b.textContent = symbol;
+  el.append(b, document.createTextNode(name));
+  return new CSS2DObject(el);
+}
+function makeCousinLabel(text, textColor) {
+  const el = document.createElement('div');
+  el.className = 'lbl cousin';
+  el.style.color = textColor;
+  el.textContent = text;
+  return new CSS2DObject(el);
+}
+
+const LAYER_EDGES = [
+  { a:'s1',  b:'s2',  width: 2.2, opacity: 1.00, dashed: false },
+  { a:'ns1', b:'ns2', width: 2.2, opacity: 1.00, dashed: false },
+  { a:'s1',  b:'ns1', width: 2.2, opacity: 1.00, dashed: false },
+  { a:'s2',  b:'ns2', width: 2.2, opacity: 1.00, dashed: false },
+  { a:'s1',  b:'ns2', width: 2.0, opacity: 0.90, dashed: true, dash: 0.22, gap: 0.16 },
+  { a:'s2',  b:'ns1', width: 2.0, opacity: 0.90, dashed: true, dash: 0.22, gap: 0.16 },
+  { a:'s1',  b:'m1',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'s1',  b:'m4',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'s2',  b:'m1',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'s2',  b:'m2',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'ns1', b:'m4',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'ns1', b:'m3',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'ns2', b:'m2',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'ns2', b:'m3',  width: 1.5, opacity: 0.65, dashed: true, dash: 0.10, gap: 0.12 },
+  { a:'c4', b:'c1', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
+  { a:'c1', b:'c2', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
+  { a:'c2', b:'c3', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
+  { a:'c3', b:'c4', width: 1.6, opacity: 0.75, dashed: true, dash: 0.12, gap: 0.13 },
+];
+
+/* =====================================================================
+   DIAGRAM INSTANCE
+   ===================================================================== */
+class DiagramInstance {
+  constructor(L, D) {
+    this.L = L;
+    this.D = D;
+    this.key = `${L}-${D}`;
+    this.data = (L === 1 && D === 1) ? defaultDiagram() : blankDiagram();
+    this.palette = paletteForLevel(L);
+
+    const lo = LAYOUT[this.key];
+    this.group = new THREE.Group();
+    this.group.position.copy(lo.position);
+    this.group.scale.setScalar(lo.scale);
+    scene.add(this.group);
+
+    /* render state */
+    this.outerAlpha = 0;
+    this.layerVisible = { front:true, center:true, back:true };
+    this.layerAlpha   = { front:1, center:1, back:1 };
+    this.layerFlicker = { front:1, center:1, back:1 };
+    this.anim = { progress:0, target:0 };
+
+    /* material/label tracking */
+    this.mats = {
+      center: { materials:[], bases:[], labels:[] },
+      front:  { materials:[], bases:[], labels:[] },
+      back:   { materials:[], bases:[], labels:[] },
+    };
+    this.crossLines = [];
+    this.cousins = [];   // per-cluster
+    this.labels = [];    // all CSS2DObjects for label visibility toggling
+
+    this.build();
+  }
+
+  build() {
+    this.clearGroup();
+    const layers = this.palette;
+    const center = layers.find(L => L.id === 'center');
+
+    /* CENTER */
+    for (const e of LAYER_EDGES) {
+      const line = makeLine(localPos(e.a, 0), localPos(e.b, 0), {
+        color: center.hex, width: e.width, opacity: e.opacity,
+        dashed: e.dashed, dash: e.dash || 0.2, gap: e.gap || 0.15
+      });
+      this.group.add(line);
+      this.mats.center.materials.push(line.material);
+      this.mats.center.bases.push(e.opacity);
+    }
+    for (const k of ALL_KEYS) {
+      const isInner = INNER_KEYS.includes(k);
+      const dot = makeDot(localPos(k, 0), center.hex, isInner ? 0.72 : 0.55, 0.95);
+      this.group.add(dot);
+      this.mats.center.materials.push(dot.material);
+      this.mats.center.bases.push(0.95);
+    }
+    for (const k of ALL_KEYS) {
+      const p = localPos(k, 0);
+      let dir, cls;
+      if (INNER_KEYS.includes(k)) { dir = new THREE.Vector3(p.x, p.y, 0).normalize(); cls = 'main'; }
+      else { dir = new THREE.Vector3(-p.x, -p.y, 0).normalize(); cls = M_KEYS.includes(k) ? 'mid' : 'corner'; }
+      const label = makeLabel(SYMBOLS[k], this.data[k].name, center.text, cls);
+      label.position.copy(p).addScaledVector(dir, 0.5);
+      this.group.add(label);
+      this.mats.center.labels.push(label);
+      this.labels.push(label);
+    }
+
+    /* FRONT + BACK */
+    for (const layer of layers) {
+      if (layer.id === 'center') continue;
+      const sideKey = layer.id;
+      const slot = this.mats[layer.id];
+
+      for (const e of LAYER_EDGES) {
+        const line = makeLine(localPos(e.a, 0), localPos(e.b, 0), {
+          color: layer.hex, width: e.width * 0.94,
+          opacity: e.opacity * layer.dim,
+          dashed: e.dashed, dash: e.dash || 0.2, gap: e.gap || 0.15
+        });
+        this.group.add(line);
+        slot.materials.push(line.material);
+        slot.bases.push(e.opacity * layer.dim);
+      }
+
+      for (const k of ALL_KEYS) {
+        const isInner = INNER_KEYS.includes(k);
+        const p = localPos(k, 0);
+        const sd = this.data[k][sideKey];
+
+        const dot = makeDot(p, layer.hex, isInner ? 0.44 : 0.36, layer.dim);
+        this.group.add(dot);
+        slot.materials.push(dot.material);
+        slot.bases.push(layer.dim);
+
+        if (sd.anchor) {
+          const dir = isInner
+            ? new THREE.Vector3(p.x, p.y, 0).normalize()
+            : new THREE.Vector3(-p.x, -p.y, 0).normalize();
+          const lbl = makeLabel(layer.prefix + SYMBOLS[k], sd.anchor, layer.text, 'layer');
+          lbl.position.copy(p).addScaledVector(dir, isInner ? 0.5 : 0.4);
+          this.group.add(lbl);
+          slot.labels.push(lbl);
+          this.labels.push(lbl);
+        }
+
+        // cross connector
+        const cross = makeLine(p, p, {
+          color: layer.hex, width: 1.1, opacity: 0.30 * layer.dim,
+          dashed: true, dash: 0.08, gap: 0.11
+        });
+        this.group.add(cross);
+        this.crossLines.push({
+          line: cross, key: k, sign: layer.sign,
+          baseOpacity: 0.30 * layer.dim, layerId: layer.id
+        });
+
+        // cousin ring
+        if (!sd.cousins || !sd.cousins.length) continue;
+        const ringR = isInner ? 0.60 : 0.46;
+        const n = sd.cousins.length;
+        const cluster = {
+          layerId: layer.id,
+          lines: [], lineBases: [],
+          dots: [], dotBases: [],
+          labels: []
+        };
+        sd.cousins.forEach((word, i) => {
+          const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+          const cpos = new THREE.Vector3(
+            p.x + Math.cos(angle) * ringR,
+            p.y + Math.sin(angle) * ringR, 0
+          );
+          const spoke = makeLine(p, cpos, {
+            color: layer.hex, width: 1.0, opacity: 0.30 * layer.dim,
+            dashed: true, dash: 0.04, gap: 0.07
+          });
+          this.group.add(spoke);
+          cluster.lines.push(spoke);
+          cluster.lineBases.push(0.30 * layer.dim);
+
+          const cdot = makeDot(cpos, layer.hex, 0.20, layer.dim * 0.9);
+          this.group.add(cdot);
+          cluster.dots.push(cdot);
+          cluster.dotBases.push(layer.dim * 0.9);
+
+          const outDir = new THREE.Vector3(Math.cos(angle), Math.sin(angle), 0);
+          const clbl = makeCousinLabel(word, layer.text);
+          clbl.position.copy(cpos).addScaledVector(outDir, 0.22);
+          this.group.add(clbl);
+          cluster.labels.push(clbl);
+          this.labels.push(clbl);
+        });
+        this.cousins.push(cluster);
+      }
+    }
+
+    this.applyOpacities(true);
+  }
+
+  clearGroup() {
+    this.group.traverse(o => {
+      if (o.isLine2) { o.geometry.dispose(); o.material.dispose(); }
+      if (o.isSprite && o.material) o.material.dispose();
     });
+    this.group.clear();
+    this.mats = {
+      center: { materials:[], bases:[], labels:[] },
+      front:  { materials:[], bases:[], labels:[] },
+      back:   { materials:[], bases:[], labels:[] },
+    };
+    this.crossLines = [];
+    this.cousins = [];
+    this.labels = [];
+  }
+
+  applyOpacities(force = false) {
+    const outer = this.outerAlpha;
+    const L = this.layerAlpha, F = this.layerFlicker;
+    const expand = 1 - Math.pow(1 - this.anim.progress, 3); // easeOutCubic on progress
+    const eExpand = expand;
+    const lv = this.layerVisible;
+
+    /* center */
+    {
+      const slot = this.mats.center;
+      const f = L.center * F.center * outer;
+      for (let i = 0; i < slot.materials.length; i++)
+        slot.materials[i].opacity = slot.bases[i] * f;
+      for (const l of slot.labels) {
+        const op = Math.min(1, f);
+        l.element.style.opacity = op.toFixed(3);
+        const visible = labelsOn && op > 0.03;
+        l.visible = visible;
+        l.element.style.display = visible ? '' : 'none';
+      }
+    }
+
+    /* front + back */
+    for (const id of ['front','back']) {
+      const slot = this.mats[id];
+      const layerOn = lv[id];
+      const f = L[id] * F[id] * outer * eExpand * (layerOn ? 1 : 0);
+
+      for (let i = 0; i < slot.materials.length; i++)
+        slot.materials[i].opacity = slot.bases[i] * f;
+
+      for (const l of slot.labels) {
+        const op = Math.min(1, f);
+        l.element.style.opacity = op.toFixed(3);
+        const visible = labelsOn && op > 0.03;
+        l.visible = visible;
+        l.element.style.display = visible ? '' : 'none';
+      }
+    }
+
+    /* cross connectors */
+    for (const c of this.crossLines) {
+      const layerOn = lv[c.layerId];
+      const centerOn = lv.center;
+      const pC = localPos(c.key, 0);
+      const pL = localPos(c.key, c.sign * eExpand * Z_DEPTH);
+      c.line.geometry.setPositions([pC.x, pC.y, pC.z, pL.x, pL.y, pL.z]);
+      c.line.computeLineDistances();
+
+      const la = (c.layerId === 'front' ? L.front : L.back);
+      c.line.material.opacity = c.baseOpacity * eExpand * outer * la
+        * (layerOn && centerOn ? 1 : 0);
+      c.line.visible = layersVisibleFor(this) && layerOn && centerOn && outer > 0.01;
+    }
+
+    /* cousins */
+    const cousinAlpha = cousinsOn ? 1 : 0;
+    for (const cl of this.cousins) {
+      const layerOn = lv[cl.layerId];
+      const la = (cl.layerId === 'front' ? L.front : L.back);
+      const f = eExpand * outer * la * (layerOn ? 1 : 0);
+      for (let i = 0; i < cl.lines.length; i++) cl.lines[i].material.opacity = cl.lineBases[i] * f;
+      for (let i = 0; i < cl.dots.length; i++)  cl.dots[i].material.opacity  = cl.dotBases[i] * f;
+      for (const l of cl.labels) {
+        const op = Math.min(1, f) * cousinAlpha * COUSIN_OPACITY_MULT;
+        l.element.style.opacity = op.toFixed(3);
+        const visible = labelsOn && op > 0.03;
+        l.visible = visible;
+        l.element.style.display = visible ? '' : 'none';
+      }
+    }
+
+    this.group.visible = outer > 0.005;
+  }
+
+  stepAnimations(dt) {
+    /* expand progress */
+    const delta = this.anim.target - this.anim.progress;
+    if (Math.abs(delta) > 0.001) {
+      const speed = 1.45;
+      const step = Math.sign(delta) * Math.min(Math.abs(delta), speed * dt);
+      this.anim.progress += step;
+    } else {
+      this.anim.progress = this.anim.target;
+    }
+
+    /* layer alphas */
+    for (const k of ['front','center','back']) {
+      let target;
+      if (k === 'center') target = 1;   // center always on for current
+      else target = this.layerVisible[k] ? 1 : 0;
+      const cur = this.layerAlpha[k];
+      const d = target - cur;
+      if (Math.abs(d) > 0.001) {
+        const speed = 3.0;
+        const step = Math.sign(d) * Math.min(Math.abs(d), speed * dt);
+        this.layerAlpha[k] = cur + step;
+        if (Math.random() < 0.18) this.layerFlicker[k] = 0;
+        else this.layerFlicker[k] = 0.35 + Math.random() * 0.85;
+      } else {
+        this.layerAlpha[k] = target;
+        this.layerFlicker[k] = 1;
+      }
+    }
   }
 }
 
-/* =====================================================================
-   6. STATE
-   ===================================================================== */
-let current = { level: 3, index: 0 };
-
-// 'steady'    — only the current square is visible
-// 'navigating'— everything is visible during the flight
-// 'overview'  — everything stays visible
-let fadeState = 'steady';
-
-let flight = null;
-
-/* =====================================================================
-   7. STATE-0 OFFSET
-   ===================================================================== */
-function state0Offset(sq) {
-  return STATE0_DIR.clone().multiplyScalar(sq.side * STATE0_DIST_FACTOR);
+function layersVisibleFor(inst) {
+  return inst.anim.progress > 0.005;
 }
 
 /* =====================================================================
-   8. CAMERA FLIGHT
-   ---------------------------------------------------------------------
-   The camera travels along an arc:
-     • the target lerps linearly from the old centroid to the new one
-     • the offset from the target interpolates in spherical coordinates
-       from its current state to the state-0 offset for the new square
-     • a mid-flight arc boost pushes the camera outward, so it "lifts"
-       like a drone rather than sliding through the structure
+   CREATE ALL DIAGRAMS
    ===================================================================== */
+const diagrams = {};
+for (const key of Object.keys(LAYOUT)) {
+  const [L, D] = key.split('-').map(Number);
+  diagrams[key] = new DiagramInstance(L, D);
+}
+
+/* =====================================================================
+   WORD PROVIDER — Datamuse
+   ===================================================================== */
+const CACHE_KEY = 'greimas-words-v3';
+const cache = new Map();
+(function loadCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return;
+    for (const k of Object.keys(JSON.parse(raw))) cache.set(k, JSON.parse(raw)[k]);
+  } catch (e) {}
+})();
+function persistCache() {
+  try {
+    const obj = {};
+    for (const [k, v] of cache) obj[k] = v;
+    localStorage.setItem(CACHE_KEY, JSON.stringify(obj));
+  } catch (e) {}
+}
+function normKey(s) {
+  return String(s || '').trim().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, ' ').trim();
+}
+function titleCase(s) {
+  return String(s || '').split(/\s+/).map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : w).join(' ');
+}
+async function datamuse(param, term, signal) {
+  if (!term) return [];
+  const url = `https://api.datamuse.com/words?${param}=${encodeURIComponent(term)}&max=25`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) throw new Error('datamuse ' + res.status);
+  return res.json();
+}
+function pickWord(cands, q, used) {
+  if (!cands || !cands.length) return '';
+  const lq = String(q || '').toLowerCase().trim();
+  const list = [];
+  for (const c of cands) {
+    const w = String(c.word || '').toLowerCase().trim();
+    if (!w || w.includes(' ')) continue;
+    if (w === lq || w === lq + 's' || w === lq + "'s") continue;
+    if (used.has(w)) continue;
+    list.push({ word:w, score:c.score || 0 });
+  }
+  if (!list.length) return '';
+  list.sort((a,b) => (b.score - a.score) || a.word.localeCompare(b.word));
+  return list[0].word;
+}
+function negationFallback(term, used) {
+  const t = String(term || '').trim();
+  if (!t) return '';
+  const tries = [];
+  if (/^non-/i.test(t)) tries.push(t.replace(/^non-/i, ''));
+  if (/^un-/i.test(t))  tries.push(t.replace(/^un-/i, ''));
+  tries.push('non-' + t.toLowerCase(), 'anti-' + t.toLowerCase(), 'un-' + t.toLowerCase());
+  for (const c of tries) if (c && !used.has(c.toLowerCase())) return c;
+  return '';
+}
+async function fetchCousins(anchor, signal, exclude) {
+  if (!anchor) return [];
+  let raw = [];
+  try { raw = await datamuse('ml', anchor, signal); }
+  catch (e) { if (e.name === 'AbortError') throw e; return []; }
+  const used = new Set([anchor.toLowerCase(), ...exclude.map(s => s.toLowerCase())]);
+  const out = [];
+  for (const c of raw) {
+    const w = String(c.word || '').toLowerCase().trim();
+    if (!w || w.includes(' ')) continue;
+    if (used.has(w)) continue;
+    used.add(w);
+    out.push(titleCase(w));
+    if (out.length >= 4) break;
+  }
+  return out;
+}
+async function resolveAll(names, signal) {
+  const used = new Set(names.map(n => n.toLowerCase().trim()).filter(Boolean));
+  const results = new Map();
+  const uncached = [];
+  for (const name of names) {
+    const k = normKey(name);
+    if (!k || results.has(k)) continue;
+    if (cache.has(k)) {
+      const r = cache.get(k);
+      results.set(k, r);
+      if (r.front?.anchor) used.add(r.front.anchor.toLowerCase());
+      if (r.back?.anchor)  used.add(r.back.anchor.toLowerCase());
+    } else uncached.push({ name, key:k });
+  }
+  const fetched = await Promise.all(uncached.map(async ({ name, key }) => {
+    try {
+      const [syns, ants] = await Promise.all([
+        datamuse('rel_syn', name, signal).catch(e => { if (e.name === 'AbortError') throw e; return []; }),
+        datamuse('rel_ant', name, signal).catch(e => { if (e.name === 'AbortError') throw e; return []; }),
+      ]);
+      return { name, key, syns, ants };
+    } catch (e) { if (e.name === 'AbortError') throw e; return { name, key, syns:[], ants:[] }; }
+  }));
+  const anchors = [];
+  for (const { name, key, syns, ants } of fetched) {
+    if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
+    const front = pickWord(syns, name, used);
+    let back = pickWord(ants, name, used);
+    if (!back) back = negationFallback(name, used);
+    if (front) used.add(front.toLowerCase());
+    if (back) used.add(back.toLowerCase());
+    anchors.push({ key, name, front, back });
+  }
+  const excludeAll = Array.from(used);
+  const jobs = [];
+  for (const a of anchors) {
+    jobs.push((async () => ({ key:a.key, side:'front', words: await fetchCousins(a.front, signal, excludeAll) }))());
+    jobs.push((async () => ({ key:a.key, side:'back',  words: await fetchCousins(a.back,  signal, excludeAll) }))());
+  }
+  const res2 = await Promise.all(jobs);
+  const cmap = new Map();
+  for (const c of res2) cmap.set(`${c.key}|${c.side}`, c.words);
+  for (const a of anchors) {
+    const r = {
+      front:{ anchor:a.front ? titleCase(a.front) : '', cousins: cmap.get(`${a.key}|front`) || [] },
+      back: { anchor:a.back  ? titleCase(a.back)  : '', cousins: cmap.get(`${a.key}|back`)  || [] },
+    };
+    cache.set(a.key, r);
+    results.set(a.key, r);
+  }
+  persistCache();
+  return results;
+}
+
+/* =====================================================================
+   CURRENT STATE
+   ===================================================================== */
+let currentKey = '3-0';
+let currentDiag = diagrams[currentKey];
+
+/* =====================================================================
+   NAVIGATION
+   ===================================================================== */
+const STATE0_DIR = new THREE.Vector3(0.55, 0.42, 0.72).normalize();
+const DIST_FACTOR = 22;
+
+let fadeState = 'steady';    // 'steady' | 'navigating' | 'overview'
+let flight = null;
+
+function state0Offset(inst) {
+  return STATE0_DIR.clone().multiplyScalar(DIST_FACTOR * inst.group.scale.x);
+}
+
 function easeInOutCubic(x) {
-  return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  return x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
 }
 
 function startFlight(endTarget, endOffset, duration, onArrive) {
   const startTarget = controls.target.clone();
   const startOffset = camera.position.clone().sub(startTarget);
-
   const s0 = new THREE.Spherical().setFromVector3(startOffset);
   const s1 = new THREE.Spherical().setFromVector3(endOffset);
-
-  // Take the shortest angular route around the vertical axis.
   let dTheta = s1.theta - s0.theta;
   while (dTheta >  Math.PI) dTheta -= 2 * Math.PI;
   while (dTheta < -Math.PI) dTheta += 2 * Math.PI;
 
   flight = {
     startTarget, endTarget,
-    s0: { r: s0.radius, phi: s0.phi, theta: s0.theta },
-    s1: { r: s1.radius, phi: s1.phi, theta: s0.theta + dTheta },
+    s0: { r:s0.radius, phi:s0.phi, theta:s0.theta },
+    s1: { r:s1.radius, phi:s1.phi, theta:s0.theta + dTheta },
     startTime: performance.now(),
     duration: duration * 1000,
     onArrive,
   };
-
   controls.enabled = false;
 }
 
 function updateFlight(now) {
   if (!flight) return;
-
   const t = Math.min(1, (now - flight.startTime) / flight.duration);
   const e = easeInOutCubic(t);
 
-  // Target slides linearly between the two centroids.
   const targetNow = flight.startTarget.clone().lerp(flight.endTarget, e);
-
-  // Offset interpolates in spherical coordinates.
   const r     = flight.s0.r     + (flight.s1.r     - flight.s0.r)     * e;
   const phi   = flight.s0.phi   + (flight.s1.phi   - flight.s0.phi)   * e;
   const theta = flight.s0.theta + (flight.s1.theta - flight.s0.theta) * e;
-
-  // Arc boost — lift the camera outward mid-flight.
   const arcBoost = 1 + 0.45 * Math.sin(Math.PI * t);
 
   const off = new THREE.Vector3().setFromSphericalCoords(r * arcBoost, phi, theta);
@@ -464,78 +1099,60 @@ function updateFlight(now) {
   }
 }
 
-/* =====================================================================
-   9. NAVIGATION ACTIONS
-   ===================================================================== */
-function goToSquare(level, index) {
+function goToDiagram(L, D) {
   if (flight) return;
+  const key = `${L}-${D}`;
+  const inst = diagrams[key];
+  if (!inst) return;
 
-  const sq = ALL_SQUARES[`${level}-${index}`];
-  if (!sq) return;
+  const targetWorld = new THREE.Vector3();
+  inst.group.getWorldPosition(targetWorld);
 
-  current = { level, index };
-  fadeState = 'navigating';   // reveal the whole diagram for the journey
+  currentKey = key;
+  currentDiag = inst;
+  fadeState = 'navigating';
   updateUI();
+  syncInputsFromState();
+  applyPaletteToUI();
+  updateExpandButton();
+  updateLayerControls();
 
-  startFlight(
-    sq.center.clone(),
-    state0Offset(sq),
-    FLIGHT_DURATION,
-    () => {
-      // On arrival, we are in state 0 for the new square. Fold back down.
-      fadeState = 'steady';
-    }
-  );
+  const worldOffset = state0Offset(inst);
+
+  startFlight(targetWorld.clone(), worldOffset, 1.6, () => {
+    fadeState = 'steady';
+  });
 }
 
 function goToOverview() {
   if (flight) return;
-
   fadeState = 'overview';
   updateUI();
 
-  const overviewTarget = new THREE.Vector3(0, 0, 200);
-  const overviewPos    = new THREE.Vector3(500, 420, 1180);
+  const overviewTarget = new THREE.Vector3(0, 0, 20);
+  const overviewPos    = new THREE.Vector3(22, 18, 70);
 
-  startFlight(
-    overviewTarget,
-    overviewPos.clone().sub(overviewTarget),
-    1.8,
-    () => { /* stay in overview */ }
-  );
+  startFlight(overviewTarget, overviewPos.clone().sub(overviewTarget), 1.8, () => {});
 }
 
 /* =====================================================================
-   10. OPACITY ANIMATION
+   OUTER ALPHA MANAGEMENT
    ===================================================================== */
-function targetOpacityFor(sq) {
-  if (fadeState === 'overview' || fadeState === 'navigating') return 1;
-  // steady: only the current square is visible
-  return (sq.level === current.level && sq.index === current.index) ? 1 : 0;
-}
-
-function updateOpacities(dt) {
+const FADE_RATE = 1.2;
+function updateOuterAlphas(dt) {
   const k = 1 - Math.exp(-FADE_RATE * dt);
-
-  for (const key of Object.keys(squareObjects)) {
-    const obj = squareObjects[key];
-    const target = targetOpacityFor(obj);
-    obj.opacity += (target - obj.opacity) * k;
-    if (Math.abs(obj.opacity - target) < 0.004) obj.opacity = target;
-
-    obj.line.material.opacity = obj.opacity;
-    for (const d of obj.dots) d.material.opacity = obj.opacity;
-  }
-
-  for (const c of connectors) {
-    const a = squareObjects[`${c.ownerA.level}-${c.ownerA.index}`].opacity;
-    const b = squareObjects[`${c.ownerB.level}-${c.ownerB.index}`].opacity;
-    c.line.material.opacity = Math.max(a, b) * c.baseOpacity;
+  for (const key of Object.keys(diagrams)) {
+    const inst = diagrams[key];
+    let target;
+    if (fadeState === 'steady') target = (key === currentKey) ? 1 : 0;
+    else target = 1;
+    inst.outerAlpha += (target - inst.outerAlpha) * k;
+    if (Math.abs(inst.outerAlpha - target) < 0.004) inst.outerAlpha = target;
   }
 }
 
 /* =====================================================================
-   11. UI
+   UI
    ===================================================================== */
 function buildUI() {
   const rowL3 = document.getElementById('row-L3');
@@ -543,7 +1160,7 @@ function buildUI() {
   const b3 = document.createElement('button');
   b3.textContent = 'D1';
   b3.dataset.key = '3-0';
-  b3.addEventListener('click', () => goToSquare(3, 0));
+  b3.addEventListener('click', () => goToDiagram(3, 0));
   rowL3.appendChild(b3);
 
   const rowL2 = document.getElementById('row-L2');
@@ -552,7 +1169,7 @@ function buildUI() {
     const b = document.createElement('button');
     b.textContent = `D${i + 1}`;
     b.dataset.key = `2-${i}`;
-    b.addEventListener('click', () => goToSquare(2, i));
+    b.addEventListener('click', () => goToDiagram(2, i));
     rowL2.appendChild(b);
   }
 
@@ -561,18 +1178,16 @@ function buildUI() {
   for (let g = 0; g < 4; g++) {
     const row = document.createElement('div');
     row.className = 'btn-row';
-
     const indent = document.createElement('span');
     indent.className = 'indent';
     indent.textContent = `L2·${g + 1}`;
     row.appendChild(indent);
-
     for (let j = 0; j < 4; j++) {
       const idx = g * 4 + j;
       const b = document.createElement('button');
       b.textContent = `D${idx + 1}`;
       b.dataset.key = `1-${idx}`;
-      b.addEventListener('click', () => goToSquare(1, idx));
+      b.addEventListener('click', () => goToDiagram(1, idx));
       row.appendChild(b);
     }
     l1rows.appendChild(row);
@@ -584,71 +1199,286 @@ function updateUI() {
   if (fadeState === 'overview') {
     card.innerHTML = `Overview<span class="sub">all squares visible</span>`;
   } else {
-    const name = LEVEL_NAMES[current.level];
-    card.innerHTML = `L${current.level} · D${current.index + 1}`
-      + `<span class="sub">${name} level</span>`;
+    const L = currentDiag.L;
+    card.innerHTML = `L${L} · D${currentDiag.D}`
+      + `<span class="sub">${LEVEL_META[L].name} level</span>`;
   }
 
   document.querySelectorAll('#ui button[data-key]').forEach(b => {
-    const active = (fadeState !== 'overview')
-                && b.dataset.key === `${current.level}-${current.index}`;
+    const active = fadeState !== 'overview' && b.dataset.key === currentKey;
     b.classList.toggle('active', active);
     b.disabled = !!flight;
   });
-
   document.getElementById('overview').disabled = !!flight;
 }
 
+function applyPaletteToUI() {
+  const layers = currentDiag.palette;
+  for (const layer of layers) {
+    const dot = document.getElementById('dot-' + layer.id);
+    if (dot) {
+      dot.style.background = '#' + layer.hex.toString(16).padStart(6, '0');
+      dot.style.boxShadow = `0 0 6px #${layer.hex.toString(16).padStart(6, '0')}`;
+    }
+  }
+  const legends = {
+    L3: PALETTES.inferno.find(p => p.id === 'center').hex,
+    L2: PALETTES.cividis.find(p => p.id === 'center').hex,
+    L1: PALETTES.mako.find(p => p.id === 'center').hex,
+  };
+  for (const k of Object.keys(legends)) {
+    const el = document.getElementById('leg-' + k);
+    if (el) {
+      el.style.background = '#' + legends[k].toString(16).padStart(6, '0');
+      el.style.color = '#' + legends[k].toString(16).padStart(6, '0');
+    }
+  }
+}
+
+/* term inputs */
+const inputs = {};
+document.querySelectorAll('#ui input[data-k]').forEach(el => {
+  const k = el.dataset.k, f = el.dataset.f;
+  if (!inputs[k]) inputs[k] = {};
+  inputs[k][f] = el;
+});
+
+function syncInputsFromState() {
+  const s = currentDiag.data;
+  for (const k of ALL_KEYS) {
+    if (inputs[k]?.name) inputs[k].name.value = s[k].name || '';
+    if (inputs[k]?.subs) {
+      const f = s[k].front?.anchor || '';
+      const b = s[k].back?.anchor  || '';
+      inputs[k].subs.value = [f, b].filter(Boolean).join(', ');
+    }
+  }
+}
+
+function applyAutoState() {
+  const auto = document.getElementById('t-auto').checked;
+  for (const k of ALL_KEYS) {
+    if (inputs[k]?.subs) {
+      inputs[k].subs.readOnly = auto;
+      inputs[k].subs.placeholder = auto ? 'auto: syn, ant' : 'syn, ant';
+    }
+  }
+}
+
+/* toggles */
+let labelsOn  = true;
+let cousinsOn = true;
+
+document.getElementById('t-labels').addEventListener('change', e => { labelsOn = e.target.checked; });
+document.getElementById('t-cousins').addEventListener('change', e => { cousinsOn = e.target.checked; });
+document.getElementById('t-rotate').addEventListener('change', e => {
+  controls.autoRotate = e.target.checked;
+  controls.autoRotateSpeed = 0.9;
+});
+document.getElementById('t-auto').addEventListener('change', applyAutoState);
+
+/* layer toggles */
+const layerToggleEls = {
+  front:  document.getElementById('t-layer-front'),
+  center: document.getElementById('t-layer-center'),
+  back:   document.getElementById('t-layer-back'),
+};
+const layerTogglesWrap = document.getElementById('layer-toggles');
+
+for (const k of ['front','center','back']) {
+  layerToggleEls[k].addEventListener('change', () => {
+    currentDiag.layerVisible[k] = layerToggleEls[k].checked;
+    updateLayerControls();
+  });
+}
+
+function updateLayerControls() {
+  const expanded = currentDiag.anim.target === 1;
+  layerTogglesWrap.classList.toggle('is-disabled', !expanded);
+  for (const k of ['front','center','back']) layerToggleEls[k].disabled = !expanded;
+}
+
+function updateExpandButton() {
+  const expanded = currentDiag.anim.target === 1;
+  const btn = document.getElementById('expand');
+  btn.classList.toggle('expanded', expanded);
+  document.getElementById('expand-label').textContent = expanded ? 'Collapse' : 'Expand';
+}
+
+document.getElementById('expand').addEventListener('click', () => {
+  if (flight) return;
+  currentDiag.anim.target = currentDiag.anim.target === 1 ? 0 : 1;
+  updateExpandButton();
+  updateLayerControls();
+});
+
+/* collapsible sections */
+document.querySelectorAll('.sec[data-sec]').forEach(sec => {
+  sec.querySelector('.sec-title').addEventListener('click', () => sec.classList.toggle('collapsed'));
+});
+
+/* apply inputs */
+document.getElementById('apply').addEventListener('click', applyInputs);
+async function applyInputs() {
+  if (flight) return;
+  const s = currentDiag.data;
+  for (const k of ALL_KEYS) {
+    if (inputs[k]?.name) s[k].name = inputs[k].name.value.trim();
+  }
+  const auto = document.getElementById('t-auto').checked;
+
+  const btn = document.getElementById('apply');
+  btn.disabled = true;
+  btn.textContent = 'Resolving…';
+
+  try {
+    if (!auto) {
+      for (const k of ALL_KEYS) {
+        const raw = inputs[k]?.subs?.value || '';
+        const parts = raw.split(',').map(x => x.trim());
+        s[k].front.anchor = parts[0] || '';
+        s[k].back.anchor  = parts[1] || '';
+        // fetch cousins for the anchors we have
+        const excl = ALL_KEYS.flatMap(kk => [s[kk].name, s[kk].front.anchor, s[kk].back.anchor]).filter(Boolean).map(x => x.toLowerCase());
+        const ac = new AbortController();
+        s[k].front.cousins = await fetchCousins(s[k].front.anchor, ac.signal, excl);
+        s[k].back.cousins  = await fetchCousins(s[k].back.anchor, ac.signal, excl);
+      }
+    } else {
+      const ac = new AbortController();
+      const names = ALL_KEYS.map(k => s[k].name);
+      const resolved = await resolveAll(names, ac.signal);
+      for (const k of ALL_KEYS) {
+        const key = normKey(s[k].name);
+        const r = resolved.get(key);
+        if (r) {
+          s[k].front = { anchor: r.front.anchor, cousins: r.front.cousins || [] };
+          s[k].back  = { anchor: r.back.anchor,  cousins: r.back.cousins  || [] };
+        } else if (!s[k].name) {
+          s[k].front = { anchor:'', cousins:[] };
+          s[k].back  = { anchor:'', cousins:[] };
+        }
+      }
+    }
+    syncInputsFromState();
+    currentDiag.build();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Update';
+  }
+}
+
+/* reset */
+document.getElementById('reset').addEventListener('click', () => {
+  if (flight) return;
+  for (const key of Object.keys(diagrams)) {
+    const inst = diagrams[key];
+    inst.data = (inst.L === 1 && inst.D === 1) ? defaultDiagram() : blankDiagram();
+    inst.build();
+  }
+  currentKey = '3-0';
+  currentDiag = diagrams[currentKey];
+  fadeState = 'steady';
+  for (const key of Object.keys(diagrams)) diagrams[key].outerAlpha = (key === currentKey) ? 1 : 0;
+  // Snap camera to current
+  const targetWorld = new THREE.Vector3();
+  currentDiag.group.getWorldPosition(targetWorld);
+  controls.target.copy(targetWorld);
+  camera.position.copy(targetWorld).add(state0Offset(currentDiag));
+  camera.lookAt(targetWorld);
+  syncInputsFromState();
+  updateUI();
+  updateExpandButton();
+  updateLayerControls();
+});
+
+/* enter key in inputs */
+document.querySelectorAll('#ui input[data-k]').forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); applyInputs(); el.blur(); }
+  });
+});
+
+/* cache clear */
+document.getElementById('clear-cache').addEventListener('click', () => {
+  cache.clear();
+  try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
+});
+
+/* overview */
 document.getElementById('overview').addEventListener('click', goToOverview);
 
 /* =====================================================================
-   12. RESIZE + RENDER LOOP
+   RESIZE
    ===================================================================== */
 function onResize() {
-  camera.aspect = innerWidth / innerHeight;
+  const w = innerWidth, h = innerHeight;
+  camera.aspect = w / h;
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(w, h);
+  labelRenderer.setSize(w, h);
+  lineMaterials.forEach(m => m.resolution.set(w, h));
 }
 addEventListener('resize', onResize);
 
-let lastTime = performance.now();
-let uiDirty = true;   // refresh button disabled state when flights start/end
+/* =====================================================================
+   LOOP
+   ===================================================================== */
+const clock = new THREE.Clock();
 
 function animate() {
   requestAnimationFrame(animate);
   const now = performance.now();
-  const dt  = Math.min(0.1, (now - lastTime) / 1000);
-  lastTime = now;
+  const dt  = Math.min(0.1, clock.getDelta());
 
   updateFlight(now);
-  updateOpacities(dt);
+  updateOuterAlphas(dt);
+
+  for (const key of Object.keys(diagrams)) {
+    const inst = diagrams[key];
+    inst.stepAnimations(dt);
+    // Skip full opacity work when the diagram is completely hidden and stable
+    const hidden = inst.outerAlpha < 0.005;
+    if (!hidden || inst.outerAlpha > 0) inst.applyOpacities();
+  }
 
   if (!flight) controls.update();
 
-  // Cheap re-enable/disable of buttons on flight start/end
-  const flightActive = !!flight;
-  if (flightActive !== uiDirty) {
-    uiDirty = flightActive;
+  // Reflect button disabled state when flight toggles
+  if (flight !== null && !document.getElementById('apply').disabled) {
+    updateUI();
+  } else if (flight === null && document.getElementById('apply').disabled) {
     updateUI();
   }
 
   renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
 }
 
 /* =====================================================================
-   13. BOOT
+   BOOT
    ===================================================================== */
 buildUI();
+syncInputsFromState();
+applyAutoState();
+applyPaletteToUI();
+updateExpandButton();
+updateLayerControls();
+updateUI();
 
-// Snap camera to state 0 for L3 D1 at load.
+// Snap camera to L3 D1
 {
-  const sq = ALL_SQUARES['3-0'];
-  controls.target.copy(sq.center);
-  camera.position.copy(sq.center).add(state0Offset(sq));
-  camera.lookAt(sq.center);
+  const inst = diagrams['3-0'];
+  inst.outerAlpha = 1;
+  const targetWorld = new THREE.Vector3();
+  inst.group.getWorldPosition(targetWorld);
+  controls.target.copy(targetWorld);
+  camera.position.copy(targetWorld).add(state0Offset(inst));
+  camera.lookAt(targetWorld);
 }
 
-updateUI();
 animate();
 </script>
 </body>
