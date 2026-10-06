@@ -52,7 +52,6 @@
   }
   .hint { margin: 0 0 12px; font-size: 10px; color: #7e8aa8; letter-spacing: 0.02em; }
 
-  /* ============ Location card ============ */
   #location {
     margin: 0 0 12px;
     border-radius: 10px;
@@ -70,41 +69,27 @@
   .loc-row:last-child { border-bottom: none; }
   .loc-swatch {
     width: 9px; height: 9px; border-radius: 50%;
-    flex: 0 0 auto;
-    box-shadow: 0 0 7px currentColor;
+    flex: 0 0 auto; box-shadow: 0 0 7px currentColor;
   }
-  .loc-lvl {
-    flex: 0 0 auto; font-weight: 600; letter-spacing: 0.05em;
-    color: #8a96b4; min-width: 22px;
-  }
+  .loc-lvl { flex: 0 0 auto; font-weight: 600; letter-spacing: 0.05em; color: #8a96b4; min-width: 22px; }
   .loc-name { flex: 1 1 auto; color: #8a96b4; letter-spacing: 0.02em; }
-  .loc-pos {
-    flex: 0 0 auto; font-size: 10.5px; letter-spacing: 0.04em;
-    color: #5f6a86; font-weight: 600;
-  }
+  .loc-pos { flex: 0 0 auto; font-size: 10.5px; letter-spacing: 0.04em; color: #5f6a86; font-weight: 600; }
   .loc-row.current { background: rgba(253,231,37,0.07); }
-  .loc-row.current .loc-lvl,
-  .loc-row.current .loc-name { color: #fde725; font-weight: 600; }
+  .loc-row.current .loc-lvl, .loc-row.current .loc-name { color: #fde725; font-weight: 600; }
   .loc-row.current .loc-pos { color: #fde725; }
   .loc-row.ancestor { cursor: pointer; }
   .loc-row.ancestor:hover { background: rgba(126,160,255,0.10); }
-  .loc-row.ancestor:hover .loc-lvl,
-  .loc-row.ancestor:hover .loc-name { color: #a3adff; }
+  .loc-row.ancestor:hover .loc-lvl, .loc-row.ancestor:hover .loc-name { color: #a3adff; }
 
-  /* ============ Nav controls ============ */
   .nav-block { margin: 0 0 12px; }
   .nav-label {
     font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
     color: #7e8aa8; margin: 0 0 6px 2px;
   }
-  .nav-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
-  }
+  .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .nav-btn {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 2px;
-    padding: 9px 6px;
-    border-radius: 8px; cursor: pointer; font: inherit;
+    gap: 2px; padding: 9px 6px; border-radius: 8px; cursor: pointer; font: inherit;
     background: rgba(255,255,255,0.045);
     border: 1px solid rgba(255,255,255,0.08);
     color: #e9edf7;
@@ -138,7 +123,6 @@
   .zoom-out-btn:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
   .zoom-out-btn .icon { display: inline-block; font-size: 13px; opacity: 0.9; }
 
-  /* ============ Collapsible sections ============ */
   .sec { margin-bottom: 4px; }
   .sec-title {
     display: flex; justify-content: space-between; align-items: center;
@@ -162,7 +146,6 @@
   .sec-clip { overflow: hidden; min-height: 0; }
   .sec-content { padding: 8px 0 6px; }
 
-  /* ============ Term rows ============ */
   .row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
   .row .sym {
     flex: 0 0 42px; font-size: 11px; font-weight: 600; text-align: right;
@@ -193,7 +176,6 @@
   .row.sub input { font-size: 10.5px; color: #a8b3cc; }
   .row.sub { margin-bottom: 8px; }
 
-  /* ============ Buttons ============ */
   .buttons { display: flex; gap: 7px; margin: 12px 0 6px; }
   button {
     flex: 1; padding: 8px 4px; border-radius: 7px; cursor: pointer;
@@ -233,16 +215,10 @@
     background: linear-gradient(135deg, rgba(65,68,135,0.30), rgba(34,168,132,0.14));
     border-color: rgba(65,68,135,0.55);
   }
-  #expand:disabled {
-    opacity: 0.35; cursor: not-allowed; filter: grayscale(0.5);
-  }
-  #expand .chev {
-    display: inline-block; width: 10px; text-align: center;
-    transition: transform 0.3s ease;
-  }
+  #expand:disabled { opacity: 0.35; cursor: not-allowed; filter: grayscale(0.5); }
+  #expand .chev { display: inline-block; width: 10px; text-align: center; transition: transform 0.3s ease; }
   #expand.expanded .chev { transform: rotate(180deg); }
 
-  /* ============ Toggles ============ */
   .toggles {
     display: flex; flex-wrap: wrap; gap: 5px;
     padding-top: 10px;
@@ -398,15 +374,11 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 
 /* =====================================================================
    TERMINOLOGY
-   ---------------------------------------------------------------------
-   Levels:  L1 = Proposition (mako)
-            L2 = Argument    (cividis)
-            L3 = Narrative   (inferno, single diagram)
-   Diagrams within a level: D1–D4
-   Positions within a diagram: P1 = S₁, P2 = S₂, P3 = ~S₁, P4 = ~S₂
-   Nesting: (L, D) sits at P_D of (L+1, 1). L3 has only D1.
+   L1 Proposition (mako) · L2 Argument (cividis) · L3 Narrative (inferno)
+   Diagrams D1–D4 per level (L3 has only D1)
+   Positions P1=S₁, P2=S₂, P3=~S₁, P4=~S₂
+   (L, D) sits at P_D of (L+1, 1)
    ===================================================================== */
-
 const INNER_KEYS = ['s1', 's2', 'ns1', 'ns2'];
 const M_KEYS     = ['m1', 'm2', 'm3', 'm4'];
 const C_KEYS     = ['c1', 'c2', 'c3', 'c4'];
@@ -426,9 +398,9 @@ const POSITIONS = [
 ];
 
 const LEVEL_META = {
-  1: { name: 'Proposition', short: 'Prop', palette: 'mako'    },
-  2: { name: 'Argument',    short: 'Arg',  palette: 'cividis' },
-  3: { name: 'Narrative',   short: 'Narr', palette: 'inferno' },
+  1: { name: 'Proposition', palette: 'mako'    },
+  2: { name: 'Argument',    palette: 'cividis' },
+  3: { name: 'Narrative',   palette: 'inferno' },
 };
 
 const DEFAULTS = {
@@ -466,9 +438,6 @@ function defaultDiagram() {
   return d;
 }
 
-/* =====================================================================
-   PALETTES
-   ===================================================================== */
 const PALETTES = {
   mako: [
     { id: 'back',   sign: -1, hex: 0x2A3F5E, text: '#8ca3c8', dim: 0.58, prefix: '−' },
@@ -507,7 +476,7 @@ let currentD = 1;
 let state = diagrams[diagKey(currentL, currentD)];
 
 /* =====================================================================
-   CONSTANTS
+   LAYOUT
    ===================================================================== */
 const Z_DEPTH = 4.2;
 const COUSIN_OPACITY_MULT = 0.62;
@@ -535,7 +504,7 @@ function posAt(k, z) {
 }
 
 /* =====================================================================
-   WORD PROVIDER  —  Datamuse
+   WORD PROVIDER — Datamuse
    ===================================================================== */
 const CACHE_KEY = 'greimas-words-v3';
 const cache = new Map();
@@ -832,21 +801,28 @@ const layerVisible = { front: true, center: true, back: true };
 const layerAlpha   = { front: 1, center: 1, back: 1 };
 const layerFlicker = { front: 1, center: 1, back: 1 };
 
-/* Transition between diagrams */
-const S_MIN = 0.035;
-const S_BIG = 3.5;
+/* =====================================================================
+   TRANSITION — the solar-system zoom
+   ---------------------------------------------------------------------
+   S_MIN is the "dot" scale. S_BIG is how far we zoom into the parent
+   on the way to a specific position. Both phases run through the same
+   screen-center point so the diagram-to-dot-to-parent-to-dot-to-child
+   chain reads continuously.
+   ===================================================================== */
+const S_MIN = 0.04;
+const S_BIG = 12.0;
 
 const transition = {
   active: false,
-  phase: 'out',
+  phase: 'out',        // 'out' then 'in'
   progress: 0,
-  direction: 'up',
+  direction: 'up',     // 'up' = zoom out (rise a level), 'down' = zoom in
+  posKey: 's1',        // which P_i we target
   targetL: null,
   targetD: null,
-  outDuration: 1.5,
-  inDuration: 1.5,
+  outDuration: 1.4,
+  inDuration:  1.4,
   alpha: 1,
-  targetPos: new THREE.Vector3(),
   onSwap: null,
 };
 
@@ -1165,7 +1141,20 @@ function updateExpandAnimation(dt) {
 }
 
 /* =====================================================================
-   TRANSITION — the whoosh between diagrams
+   TRANSITION UPDATE
+   ---------------------------------------------------------------------
+   Zoom-out (direction 'up'):
+     out: current diagram shrinks in place, centred on screen
+     swap: build the parent
+     in:  parent blooms in place; its P_D point starts at screen centre
+          and drifts outward to its final position as the parent grows
+
+   Zoom-in (direction 'down'):
+     out: parent grows so the target position P_i drifts to screen centre
+     swap: build the child
+     in:  child blooms in place from a dot
+
+   No flicker, no dropout — clean scale motion only.
    ===================================================================== */
 function updateTransition(dt) {
   if (!transition.active) {
@@ -1175,32 +1164,38 @@ function updateTransition(dt) {
     return;
   }
 
-  const dur = (transition.phase === 'out') ? transition.outDuration : transition.inDuration;
+  const isOut = transition.phase === 'out';
+  const dur = isOut ? transition.outDuration : transition.inDuration;
   transition.progress += dt / dur;
   const t = Math.min(1, transition.progress);
+  const pv = POS_VEC[transition.posKey];
 
   if (transition.direction === 'up') {
-    /* ===== ZOOM OUT: shrink current to a point, then reveal parent ===== */
-    if (transition.phase === 'out') {
+    /* ===== ZOOM OUT ===== */
+    if (isOut) {
+      /* Current diagram shrinks in place. */
       const e = easeInCubic(t);
       const s = 1 - e * (1 - S_MIN);
       diagramRoot.scale.setScalar(s);
-      diagramRoot.position.copy(transition.targetPos).multiplyScalar(1 - s);
-      /* Fade in the last stretch, as the diagram becomes a dot */
-      transition.alpha = Math.max(0, Math.min(1, 1 - (t - 0.55) * 2.4));
-      if (transition.progress >= 1) {
+      diagramRoot.position.set(0, 0, 0);
+      transition.alpha = 1;   // hold fully visible; dot is self-effacing at S_MIN
+      if (t >= 1) {
         if (transition.onSwap) transition.onSwap();
         transition.phase = 'in';
         transition.progress = 0;
+        transition.alpha = 0;
       }
     } else {
+      /* Parent blooms in place. Its P_D point emerges from centre. */
       const e = easeOutCubic(t);
       const s = S_MIN + e * (1 - S_MIN);
       diagramRoot.scale.setScalar(s);
-      diagramRoot.position.copy(transition.targetPos).multiplyScalar(1 - s);
-      /* Fade in over the first stretch */
-      transition.alpha = Math.max(0, Math.min(1, t * 2.4));
-      if (transition.progress >= 1) {
+      /* Want P_D world = pv * e (0 at start, pv at end).
+         P_D world = position + pv * s. So position = pv * (e - s). */
+      diagramRoot.position.copy(pv).multiplyScalar(e - s);
+      /* Quick fade-in over the first 18%. */
+      transition.alpha = t < 0.18 ? (t / 0.18) : 1;
+      if (t >= 1) {
         transition.active = false;
         diagramRoot.scale.setScalar(1);
         diagramRoot.position.set(0, 0, 0);
@@ -1209,26 +1204,31 @@ function updateTransition(dt) {
       }
     }
   } else {
-    /* ===== ZOOM IN: fly into a position, then the child grows out ===== */
-    if (transition.phase === 'out') {
+    /* ===== ZOOM IN ===== */
+    if (isOut) {
+      /* Parent grows and P_i drifts to centre. */
       const e = easeInCubic(t);
       const s = 1 + e * (S_BIG - 1);
       diagramRoot.scale.setScalar(s);
-      /* P_i moves from its position to screen center as we dive */
-      diagramRoot.position.copy(transition.targetPos).multiplyScalar(-S_BIG * e);
-      transition.alpha = Math.max(0, Math.min(1, 1 - (t - 0.35) * 1.8));
-      if (transition.progress >= 1) {
+      /* Want P_i world = pv * (1 - e). position = pv * (1 - e - s).
+         Since 1 - e - s = -e * S_BIG, this simplifies. */
+      diagramRoot.position.copy(pv).multiplyScalar(-S_BIG * e);
+      /* Hold full, then fade the last 18%. */
+      transition.alpha = t < 0.82 ? 1 : Math.max(0, 1 - (t - 0.82) / 0.18);
+      if (t >= 1) {
         if (transition.onSwap) transition.onSwap();
         transition.phase = 'in';
         transition.progress = 0;
+        transition.alpha = 0;
       }
     } else {
+      /* Child blooms in place from a dot. */
       const e = easeOutCubic(t);
       const s = S_MIN + e * (1 - S_MIN);
       diagramRoot.scale.setScalar(s);
       diagramRoot.position.set(0, 0, 0);
-      transition.alpha = Math.max(0, Math.min(1, t * 2.4));
-      if (transition.progress >= 1) {
+      transition.alpha = t < 0.18 ? (t / 0.18) : 1;
+      if (t >= 1) {
         transition.active = false;
         diagramRoot.scale.setScalar(1);
         diagramRoot.position.set(0, 0, 0);
@@ -1251,21 +1251,21 @@ function startZoomOut() {
   const targetL = currentL + 1;
   const targetD = 1;
   const posKey = POSITIONS[currentD - 1].key;
-  const targetPos = POS_VEC[posKey].clone();
 
   transition.active = true;
   transition.phase = 'out';
   transition.progress = 0;
   transition.direction = 'up';
+  transition.posKey = posKey;
   transition.targetL = targetL;
   transition.targetD = targetD;
-  transition.targetPos.copy(targetPos);
-  transition.outDuration = 1.55;
-  transition.inDuration  = 1.55;
+  transition.outDuration = 1.45;
+  transition.inDuration  = 1.45;
+  transition.alpha = 1;
 
   transition.onSwap = () => {
-    /* Sync: child's S1 becomes parent's P_D */
-    const child = diagrams[diagKey(currentL, currentD)];
+    /* Sync: parent's P_D gets the child's S₁ name. */
+    const child  = diagrams[diagKey(currentL, currentD)];
     const parent = diagrams[diagKey(targetL, targetD)];
     const parentKey = POSITIONS[currentD - 1].key;
     parent[parentKey].name = child.s1.name || '';
@@ -1285,17 +1285,17 @@ function startZoomIn(positionIndex) {
   const targetL = currentL - 1;
   const targetD = positionIndex;
   const posKey = POSITIONS[positionIndex - 1].key;
-  const targetPos = POS_VEC[posKey].clone();
 
   transition.active = true;
   transition.phase = 'out';
   transition.progress = 0;
   transition.direction = 'down';
+  transition.posKey = posKey;
   transition.targetL = targetL;
   transition.targetD = targetD;
-  transition.targetPos.copy(targetPos);
-  transition.outDuration = 1.05;
-  transition.inDuration  = 1.05;
+  transition.outDuration = 1.2;
+  transition.inDuration  = 1.2;
+  transition.alpha = 1;
 
   transition.onSwap = () => {
     currentL = targetL;
@@ -1360,7 +1360,6 @@ function updateLocationUI() {
     locationEl.appendChild(row);
   }
 
-  /* Zoom-out button */
   if (!canZoomOut()) {
     zoomOutBtn.style.display = 'none';
   } else {
@@ -1369,7 +1368,6 @@ function updateLocationUI() {
     zoomOutLabel.textContent = `Zoom Out · ${parentMeta.name}`;
   }
 
-  /* Zoom-in grid */
   zoomInGrid.innerHTML = '';
   if (!canZoomIn()) {
     zoomInGrid.style.display = 'none';
@@ -1391,7 +1389,6 @@ function updateLocationUI() {
     }
   }
 
-  /* Nav label */
   if (canZoomOut() && canZoomIn()) navLabel.textContent = 'Navigate';
   else if (canZoomOut()) navLabel.textContent = 'Zoom out only (bottom level)';
   else navLabel.textContent = 'Zoom in only (top level)';
