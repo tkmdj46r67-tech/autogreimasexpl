@@ -164,7 +164,6 @@
   }
   button.ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.11); }
 
-  /* Export row */
   .export-row { display: flex; gap: 7px; margin: 0 0 6px; }
   .export-row button {
     flex: 1; padding: 8px 4px; border-radius: 7px; cursor: pointer;
@@ -340,6 +339,9 @@ const SYMBOLS = {
   c1:'C₁', c2:'C₂', c3:'C₃', c4:'C₄',
 };
 
+/* Diagram-internal P positions for the four S-corner slots */
+const DIAGRAM_P = { s1:'P1', s2:'P2', ns1:'P3', ns2:'P4' };
+
 const SIDE    = { 3: 120, 2: 60, 1: 30 };
 const Z_PLANE = { 3: 400, 2: 200, 1: 0 };
 const LEVEL_COLORS = { 3: 0xFF7A45, 2: 0xFDE725, 1: 0x6DD4C4 };
@@ -388,7 +390,7 @@ const EDGES = [
 ];
 const OPACITY = { solid: 0.95, dashed: 0.55, faint: 0.32 };
 
-/* Canonical ordering of the 12 Greimas positions, used by the CSV */
+/* Canonical ordering of the 12 Greimas positions */
 const POS_ORDER = ['s1','s2','ns1','ns2','m1','m2','m3','m4','c1','c2','c3','c4'];
 
 /* =====================================================================
@@ -504,6 +506,46 @@ controls.minDistance     = 4;
 controls.maxDistance     = 6000;
 
 /* =====================================================================
+   STARFIELD — buckyball vertex shell around the whole structure
+   ---------------------------------------------------------------------
+   Uses an icosahedron subdivided twice (162 unique vertices). Deduped
+   from the geometry's non-indexed position buffer. Rendered as fixed-
+   pixel-size points in mid-gray.
+   ===================================================================== */
+(function createStarfield() {
+  const shell = new THREE.IcosahedronGeometry(2800, 2);
+  const posAttr = shell.attributes.position;
+  const seen = new Set();
+  const coords = [];
+  for (let i = 0; i < posAttr.count; i++) {
+    const x = posAttr.getX(i);
+    const y = posAttr.getY(i);
+    const z = posAttr.getZ(i);
+    const key = x.toFixed(2) + ',' + y.toFixed(2) + ',' + z.toFixed(2);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    coords.push(x, y, z);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(coords, 3));
+
+  const mat = new THREE.PointsMaterial({
+    color: 0x8c8c8c,
+    size: 3.5,
+    sizeAttenuation: false,
+    transparent: true,
+    opacity: 0.55,
+    depthWrite: false,
+  });
+  const pts = new THREE.Points(geo, mat);
+  pts.position.set(0, 0, 200);
+  pts.renderOrder = -1;
+  scene.add(pts);
+
+  shell.dispose();
+})();
+
+/* =====================================================================
    HELPERS
    ===================================================================== */
 function makeLine(p1, p2, color, opacity) {
@@ -603,57 +645,7 @@ for (const key of Object.keys(LAYOUT)) {
 }
 
 /* =====================================================================
-   BEACONS
-   ===================================================================== */
-const beaconRingTex = (() => {
-  const s = 128;
-  const cv = document.createElement('canvas');
-  cv.width = cv.height = s;
-  const ctx = cv.getContext('2d');
-  const cx = s/2, cy = s/2;
-  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, s/2);
-  g.addColorStop(0.00, 'rgba(255,255,255,0.0)');
-  g.addColorStop(0.35, 'rgba(255,255,255,0.0)');
-  g.addColorStop(0.55, 'rgba(255,255,255,0.85)');
-  g.addColorStop(0.72, 'rgba(255,255,255,0.15)');
-  g.addColorStop(1.00, 'rgba(255,255,255,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, s, s);
-  const t = new THREE.CanvasTexture(cv);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-})();
-
-const links = [];
-for (const key of Object.keys(LAYOUT)) {
-  const lo = LAYOUT[key];
-  if (!lo.parentKey) continue;
-
-  const parent = LAYOUT[lo.parentKey];
-  const anchorPos = new THREE.Vector3(lo.center.x, lo.center.y, parent.center.z);
-  const size = parent.scale * 1.1;
-
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: beaconRingTex, color: LEVEL_COLORS[lo.level],
-    blending: THREE.AdditiveBlending,
-    transparent: true, depthWrite: false, depthTest: false,
-    opacity: 0,
-  }));
-  sprite.position.copy(anchorPos);
-  sprite.scale.setScalar(size);
-  scene.add(sprite);
-
-  links.push({
-    childKey: key,
-    parentKey: lo.parentKey,
-    parentCorner: lo.parentCorner,
-    beacon: sprite,
-    opacity: 0,
-  });
-}
-
-/* =====================================================================
-   TREE LINKS
+   TREE LINKS — centroid-to-centroid hierarchy lines
    ===================================================================== */
 const treeGroup = new THREE.Group();
 scene.add(treeGroup);
@@ -817,28 +809,14 @@ function updateExpansions(dt) {
 }
 
 /* =====================================================================
-   LINKS + LABEL FADE
+   TREE LINK FADE
    ===================================================================== */
 function updateLinks(dt) {
   const k = 1 - Math.exp(-3.0 * dt);
   const ov = (fadeState === 'overview' || fadeState === 'navigating');
-
-  for (const link of links) {
-    let target;
-    if (fadeState === 'overview')          target = 0.75;
-    else if (fadeState === 'navigating')   target = 0.55;
-    else if (link.childKey === currentKey) target = 1.0;
-    else if (link.parentKey === currentKey) target = 0.55;
-    else target = 0;
-
-    link.opacity += (target - link.opacity) * k;
-    if (Math.abs(link.opacity - target) < 0.004) link.opacity = target;
-    link.beacon.material.opacity = link.opacity;
-    link.beacon.visible = link.opacity > 0.004;
-  }
+  const target = ov ? (fadeState === 'overview' ? 0.55 : 0.35) : 0;
 
   for (const t of treeLinks) {
-    const target = ov ? (fadeState === 'overview' ? 0.55 : 0.35) : 0;
     t.opacity += (target - t.opacity) * k;
     if (Math.abs(t.opacity - target) < 0.004) t.opacity = target;
     t.line.material.opacity = t.opacity;
@@ -982,6 +960,15 @@ function saveInputsToCurrentDiagram() {
 
 /* =====================================================================
    CSV EXPORT
+   ---------------------------------------------------------------------
+   Columns:
+     L, D, Parent, Parent_P, Position, Diagram_P, Name,
+     Expanded_Syn, Expanded_Ant
+
+   Diagram_P is P1–P4 for the four S-corner slots, and blank for
+   M1–M4 and C1–C4. Expanded_Syn / Expanded_Ant hold the +front and
+   −back terms, which are only visible on-screen when the diagram
+   is expanded, but are exported regardless of expansion state.
    ===================================================================== */
 function csvEscape(v) {
   const s = (v == null) ? '' : String(v);
@@ -990,16 +977,16 @@ function csvEscape(v) {
 }
 
 function buildCSVRows(keys) {
-  /* Header */
   const rows = [[
-    'L',           // level (1..3)
-    'D',           // diagram index within its level (1..N)
-    'P',           // position of this diagram on its parent (P1..P4); empty for root
-    'Parent',      // e.g. "L2 D1" — which parent diagram it sits on; empty for root
-    'Position',    // Greimas position inside this diagram (S₁, S₂, ~S₁, ~S₂, M₁..M₄, C₁..C₄)
+    'L',
+    'D',
+    'Parent',
+    'Parent_P',
+    'Position',
+    'Diagram_P',
     'Name',
-    'Synonym',
-    'Antonym',
+    'Expanded_Syn',
+    'Expanded_Ant',
   ]];
 
   for (const key of keys) {
@@ -1008,12 +995,12 @@ function buildCSVRows(keys) {
     const L = lo.level;
     const D = lo.index + 1;
 
-    let P = '';
     let parentLabel = '';
+    let parentP = '';
     if (lo.parentKey) {
       const parentLo = LAYOUT[lo.parentKey];
-      P = `P${lo.parentCorner + 1}`;
       parentLabel = `L${parentLo.level} D${parentLo.index + 1}`;
+      parentP = `P${lo.parentCorner + 1}`;
     }
 
     for (const pos of POS_ORDER) {
@@ -1021,9 +1008,10 @@ function buildCSVRows(keys) {
       rows.push([
         L,
         D,
-        P,
         parentLabel,
+        parentP,
         SYMBOLS[pos],
+        DIAGRAM_P[pos] || '',
         entry.name,
         entry.syn,
         entry.ant,
@@ -1036,7 +1024,7 @@ function buildCSVRows(keys) {
 
 function downloadCSV(rows, filename) {
   const body = rows.map(r => r.map(csvEscape).join(',')).join('\r\n');
-  const BOM = '\uFEFF';   // helps Excel detect UTF-8
+  const BOM = '\uFEFF';
   const blob = new Blob([BOM + body], { type: 'text/csv;charset=utf-8' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -1058,12 +1046,11 @@ function exportCurrentD() {
 function exportAll() {
   saveInputsToCurrentDiagram();
 
-  /* Order the whole shape: L3 first, then L2 D1–D4, then L1 D1–D16 */
   const keys = Object.keys(LAYOUT).sort((a, b) => {
     const [la, da] = a.split('-').map(Number);
     const [lb, db] = b.split('-').map(Number);
-    if (lb !== la) return lb - la;   // L descending
-    return da - db;                  // D ascending
+    if (lb !== la) return lb - la;
+    return da - db;
   });
 
   const rows = buildCSVRows(keys);
@@ -1179,7 +1166,6 @@ document.getElementById('reset').addEventListener('click', () => {
   updateExpandButton();
 });
 
-/* expand/collapse */
 function updateExpandButton() {
   const inst = diagrams[currentKey];
   const expanded = inst.expansionTarget === 1;
@@ -1195,7 +1181,6 @@ document.getElementById('expand').addEventListener('click', () => {
   updateExpandButton();
 });
 
-/* export buttons */
 document.getElementById('export-current').addEventListener('click', () => {
   if (flight) return;
   exportCurrentD();
@@ -1261,7 +1246,6 @@ rebuildLabels();
 for (const key of Object.keys(diagrams)) {
   diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
 }
-for (const link of links) link.opacity = 0;
 for (const t of treeLinks) t.opacity = 0;
 
 {
