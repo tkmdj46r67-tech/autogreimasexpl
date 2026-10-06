@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Greimas Square — Nesting Diagrams</title>
+<title>Greimas Square — Proposition / Meta-proposition</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -46,10 +46,11 @@
     filter: saturate(0.42) brightness(1.22);
   }
 
+  /* ============ Panel — now on the RIGHT, slightly wider ============ */
   #ui {
-    position: fixed; top: 14px; left: 14px; z-index: 10;
-    width: 328px; max-height: calc(100vh - 28px); overflow-y: auto;
-    padding: 12px 14px; border-radius: 12px;
+    position: fixed; top: 14px; right: 14px; z-index: 10;
+    width: 372px; max-height: calc(100vh - 28px); overflow-y: auto;
+    padding: 13px 15px; border-radius: 12px;
     background: rgba(9, 13, 22, 0.88);
     border: 1px solid rgba(255, 255, 255, 0.07);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -66,7 +67,7 @@
     display: inline-block; margin-left: 6px; padding: 1px 5px;
     font-size: 9px; letter-spacing: 0.12em; border-radius: 4px;
     color: #0a0e1c; vertical-align: 2px;
-    background: linear-gradient(120deg, #22a884, #fde725);
+    background: linear-gradient(120deg, #4C8A8A, #A9D583);
   }
   .hint { margin: 0 0 10px; font-size: 10px; color: #7e8aa8; letter-spacing: 0.02em; }
 
@@ -180,7 +181,7 @@
   button:active:not(:disabled) { transform: translateY(1px); }
   button:disabled { opacity: 0.55; cursor: progress; }
   button.ghost {
-    flex: 0 0 78px;
+    flex: 0 0 84px;
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.10);
   }
@@ -222,7 +223,7 @@
   }
   #expand.expanded .chev { transform: rotate(180deg); }
 
-  /* ============ Concentrate button ============ */
+  /* ============ Emplace button ============ */
   #concentrate {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; padding: 10px 12px; margin: 0 0 10px;
@@ -271,6 +272,7 @@
   #layer-toggles label i {
     width: 7px; height: 7px; border-radius: 50%;
     display: inline-block; flex: 0 0 auto; font-style: normal;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
   }
   #layer-toggles.is-disabled { opacity: 0.32; pointer-events: none; }
   #layer-toggles.is-disabled label {
@@ -290,8 +292,8 @@
   }
   .footer-link a:hover { color: #a3adff; }
 
-  @media (max-width: 620px) {
-    #ui { width: 244px; padding: 10px 11px; font-size: 11px; }
+  @media (max-width: 720px) {
+    #ui { width: 260px; padding: 10px 11px; font-size: 11px; }
     .hint, .legend { display: none; }
     #ui h1 { font-size: 11px; }
     .row .sym { flex: 0 0 34px; font-size: 10.5px; }
@@ -308,12 +310,11 @@
   <p class="hint">drag · rotate | scroll · zoom | right-drag · pan</p>
 
   <div class="legend">
-    <span><i style="color:#fde725; background:#fde725"></i>front · synonyms</span>
-    <span><i style="color:#22a884; background:#22a884"></i>center</span>
-    <span><i style="color:#414487; background:#414487"></i>back · antonyms</span>
+    <span><i id="leg-back"></i>back · antonyms</span>
+    <span><i id="leg-center"></i>center</span>
+    <span><i id="leg-front"></i>front · synonyms</span>
   </div>
 
-  <!-- ============ Breadcrumb ============ -->
   <div id="breadcrumb"></div>
 
   <!-- ============ INNER SQUARE ============ -->
@@ -377,7 +378,7 @@
 
   <button id="expand"><span class="chev">▸</span><span id="expand-label">Expand</span></button>
 
-  <button id="concentrate"><span class="icon">◈</span><span id="concentrate-label">Concentrate ↓</span></button>
+  <button id="concentrate"><span class="icon">◈</span><span id="concentrate-label">Emplace ↓</span></button>
 
   <div class="toggles">
     <label><input type="checkbox" id="t-auto" checked><span>Auto anchors</span></label>
@@ -389,17 +390,17 @@
   <div class="toggles" id="layer-toggles">
     <label>
       <input type="checkbox" id="t-layer-front" checked>
-      <i style="background:#fde725; box-shadow:0 0 6px #fde725"></i>
+      <i id="dot-front"></i>
       <span>+ Front</span>
     </label>
     <label>
       <input type="checkbox" id="t-layer-center" checked>
-      <i style="background:#22a884; box-shadow:0 0 6px #22a884"></i>
+      <i id="dot-center"></i>
       <span>Center</span>
     </label>
     <label>
       <input type="checkbox" id="t-layer-back" checked>
-      <i style="background:#414487; box-shadow:0 0 6px #414487"></i>
+      <i id="dot-back"></i>
       <span>− Back</span>
     </label>
   </div>
@@ -478,14 +479,31 @@ function defaultD0() {
 }
 
 /* =====================================================================
+   PALETTES — one per diagram depth
+   ----------------------------------------------------------------
+   D0 (proposition)      — Mako palette  (deep blue → teal → light green)
+   D1 (meta-proposition) — Cividis palette (deep blue → grey → yellow)
+   D2, D3, ...           — alternate between the two for now
+   ===================================================================== */
+const PALETTES = {
+  mako: [
+    { id: 'back',   sign: -1, hex: 0x2A3F5E, text: '#8ca3c8', dim: 0.58, prefix: '−' },
+    { id: 'center', sign:  0, hex: 0x4C8A8A, text: '#a5d8d8', dim: 1.00, prefix: ''  },
+    { id: 'front',  sign: +1, hex: 0xA9D583, text: '#cdeab4', dim: 0.78, prefix: '+' },
+  ],
+  cividis: [
+    { id: 'back',   sign: -1, hex: 0x124E7C, text: '#7ab5e0', dim: 0.58, prefix: '−' },
+    { id: 'center', sign:  0, hex: 0x85837A, text: '#c4c2b6', dim: 1.00, prefix: ''  },
+    { id: 'front',  sign: +1, hex: 0xFDE725, text: '#fde725', dim: 0.78, prefix: '+' },
+  ],
+};
+
+function currentPalette() {
+  return PALETTES[currentDiag % 2 === 0 ? 'mako' : 'cividis'];
+}
+
+/* =====================================================================
    NESTING STATE
-   ---------------------------------------------------------------------
-   diagrams[]  — each entry is a full diagram state (like the old `state`)
-   nestings[]  — links between diagrams:
-                 { parentDiag, parentKey, childDiag, childKey }
-                 only ever created parentKey = 'ns2', childKey = 's1'
-   currentDiag — index into diagrams of the diagram the UI is showing
-   state       — alias for diagrams[currentDiag]; used by all the rest
    ===================================================================== */
 const diagrams = [ defaultD0() ];
 const nestings = [];
@@ -493,24 +511,20 @@ let currentDiag = 0;
 let state = diagrams[currentDiag];
 
 /* =====================================================================
-   LAYER CONFIG
+   CONSTANTS
    ===================================================================== */
 const Z_DEPTH = 4.2;
-
-const LAYERS = [
-  { id: 'back',   sign: -1, hex: 0x414487, text: '#8a8fd4', dim: 0.58, prefix: '−' },
-  { id: 'center', sign:  0, hex: 0x22a884, text: '#5bcfa0', dim: 1.00, prefix: ''  },
-  { id: 'front',  sign: +1, hex: 0xfde725, text: '#fde725', dim: 0.78, prefix: '+' },
-];
-
 const COUSIN_OPACITY_MULT = 0.62;
+
+const H = 2.0;
+const D = 4.5;
+
+/* The anchor point at which diagrams collapse / from which they bloom */
+const BLOOM_POINT = new THREE.Vector3(-H, H, 0);  // S1_local
 
 /* =====================================================================
    POSITIONS
    ===================================================================== */
-const H = 2.0;
-const D = 4.5;
-
 const POS = {
   s1:  new THREE.Vector3(-H,  H, 0),
   s2:  new THREE.Vector3( H,  H, 0),
@@ -753,6 +767,49 @@ const labelGroup     = new THREE.Group();
 diagramRoot.add(structureGroup, labelGroup, frontGroup, backGroup);
 
 /* =====================================================================
+   SHOCKWAVE — expanding ring at the swap moment
+   ===================================================================== */
+const shockwave = (() => {
+  const geo = new THREE.RingGeometry(0.55, 0.72, 64);
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0xb8e8ff,
+    transparent: true,
+    opacity: 0,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  const m = new THREE.Mesh(geo, mat);
+  m.visible = false;
+  scene.add(m);
+  return m;
+})();
+let shockwaveAge = -1;
+const SHOCKWAVE_DURATION = 0.62;
+
+function triggerShockwave(pos) {
+  shockwave.position.copy(pos);
+  shockwaveAge = 0;
+  shockwave.visible = true;
+  shockwave.scale.setScalar(0.3);
+  shockwave.material.opacity = 0.95;
+}
+
+function updateShockwave(dt) {
+  if (shockwaveAge < 0) return;
+  shockwaveAge += dt;
+  const t = shockwaveAge / SHOCKWAVE_DURATION;
+  if (t >= 1) {
+    shockwave.visible = false;
+    shockwaveAge = -1;
+    return;
+  }
+  const e = 1 - Math.pow(1 - t, 3);
+  shockwave.scale.setScalar(0.3 + e * 7.0);
+  shockwave.material.opacity = (1 - t) * 0.85;
+}
+
+/* =====================================================================
    HELPERS
    ===================================================================== */
 const glowTex = (() => {
@@ -871,12 +928,12 @@ const layerVisible = { front: true, center: true, back: true };
 const layerAlpha   = { front: 1, center: 1, back: 1 };
 const layerFlicker = { front: 1, center: 1, back: 1 };
 
-/* ---- Transition (concentrate / return) ---- */
+/* Emplacing transition */
 const transition = {
   active: false,
-  phase: 'out',       // 'out' then 'in'
+  phase: 'out',
   progress: 0,
-  duration: 0.42,     // seconds per phase
+  duration: 0.36,
   pendingDiag: null,
   onSwap: null,
   alpha: 1,
@@ -924,7 +981,8 @@ function build() {
   subLabels = [];
   cousinLabels = [];
 
-  const center = LAYERS.find(L => L.id === 'center');
+  const layers = currentPalette();
+  const center = layers.find(L => L.id === 'center');
 
   /* ---- CENTER LAYER ---- */
   for (const e of LAYER_EDGES) {
@@ -962,7 +1020,7 @@ function build() {
   }
 
   /* ---- FRONT + BACK LAYERS ---- */
-  for (const layer of LAYERS) {
+  for (const layer of layers) {
     if (layer.id === 'center') continue;
 
     const group   = layer.id === 'front' ? frontGroup : backGroup;
@@ -1063,6 +1121,7 @@ function build() {
     }
   }
 
+  applyPaletteToUI();
   applyExpandState(1);
   applyVisibility();
   applyCousinVisibility();
@@ -1070,13 +1129,42 @@ function build() {
 }
 
 /* =====================================================================
-   EXPAND / COLLAPSE
+   PALETTE → UI
+   ===================================================================== */
+function hexStr(hex) {
+  return '#' + hex.toString(16).padStart(6, '0');
+}
+
+function applyPaletteToUI() {
+  const layers = currentPalette();
+
+  /* Layer toggle dots */
+  for (const layer of layers) {
+    const dot = document.getElementById('dot-' + layer.id);
+    if (dot) {
+      dot.style.background = hexStr(layer.hex);
+      dot.style.boxShadow = `0 0 6px ${hexStr(layer.hex)}`;
+    }
+  }
+
+  /* Legend swatches */
+  for (const layer of layers) {
+    const el = document.getElementById('leg-' + layer.id);
+    if (el) {
+      el.style.color = hexStr(layer.hex);
+      el.style.background = hexStr(layer.hex);
+    }
+  }
+}
+
+/* =====================================================================
+   EXPAND / COLLAPSE + GLOBAL ALPHA
    ===================================================================== */
 function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
 
 function applyExpandState(flickerFactor) {
   const e = easeOutCubic(anim.progress);
-  const gAlpha = transition.alpha;    // 0..1 — global transition fade
+  const gAlpha = transition.alpha;
 
   frontGroup.position.z = e * Z_DEPTH;
   backGroup.position.z  = -e * Z_DEPTH;
@@ -1241,11 +1329,23 @@ function updateExpandAnimation(dt) {
 }
 
 /* =====================================================================
-   CONCENTRATE / RETURN  —  transition animation
+   EMPLACING — the collapse/zoom-out animation between diagrams
+   ---------------------------------------------------------------------
+   Both phases drive the diagram toward BLOOM_POINT (S1's local position).
+   • Out phase: the entire diagram shrinks and slides toward that point.
+     Its scale collapses to ~0.04 so the whole structure becomes a dot.
+   • Midpoint: swap diagrams, fire a shockwave.
+   • In phase: the new diagram grows out from the same point, sliding
+     back to the origin and expanding to full size.
+   The diagonal drift gives the "whoosh" feel; rapid flicker reads as
+   holographic materialization.
    ===================================================================== */
+function easeInCubic(x) { return x * x * x; }
+
 function updateTransition(dt) {
   if (!transition.active) {
     diagramRoot.scale.setScalar(1);
+    diagramRoot.position.set(0, 0, 0);
     transition.alpha = 1;
     return;
   }
@@ -1254,33 +1354,44 @@ function updateTransition(dt) {
 
   if (transition.phase === 'out') {
     const t = Math.min(1, transition.progress);
-    diagramRoot.scale.setScalar(Math.max(0.0001, 1 - t));
-    transition.alpha = Math.max(0, 1 - t);
+    const eased = easeInCubic(t);
+    const s = 1 - eased * 0.96;          // 1 → 0.04
+
+    diagramRoot.scale.setScalar(s);
+    diagramRoot.position.copy(BLOOM_POINT).multiplyScalar(1 - s);
+
+    /* Rapid flicker while collapsing */
+    let a = Math.max(0, 1 - eased);
+    if (Math.random() < 0.24) a = 0;
+    else a *= 0.35 + Math.random() * 0.75;
+    transition.alpha = a;
 
     if (transition.progress >= 1) {
-      /* Midpoint: swap diagrams, rebuild */
       if (transition.onSwap) transition.onSwap();
+      triggerShockwave(BLOOM_POINT);
       transition.phase = 'in';
       transition.progress = 0;
     }
   } else {
     const t = Math.min(1, transition.progress);
-    diagramRoot.scale.setScalar(Math.max(0.0001, t));
-    transition.alpha = Math.min(1, t);
+    const eased = easeOutCubic(t);
+    const s = 0.04 + eased * 0.96;       // 0.04 → 1
+
+    diagramRoot.scale.setScalar(s);
+    diagramRoot.position.copy(BLOOM_POINT).multiplyScalar(1 - s);
+
+    /* Flicker while blooming */
+    let a = Math.min(1, eased);
+    if (Math.random() < 0.20) a *= 0;
+    else a *= 0.55 + Math.random() * 0.65;
+    transition.alpha = a;
 
     if (transition.progress >= 1) {
       transition.active = false;
-      transition.pendingDiag = null;
-      transition.onSwap = null;
       diagramRoot.scale.setScalar(1);
+      diagramRoot.position.set(0, 0, 0);
       transition.alpha = 1;
     }
-  }
-
-  /* Flicker during transition */
-  if (transition.active) {
-    if (Math.random() < 0.22) transition.alpha *= 0;
-    else transition.alpha *= 0.35 + Math.random() * 0.7;
   }
 }
 
@@ -1288,14 +1399,12 @@ function updateTransition(dt) {
    NESTING — sync between linked diagrams
    ===================================================================== */
 function propagateLinks(fromIdx) {
-  /* Down (parent -> child): copy parentKey name into childKey */
   const down = nestings.find(n => n.parentDiag === fromIdx);
   if (down) {
     const parent = diagrams[down.parentDiag];
     const child  = diagrams[down.childDiag];
     child[down.childKey].name = parent[down.parentKey].name || '';
   }
-  /* Up (child -> parent) */
   const up = nestings.find(n => n.childDiag === fromIdx);
   if (up) {
     const parent = diagrams[up.parentDiag];
@@ -1304,17 +1413,14 @@ function propagateLinks(fromIdx) {
   }
 }
 
-function startConcentrate() {
+function startEmplace() {
   if (transition.active) return;
 
-  /* If child already exists, just transition to it without recreating. */
   let childIdx = nestings.find(n => n.parentDiag === currentDiag)?.childDiag;
 
   if (childIdx == null) {
-    /* Create new nested diagram */
     const newIdx = diagrams.length;
     const newDiag = blankDiagram();
-    /* Seed new S1 with the current diagram's ~S2 term name */
     newDiag.s1.name = diagrams[currentDiag].ns2.name || '';
     diagrams.push(newDiag);
     nestings.push({
@@ -1359,16 +1465,31 @@ function startReturn(targetIdx) {
 }
 
 /* =====================================================================
-   BREADCRUMB + CONCENTRATE BUTTON UI
+   BREADCRUMB + BUTTON UI
    ===================================================================== */
 const breadcrumbEl = document.getElementById('breadcrumb');
 const concentrateBtn = document.getElementById('concentrate');
 const concentrateLabel = document.getElementById('concentrate-label');
 
+const SUPER_NUMS = ['²','³','⁴','⁵','⁶','⁷','⁸','⁹'];
+
+function diagramFullLabel(idx) {
+  if (idx === 0) return 'Proposition';
+  if (idx === 1) return 'Meta-proposition';
+  const n = Math.min(idx - 1, SUPER_NUMS.length);
+  return 'Meta' + SUPER_NUMS.slice(0, n).join('') + '-proposition';
+}
+
+function diagramShortLabel(idx) {
+  if (idx === 0) return 'Proposition';
+  if (idx === 1) return 'Meta';
+  const n = Math.min(idx - 1, SUPER_NUMS.length);
+  return 'Meta' + SUPER_NUMS.slice(0, n).join('');
+}
+
 function updateBreadcrumb() {
   breadcrumbEl.innerHTML = '';
 
-  /* Walk up to root */
   const chain = [currentDiag];
   let idx = currentDiag;
   while (true) {
@@ -1387,7 +1508,8 @@ function updateBreadcrumb() {
     }
     const el = document.createElement('span');
     el.className = 'crumb' + (i === currentDiag ? ' current' : '');
-    el.textContent = 'D' + i;
+    el.textContent = diagramShortLabel(i);
+    el.title = diagramFullLabel(i);
     if (i !== currentDiag) {
       el.addEventListener('click', () => startReturn(i));
     }
@@ -1397,13 +1519,10 @@ function updateBreadcrumb() {
 
 function updateConcentrateButton() {
   const hasChild = nestings.some(n => n.parentDiag === currentDiag);
-  const nextIdx = currentDiag + 1;
-  concentrateLabel.textContent = hasChild
-    ? 'Enter D' + nextIdx + ' ↓'
-    : 'Concentrate ↓';
+  concentrateLabel.textContent = hasChild ? 'Re-enter ↓' : 'Emplace ↓';
 }
 
-concentrateBtn.addEventListener('click', startConcentrate);
+concentrateBtn.addEventListener('click', startEmplace);
 
 /* =====================================================================
    VISIBILITY / CONTROLS
@@ -1527,18 +1646,15 @@ function setButtonLoading(on) {
 async function applyInputs() {
   if (transition.active) return;
 
-  /* Read names from inputs into current diagram */
   for (const k of ALL_KEYS) {
     if (inputs[k]?.name) {
       const v = inputs[k].name.value.trim();
-      state[k].name = v || '';    // blank allowed — D1+ starts blank
+      state[k].name = v || '';
     }
   }
 
-  /* Propagate through nestings BEFORE anything else */
   propagateLinks(currentDiag);
 
-  /* If we synced a name up/down, refresh the visible fields */
   if (nestings.some(n => n.childDiag === currentDiag || n.parentDiag === currentDiag)) {
     syncInputsFromState();
   }
@@ -1599,7 +1715,6 @@ async function applyInputs() {
         state[k].front = { anchor: r.front.anchor, cousins: r.front.cousins || [] };
         state[k].back  = { anchor: r.back.anchor,  cousins: r.back.cousins  || [] };
       } else if (!state[k].name) {
-        /* Blank name -> blank anchors */
         state[k].front = { anchor: '', cousins: [] };
         state[k].back  = { anchor: '', cousins: [] };
       }
@@ -1616,7 +1731,6 @@ async function applyInputs() {
 
 applyBtn.addEventListener('click', applyInputs);
 
-/* Reset = hard reset back to initial D0, clearing nestings */
 document.getElementById('reset').addEventListener('click', () => {
   if (transition.active) return;
   diagrams.length = 0;
@@ -1625,7 +1739,6 @@ document.getElementById('reset').addEventListener('click', () => {
   currentDiag = 0;
   state = diagrams[0];
 
-  /* Snap any in-flight animation back to a clean state */
   anim.progress = 0;
   anim.target = 0;
   updateExpandButton();
@@ -1673,6 +1786,7 @@ function animate() {
 
   updateTransition(dt);
   updateExpandAnimation(dt);
+  updateShockwave(dt);
   controls.update();
 
   renderer.render(scene, camera);
