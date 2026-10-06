@@ -164,6 +164,23 @@
   }
   button.ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.11); }
 
+  /* Export row */
+  .export-row { display: flex; gap: 7px; margin: 0 0 6px; }
+  .export-row button {
+    flex: 1; padding: 8px 4px; border-radius: 7px; cursor: pointer;
+    font: inherit; font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #b8e8c4;
+    background: linear-gradient(135deg, rgba(34,168,132,0.14), rgba(110,200,140,0.08));
+    border: 1px solid rgba(34,168,132,0.4);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .export-row button:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(34,168,132,0.28), rgba(110,200,140,0.16));
+    border-color: rgba(34,168,132,0.75);
+    color: #e6fff0;
+  }
+  .export-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+
   #expand {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; padding: 9px 12px; margin: 0 0 8px;
@@ -236,6 +253,11 @@
   <div class="buttons">
     <button id="apply">Update</button>
     <button id="reset" class="ghost">Reset All</button>
+  </div>
+
+  <div class="export-row">
+    <button id="export-current">Export this D</button>
+    <button id="export-all">Export all</button>
   </div>
 
   <button id="expand"><span class="chev">▸</span><span id="expand-label">Expand</span></button>
@@ -325,7 +347,6 @@ const LEVEL_NAMES  = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
 
 const SPREAD = 2.2;
 
-/* Greimas local geometry */
 const GREIMAS_LOCAL = {
   s1:  new THREE.Vector3(-2,  2, 0),
   s2:  new THREE.Vector3( 2,  2, 0),
@@ -343,7 +364,7 @@ const GREIMAS_LOCAL = {
 const GREIMAS_EXTENT = 9;
 const GREIMAS_INNER  = 4;
 
-const LAYER_Z = 2.7;   // local-space z offset for front / back layers
+const LAYER_Z = 2.7;
 
 const EDGES = [
   { a:'s1',  b:'s2',  kind:'solid' },
@@ -366,6 +387,9 @@ const EDGES = [
   { a:'c3', b:'c4', kind:'faint' },
 ];
 const OPACITY = { solid: 0.95, dashed: 0.55, faint: 0.32 };
+
+/* Canonical ordering of the 12 Greimas positions, used by the CSV */
+const POS_ORDER = ['s1','s2','ns1','ns2','m1','m2','m3','m4','c1','c2','c3','c4'];
 
 /* =====================================================================
    DATA
@@ -512,12 +536,6 @@ function makeLabel(symbol, name, textColor, cls) {
 
 /* =====================================================================
    DIAGRAM BUILDER
-   ---------------------------------------------------------------------
-   Each diagram has three internal groups:
-     centerGroup — always visible
-     frontGroup  — offset +LAYER_Z when expanded
-     backGroup   — offset -LAYER_Z when expanded
-   Only the center participates in the level hierarchy.
    ===================================================================== */
 function buildDiagram(layout) {
   const { level, index, center, scale } = layout;
@@ -533,7 +551,6 @@ function buildDiagram(layout) {
   const backGroup   = new THREE.Group();
   group.add(centerGroup, frontGroup, backGroup);
 
-  /* radius of point markers, in local units */
   const dotR = level === 3 ? 0.30 : level === 2 ? 0.24 : 0.20;
 
   function fillLayer(g) {
@@ -561,7 +578,6 @@ function buildDiagram(layout) {
   const frontMats  = fillLayer(frontGroup);
   const backMats   = fillLayer(backGroup);
 
-  // front / back start collapsed: at z=0 and invisible
   frontGroup.position.z = 0;
   backGroup.position.z  = 0;
 
@@ -587,25 +603,8 @@ for (const key of Object.keys(LAYOUT)) {
 }
 
 /* =====================================================================
-   BEACONS — anchor markers on parent showing where each child sits
+   BEACONS
    ===================================================================== */
-const glowTex = (() => {
-  const s = 64;
-  const cv = document.createElement('canvas');
-  cv.width = cv.height = s;
-  const ctx = cv.getContext('2d');
-  const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
-  g.addColorStop(0.00, 'rgba(255,255,255,1.0)');
-  g.addColorStop(0.30, 'rgba(255,255,255,0.6)');
-  g.addColorStop(0.65, 'rgba(255,255,255,0.15)');
-  g.addColorStop(1.00, 'rgba(255,255,255,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, s, s);
-  const t = new THREE.CanvasTexture(cv);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-})();
-
 const beaconRingTex = (() => {
   const s = 128;
   const cv = document.createElement('canvas');
@@ -654,7 +653,7 @@ for (const key of Object.keys(LAYOUT)) {
 }
 
 /* =====================================================================
-   TREE LINKS — centroid-to-centroid lines between parent and child
+   TREE LINKS
    ===================================================================== */
 const treeGroup = new THREE.Group();
 scene.add(treeGroup);
@@ -790,7 +789,7 @@ function targetAlphaFor(key) {
   if (fadeState === 'overview' || fadeState === 'navigating') return 1;
   if (key === currentKey) return 1;
   const lo = LAYOUT[currentKey];
-  if (lo.parentKey === key) return 0.20;    // parent ghost
+  if (lo.parentKey === key) return 0.20;
   return 0;
 }
 
@@ -818,7 +817,7 @@ function updateExpansions(dt) {
 }
 
 /* =====================================================================
-   BEACONS + TREE LINKS
+   LINKS + LABEL FADE
    ===================================================================== */
 function updateLinks(dt) {
   const k = 1 - Math.exp(-3.0 * dt);
@@ -838,7 +837,6 @@ function updateLinks(dt) {
     link.beacon.visible = link.opacity > 0.004;
   }
 
-  /* tree lines: only during overview / navigating */
   for (const t of treeLinks) {
     const target = ov ? (fadeState === 'overview' ? 0.55 : 0.35) : 0;
     t.opacity += (target - t.opacity) * k;
@@ -848,9 +846,6 @@ function updateLinks(dt) {
   }
 }
 
-/* =====================================================================
-   LABEL FADE
-   ===================================================================== */
 function updateLabelFade(dt) {
   const target = fadeState === 'overview' ? 0 : 1;
   labelFade += (target - labelFade) * (1 - Math.exp(-2.5 * dt));
@@ -868,25 +863,13 @@ function applyOpacities() {
 
     inst.group.visible = a > 0.004;
 
-    // center
-    for (const em of inst.centerMats.edgeMats)
-      em.mat.opacity = em.base * a;
-    for (const pm of inst.centerMats.pointMats)
-      pm.mat.opacity = pm.base * a;
+    for (const em of inst.centerMats.edgeMats) em.mat.opacity = em.base * a;
+    for (const pm of inst.centerMats.pointMats) pm.mat.opacity = pm.base * a;
+    for (const em of inst.frontMats.edgeMats) em.mat.opacity = em.base * a * e;
+    for (const pm of inst.frontMats.pointMats) pm.mat.opacity = pm.base * a * e;
+    for (const em of inst.backMats.edgeMats) em.mat.opacity = em.base * a * e;
+    for (const pm of inst.backMats.pointMats) pm.mat.opacity = pm.base * a * e;
 
-    // front
-    for (const em of inst.frontMats.edgeMats)
-      em.mat.opacity = em.base * a * e;
-    for (const pm of inst.frontMats.pointMats)
-      pm.mat.opacity = pm.base * a * e;
-
-    // back
-    for (const em of inst.backMats.edgeMats)
-      em.mat.opacity = em.base * a * e;
-    for (const pm of inst.backMats.pointMats)
-      pm.mat.opacity = pm.base * a * e;
-
-    // labels
     for (const lbl of inst.centerLabels) {
       const op = a * labelFade;
       lbl.element.style.opacity = op.toFixed(3);
@@ -912,7 +895,7 @@ function applyOpacities() {
 }
 
 /* =====================================================================
-   LABELS — only for the current diagram
+   LABELS
    ===================================================================== */
 let labelsOn = true;
 
@@ -946,19 +929,16 @@ function rebuildLabels() {
       cls = M_KEYS.includes(k) ? 'mid' : 'corner';
     }
 
-    // center label
     const centerLbl = makeLabel(SYMBOLS[k], data[k].name, colorHex, cls);
     centerLbl.position.copy(pos).addScaledVector(dir, 0.7);
     inst.centerGroup.add(centerLbl);
     inst.centerLabels.push(centerLbl);
 
-    // front label (+ prefix, syn)
     const frontLbl = makeLabel('+' + SYMBOLS[k], data[k].syn, colorHex, 'layer');
     frontLbl.position.copy(pos).addScaledVector(dir, 0.7);
     inst.frontGroup.add(frontLbl);
     inst.frontLabels.push(frontLbl);
 
-    // back label (− prefix, ant)
     const backLbl = makeLabel('−' + SYMBOLS[k], data[k].ant, colorHex, 'layer');
     backLbl.position.copy(pos).addScaledVector(dir, 0.7);
     inst.backGroup.add(backLbl);
@@ -998,6 +978,96 @@ function saveInputsToCurrentDiagram() {
       data[k].ant = parts[1] || '';
     }
   }
+}
+
+/* =====================================================================
+   CSV EXPORT
+   ===================================================================== */
+function csvEscape(v) {
+  const s = (v == null) ? '' : String(v);
+  if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+function buildCSVRows(keys) {
+  /* Header */
+  const rows = [[
+    'L',           // level (1..3)
+    'D',           // diagram index within its level (1..N)
+    'P',           // position of this diagram on its parent (P1..P4); empty for root
+    'Parent',      // e.g. "L2 D1" — which parent diagram it sits on; empty for root
+    'Position',    // Greimas position inside this diagram (S₁, S₂, ~S₁, ~S₂, M₁..M₄, C₁..C₄)
+    'Name',
+    'Synonym',
+    'Antonym',
+  ]];
+
+  for (const key of keys) {
+    const lo = LAYOUT[key];
+    const data = diagramData[key];
+    const L = lo.level;
+    const D = lo.index + 1;
+
+    let P = '';
+    let parentLabel = '';
+    if (lo.parentKey) {
+      const parentLo = LAYOUT[lo.parentKey];
+      P = `P${lo.parentCorner + 1}`;
+      parentLabel = `L${parentLo.level} D${parentLo.index + 1}`;
+    }
+
+    for (const pos of POS_ORDER) {
+      const entry = data[pos] || { name:'', syn:'', ant:'' };
+      rows.push([
+        L,
+        D,
+        P,
+        parentLabel,
+        SYMBOLS[pos],
+        entry.name,
+        entry.syn,
+        entry.ant,
+      ]);
+    }
+  }
+
+  return rows;
+}
+
+function downloadCSV(rows, filename) {
+  const body = rows.map(r => r.map(csvEscape).join(',')).join('\r\n');
+  const BOM = '\uFEFF';   // helps Excel detect UTF-8
+  const blob = new Blob([BOM + body], { type: 'text/csv;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function exportCurrentD() {
+  saveInputsToCurrentDiagram();
+  const lo = LAYOUT[currentKey];
+  const rows = buildCSVRows([currentKey]);
+  downloadCSV(rows, `greimas-L${lo.level}-D${lo.index + 1}.csv`);
+}
+
+function exportAll() {
+  saveInputsToCurrentDiagram();
+
+  /* Order the whole shape: L3 first, then L2 D1–D4, then L1 D1–D16 */
+  const keys = Object.keys(LAYOUT).sort((a, b) => {
+    const [la, da] = a.split('-').map(Number);
+    const [lb, db] = b.split('-').map(Number);
+    if (lb !== la) return lb - la;   // L descending
+    return da - db;                  // D ascending
+  });
+
+  const rows = buildCSVRows(keys);
+  downloadCSV(rows, 'greimas-nested-full.csv');
 }
 
 /* =====================================================================
@@ -1074,8 +1144,9 @@ function updateUI() {
   document.getElementById('overview').disabled = !!flight;
   document.getElementById('apply').disabled = !!flight;
   document.getElementById('reset').disabled = !!flight;
-  document.getElementById('expand').disabled = !!flight
-    || fadeState === 'overview';
+  document.getElementById('expand').disabled = !!flight || fadeState === 'overview';
+  document.getElementById('export-current').disabled = !!flight;
+  document.getElementById('export-all').disabled = !!flight;
 }
 
 document.getElementById('t-labels').addEventListener('change', e => {
@@ -1122,6 +1193,16 @@ document.getElementById('expand').addEventListener('click', () => {
   const inst = diagrams[currentKey];
   inst.expansionTarget = inst.expansionTarget === 1 ? 0 : 1;
   updateExpandButton();
+});
+
+/* export buttons */
+document.getElementById('export-current').addEventListener('click', () => {
+  if (flight) return;
+  exportCurrentD();
+});
+document.getElementById('export-all').addEventListener('click', () => {
+  if (flight) return;
+  exportAll();
 });
 
 document.getElementById('overview').addEventListener('click', goToOverview);
