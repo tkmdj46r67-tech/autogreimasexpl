@@ -339,13 +339,25 @@ const SYMBOLS = {
   c1:'C₁', c2:'C₂', c3:'C₃', c4:'C₄',
 };
 
-/* Diagram-internal P positions for the four S-corner slots */
 const DIAGRAM_P = { s1:'P1', s2:'P2', ns1:'P3', ns2:'P4' };
 
 const SIDE    = { 3: 120, 2: 60, 1: 30 };
 const Z_PLANE = { 3: 400, 2: 200, 1: 0 };
-const LEVEL_COLORS = { 3: 0xFF7A45, 2: 0xFDE725, 1: 0x6DD4C4 };
-const LEVEL_NAMES  = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
+
+/* Each level now has three distinct colors — one per internal layer.
+   Center = the diagram's identity color.
+   Front  = a lighter/warmer sibling of center.
+   Back   = a cooler/more distant sibling of center.
+   No two of the twenty-one diagrams share all three, and no two share
+   even one — each level's trio is unique. */
+const LEVEL_COLORS = {
+  3: { center: 0xFF7A45, front: 0xFFBB7A, back: 0xC7477A },   // orange / amber / magenta
+  2: { center: 0xFDE725, front: 0xFF9A3D, back: 0x7ECB65 },   // yellow / orange / green
+  1: { center: 0x6DD4C4, front: 0xA4E8FF, back: 0x5578CC },   // teal   / sky    / blue
+};
+const LEVEL_NAMES = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
+
+function hexOf(c) { return '#' + c.toString(16).padStart(6, '0'); }
 
 const SPREAD = 2.2;
 
@@ -390,7 +402,23 @@ const EDGES = [
 ];
 const OPACITY = { solid: 0.95, dashed: 0.55, faint: 0.32 };
 
-/* Canonical ordering of the 12 Greimas positions */
+/* Precompute merged position buffers per edge kind — done once, shared
+   across every diagram and every layer that uses the same geometry. */
+const EDGE_POSITIONS_BY_KIND = {};
+const EDGE_KINDS = ['solid','dashed','faint'];
+for (const kind of EDGE_KINDS) {
+  const kindEdges = EDGES.filter(e => e.kind === kind);
+  const positions = new Float32Array(kindEdges.length * 6);
+  let p = 0;
+  for (const e of kindEdges) {
+    const a = GREIMAS_LOCAL[e.a];
+    const b = GREIMAS_LOCAL[e.b];
+    positions[p++] = a.x; positions[p++] = a.y; positions[p++] = a.z;
+    positions[p++] = b.x; positions[p++] = b.y; positions[p++] = b.z;
+  }
+  EDGE_POSITIONS_BY_KIND[kind] = positions;
+}
+
 const POS_ORDER = ['s1','s2','ns1','ns2','m1','m2','m3','m4','c1','c2','c3','c4'];
 
 /* =====================================================================
@@ -484,7 +512,7 @@ scene.background = new THREE.Color(0x05070d);
 
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.5, 12000);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 app.appendChild(renderer.domElement);
@@ -506,43 +534,45 @@ controls.minDistance     = 4;
 controls.maxDistance     = 6000;
 
 /* =====================================================================
-   STARFIELD — buckyball vertex shell around the whole structure
+   STARFIELD — Fibonacci sphere, ~5000 points, single draw call
    ---------------------------------------------------------------------
-   Uses an icosahedron subdivided twice (162 unique vertices). Deduped
-   from the geometry's non-indexed position buffer. Rendered as fixed-
-   pixel-size points in mid-gray.
+   A Fibonacci distribution gives an even point spread without any
+   deduplication or subdivision overhead. 5000 points in a single
+   BufferGeometry costs essentially nothing at draw time.
    ===================================================================== */
 (function createStarfield() {
-  const shell = new THREE.IcosahedronGeometry(2800, 2);
-  const posAttr = shell.attributes.position;
-  const seen = new Set();
-  const coords = [];
-  for (let i = 0; i < posAttr.count; i++) {
-    const x = posAttr.getX(i);
-    const y = posAttr.getY(i);
-    const z = posAttr.getZ(i);
-    const key = x.toFixed(2) + ',' + y.toFixed(2) + ',' + z.toFixed(2);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    coords.push(x, y, z);
+  const NUM = 5000;
+  const R   = 3200;
+
+  const positions = new Float32Array(NUM * 3);
+  const golden = Math.PI * (3 - Math.sqrt(5));
+
+  for (let i = 0; i < NUM; i++) {
+    const y = 1 - (i / (NUM - 1)) * 2;         // -1 .. 1
+    const r = Math.sqrt(Math.max(0, 1 - y * y));
+    const theta = golden * i;
+    positions[i*3    ] = Math.cos(theta) * r * R;
+    positions[i*3 + 1] = y * R;
+    positions[i*3 + 2] = Math.sin(theta) * r * R;
   }
+
   const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(coords, 3));
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
   const mat = new THREE.PointsMaterial({
     color: 0x8c8c8c,
-    size: 3.5,
+    size: 2.6,
     sizeAttenuation: false,
     transparent: true,
-    opacity: 0.55,
+    opacity: 0.62,
     depthWrite: false,
   });
+
   const pts = new THREE.Points(geo, mat);
   pts.position.set(0, 0, 200);
+  pts.frustumCulled = false;
   pts.renderOrder = -1;
   scene.add(pts);
-
-  shell.dispose();
 })();
 
 /* =====================================================================
@@ -557,7 +587,7 @@ function makeLine(p1, p2, color, opacity) {
 }
 
 function makePoint(pos, color, radius) {
-  const geo = new THREE.SphereGeometry(radius, 12, 8);
+  const geo = new THREE.SphereGeometry(radius, 10, 6);
   const mat = new THREE.MeshBasicMaterial({
     color, transparent: true, opacity: 1, depthWrite: false,
   });
@@ -578,10 +608,16 @@ function makeLabel(symbol, name, textColor, cls) {
 
 /* =====================================================================
    DIAGRAM BUILDER
+   ---------------------------------------------------------------------
+   Each layer within a diagram:
+     - three merged LineSegments objects (one per edge kind)
+     - twelve small sphere meshes (one per Greimas vertex)
+   The edge geometry buffers are shared across every layer of every
+   diagram, so building 21 * 3 = 63 layers costs almost nothing.
    ===================================================================== */
 function buildDiagram(layout) {
   const { level, index, center, scale } = layout;
-  const color = LEVEL_COLORS[level];
+  const colors = LEVEL_COLORS[level];
 
   const group = new THREE.Group();
   group.position.copy(center);
@@ -595,30 +631,36 @@ function buildDiagram(layout) {
 
   const dotR = level === 3 ? 0.30 : level === 2 ? 0.24 : 0.20;
 
-  function fillLayer(g) {
+  function fillLayer(g, layerColor) {
     const edgeMats = [];
-    for (const e of EDGES) {
-      const a = GREIMAS_LOCAL[e.a].clone();
-      const b = GREIMAS_LOCAL[e.b].clone();
-      const op = OPACITY[e.kind];
-      const line = makeLine(a, b, color, op);
-      g.add(line);
-      edgeMats.push({ mat: line.material, base: op });
+    for (const kind of EDGE_KINDS) {
+      const positions = EDGE_POSITIONS_BY_KIND[kind];
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const op = OPACITY[kind];
+      const mat = new THREE.LineBasicMaterial({
+        color: layerColor, transparent: true, opacity: op, depthWrite: false,
+      });
+      const seg = new THREE.LineSegments(geo, mat);
+      g.add(seg);
+      edgeMats.push({ mat, base: op });
     }
+
     const pointMats = [];
     for (const k of ALL_KEYS) {
       const isInner = INNER_KEYS.includes(k);
       const pos = GREIMAS_LOCAL[k].clone();
-      const mesh = makePoint(pos, color, isInner ? dotR : dotR * 0.75);
+      const mesh = makePoint(pos, layerColor, isInner ? dotR : dotR * 0.75);
       g.add(mesh);
       pointMats.push({ mat: mesh.material, base: 1 });
     }
+
     return { edgeMats, pointMats };
   }
 
-  const centerMats = fillLayer(centerGroup);
-  const frontMats  = fillLayer(frontGroup);
-  const backMats   = fillLayer(backGroup);
+  const centerMats = fillLayer(centerGroup, colors.center);
+  const frontMats  = fillLayer(frontGroup,  colors.front);
+  const backMats   = fillLayer(backGroup,   colors.back);
 
   frontGroup.position.z = 0;
   backGroup.position.z  = 0;
@@ -645,7 +687,7 @@ for (const key of Object.keys(LAYOUT)) {
 }
 
 /* =====================================================================
-   TREE LINKS — centroid-to-centroid hierarchy lines
+   TREE LINKS
    ===================================================================== */
 const treeGroup = new THREE.Group();
 scene.add(treeGroup);
@@ -659,7 +701,7 @@ for (const key of Object.keys(LAYOUT)) {
   const b = LAYOUT[lo.parentKey].center.clone();
   const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
   const mat = new THREE.LineBasicMaterial({
-    color: LEVEL_COLORS[lo.level],
+    color: LEVEL_COLORS[lo.level].center,
     transparent: true, opacity: 0, depthWrite: false,
   });
   const line = new THREE.Line(geo, mat);
@@ -775,7 +817,7 @@ function goToOverview() {
 }
 
 /* =====================================================================
-   ALPHA TARGETS
+   ALPHA ANIMATIONS
    ===================================================================== */
 function targetAlphaFor(key) {
   if (fadeState === 'overview' || fadeState === 'navigating') return 1;
@@ -808,9 +850,6 @@ function updateExpansions(dt) {
   }
 }
 
-/* =====================================================================
-   TREE LINK FADE
-   ===================================================================== */
 function updateLinks(dt) {
   const k = 1 - Math.exp(-3.0 * dt);
   const ov = (fadeState === 'overview' || fadeState === 'navigating');
@@ -832,12 +871,23 @@ function updateLabelFade(dt) {
 
 /* =====================================================================
    OPACITY APPLICATION
+   ---------------------------------------------------------------------
+   Skip the per-diagram loop entirely if nothing has changed this frame.
    ===================================================================== */
+const lastApply = { labelFade: -1, states: {} };
+
 function applyOpacities() {
+  const lfChanged = (labelFade !== lastApply.labelFade);
+  lastApply.labelFade = labelFade;
+
   for (const key of Object.keys(diagrams)) {
     const inst = diagrams[key];
     const a = inst.outerAlpha;
     const e = inst.expansion;
+
+    const prev = lastApply.states[key];
+    if (!lfChanged && prev && prev.a === a && prev.e === e) continue;
+    lastApply.states[key] = { a, e };
 
     inst.group.visible = a > 0.004;
 
@@ -893,8 +943,11 @@ function rebuildLabels() {
   clearLabels();
   const inst = diagrams[currentKey];
   const data = diagramData[currentKey];
-  const color = LEVEL_COLORS[inst.level];
-  const colorHex = '#' + color.toString(16).padStart(6, '0');
+  const colors = LEVEL_COLORS[inst.level];
+
+  const centerHex = hexOf(colors.center);
+  const frontHex  = hexOf(colors.front);
+  const backHex   = hexOf(colors.back);
 
   for (const k of ALL_KEYS) {
     const pos = GREIMAS_LOCAL[k].clone();
@@ -907,17 +960,17 @@ function rebuildLabels() {
       cls = M_KEYS.includes(k) ? 'mid' : 'corner';
     }
 
-    const centerLbl = makeLabel(SYMBOLS[k], data[k].name, colorHex, cls);
+    const centerLbl = makeLabel(SYMBOLS[k], data[k].name, centerHex, cls);
     centerLbl.position.copy(pos).addScaledVector(dir, 0.7);
     inst.centerGroup.add(centerLbl);
     inst.centerLabels.push(centerLbl);
 
-    const frontLbl = makeLabel('+' + SYMBOLS[k], data[k].syn, colorHex, 'layer');
+    const frontLbl = makeLabel('+' + SYMBOLS[k], data[k].syn, frontHex, 'layer');
     frontLbl.position.copy(pos).addScaledVector(dir, 0.7);
     inst.frontGroup.add(frontLbl);
     inst.frontLabels.push(frontLbl);
 
-    const backLbl = makeLabel('−' + SYMBOLS[k], data[k].ant, colorHex, 'layer');
+    const backLbl = makeLabel('−' + SYMBOLS[k], data[k].ant, backHex, 'layer');
     backLbl.position.copy(pos).addScaledVector(dir, 0.7);
     inst.backGroup.add(backLbl);
     inst.backLabels.push(backLbl);
@@ -960,15 +1013,6 @@ function saveInputsToCurrentDiagram() {
 
 /* =====================================================================
    CSV EXPORT
-   ---------------------------------------------------------------------
-   Columns:
-     L, D, Parent, Parent_P, Position, Diagram_P, Name,
-     Expanded_Syn, Expanded_Ant
-
-   Diagram_P is P1–P4 for the four S-corner slots, and blank for
-   M1–M4 and C1–C4. Expanded_Syn / Expanded_Ant hold the +front and
-   −back terms, which are only visible on-screen when the diagram
-   is expanded, but are exported regardless of expansion state.
    ===================================================================== */
 function csvEscape(v) {
   const s = (v == null) ? '' : String(v);
@@ -978,15 +1022,7 @@ function csvEscape(v) {
 
 function buildCSVRows(keys) {
   const rows = [[
-    'L',
-    'D',
-    'Parent',
-    'Parent_P',
-    'Position',
-    'Diagram_P',
-    'Name',
-    'Expanded_Syn',
-    'Expanded_Ant',
+    'L','D','Parent','Parent_P','Position','Diagram_P','Name','Expanded_Syn','Expanded_Ant',
   ]];
 
   for (const key of keys) {
@@ -1006,15 +1042,9 @@ function buildCSVRows(keys) {
     for (const pos of POS_ORDER) {
       const entry = data[pos] || { name:'', syn:'', ant:'' };
       rows.push([
-        L,
-        D,
-        parentLabel,
-        parentP,
-        SYMBOLS[pos],
-        DIAGRAM_P[pos] || '',
-        entry.name,
-        entry.syn,
-        entry.ant,
+        L, D, parentLabel, parentP,
+        SYMBOLS[pos], DIAGRAM_P[pos] || '',
+        entry.name, entry.syn, entry.ant,
       ]);
     }
   }
@@ -1045,14 +1075,12 @@ function exportCurrentD() {
 
 function exportAll() {
   saveInputsToCurrentDiagram();
-
   const keys = Object.keys(LAYOUT).sort((a, b) => {
     const [la, da] = a.split('-').map(Number);
     const [lb, db] = b.split('-').map(Number);
     if (lb !== la) return lb - la;
     return da - db;
   });
-
   const rows = buildCSVRows(keys);
   downloadCSV(rows, 'greimas-nested-full.csv');
 }
