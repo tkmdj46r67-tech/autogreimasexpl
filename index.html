@@ -128,11 +128,6 @@
 
   .row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
   .row .sym { flex: 0 0 42px; font-size: 11px; font-weight: 600; text-align: right; }
-  .row .sym.dot { flex: 0 0 42px; display: flex; justify-content: flex-end; }
-  .row .sym.dot i {
-    display: block; width: 7px; height: 7px; border-radius: 50%;
-    background: currentColor; box-shadow: 0 0 8px currentColor;
-  }
   .row input {
     flex: 1; min-width: 0; padding: 5px 9px; border-radius: 6px;
     background: rgba(255, 255, 255, 0.05);
@@ -140,12 +135,6 @@
     color: #e9edf7; font: inherit; font-size: 11.5px; outline: none;
   }
   .row input:focus { border-color: rgba(126, 160, 255, 0.5); background: rgba(126, 160, 255, 0.10); }
-  .row input[readonly] {
-    cursor: default; background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.05); color: #97a2be;
-  }
-  .row.sub input { font-size: 10.5px; color: #a8b3cc; }
-  .row.sub { margin-bottom: 7px; }
 
   .buttons { display: flex; gap: 7px; margin: 10px 0 6px; }
   button {
@@ -287,14 +276,18 @@ const SYMBOLS = {
   c1:'C₁', c2:'C₂', c3:'C₃', c4:'C₄',
 };
 
-/* Same layout the earlier "nested squares" demo used */
-const SIDE      = { 3: 120, 2: 60, 1: 30 };
-const Z_PLANE   = { 3: 400, 2: 200, 1: 0 };
+/* Level sizes and plane heights */
+const SIDE    = { 3: 120, 2: 60, 1: 30 };
+const Z_PLANE = { 3: 400, 2: 200, 1: 0 };
 const LEVEL_COLORS = { 3: 0xFF7A45, 2: 0xFDE725, 1: 0x6DD4C4 };
 const LEVEL_NAMES  = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
 
-/* Greimas local geometry — inner square is 4 units across,
-   outer diamond is 9 units across. Both centred on the origin. */
+/* SPREAD: multiplier on child offsets. 1.0 puts children exactly on
+   their parent's inner corners; >1 pushes them outward for breathing
+   room. 2.2 gives a generous gap between adjacent diagrams. */
+const SPREAD = 2.2;
+
+/* Greimas local geometry — inner square 4 units across, outer 9 units */
 const GREIMAS_LOCAL = {
   s1:  new THREE.Vector3(-2,  2, 0),
   s2:  new THREE.Vector3( 2,  2, 0),
@@ -309,35 +302,34 @@ const GREIMAS_LOCAL = {
   c3:  new THREE.Vector3(-4.5, -4.5, 0),
   c4:  new THREE.Vector3(-4.5,  4.5, 0),
 };
-
 const GREIMAS_EXTENT = 9;
 const GREIMAS_INNER  = 4;
 
-/* Edge topology — first the solid inner relations, then the dashed outer
-   connections. `dashed` here just means "we'll draw it thinner & dimmer". */
 const EDGES = [
-  { a:'s1',  b:'s2',  w:0.9, kind:'solid' },
-  { a:'ns1', b:'ns2', w:0.9, kind:'solid' },
-  { a:'s1',  b:'ns1', w:0.9, kind:'solid' },
-  { a:'s2',  b:'ns2', w:0.9, kind:'solid' },
-  { a:'s1',  b:'ns2', w:0.8, kind:'dashed' },
-  { a:'s2',  b:'ns1', w:0.8, kind:'dashed' },
-  { a:'s1',  b:'m1',  w:0.55, kind:'dashed' },
-  { a:'s1',  b:'m4',  w:0.55, kind:'dashed' },
-  { a:'s2',  b:'m1',  w:0.55, kind:'dashed' },
-  { a:'s2',  b:'m2',  w:0.55, kind:'dashed' },
-  { a:'ns1', b:'m4',  w:0.55, kind:'dashed' },
-  { a:'ns1', b:'m3',  w:0.55, kind:'dashed' },
-  { a:'ns2', b:'m2',  w:0.55, kind:'dashed' },
-  { a:'ns2', b:'m3',  w:0.55, kind:'dashed' },
-  { a:'c4', b:'c1', w:0.7, kind:'dashed' },
-  { a:'c1', b:'c2', w:0.7, kind:'dashed' },
-  { a:'c2', b:'c3', w:0.7, kind:'dashed' },
-  { a:'c3', b:'c4', w:0.7, kind:'dashed' },
+  { a:'s1',  b:'s2',  kind:'solid' },
+  { a:'ns1', b:'ns2', kind:'solid' },
+  { a:'s1',  b:'ns1', kind:'solid' },
+  { a:'s2',  b:'ns2', kind:'solid' },
+  { a:'s1',  b:'ns2', kind:'dashed' },
+  { a:'s2',  b:'ns1', kind:'dashed' },
+  { a:'s1',  b:'m1',  kind:'faint' },
+  { a:'s1',  b:'m4',  kind:'faint' },
+  { a:'s2',  b:'m1',  kind:'faint' },
+  { a:'s2',  b:'m2',  kind:'faint' },
+  { a:'ns1', b:'m4',  kind:'faint' },
+  { a:'ns1', b:'m3',  kind:'faint' },
+  { a:'ns2', b:'m2',  kind:'faint' },
+  { a:'ns2', b:'m3',  kind:'faint' },
+  { a:'c4', b:'c1', kind:'faint' },
+  { a:'c1', b:'c2', kind:'faint' },
+  { a:'c2', b:'c3', kind:'faint' },
+  { a:'c3', b:'c4', kind:'faint' },
 ];
 
+const OPACITY = { solid: 0.95, dashed: 0.55, faint: 0.32 };
+
 /* =====================================================================
-   DATA DEFAULTS
+   DATA
    ===================================================================== */
 const DEFAULTS = {
   s1:  { name:'Being' },
@@ -353,7 +345,6 @@ const DEFAULTS = {
   c3:  { name:'Subterfuge' },
   c4:  { name:'Revelation' },
 };
-
 function blankDiagram() {
   const d = {};
   for (const k of ALL_KEYS) d[k] = { name: '' };
@@ -366,31 +357,31 @@ function defaultDiagram() {
 }
 
 /* =====================================================================
-   LAYOUT — compute world positions of every diagram
+   LAYOUT
    ===================================================================== */
 function scaleFor(L) { return SIDE[L] / GREIMAS_EXTENT; }
 function innerHalf(L) { return (GREIMAS_INNER * scaleFor(L)) / 2; }
 
 const P_LOCAL = [
-  { x: -1, y:  1 },   // P1 (top-left)
-  { x:  1, y:  1 },   // P2 (top-right)
-  { x: -1, y: -1 },   // P3 (bottom-left)
-  { x:  1, y: -1 },   // P4 (bottom-right)
+  { x: -1, y:  1 },  // P1 (top-left)
+  { x:  1, y:  1 },  // P2 (top-right)
+  { x: -1, y: -1 },  // P3 (bottom-left)
+  { x:  1, y: -1 },  // P4 (bottom-right)
 ];
 
 const LAYOUT = {};
 
-/* L3 */
+/* L3 (root) */
 LAYOUT['3-0'] = {
   level: 3, index: 0,
   center: new THREE.Vector3(0, 0, Z_PLANE[3]),
   scale: scaleFor(3),
 };
 
-/* L2 — at L3's inner-square corners */
+/* L2 children — placed at L3's inner corners, multiplied by SPREAD */
 for (let i = 0; i < 4; i++) {
   const p = P_LOCAL[i];
-  const off = innerHalf(3);
+  const off = innerHalf(3) * SPREAD;
   LAYOUT[`2-${i}`] = {
     level: 2, index: i,
     parentKey: '3-0', parentCorner: i,
@@ -399,11 +390,11 @@ for (let i = 0; i < 4; i++) {
   };
 }
 
-/* L1 — at L2's inner-square corners */
+/* L1 grandchildren — placed at L2 inner corners, times SPREAD */
 for (let i = 0; i < 4; i++) {
   for (let j = 0; j < 4; j++) {
     const p = P_LOCAL[j];
-    const off = innerHalf(2);
+    const off = innerHalf(2) * SPREAD;
     const parent = LAYOUT[`2-${i}`];
     const idx = i * 4 + j;
     LAYOUT[`1-${idx}`] = {
@@ -426,7 +417,7 @@ const app = document.getElementById('app');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x05070d);
 
-const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.5, 8000);
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.5, 12000);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -447,7 +438,7 @@ controls.rotateSpeed     = 0.85;
 controls.zoomSpeed       = 0.9;
 controls.enablePan       = false;
 controls.minDistance     = 4;
-controls.maxDistance     = 4000;
+controls.maxDistance     = 6000;
 
 /* =====================================================================
    HELPERS
@@ -458,9 +449,10 @@ const glowTex = (() => {
   cv.width = cv.height = s;
   const ctx = cv.getContext('2d');
   const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
+  /* Softer alpha ramp — the glow falls off faster */
   g.addColorStop(0.00, 'rgba(255,255,255,1.0)');
-  g.addColorStop(0.30, 'rgba(255,255,255,0.7)');
-  g.addColorStop(0.65, 'rgba(255,255,255,0.15)');
+  g.addColorStop(0.22, 'rgba(255,255,255,0.55)');
+  g.addColorStop(0.55, 'rgba(255,255,255,0.10)');
   g.addColorStop(1.00, 'rgba(255,255,255,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, s, s);
@@ -469,17 +461,15 @@ const glowTex = (() => {
   return t;
 })();
 
-function makeLine(p1, p2, color, opacity, lw = 1) {
+function makeLine(p1, p2, color, opacity) {
   const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
   const mat = new THREE.LineBasicMaterial({
-    color, transparent: true, opacity,
-    depthWrite: false, linewidth: lw,
+    color, transparent: true, opacity, depthWrite: false,
   });
-  const line = new THREE.Line(geo, mat);
-  return line;
+  return new THREE.Line(geo, mat);
 }
 
-function makeDot(pos, color, scale, opacity = 1) {
+function makeDot(pos, color, scale, opacity) {
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
     map: glowTex, color,
     blending: THREE.AdditiveBlending,
@@ -502,11 +492,6 @@ function makeLabel(symbol, name, textColor, cls) {
 
 /* =====================================================================
    DIAGRAM BUILDER
-   ---------------------------------------------------------------------
-   Each diagram is a Group at world position with a scale factor. All
-   Greimas geometry is authored in local coordinates and multiplied by
-   the group's scale, so the same 9-unit outer diamond ends up fitting
-   inside each level's allotted square.
    ===================================================================== */
 function buildDiagram(layout) {
   const { level, index, center, scale } = layout;
@@ -517,26 +502,25 @@ function buildDiagram(layout) {
   group.scale.setScalar(scale);
   scene.add(group);
 
-  /* --- Edges --- */
   const edgeLines = [];
   for (const e of EDGES) {
     const a = GREIMAS_LOCAL[e.a].clone();
     const b = GREIMAS_LOCAL[e.b].clone();
-    const baseOp = e.kind === 'solid' ? 0.95 : 0.55;
-    const line = makeLine(a, b, color, baseOp);
+    const op = OPACITY[e.kind];
+    const line = makeLine(a, b, color, op);
     group.add(line);
-    edgeLines.push({ line, baseOpacity: baseOp });
+    edgeLines.push({ line, baseOpacity: op });
   }
 
-  /* --- Vertex dots --- */
-  const dotSize = level === 3 ? 2.2 : level === 2 ? 1.6 : 1.2;
+  /* Dot size reduced ~30% from before; opacity lowered for softer glow */
+  const dotSize = level === 3 ? 1.5 : level === 2 ? 1.1 : 0.85;
   const dotSprites = [];
   for (const k of ALL_KEYS) {
     const isInner = INNER_KEYS.includes(k);
     const pos = GREIMAS_LOCAL[k].clone();
-    const s = makeDot(pos, color, isInner ? dotSize : dotSize * 0.72, 0.95);
+    const s = makeDot(pos, color, isInner ? dotSize : dotSize * 0.7, 0.55);
     group.add(s);
-    dotSprites.push({ sprite: s, baseOpacity: 0.95 });
+    dotSprites.push({ sprite: s, baseOpacity: 0.55 });
   }
 
   return {
@@ -544,31 +528,30 @@ function buildDiagram(layout) {
     level, index,
     group, scale, center: center.clone(),
     edgeLines, dotSprites,
-    outerAlpha: 0,        // animated
-    labels: [],           // CSS2D labels, built only when this diagram is current
+    outerAlpha: 0,
+    labels: [],
   };
 }
 
-/* =====================================================================
-   DIAGRAM INSTANCES
-   ===================================================================== */
 const diagrams = {};
 for (const key of Object.keys(LAYOUT)) {
   diagrams[key] = buildDiagram(LAYOUT[key]);
 }
 
-/* Term data per diagram */
+/* =====================================================================
+   DATA PER DIAGRAM
+   L1 D1 is the starting diagram and carries the default Greimas content.
+   ===================================================================== */
 const diagramData = {};
 for (const key of Object.keys(LAYOUT)) {
-  const [L, D] = key.split('-').map(Number);
-  diagramData[key] = (L === 3 && D === 0) ? defaultDiagram() : blankDiagram();
+  diagramData[key] = (key === '1-0') ? defaultDiagram() : blankDiagram();
 }
 
 /* =====================================================================
    NAVIGATION
    ===================================================================== */
-let currentKey = '3-0';
-let fadeState  = 'steady';       // 'steady' | 'navigating' | 'overview'
+let currentKey = '1-0';
+let fadeState  = 'steady';
 let flight     = null;
 
 const STATE0_DIR = new THREE.Vector3(0.55, 0.42, 0.72).normalize();
@@ -634,7 +617,6 @@ function goToDiagram(L, D) {
   const key = `${L}-${D}`;
   if (!diagrams[key]) return;
 
-  // Save current inputs into the current diagram's data
   saveInputsToCurrentDiagram();
 
   currentKey = key;
@@ -657,14 +639,15 @@ function goToOverview() {
   fadeState = 'overview';
   updateUI();
 
+  /* Overview camera pulled further back to accommodate the wider spread */
   const overviewTarget = new THREE.Vector3(0, 0, 200);
-  const overviewPos    = new THREE.Vector3(500, 400, 1150);
+  const overviewPos    = new THREE.Vector3(650, 520, 1500);
 
   startFlight(overviewTarget, overviewPos.clone().sub(overviewTarget), 1.8, () => {});
 }
 
 /* =====================================================================
-   OUTER ALPHA ANIMATION
+   OUTER ALPHA
    ===================================================================== */
 function updateOuterAlphas(dt) {
   const k = 1 - Math.exp(-1.5 * dt);
@@ -682,7 +665,6 @@ function applyOpacities() {
   for (const key of Object.keys(diagrams)) {
     const inst = diagrams[key];
     const a = inst.outerAlpha;
-
     inst.group.visible = a > 0.004;
 
     for (const el of inst.edgeLines) {
@@ -702,7 +684,7 @@ function applyOpacities() {
 }
 
 /* =====================================================================
-   LABELS — only for the current diagram
+   LABELS (current diagram only)
    ===================================================================== */
 let labelsOn = true;
 
@@ -754,7 +736,6 @@ function syncInputsFromState() {
     if (inputs[k]?.name) inputs[k].name.value = data[k].name || '';
   }
 }
-
 function saveInputsToCurrentDiagram() {
   const data = diagramData[currentKey];
   for (const k of ALL_KEYS) {
@@ -763,7 +744,7 @@ function saveInputsToCurrentDiagram() {
 }
 
 /* =====================================================================
-   UI BUILDING
+   UI
    ===================================================================== */
 function buildUI() {
   const rowL3 = document.getElementById('row-L3');
@@ -825,7 +806,6 @@ function updateUI() {
   document.getElementById('reset').disabled = !!flight;
 }
 
-/* toggles */
 document.getElementById('t-labels').addEventListener('change', e => {
   labelsOn = e.target.checked;
   applyOpacities();
@@ -834,38 +814,27 @@ document.getElementById('t-rotate').addEventListener('change', e => {
   controls.autoRotate = e.target.checked;
   controls.autoRotateSpeed = 0.9;
 });
-
-/* collapsible sections */
 document.querySelectorAll('.sec[data-sec]').forEach(sec => {
   sec.querySelector('.sec-title').addEventListener('click', () => sec.classList.toggle('collapsed'));
 });
 
-/* apply / reset */
 document.getElementById('apply').addEventListener('click', () => {
   if (flight) return;
   saveInputsToCurrentDiagram();
   rebuildLabels();
 });
-
 document.getElementById('reset').addEventListener('click', () => {
   if (flight) return;
   for (const key of Object.keys(diagramData)) {
-    const [L, D] = key.split('-').map(Number);
-    diagramData[key] = (L === 3 && D === 0) ? defaultDiagram() : blankDiagram();
+    diagramData[key] = (key === '1-0') ? defaultDiagram() : blankDiagram();
   }
   syncInputsFromState();
   rebuildLabels();
 });
-
-/* overview button */
 document.getElementById('overview').addEventListener('click', goToOverview);
-
-/* clear cache link — placeholder to keep the UI consistent */
 document.getElementById('clear-cache').addEventListener('click', () => {
   try { localStorage.removeItem('greimas-words-v3'); } catch (e) {}
 });
-
-/* Enter key in inputs triggers apply */
 document.querySelectorAll('#ui input[data-k]').forEach(el => {
   el.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
@@ -878,7 +847,7 @@ document.querySelectorAll('#ui input[data-k]').forEach(el => {
 });
 
 /* =====================================================================
-   RESIZE
+   RESIZE + LOOP
    ===================================================================== */
 function onResize() {
   camera.aspect = innerWidth / innerHeight;
@@ -888,11 +857,7 @@ function onResize() {
 }
 addEventListener('resize', onResize);
 
-/* =====================================================================
-   LOOP
-   ===================================================================== */
 const clock = new THREE.Clock();
-
 function animate() {
   requestAnimationFrame(animate);
   const now = performance.now();
@@ -912,15 +877,20 @@ function animate() {
    BOOT
    ===================================================================== */
 buildUI();
+
+/* Start at L1 D1 */
+currentKey = '1-0';
 syncInputsFromState();
 rebuildLabels();
 
-/* Snap camera to L3 D1 */
+for (const key of Object.keys(diagrams)) {
+  diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
+}
+
 {
-  const inst = diagrams['3-0'];
-  inst.outerAlpha = 1;
+  const inst = diagrams['1-0'];
   controls.target.copy(inst.center);
-  camera.position.copy(inst.center).add(state0Offset('3-0'));
+  camera.position.copy(inst.center).add(state0Offset('1-0'));
   camera.lookAt(inst.center);
 }
 
