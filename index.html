@@ -1039,8 +1039,9 @@ function goToDiagram(L, D) {
     clearValidationReport();
   }
 
-  currentKey = key;
+    currentKey = key;
   fadeState = 'navigating';
+  syncInputsFromState();   // <-- add this
   updateUI();
   updateExpandButton();
   rebuildLabels();
