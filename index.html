@@ -155,7 +155,6 @@
   .row.sub input { font-size: 10.5px; color: #a8b3cc; }
   .row.sub { margin-bottom: 7px; }
 
-  /* Shared style for the two code paste panels */
   #json-input,
   #full-structure-input {
     width: 100%;
@@ -200,6 +199,42 @@
   #full-structure-status.err { color: #ff9a9a; }
   #json-status.ok,
   #full-structure-status.ok  { color: #a8e8a8; }
+
+  /* Validation report */
+  #full-structure-report {
+    display: none;
+    margin: 4px 0 8px;
+    padding: 9px 11px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 10px;
+    line-height: 1.55;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  #full-structure-report.visible { display: block; }
+  #full-structure-report::-webkit-scrollbar { width: 5px; }
+  #full-structure-report::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15); border-radius: 3px;
+  }
+  #full-structure-report .rep-heading {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8a96b4;
+    margin: 9px 0 4px;
+  }
+  #full-structure-report .rep-heading:first-child { margin-top: 0; }
+  #full-structure-report .rep-item {
+    padding: 1px 0;
+    word-break: break-word;
+  }
+  #full-structure-report .rep-ok      { color: #a8e8a8; }
+  #full-structure-report .rep-issue   { color: #ff9a9a; }
+  #full-structure-report .rep-warning { color: #ffd27a; }
+  #full-structure-report .rep-info    { color: #a8c8e8; }
 
   #json-apply,
   #full-structure-apply {
@@ -413,17 +448,11 @@
     "D2": { ... },
     "D3": { ... }
   },
-  "L2": {
-    "D1": { ... },
-    "D2": { ... },
-    "D3": { ... },
-    "D4": { ... }
-  },
-  "L3": {
-    "D1": { ... }
-  }
+  "L2": { "D1": { ... }, "D2": { ... }, "D3": { ... }, "D4": { ... } },
+  "L3": { "D1": { ... } }
 }'></textarea>
       <div id="full-structure-status"></div>
+      <div id="full-structure-report"></div>
       <button id="full-structure-apply">Apply Full Structure</button>
     </div></div></div>
   </div>
@@ -924,6 +953,7 @@ function goToDiagram(L, D) {
     }
     setJsonStatus('', '');
     setFullStructureStatus('', '');
+    clearValidationReport();
   }
 
   currentKey = key;
@@ -954,6 +984,7 @@ function goToOverview() {
   updateUI();
   setJsonStatus('', '');
   setFullStructureStatus('', '');
+  clearValidationReport();
 
   const overviewTarget = new THREE.Vector3(0, 0, 200);
   const overviewPos    = new THREE.Vector3(650, 520, 1500);
@@ -1155,10 +1186,7 @@ function saveInputsToCurrentDiagram() {
 }
 
 /* =====================================================================
-   JSON PANELS
-   ---------------------------------------------------------------------
-   Shared key map used by both the single-D panel and the full-structure
-   panel. Both write only to `.name` (the center-layer term).
+   JSON KEY MAP (shared)
    ===================================================================== */
 const JSON_KEY_MAP = {
   'S1':  's1',
@@ -1175,7 +1203,9 @@ const JSON_KEY_MAP = {
   'C4':  'c4',
 };
 
-/* ---- Single-D panel ---- */
+/* =====================================================================
+   SINGLE-D JSON PANEL
+   ===================================================================== */
 const jsonInputEl  = document.getElementById('json-input');
 const jsonApplyEl  = document.getElementById('json-apply');
 const jsonStatusEl = document.getElementById('json-status');
@@ -1234,14 +1264,193 @@ function applyJSONInput() {
 
 jsonApplyEl.addEventListener('click', applyJSONInput);
 
-/* ---- Full-structure panel ---- */
+/* =====================================================================
+   FULL-STRUCTURE PANEL
+   ===================================================================== */
 const fullStructureInputEl  = document.getElementById('full-structure-input');
 const fullStructureApplyEl  = document.getElementById('full-structure-apply');
 const fullStructureStatusEl = document.getElementById('full-structure-status');
+const fullStructureReportEl = document.getElementById('full-structure-report');
 
 function setFullStructureStatus(text, cls) {
   fullStructureStatusEl.textContent = text || '';
   fullStructureStatusEl.className = cls || '';
+}
+
+function clearValidationReport() {
+  fullStructureReportEl.innerHTML = '';
+  fullStructureReportEl.classList.remove('visible');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+/* ---------------------------------------------------------------------
+   VALIDATOR
+   Checks after applying a full structure:
+     1. Internal mirror collapse: ~S1 == S2 or ~S2 == S1 within any D
+     2. C2 self-loop: C2 == S1 in L1 (would stall the cascade)
+     3. Cascade integrity:
+          L1: D(n+1).S1  = D(n).C2
+          L2: D_k.S_j    = L1 D_(4(k-1)+j).~S2
+          L3: D1.S_j     = L2 D_j.C2
+     4. Reuse across L1 diagrams (informational)
+   --------------------------------------------------------------------- */
+function validateStructure() {
+  const issues = [];
+  const warnings = [];
+  const reuse = [];
+  let cascadeOk = 0;
+  let cascadeTotal = 0;
+
+  /* ---- 1. Internal integrity (all diagrams) ---- */
+  for (const key of Object.keys(LAYOUT)) {
+    const lo = LAYOUT[key];
+    const data = diagramData[key];
+    const label = `L${lo.level} D${lo.index + 1}`;
+
+    if (data.ns1.name && data.s2.name && data.ns1.name === data.s2.name) {
+      issues.push(`${label}: ~S1 equals S2 ("${data.ns1.name}") — square collapses`);
+    }
+    if (data.ns2.name && data.s1.name && data.ns2.name === data.s1.name) {
+      issues.push(`${label}: ~S2 equals S1 ("${data.ns2.name}") — square collapses`);
+    }
+
+    if (lo.level === 1 && data.c2.name && data.s1.name && data.c2.name === data.s1.name) {
+      issues.push(`${label}: C2 equals S1 ("${data.c2.name}") — cascade will stall`);
+    }
+  }
+
+  /* ---- 2. Cascade: L1 chain ---- */
+  for (let i = 0; i < 15; i++) {
+    cascadeTotal++;
+    const cur = diagramData[`1-${i}`];
+    const nxt = diagramData[`1-${i+1}`];
+    if (!cur.c2.name || !nxt.s1.name) continue;
+    if (cur.c2.name === nxt.s1.name) cascadeOk++;
+    else {
+      warnings.push(
+        `L1 D${i+1}.C2 ("${cur.c2.name}") ≠ L1 D${i+2}.S1 ("${nxt.s1.name}") — cascade broken`
+      );
+    }
+  }
+
+  /* ---- 3. Cascade: L2 ← L1 (~S2 → S_j) ---- */
+  for (let k = 0; k < 4; k++) {
+    const l2 = diagramData[`2-${k}`];
+    for (let j = 0; j < 4; j++) {
+      cascadeTotal++;
+      const l1Index = k * 4 + j;
+      const l1 = diagramData[`1-${l1Index}`];
+      const l2Key = P_CORNER_KEYS[j];
+      const l2Val = l2[l2Key].name;
+      const l1Val = l1.ns2.name;
+      if (!l2Val || !l1Val) continue;
+      if (l2Val === l1Val) cascadeOk++;
+      else {
+        warnings.push(
+          `L2 D${k+1}.${SYMBOLS[l2Key]} ("${l2Val}") ≠ L1 D${l1Index+1}.~S2 ("${l1Val}") — cascade broken`
+        );
+      }
+    }
+  }
+
+  /* ---- 4. Cascade: L3 ← L2 (C2 → S_j) ---- */
+  const l3 = diagramData['3-0'];
+  for (let j = 0; j < 4; j++) {
+    cascadeTotal++;
+    const l2 = diagramData[`2-${j}`];
+    const l3Key = P_CORNER_KEYS[j];
+    const l3Val = l3[l3Key].name;
+    const l2Val = l2.c2.name;
+    if (!l3Val || !l2Val) continue;
+    if (l3Val === l2Val) cascadeOk++;
+    else {
+      warnings.push(
+        `L3 D1.${SYMBOLS[l3Key]} ("${l3Val}") ≠ L2 D${j+1}.C2 ("${l2Val}") — cascade broken`
+      );
+    }
+  }
+
+  /* ---- 5. Reuse across L1 diagrams (informational) ---- */
+  const termAppearances = new Map(); // term -> [{d, pos}]
+  for (let i = 0; i < 16; i++) {
+    const data = diagramData[`1-${i}`];
+    for (const pos of POS_ORDER) {
+      const t = data[pos].name;
+      if (!t) continue;
+      if (!termAppearances.has(t)) termAppearances.set(t, []);
+      termAppearances.get(t).push({ d: i + 1, pos });
+    }
+  }
+  for (const [term, appearances] of termAppearances) {
+    if (appearances.length < 2) continue;
+    // count distinct Ds
+    const ds = [...new Set(appearances.map(a => a.d))].sort((a,b) => a-b);
+    if (ds.length < 2) continue;
+    reuse.push({ term, appearances, dCount: ds.length });
+  }
+  // sort: most widespread first, tie-break by term
+  reuse.sort((a, b) => (b.dCount - a.dCount) || a.term.localeCompare(b.term));
+
+  return { issues, warnings, reuse, cascadeOk, cascadeTotal };
+}
+
+function renderValidationReport(report) {
+  const { issues, warnings, reuse, cascadeOk, cascadeTotal } = report;
+  let html = '';
+
+  /* Cascade integrity summary */
+  html += `<div class="rep-heading">Cascade Integrity</div>`;
+  if (cascadeTotal === 0) {
+    html += `<div class="rep-item rep-info">No cascade links to check.</div>`;
+  } else if (cascadeOk === cascadeTotal) {
+    html += `<div class="rep-item rep-ok">✓ All ${cascadeTotal} cascade links satisfied</div>`;
+  } else {
+    html += `<div class="rep-item rep-warning">⚠ ${cascadeOk}/${cascadeTotal} cascade links satisfied</div>`;
+  }
+
+  /* Issues */
+  if (issues.length) {
+    html += `<div class="rep-heading">Issues (${issues.length})</div>`;
+    for (const issue of issues) {
+      html += `<div class="rep-item rep-issue">✗ ${escapeHtml(issue)}</div>`;
+    }
+  }
+
+  /* Warnings */
+  if (warnings.length) {
+    html += `<div class="rep-heading">Warnings (${warnings.length})</div>`;
+    for (const w of warnings) {
+      html += `<div class="rep-item rep-warning">⚠ ${escapeHtml(w)}</div>`;
+    }
+  }
+
+  /* Reuse */
+  if (reuse.length) {
+    html += `<div class="rep-heading">Reuse Across L1 (${reuse.length})</div>`;
+    html += `<div class="rep-item rep-info" style="opacity:0.7;margin-bottom:4px;">Terms appearing in 2+ different L1 diagrams. Cascade-required repeats (C2→S1) are included.</div>`;
+    const shown = reuse.slice(0, 14);
+    for (const r of shown) {
+      const ds = [...new Set(r.appearances.map(a => a.d))].sort((a,b) => a-b);
+      html += `<div class="rep-item rep-info">"${escapeHtml(r.term)}" — D${ds.join(', D')}</div>`;
+    }
+    if (reuse.length > shown.length) {
+      html += `<div class="rep-item rep-info" style="opacity:0.7;">… and ${reuse.length - shown.length} more</div>`;
+    }
+  }
+
+  /* Clean result */
+  if (!issues.length && !warnings.length && !reuse.length && cascadeTotal > 0 && cascadeOk === cascadeTotal) {
+    html += `<div class="rep-heading">Result</div>`;
+    html += `<div class="rep-item rep-ok">✓ Structure is clean — no issues, no warnings, no reuse.</div>`;
+  }
+
+  fullStructureReportEl.innerHTML = html;
+  fullStructureReportEl.classList.add('visible');
 }
 
 function applyFullStructure() {
@@ -1250,6 +1459,7 @@ function applyFullStructure() {
   const text = fullStructureInputEl.value.trim();
   if (!text) {
     setFullStructureStatus('Nothing to apply.', 'err');
+    clearValidationReport();
     return;
   }
 
@@ -1258,11 +1468,13 @@ function applyFullStructure() {
     parsed = JSON.parse(text);
   } catch (e) {
     setFullStructureStatus('Invalid JSON: ' + e.message, 'err');
+    clearValidationReport();
     return;
   }
 
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
     setFullStructureStatus('JSON must be a single object.', 'err');
+    clearValidationReport();
     return;
   }
 
@@ -1272,7 +1484,7 @@ function applyFullStructure() {
 
   for (const levelKey of Object.keys(parsed)) {
     const lvlMatch = /^L(\d+)$/.exec(levelKey);
-    if (!lvlMatch) continue;   // skips metadata and anything else
+    if (!lvlMatch) continue;
     const level = parseInt(lvlMatch[1], 10);
 
     const levelObj = parsed[levelKey];
@@ -1318,18 +1530,28 @@ function applyFullStructure() {
       'No diagrams found. Expected keys like "L1": { "D1": { ... }, ... }, "L2": { ... }, "L3": { ... }.',
       'err'
     );
+    clearValidationReport();
     return;
   }
 
-  /* Refresh the visible panel and labels for whatever D is current */
   syncInputsFromState();
   rebuildLabels();
+
+  /* Run the validator and render the report */
+  const report = validateStructure();
+  renderValidationReport(report);
 
   let msg = `Applied ${termsUpdated} term${termsUpdated === 1 ? '' : 's'} across ${diagramsUpdated} diagram${diagramsUpdated === 1 ? '' : 's'}.`;
   if (unknownDiagrams.length) {
     msg += ` Skipped ${unknownDiagrams.length} unknown (${unknownDiagrams.slice(0, 4).join(', ')}${unknownDiagrams.length > 4 ? ', …' : ''}).`;
   }
-  setFullStructureStatus(msg, 'ok');
+  const problemCount = report.issues.length + report.warnings.length;
+  if (problemCount > 0) {
+    msg += ` ${problemCount} problem${problemCount === 1 ? '' : 's'} found — see report below.`;
+    setFullStructureStatus(msg, 'err');
+  } else {
+    setFullStructureStatus(msg, 'ok');
+  }
 }
 
 fullStructureApplyEl.addEventListener('click', applyFullStructure);
@@ -1533,6 +1755,7 @@ document.getElementById('reset').addEventListener('click', () => {
   updateExpandButton();
   setJsonStatus('', '');
   setFullStructureStatus('', '');
+  clearValidationReport();
 });
 
 function updateExpandButton() {
