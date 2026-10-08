@@ -155,6 +155,62 @@
   .row.sub input { font-size: 10.5px; color: #a8b3cc; }
   .row.sub { margin-bottom: 7px; }
 
+  /* JSON panel */
+  #json-input {
+    width: 100%;
+    min-height: 168px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e9edf7;
+    font-family: ui-monospace, Menlo, Consolas, "Courier New", monospace;
+    font-size: 11px;
+    line-height: 1.45;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.15s, background 0.15s, opacity 0.2s;
+  }
+  #json-input:focus {
+    border-color: rgba(126, 160, 255, 0.5);
+    background: rgba(126, 160, 255, 0.10);
+  }
+  #json-input:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  #json-status {
+    margin: 6px 2px 6px;
+    font-size: 10px;
+    letter-spacing: 0.03em;
+    min-height: 13px;
+    color: #7e8aa8;
+    transition: color 0.2s;
+  }
+  #json-status.err { color: #ff9a9a; }
+  #json-status.ok  { color: #a8e8a8; }
+
+  #json-apply {
+    display: block;
+    width: 100%;
+    padding: 8px 4px;
+    margin: 0;
+    border-radius: 7px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #cfe0ff;
+    background: rgba(126, 160, 255, 0.18);
+    border: 1px solid rgba(126, 160, 255, 0.4);
+    transition: background 0.15s, border-color 0.15s, opacity 0.2s;
+  }
+  #json-apply:hover:not(:disabled) { background: rgba(126, 160, 255, 0.32); }
+  #json-apply:disabled { opacity: 0.4; cursor: not-allowed; }
+
   .buttons { display: flex; gap: 7px; margin: 10px 0 6px; }
   button {
     flex: 1; padding: 8px 4px; border-radius: 7px; cursor: pointer;
@@ -311,6 +367,28 @@
     </div></div></div>
   </div>
 
+  <div class="sec collapsed" data-sec>
+    <div class="sec-title"><span>Paste JSON</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
+      <textarea id="json-input" spellcheck="false" placeholder='{
+  "S1": "Autonomy",
+  "S2": "Determinism",
+  "~S1": "Dependence",
+  "~S2": "Necessity",
+  "M1": "Liberty",
+  "M2": "Coercion",
+  "M3": "Compulsion",
+  "M4": "Obligation",
+  "C1": "Choice",
+  "C2": "Force",
+  "C3": "Constraint",
+  "C4": "Responsibility"
+}'></textarea>
+      <div id="json-status"></div>
+      <button id="json-apply">Apply JSON</button>
+    </div></div></div>
+  </div>
+
   <div class="toggles">
     <label><input type="checkbox" id="t-labels" checked><span>Labels</span></label>
     <label><input type="checkbox" id="t-rotate"><span>Rotate</span></label>
@@ -390,10 +468,6 @@ function layerTripleFor(level, index) {
 
 function centerColorFor(level, index) {
   return layerTripleFor(level, index).center;
-}
-
-function l1GroupColor(index) {
-  return L1_GROUP_CENTERS[Math.floor(index / 4)];
 }
 
 const LEVEL_NAMES = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
@@ -573,25 +647,13 @@ controls.minDistance     = 4;
 controls.maxDistance     = 6000;
 
 /* =====================================================================
-   VIEW OFFSET — recenter the diagram in the free area left of the panel
-   ---------------------------------------------------------------------
-   setViewOffset() shifts the projection so the camera's forward axis
-   lands at a chosen pixel of the render target, rather than the window
-   center. We aim it at the horizontal center of the "free" strip that
-   runs from the left edge of the window to the left edge of the panel.
-   Recomputed on every resize so it follows the responsive breakpoint.
+   VIEW OFFSET
    ===================================================================== */
 function updateViewOffset() {
   const panel = document.getElementById('ui');
   const rect = panel.getBoundingClientRect();
-
-  /* Horizontal center of the free area, in pixels from the window's left */
   const freeCenterX = rect.left / 2;
-
-  /* Offsets we need to apply: aim the projection at freeCenterX, not
-     innerWidth / 2. The result is innerWidth/2 - offsetX = freeCenterX. */
   const offsetX = (innerWidth / 2) - freeCenterX;
-
   camera.setViewOffset(
     innerWidth, innerHeight,
     offsetX, 0,
@@ -821,6 +883,8 @@ function goToDiagram(L, D) {
     for (const k of Object.keys(diagrams)) {
       diagrams[k].expansionTarget = 0;
     }
+    /* Clear any transient JSON status when changing diagrams */
+    setJsonStatus('', '');
   }
 
   currentKey = key;
@@ -849,6 +913,7 @@ function goToOverview() {
 
   fadeState = 'overview';
   updateUI();
+  setJsonStatus('', '');
 
   const overviewTarget = new THREE.Vector3(0, 0, 200);
   const overviewPos    = new THREE.Vector3(650, 520, 1500);
@@ -1050,6 +1115,87 @@ function saveInputsToCurrentDiagram() {
 }
 
 /* =====================================================================
+   JSON PANEL
+   ---------------------------------------------------------------------
+   Parses JSON with the canonical Greimas position names and updates
+   the center-layer names of the current diagram. Keys in the JSON
+   must match the format S1, S2, ~S1, ~S2, M1-M4, C1-C4. Unknown keys
+   are ignored; missing keys leave the existing term untouched.
+   ===================================================================== */
+const jsonInputEl  = document.getElementById('json-input');
+const jsonApplyEl  = document.getElementById('json-apply');
+const jsonStatusEl = document.getElementById('json-status');
+
+const JSON_KEY_MAP = {
+  'S1':  's1',
+  'S2':  's2',
+  '~S1': 'ns1',
+  '~S2': 'ns2',
+  'M1':  'm1',
+  'M2':  'm2',
+  'M3':  'm3',
+  'M4':  'm4',
+  'C1':  'c1',
+  'C2':  'c2',
+  'C3':  'c3',
+  'C4':  'c4',
+};
+
+function setJsonStatus(text, cls) {
+  jsonStatusEl.textContent = text || '';
+  jsonStatusEl.className = cls || '';
+}
+
+function applyJSONInput() {
+  if (flight || fadeState === 'overview') return;
+
+  const text = jsonInputEl.value.trim();
+  if (!text) {
+    setJsonStatus('Nothing to apply.', 'err');
+    return;
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    setJsonStatus('Invalid JSON: ' + e.message, 'err');
+    return;
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    setJsonStatus('JSON must be a single object.', 'err');
+    return;
+  }
+
+  const data = diagramData[currentKey];
+  let updatedCount = 0;
+  const recognized = [];
+
+  for (const jsonKey of Object.keys(JSON_KEY_MAP)) {
+    if (Object.prototype.hasOwnProperty.call(parsed, jsonKey)) {
+      const val = parsed[jsonKey];
+      if (typeof val === 'string') {
+        data[JSON_KEY_MAP[jsonKey]].name = val;
+        updatedCount++;
+        recognized.push(jsonKey);
+      }
+    }
+  }
+
+  if (updatedCount === 0) {
+    setJsonStatus('No recognized keys. Expected S1, S2, ~S1, ~S2, M1–M4, C1–C4.', 'err');
+    return;
+  }
+
+  syncInputsFromState();
+  rebuildLabels();
+  setJsonStatus(`Applied ${updatedCount} term${updatedCount === 1 ? '' : 's'} (${recognized.join(', ')}).`, 'ok');
+}
+
+jsonApplyEl.addEventListener('click', applyJSONInput);
+
+/* =====================================================================
    CSV EXPORT
    ===================================================================== */
 function csvEscape(v) {
@@ -1210,6 +1356,11 @@ function updateUI() {
   document.getElementById('expand').disabled = !!flight || fadeState === 'overview';
   document.getElementById('export-current').disabled = !!flight;
   document.getElementById('export-all').disabled = !!flight;
+
+  /* JSON panel locks during flight and in overview */
+  const jsonLocked = !!flight || fadeState === 'overview';
+  jsonInputEl.disabled = jsonLocked;
+  jsonApplyEl.disabled = jsonLocked;
 }
 
 document.getElementById('t-labels').addEventListener('change', e => {
@@ -1240,6 +1391,7 @@ document.getElementById('reset').addEventListener('click', () => {
   syncInputsFromState();
   rebuildLabels();
   updateExpandButton();
+  setJsonStatus('', '');
 });
 
 function updateExpandButton() {
@@ -1332,8 +1484,6 @@ for (const t of treeLinks) t.opacity = 0;
   camera.lookAt(inst.center);
 }
 
-/* Apply the view offset once the DOM is laid out so the panel's
-   rect.left reads correctly. */
 updateViewOffset();
 
 updateExpandButton();
