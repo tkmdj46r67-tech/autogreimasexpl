@@ -19,14 +19,14 @@
     text-shadow: 0 0 8px rgba(0,0,0,0.92), 0 1px 2px rgba(0,0,0,0.9);
     color: #fff;
   }
-  .lbl.main { font-size: 13px; font-weight: 600; }
-  .lbl.main b { font-weight: 500; font-size: 9.5px; opacity: 0.55; margin-right: 5px; letter-spacing: 0.06em; }
-  .lbl.mid { font-size: 12px; font-weight: 600; }
-  .lbl.mid b { font-weight: 500; font-size: 9px; opacity: 0.55; margin-right: 5px; letter-spacing: 0.06em; }
-  .lbl.corner { font-size: 11px; font-weight: 500; opacity: 0.92; }
-  .lbl.corner b { font-weight: 400; font-size: 8.5px; opacity: 0.55; margin-right: 4px; letter-spacing: 0.06em; }
-  .lbl.layer { font-size: 11px; font-weight: 500; font-style: italic; letter-spacing: 0.03em; }
-  .lbl.layer b { font-style: normal; font-weight: 600; font-size: 10px; margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em; }
+  .lbl.main { font-size: 12px; font-weight: 600; }
+  .lbl.main b { font-weight: 500; font-size: 9px; opacity: 0.55; margin-right: 5px; letter-spacing: 0.06em; }
+  .lbl.mid { font-size: 11px; font-weight: 600; }
+  .lbl.mid b { font-weight: 500; font-size: 8.5px; opacity: 0.55; margin-right: 5px; letter-spacing: 0.06em; }
+  .lbl.corner { font-size: 10px; font-weight: 500; opacity: 0.92; }
+  .lbl.corner b { font-weight: 400; font-size: 8px; opacity: 0.55; margin-right: 4px; letter-spacing: 0.06em; }
+  .lbl.layer { font-size: 10.5px; font-weight: 500; font-style: italic; letter-spacing: 0.03em; }
+  .lbl.layer b { font-style: normal; font-weight: 600; font-size: 9.5px; margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em; }
 
   #ui {
     position: fixed; top: 14px; right: 14px; z-index: 10;
@@ -200,7 +200,6 @@
   #json-status.ok,
   #full-structure-status.ok  { color: #a8e8a8; }
 
-  /* Validation report */
   #full-structure-report {
     display: none;
     margin: 4px 0 8px;
@@ -227,10 +226,7 @@
     margin: 9px 0 4px;
   }
   #full-structure-report .rep-heading:first-child { margin-top: 0; }
-  #full-structure-report .rep-item {
-    padding: 1px 0;
-    word-break: break-word;
-  }
+  #full-structure-report .rep-item { padding: 1px 0; word-break: break-word; }
   #full-structure-report .rep-ok      { color: #a8e8a8; }
   #full-structure-report .rep-issue   { color: #ff9a9a; }
   #full-structure-report .rep-warning { color: #ffd27a; }
@@ -415,7 +411,7 @@
   </div>
 
   <div class="sec collapsed" data-sec>
-    <div class="sec-title"><span>Paste JSON (this D)</span><span class="chev">▾</span></div>
+    <div class="sec-title"><span>Paste into this D</span><span class="chev">▾</span></div>
     <div class="sec-body"><div class="sec-clip"><div class="sec-content">
       <textarea id="json-input" spellcheck="false" placeholder='{
   "S1": "Autonomy",
@@ -432,28 +428,24 @@
   "C4": "Responsibility"
 }'></textarea>
       <div id="json-status"></div>
-      <button id="json-apply">Apply JSON</button>
+      <button id="json-apply">Update D</button>
     </div></div></div>
   </div>
 
   <div class="sec collapsed" data-sec>
-    <div class="sec-title"><span>Paste Full Structure (all Ds)</span><span class="chev">▾</span></div>
+    <div class="sec-title"><span>Paste into all D's</span><span class="chev">▾</span></div>
     <div class="sec-body"><div class="sec-clip"><div class="sec-content">
       <textarea id="full-structure-input" spellcheck="false" placeholder='{
   "L1": {
-    "D1": { "S1": "Freedom", "S2": "Captivity", "~S1": "Restraint",
-            "~S2": "Obligation", "M1": "Autonomy", "M2": "Confinement",
-            "M3": "Submission", "M4": "Liberty", "C1": "Restraint",
-            "C2": "Obligation", "C3": "Submission", "C4": "Autonomy" },
-    "D2": { ... },
-    "D3": { ... }
+    "D1": { "S1": "freedom", "S2": "Captivity", ... },
+    "D2": { ... }
   },
-  "L2": { "D1": { ... }, "D2": { ... }, "D3": { ... }, "D4": { ... } },
-  "L3": { "D1": { ... } }
+  "L2": { ... },
+  "L3": { ... }
 }'></textarea>
       <div id="full-structure-status"></div>
       <div id="full-structure-report"></div>
-      <button id="full-structure-apply">Apply Full Structure</button>
+      <button id="full-structure-apply">Update all D's</button>
     </div></div></div>
   </div>
 
@@ -480,6 +472,81 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 /* =====================================================================
+   INITIAL STRUCTURE — baked in as the default state at boot.
+   ===================================================================== */
+const INITIAL_STRUCTURE = {
+  L1: {
+    D1: { "S1":"freedom","S2":"Captivity","~S1":"Enslavement","~S2":"Obligation",
+          "M1":"Liberty","M2":"Confinement","M3":"Restriction","M4":"Autonomy",
+          "C1":"Restraint","C2":"Subjugation","C3":"Limitation","C4":"Independence" },
+    D2: { "S1":"Subjugation","S2":"Empowerment","~S1":"Autonomy","~S2":"Submission",
+          "M1":"Dominance","M2":"Obligation","M3":"Enslavement","M4":"Freedom",
+          "C1":"Restriction","C2":"Confinement","C3":"Restraint","C4":"Empowerment" },
+    D3: { "S1":"Confinement","S2":"Liberty","~S1":"Escape","~S2":"Captivity",
+          "M1":"Containment","M2":"Rebellion","M3":"Escape Route","M4":"Imprisonment",
+          "C1":"Detention","C2":"Revolt","C3":"Flight","C4":"Rehabilitation" },
+    D4: { "S1":"Revolt","S2":"Compliance","~S1":"Submission","~S2":"Obedience",
+          "M1":"Uprising","M2":"Conformity","M3":"Resignation","M4":"Protest",
+          "C1":"Insurrection","C2":"Cohesion","C3":"Surrender","C4":"Perturbation" },
+    D5: { "S1":"Cohesion","S2":"Disintegration","~S1":"Dissolution","~S2":"Fragmentation",
+          "M1":"Synthesis","M2":"Dissolution","M3":"Fragmentation","M4":"Integration",
+          "C1":"Disunity","C2":"Dissolution","C3":"Fragmentation","C4":"Integration" },
+    D6: { "S1":"Dissolution","S2":"Solidification","~S1":"Stagnation","~S2":"Consolidation",
+          "M1":"Melting","M2":"Freezing","M3":"Rust","M4":"Cementation",
+          "C1":"Thawing","C2":"Freezing Point","C3":"Corrosion","C4":"Hardening" },
+    D7: { "S1":"Freezing Point","S2":"Thawing","~S1":"Sublimation","~S2":"Melting",
+          "M1":"Stasis","M2":"Instability","M3":"Solidification","M4":"Thawing",
+          "C1":"Transition","C2":"Instability","C3":"Solidification","C4":"Thawing" },
+    D8: { "S1":"Instability","S2":"Sustainability","~S1":"Immobility","~S2":"Unpredictability",
+          "M1":"Flux","M2":"Order","M3":"Crisis","M4":"Balance",
+          "C1":"Turbulence","C2":"Rigidity","C3":"Disorder","C4":"Harmony" },
+    D9: { "S1":"Rigidity","S2":"Flexibility","~S1":"Plasticity","~S2":"Rigidity",
+          "M1":"Stiffness","M2":"Compliance","M3":"Inflexibility","M4":"Adaptability",
+          "C1":"Stiffness","C2":"Compliance","C3":"Inflexibility","C4":"Adaptability" },
+    D10:{ "S1":"Compliance","S2":"Resistance","~S1":"Noncompliance","~S2":"Nonresistance",
+          "M1":"Obedience","M2":"Rebellion","M3":"Negation","M4":"Submission",
+          "C1":"Adaptation","C2":"Disobedience","C3":"Rejection","C4":"Conformity" },
+    D11:{ "S1":"Disobedience","S2":"Obedience","~S1":"Compliance","~S2":"Rebellion",
+          "M1":"Nonconformity","M2":"Submission","M3":"Negation","M4":"Freedom",
+          "C1":"Paradox","C2":"Deception","C3":"Subterfuge","C4":"Revolt" },
+    D12:{ "S1":"Deception","S2":"Authenticity","~S1":"Vulnerability","~S2":"Honesty",
+          "M1":"Misdirection","M2":"Dishonesty","M3":"Manipulation","M4":"Secrecy",
+          "C1":"Ambiguity","C2":"Deceit","C3":"Covert","C4":"Transparency" },
+    D13:{ "S1":"Deceit","S2":"Truth","~S1":"Honesty","~S2":"Lies",
+          "M1":"Integrity","M2":"Dishonesty","M3":"Falsehood","M4":"Secrecy",
+          "C1":"Ambiguity","C2":"Misdirection","C3":"Subterfuge","C4":"Revelation" },
+    D14:{ "S1":"Misdirection","S2":"Directness","~S1":"Clarity","~S2":"Indirectness",
+          "M1":"Misleading","M2":"Deception","M3":"Subterfuge","M4":"Ambiguity",
+          "C1":"Paradox","C2":"Deceit","C3":"Subterfuge","C4":"Uncertainty" },
+    D15:{ "S1":"Deceit","S2":"Truth","~S1":"Honesty","~S2":"Lies",
+          "M1":"Integrity","M2":"Disloyalty","M3":"Secrecy","M4":"Authenticity",
+          "C1":"Dishonesty","C2":"Covert","C3":"Manipulation","C4":"Transparency" },
+    D16:{ "S1":"Covert","S2":"Manifest","~S1":"Open","~S2":"Secret",
+          "M1":"Stealth","M2":"Guerrilla","M3":"Veil","M4":"Surveillance",
+          "C1":"Ambush","C2":"Sabotage","C3":"Concealment","C4":"Infiltration" },
+  },
+  L2: {
+    D1: { "S1":"Obligation","S2":"Submission","~S1":"Captivity","~S2":"Obedience",
+          "M1":"Compromise","M2":"Obedience","M3":"Submission","M4":"Captivity",
+          "C1":"Conformity","C2":"Dissolution","C3":"Noncompliance","C4":"Rebellion" },
+    D2: { "S1":"Fragmentation","S2":"Consolidation","~S1":"Melting","~S2":"Unpredictability",
+          "M1":"Unification","M2":"Uncertainty","M3":"Instability","M4":"Divergence",
+          "C1":"Tension","C2":"Instability","C3":"Disorder","C4":"Unity" },
+    D3: { "S1":"Rigidity","S2":"Nonresistance","~S1":"Rebellion","~S2":"Honesty",
+          "M1":"Moderation","M2":"Cooperation","M3":"Dialogue","M4":"Negotiation",
+          "C1":"Mediation","C2":"Combination","C3":"Diplomacy","C4":"Pragmatism" },
+    D4: { "S1":"Lies","S2":"Indirectness","~S1":"Lies","~S2":"Secret",
+          "M1":"Authenticity","M2":"Transparency","M3":"Manipulation","M4":"Compromise",
+          "C1":"Honesty","C2":"Deception","C3":"Integrity","C4":"Falsehood" },
+  },
+  L3: {
+    D1: { "S1":"Dissolution","S2":"Instability","~S1":"Combination","~S2":"Deception",
+          "M1":"Stabilization","M2":"Deception","M3":"Subterfuge","M4":"Reform",
+          "C1":"Negation","C2":"Infiltration","C3":"Covert","C4":"Revolution" },
+  },
+};
+
+/* =====================================================================
    CONSTANTS
    ===================================================================== */
 const INNER_KEYS = ['s1','s2','ns1','ns2'];
@@ -502,12 +569,7 @@ const Z_PLANE = { 3: 400, 2: 200, 1: 0 };
 const L3_COLORS = { center: 0xFF7A45, front: 0xFFBB7A, back: 0xC7477A };
 const L2_COLORS = { center: 0xFDE725, front: 0xFF9A3D, back: 0x7ECB65 };
 
-const L1_GROUP_CENTERS = [
-  0x4C6EAF,
-  0x4C9BA5,
-  0x70C89A,
-  0xA9D583,
-];
+const L1_GROUP_CENTERS = [0x4C6EAF, 0x4C9BA5, 0x70C89A, 0xA9D583];
 
 function l1TripleFor(index) {
   const group = Math.floor(index / 4);
@@ -516,15 +578,9 @@ function l1TripleFor(index) {
   const hsl = {};
   c.getHSL(hsl);
   const front = new THREE.Color().setHSL(
-    hsl.h + 0.03,
-    Math.max(0, hsl.s - 0.15),
-    Math.min(0.88, hsl.l + 0.22)
-  );
+    hsl.h + 0.03, Math.max(0, hsl.s - 0.15), Math.min(0.88, hsl.l + 0.22));
   const back = new THREE.Color().setHSL(
-    hsl.h - 0.06,
-    Math.min(1, hsl.s + 0.05),
-    Math.max(0.18, hsl.l - 0.20)
-  );
+    hsl.h - 0.06, Math.min(1, hsl.s + 0.05), Math.max(0.18, hsl.l - 0.20));
   return { center, front: front.getHex(), back: back.getHex() };
 }
 
@@ -539,7 +595,6 @@ function centerColorFor(level, index) {
 }
 
 const LEVEL_NAMES = { 3: 'Narrative', 2: 'Argument', 1: 'Proposition' };
-
 function hexOf(c) { return '#' + c.toString(16).padStart(6, '0'); }
 
 const SPREAD = 2.2;
@@ -562,6 +617,13 @@ const GREIMAS_EXTENT = 9;
 const GREIMAS_INNER  = 4;
 
 const LAYER_Z = 2.7;
+
+/* Label offset distances. Smaller = tighter to the vertex. The labels
+   are centered on their anchor point (three.js CSS2DObject default), so
+   the offset only needs to clear the vertex dot. */
+const LABEL_OFFSET_INNER = 0.55;
+const LABEL_OFFSET_MID   = 0.50;
+const LABEL_OFFSET_CORNER = 0.50;
 
 const EDGES = [
   { a:'s1',  b:'s2',  kind:'solid' },
@@ -647,7 +709,6 @@ const P_LOCAL = [
 ];
 
 const LAYOUT = {};
-
 LAYOUT['3-0'] = {
   level: 3, index: 0,
   center: new THREE.Vector3(0, 0, Z_PLANE[3]),
@@ -664,7 +725,6 @@ for (let i = 0; i < 4; i++) {
     scale: scaleFor(2),
   };
 }
-
 for (let i = 0; i < 4; i++) {
   for (let j = 0; j < 4; j++) {
     const p = P_LOCAL[j];
@@ -722,11 +782,7 @@ function updateViewOffset() {
   const rect = panel.getBoundingClientRect();
   const freeCenterX = rect.left / 2;
   const offsetX = (innerWidth / 2) - freeCenterX;
-  camera.setViewOffset(
-    innerWidth, innerHeight,
-    offsetX, 0,
-    innerWidth, innerHeight
-  );
+  camera.setViewOffset(innerWidth, innerHeight, offsetX, 0, innerWidth, innerHeight);
 }
 
 /* =====================================================================
@@ -785,7 +841,6 @@ function buildDiagram(layout) {
       g.add(seg);
       edgeMats.push({ mat, base: op });
     }
-
     const pointMats = [];
     for (const k of ALL_KEYS) {
       const isInner = INNER_KEYS.includes(k);
@@ -794,7 +849,6 @@ function buildDiagram(layout) {
       g.add(mesh);
       pointMats.push({ mat: mesh.material, base: 1 });
     }
-
     return { edgeMats, pointMats };
   }
 
@@ -807,17 +861,12 @@ function buildDiagram(layout) {
 
   return {
     key: `${level}-${index}`,
-    layout,
-    level, index,
+    layout, level, index,
     group, scale, center: center.clone(),
     centerGroup, frontGroup, backGroup,
     centerMats, frontMats, backMats,
-    outerAlpha: 0,
-    expansion: 0,
-    expansionTarget: 0,
-    centerLabels: [],
-    frontLabels:  [],
-    backLabels:   [],
+    outerAlpha: 0, expansion: 0, expansionTarget: 0,
+    centerLabels: [], frontLabels: [], backLabels: [],
   };
 }
 
@@ -836,7 +885,6 @@ const treeLinks = [];
 for (const key of Object.keys(LAYOUT)) {
   const lo = LAYOUT[key];
   if (!lo.parentKey) continue;
-
   const parent = LAYOUT[lo.parentKey];
 
   const childLocal = GREIMAS_LOCAL.ns2;
@@ -845,7 +893,6 @@ for (const key of Object.keys(LAYOUT)) {
     lo.center.y + childLocal.y * lo.scale,
     lo.center.z + childLocal.z * lo.scale
   );
-
   const parentCornerKey = P_CORNER_KEYS[lo.parentCorner];
   const parentLocal = GREIMAS_LOCAL[parentCornerKey];
   const endWorld = new THREE.Vector3(
@@ -869,8 +916,51 @@ for (const key of Object.keys(LAYOUT)) {
    ===================================================================== */
 const diagramData = {};
 for (const key of Object.keys(LAYOUT)) {
-  diagramData[key] = (key === '1-0') ? defaultDiagram() : blankDiagram();
+  diagramData[key] = blankDiagram();
 }
+
+/* Apply the baked-in initial structure */
+const JSON_KEY_MAP = {
+  'S1':'s1', 'S2':'s2', '~S1':'ns1', '~S2':'ns2',
+  'M1':'m1', 'M2':'m2', 'M3':'m3', 'M4':'m4',
+  'C1':'c1', 'C2':'c2', 'C3':'c3', 'C4':'c4',
+};
+
+function applyStructureObject(parsed) {
+  let diagramsUpdated = 0, termsUpdated = 0;
+  const unknown = [];
+  for (const levelKey of Object.keys(parsed)) {
+    const lvlMatch = /^L(\d+)$/.exec(levelKey);
+    if (!lvlMatch) continue;
+    const level = parseInt(lvlMatch[1], 10);
+    const levelObj = parsed[levelKey];
+    if (!levelObj || typeof levelObj !== 'object' || Array.isArray(levelObj)) continue;
+    for (const dKey of Object.keys(levelObj)) {
+      const dMatch = /^D(\d+)$/.exec(dKey);
+      if (!dMatch) continue;
+      const dNum = parseInt(dMatch[1], 10);
+      const diagramKey = `${level}-${dNum - 1}`;
+      if (!diagramData[diagramKey]) { unknown.push(`${levelKey}.${dKey}`); continue; }
+      const dObj = levelObj[dKey];
+      if (!dObj || typeof dObj !== 'object' || Array.isArray(dObj)) continue;
+      const data = diagramData[diagramKey];
+      let changed = 0;
+      for (const jsonKey of Object.keys(JSON_KEY_MAP)) {
+        if (Object.prototype.hasOwnProperty.call(dObj, jsonKey)) {
+          const val = dObj[jsonKey];
+          if (typeof val === 'string') {
+            data[JSON_KEY_MAP[jsonKey]].name = val;
+            changed++;
+          }
+        }
+      }
+      if (changed > 0) { diagramsUpdated++; termsUpdated += changed; }
+    }
+  }
+  return { diagramsUpdated, termsUpdated, unknown };
+}
+
+applyStructureObject(INITIAL_STRUCTURE);
 
 /* =====================================================================
    NAVIGATION
@@ -914,21 +1004,17 @@ function startFlight(endTarget, endOffset, duration, onArrive) {
 
 function updateFlight(now) {
   if (!flight) return;
-
   const t = Math.min(1, (now - flight.startTime) / flight.duration);
   const e = easeInOutCubic(t);
-
   const targetNow = flight.startTarget.clone().lerp(flight.endTarget, e);
   const r     = flight.s0.r     + (flight.s1.r     - flight.s0.r)     * e;
   const phi   = flight.s0.phi   + (flight.s1.phi   - flight.s0.phi)   * e;
   const theta = flight.s0.theta + (flight.s1.theta - flight.s0.theta) * e;
   const arcBoost = 1 + 0.35 * Math.sin(Math.PI * t);
-
   const off = new THREE.Vector3().setFromSphericalCoords(r * arcBoost, phi, theta);
   camera.position.copy(targetNow).add(off);
   controls.target.copy(targetNow);
   camera.lookAt(targetNow);
-
   if (t >= 1) {
     const cb = flight.onArrive;
     flight = null;
@@ -944,13 +1030,10 @@ function goToDiagram(L, D) {
   if (!diagrams[key]) return;
 
   const isSame = (key === currentKey);
-
   saveInputsToCurrentDiagram();
 
   if (!isSame) {
-    for (const k of Object.keys(diagrams)) {
-      diagrams[k].expansionTarget = 0;
-    }
+    for (const k of Object.keys(diagrams)) diagrams[k].expansionTarget = 0;
     setJsonStatus('', '');
     setFullStructureStatus('', '');
     clearValidationReport();
@@ -962,10 +1045,7 @@ function goToDiagram(L, D) {
   updateExpandButton();
   rebuildLabels();
 
-  const targetWorld = diagrams[key].center.clone();
-  const worldOffset = state0Offset(key);
-
-  startFlight(targetWorld, worldOffset, 1.5, () => {
+  startFlight(diagrams[key].center.clone(), state0Offset(key), 1.5, () => {
     fadeState = 'steady';
     updateUI();
   });
@@ -974,21 +1054,15 @@ function goToDiagram(L, D) {
 function goToOverview() {
   if (flight) return;
   saveInputsToCurrentDiagram();
-
-  for (const k of Object.keys(diagrams)) {
-    diagrams[k].expansionTarget = 0;
-  }
+  for (const k of Object.keys(diagrams)) diagrams[k].expansionTarget = 0;
   updateExpandButton();
-
   fadeState = 'overview';
   updateUI();
   setJsonStatus('', '');
   setFullStructureStatus('', '');
   clearValidationReport();
-
   const overviewTarget = new THREE.Vector3(0, 0, 200);
   const overviewPos    = new THREE.Vector3(650, 520, 1500);
-
   startFlight(overviewTarget, overviewPos.clone().sub(overviewTarget), 1.8, () => {});
 }
 
@@ -1020,7 +1094,6 @@ function updateExpansions(dt) {
     const t = inst.expansionTarget;
     inst.expansion += (t - inst.expansion) * k;
     if (Math.abs(inst.expansion - t) < 0.004) inst.expansion = t;
-
     inst.frontGroup.position.z =  inst.expansion * LAYER_Z;
     inst.backGroup.position.z  = -inst.expansion * LAYER_Z;
   }
@@ -1030,7 +1103,6 @@ function updateLinks(dt) {
   const k = 1 - Math.exp(-3.0 * dt);
   const ov = (fadeState === 'overview' || fadeState === 'navigating');
   const target = ov ? (fadeState === 'overview' ? 0.55 : 0.35) : 0;
-
   for (const t of treeLinks) {
     t.opacity += (target - t.opacity) * k;
     if (Math.abs(t.opacity - target) < 0.004) t.opacity = target;
@@ -1058,7 +1130,6 @@ function applyOpacities() {
     const inst = diagrams[key];
     const a = inst.outerAlpha;
     const e = inst.expansion;
-
     const prev = lastApply.states[key];
     if (!lfChanged && prev && prev.a === a && prev.e === e) continue;
     lastApply.states[key] = { a, e };
@@ -1098,6 +1169,11 @@ function applyOpacities() {
 
 /* =====================================================================
    LABELS
+   ---------------------------------------------------------------------
+   Each label is offset from its vertex along a direction pointing
+   AWAY from the diagram centre for inner keys (S) and TOWARD the
+   centre for outer keys (M, C). This keeps the 12 labels evenly
+   distributed around the shape with no two anchored to the same point.
    ===================================================================== */
 let labelsOn = true;
 
@@ -1107,9 +1183,18 @@ function clearLabels() {
     for (const l of inst.centerLabels) inst.centerGroup.remove(l);
     for (const l of inst.frontLabels)  inst.frontGroup.remove(l);
     for (const l of inst.backLabels)   inst.backGroup.remove(l);
-    inst.centerLabels = [];
-    inst.frontLabels = [];
-    inst.backLabels = [];
+    inst.centerLabels = []; inst.frontLabels = []; inst.backLabels = [];
+  }
+}
+
+function labelOffsetFor(k) {
+  const pos = GREIMAS_LOCAL[k];
+  if (INNER_KEYS.includes(k)) {
+    return new THREE.Vector3(pos.x, pos.y, 0).normalize().multiplyScalar(LABEL_OFFSET_INNER);
+  } else if (M_KEYS.includes(k)) {
+    return new THREE.Vector3(-pos.x, -pos.y, 0).normalize().multiplyScalar(LABEL_OFFSET_MID);
+  } else {
+    return new THREE.Vector3(-pos.x, -pos.y, 0).normalize().multiplyScalar(LABEL_OFFSET_CORNER);
   }
 }
 
@@ -1125,27 +1210,24 @@ function rebuildLabels() {
 
   for (const k of ALL_KEYS) {
     const pos = GREIMAS_LOCAL[k].clone();
-    let dir, cls;
-    if (INNER_KEYS.includes(k)) {
-      dir = new THREE.Vector3(pos.x, pos.y, 0).normalize();
-      cls = 'main';
-    } else {
-      dir = new THREE.Vector3(-pos.x, -pos.y, 0).normalize();
-      cls = M_KEYS.includes(k) ? 'mid' : 'corner';
-    }
+    const off = labelOffsetFor(k);
+    let cls;
+    if (INNER_KEYS.includes(k)) cls = 'main';
+    else if (M_KEYS.includes(k)) cls = 'mid';
+    else cls = 'corner';
 
     const centerLbl = makeLabel(SYMBOLS[k], data[k].name, centerHex, cls);
-    centerLbl.position.copy(pos).addScaledVector(dir, 0.7);
+    centerLbl.position.copy(pos).add(off);
     inst.centerGroup.add(centerLbl);
     inst.centerLabels.push(centerLbl);
 
     const frontLbl = makeLabel('+' + SYMBOLS[k], data[k].syn, frontHex, 'layer');
-    frontLbl.position.copy(pos).addScaledVector(dir, 0.7);
+    frontLbl.position.copy(pos).add(off);
     inst.frontGroup.add(frontLbl);
     inst.frontLabels.push(frontLbl);
 
     const backLbl = makeLabel('−' + SYMBOLS[k], data[k].ant, backHex, 'layer');
-    backLbl.position.copy(pos).addScaledVector(dir, 0.7);
+    backLbl.position.copy(pos).add(off);
     inst.backGroup.add(backLbl);
     inst.backLabels.push(backLbl);
   }
@@ -1186,25 +1268,7 @@ function saveInputsToCurrentDiagram() {
 }
 
 /* =====================================================================
-   JSON KEY MAP (shared)
-   ===================================================================== */
-const JSON_KEY_MAP = {
-  'S1':  's1',
-  'S2':  's2',
-  '~S1': 'ns1',
-  '~S2': 'ns2',
-  'M1':  'm1',
-  'M2':  'm2',
-  'M3':  'm3',
-  'M4':  'm4',
-  'C1':  'c1',
-  'C2':  'c2',
-  'C3':  'c3',
-  'C4':  'c4',
-};
-
-/* =====================================================================
-   SINGLE-D JSON PANEL
+   PASTE INTO THIS D
    ===================================================================== */
 const jsonInputEl  = document.getElementById('json-input');
 const jsonApplyEl  = document.getElementById('json-apply');
@@ -1217,20 +1281,12 @@ function setJsonStatus(text, cls) {
 
 function applyJSONInput() {
   if (flight || fadeState === 'overview') return;
-
   const text = jsonInputEl.value.trim();
-  if (!text) {
-    setJsonStatus('Nothing to apply.', 'err');
-    return;
-  }
+  if (!text) { setJsonStatus('Nothing to apply.', 'err'); return; }
 
   let parsed;
-  try {
-    parsed = JSON.parse(text);
-  } catch (e) {
-    setJsonStatus('Invalid JSON: ' + e.message, 'err');
-    return;
-  }
+  try { parsed = JSON.parse(text); }
+  catch (e) { setJsonStatus('Invalid JSON: ' + e.message, 'err'); return; }
 
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
     setJsonStatus('JSON must be a single object.', 'err');
@@ -1240,7 +1296,6 @@ function applyJSONInput() {
   const data = diagramData[currentKey];
   let updatedCount = 0;
   const recognized = [];
-
   for (const jsonKey of Object.keys(JSON_KEY_MAP)) {
     if (Object.prototype.hasOwnProperty.call(parsed, jsonKey)) {
       const val = parsed[jsonKey];
@@ -1259,13 +1314,12 @@ function applyJSONInput() {
 
   syncInputsFromState();
   rebuildLabels();
-  setJsonStatus(`Applied ${updatedCount} term${updatedCount === 1 ? '' : 's'} (${recognized.join(', ')}).`, 'ok');
+  setJsonStatus(`Updated this D — ${updatedCount} term${updatedCount === 1 ? '' : 's'} (${recognized.join(', ')}).`, 'ok');
 }
-
 jsonApplyEl.addEventListener('click', applyJSONInput);
 
 /* =====================================================================
-   FULL-STRUCTURE PANEL
+   PASTE INTO ALL D's
    ===================================================================== */
 const fullStructureInputEl  = document.getElementById('full-structure-input');
 const fullStructureApplyEl  = document.getElementById('full-structure-apply');
@@ -1284,61 +1338,36 @@ function clearValidationReport() {
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[c]));
 }
 
-/* ---------------------------------------------------------------------
-   VALIDATOR
-   Checks after applying a full structure:
-     1. Internal mirror collapse: ~S1 == S2 or ~S2 == S1 within any D
-     2. C2 self-loop: C2 == S1 in L1 (would stall the cascade)
-     3. Cascade integrity:
-          L1: D(n+1).S1  = D(n).C2
-          L2: D_k.S_j    = L1 D_(4(k-1)+j).~S2
-          L3: D1.S_j     = L2 D_j.C2
-     4. Reuse across L1 diagrams (informational)
-   --------------------------------------------------------------------- */
 function validateStructure() {
-  const issues = [];
-  const warnings = [];
-  const reuse = [];
-  let cascadeOk = 0;
-  let cascadeTotal = 0;
+  const issues = [], warnings = [], reuse = [];
+  let cascadeOk = 0, cascadeTotal = 0;
 
-  /* ---- 1. Internal integrity (all diagrams) ---- */
   for (const key of Object.keys(LAYOUT)) {
     const lo = LAYOUT[key];
     const data = diagramData[key];
     const label = `L${lo.level} D${lo.index + 1}`;
-
     if (data.ns1.name && data.s2.name && data.ns1.name === data.s2.name) {
       issues.push(`${label}: ~S1 equals S2 ("${data.ns1.name}") — square collapses`);
     }
     if (data.ns2.name && data.s1.name && data.ns2.name === data.s1.name) {
       issues.push(`${label}: ~S2 equals S1 ("${data.ns2.name}") — square collapses`);
     }
-
     if (lo.level === 1 && data.c2.name && data.s1.name && data.c2.name === data.s1.name) {
       issues.push(`${label}: C2 equals S1 ("${data.c2.name}") — cascade will stall`);
     }
   }
 
-  /* ---- 2. Cascade: L1 chain ---- */
   for (let i = 0; i < 15; i++) {
     cascadeTotal++;
-    const cur = diagramData[`1-${i}`];
-    const nxt = diagramData[`1-${i+1}`];
+    const cur = diagramData[`1-${i}`], nxt = diagramData[`1-${i+1}`];
     if (!cur.c2.name || !nxt.s1.name) continue;
     if (cur.c2.name === nxt.s1.name) cascadeOk++;
-    else {
-      warnings.push(
-        `L1 D${i+1}.C2 ("${cur.c2.name}") ≠ L1 D${i+2}.S1 ("${nxt.s1.name}") — cascade broken`
-      );
-    }
+    else warnings.push(`L1 D${i+1}.C2 ("${cur.c2.name}") ≠ L1 D${i+2}.S1 ("${nxt.s1.name}") — cascade broken`);
   }
-
-  /* ---- 3. Cascade: L2 ← L1 (~S2 → S_j) ---- */
   for (let k = 0; k < 4; k++) {
     const l2 = diagramData[`2-${k}`];
     for (let j = 0; j < 4; j++) {
@@ -1346,37 +1375,24 @@ function validateStructure() {
       const l1Index = k * 4 + j;
       const l1 = diagramData[`1-${l1Index}`];
       const l2Key = P_CORNER_KEYS[j];
-      const l2Val = l2[l2Key].name;
-      const l1Val = l1.ns2.name;
+      const l2Val = l2[l2Key].name, l1Val = l1.ns2.name;
       if (!l2Val || !l1Val) continue;
       if (l2Val === l1Val) cascadeOk++;
-      else {
-        warnings.push(
-          `L2 D${k+1}.${SYMBOLS[l2Key]} ("${l2Val}") ≠ L1 D${l1Index+1}.~S2 ("${l1Val}") — cascade broken`
-        );
-      }
+      else warnings.push(`L2 D${k+1}.${SYMBOLS[l2Key]} ("${l2Val}") ≠ L1 D${l1Index+1}.~S2 ("${l1Val}") — cascade broken`);
     }
   }
-
-  /* ---- 4. Cascade: L3 ← L2 (C2 → S_j) ---- */
   const l3 = diagramData['3-0'];
   for (let j = 0; j < 4; j++) {
     cascadeTotal++;
     const l2 = diagramData[`2-${j}`];
     const l3Key = P_CORNER_KEYS[j];
-    const l3Val = l3[l3Key].name;
-    const l2Val = l2.c2.name;
+    const l3Val = l3[l3Key].name, l2Val = l2.c2.name;
     if (!l3Val || !l2Val) continue;
     if (l3Val === l2Val) cascadeOk++;
-    else {
-      warnings.push(
-        `L3 D1.${SYMBOLS[l3Key]} ("${l3Val}") ≠ L2 D${j+1}.C2 ("${l2Val}") — cascade broken`
-      );
-    }
+    else warnings.push(`L3 D1.${SYMBOLS[l3Key]} ("${l3Val}") ≠ L2 D${j+1}.C2 ("${l2Val}") — cascade broken`);
   }
 
-  /* ---- 5. Reuse across L1 diagrams (informational) ---- */
-  const termAppearances = new Map(); // term -> [{d, pos}]
+  const termAppearances = new Map();
   for (let i = 0; i < 16; i++) {
     const data = diagramData[`1-${i}`];
     for (const pos of POS_ORDER) {
@@ -1388,12 +1404,10 @@ function validateStructure() {
   }
   for (const [term, appearances] of termAppearances) {
     if (appearances.length < 2) continue;
-    // count distinct Ds
     const ds = [...new Set(appearances.map(a => a.d))].sort((a,b) => a-b);
     if (ds.length < 2) continue;
     reuse.push({ term, appearances, dCount: ds.length });
   }
-  // sort: most widespread first, tie-break by term
   reuse.sort((a, b) => (b.dCount - a.dCount) || a.term.localeCompare(b.term));
 
   return { issues, warnings, reuse, cascadeOk, cascadeTotal };
@@ -1403,7 +1417,6 @@ function renderValidationReport(report) {
   const { issues, warnings, reuse, cascadeOk, cascadeTotal } = report;
   let html = '';
 
-  /* Cascade integrity summary */
   html += `<div class="rep-heading">Cascade Integrity</div>`;
   if (cascadeTotal === 0) {
     html += `<div class="rep-item rep-info">No cascade links to check.</div>`;
@@ -1413,23 +1426,14 @@ function renderValidationReport(report) {
     html += `<div class="rep-item rep-warning">⚠ ${cascadeOk}/${cascadeTotal} cascade links satisfied</div>`;
   }
 
-  /* Issues */
   if (issues.length) {
     html += `<div class="rep-heading">Issues (${issues.length})</div>`;
-    for (const issue of issues) {
-      html += `<div class="rep-item rep-issue">✗ ${escapeHtml(issue)}</div>`;
-    }
+    for (const issue of issues) html += `<div class="rep-item rep-issue">✗ ${escapeHtml(issue)}</div>`;
   }
-
-  /* Warnings */
   if (warnings.length) {
     html += `<div class="rep-heading">Warnings (${warnings.length})</div>`;
-    for (const w of warnings) {
-      html += `<div class="rep-item rep-warning">⚠ ${escapeHtml(w)}</div>`;
-    }
+    for (const w of warnings) html += `<div class="rep-item rep-warning">⚠ ${escapeHtml(w)}</div>`;
   }
-
-  /* Reuse */
   if (reuse.length) {
     html += `<div class="rep-heading">Reuse Across L1 (${reuse.length})</div>`;
     html += `<div class="rep-item rep-info" style="opacity:0.7;margin-bottom:4px;">Terms appearing in 2+ different L1 diagrams. Cascade-required repeats (C2→S1) are included.</div>`;
@@ -1442,8 +1446,6 @@ function renderValidationReport(report) {
       html += `<div class="rep-item rep-info" style="opacity:0.7;">… and ${reuse.length - shown.length} more</div>`;
     }
   }
-
-  /* Clean result */
   if (!issues.length && !warnings.length && !reuse.length && cascadeTotal > 0 && cascadeOk === cascadeTotal) {
     html += `<div class="rep-heading">Result</div>`;
     html += `<div class="rep-item rep-ok">✓ Structure is clean — no issues, no warnings, no reuse.</div>`;
@@ -1455,22 +1457,12 @@ function renderValidationReport(report) {
 
 function applyFullStructure() {
   if (flight || fadeState === 'overview') return;
-
   const text = fullStructureInputEl.value.trim();
-  if (!text) {
-    setFullStructureStatus('Nothing to apply.', 'err');
-    clearValidationReport();
-    return;
-  }
+  if (!text) { setFullStructureStatus('Nothing to apply.', 'err'); clearValidationReport(); return; }
 
   let parsed;
-  try {
-    parsed = JSON.parse(text);
-  } catch (e) {
-    setFullStructureStatus('Invalid JSON: ' + e.message, 'err');
-    clearValidationReport();
-    return;
-  }
+  try { parsed = JSON.parse(text); }
+  catch (e) { setFullStructureStatus('Invalid JSON: ' + e.message, 'err'); clearValidationReport(); return; }
 
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
     setFullStructureStatus('JSON must be a single object.', 'err');
@@ -1478,52 +1470,7 @@ function applyFullStructure() {
     return;
   }
 
-  let diagramsUpdated = 0;
-  let termsUpdated = 0;
-  const unknownDiagrams = [];
-
-  for (const levelKey of Object.keys(parsed)) {
-    const lvlMatch = /^L(\d+)$/.exec(levelKey);
-    if (!lvlMatch) continue;
-    const level = parseInt(lvlMatch[1], 10);
-
-    const levelObj = parsed[levelKey];
-    if (!levelObj || typeof levelObj !== 'object' || Array.isArray(levelObj)) continue;
-
-    for (const dKey of Object.keys(levelObj)) {
-      const dMatch = /^D(\d+)$/.exec(dKey);
-      if (!dMatch) continue;
-      const dNum = parseInt(dMatch[1], 10);
-      const idx = dNum - 1;
-      const diagramKey = `${level}-${idx}`;
-
-      if (!diagramData[diagramKey]) {
-        unknownDiagrams.push(`${levelKey}.${dKey}`);
-        continue;
-      }
-
-      const dObj = levelObj[dKey];
-      if (!dObj || typeof dObj !== 'object' || Array.isArray(dObj)) continue;
-
-      const data = diagramData[diagramKey];
-      let changed = 0;
-
-      for (const jsonKey of Object.keys(JSON_KEY_MAP)) {
-        if (Object.prototype.hasOwnProperty.call(dObj, jsonKey)) {
-          const val = dObj[jsonKey];
-          if (typeof val === 'string') {
-            data[JSON_KEY_MAP[jsonKey]].name = val;
-            changed++;
-          }
-        }
-      }
-
-      if (changed > 0) {
-        diagramsUpdated++;
-        termsUpdated += changed;
-      }
-    }
-  }
+  const { diagramsUpdated, termsUpdated, unknown } = applyStructureObject(parsed);
 
   if (diagramsUpdated === 0) {
     setFullStructureStatus(
@@ -1537,13 +1484,12 @@ function applyFullStructure() {
   syncInputsFromState();
   rebuildLabels();
 
-  /* Run the validator and render the report */
   const report = validateStructure();
   renderValidationReport(report);
 
-  let msg = `Applied ${termsUpdated} term${termsUpdated === 1 ? '' : 's'} across ${diagramsUpdated} diagram${diagramsUpdated === 1 ? '' : 's'}.`;
-  if (unknownDiagrams.length) {
-    msg += ` Skipped ${unknownDiagrams.length} unknown (${unknownDiagrams.slice(0, 4).join(', ')}${unknownDiagrams.length > 4 ? ', …' : ''}).`;
+  let msg = `Updated all D's — ${termsUpdated} term${termsUpdated === 1 ? '' : 's'} across ${diagramsUpdated} diagram${diagramsUpdated === 1 ? '' : 's'}.`;
+  if (unknown.length) {
+    msg += ` Skipped ${unknown.length} unknown (${unknown.slice(0, 4).join(', ')}${unknown.length > 4 ? ', …' : ''}).`;
   }
   const problemCount = report.issues.length + report.warnings.length;
   if (problemCount > 0) {
@@ -1553,7 +1499,6 @@ function applyFullStructure() {
     setFullStructureStatus(msg, 'ok');
   }
 }
-
 fullStructureApplyEl.addEventListener('click', applyFullStructure);
 
 /* =====================================================================
@@ -1566,34 +1511,25 @@ function csvEscape(v) {
 }
 
 function buildCSVRows(keys) {
-  const rows = [[
-    'L','D','Parent','Parent_P','Position','Diagram_P','Name','Expanded_Syn','Expanded_Ant',
-  ]];
-
+  const rows = [[ 'L','D','Parent','Parent_P','Position','Diagram_P','Name','Expanded_Syn','Expanded_Ant' ]];
   for (const key of keys) {
     const lo = LAYOUT[key];
     const data = diagramData[key];
-    const L = lo.level;
-    const D = lo.index + 1;
-
-    let parentLabel = '';
-    let parentP = '';
+    let parentLabel = '', parentP = '';
     if (lo.parentKey) {
       const parentLo = LAYOUT[lo.parentKey];
       parentLabel = `L${parentLo.level} D${parentLo.index + 1}`;
       parentP = `P${lo.parentCorner + 1}`;
     }
-
     for (const pos of POS_ORDER) {
       const entry = data[pos] || { name:'', syn:'', ant:'' };
       rows.push([
-        L, D, parentLabel, parentP,
+        lo.level, lo.index + 1, parentLabel, parentP,
         SYMBOLS[pos], DIAGRAM_P[pos] || '',
         entry.name, entry.syn, entry.ant,
       ]);
     }
   }
-
   return rows;
 }
 
@@ -1603,11 +1539,8 @@ function downloadCSV(rows, filename) {
   const blob = new Blob([BOM + body], { type: 'text/csv;charset=utf-8' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
@@ -1631,14 +1564,13 @@ function exportAll() {
 }
 
 /* =====================================================================
-   UI
+   UI BUILDING
    ===================================================================== */
 function buildUI() {
   const rowL3 = document.getElementById('row-L3');
   rowL3.innerHTML = '';
   const b3 = document.createElement('button');
-  b3.textContent = 'D1';
-  b3.dataset.key = '3-0';
+  b3.textContent = 'D1'; b3.dataset.key = '3-0';
   b3.addEventListener('click', () => goToDiagram(3, 0));
   rowL3.appendChild(b3);
 
@@ -1646,8 +1578,7 @@ function buildUI() {
   rowL2.innerHTML = '';
   for (let i = 0; i < 4; i++) {
     const b = document.createElement('button');
-    b.textContent = `D${i + 1}`;
-    b.dataset.key = `2-${i}`;
+    b.textContent = `D${i + 1}`; b.dataset.key = `2-${i}`;
     b.addEventListener('click', () => goToDiagram(2, i));
     rowL2.appendChild(b);
   }
@@ -1658,24 +1589,18 @@ function buildUI() {
     const row = document.createElement('div');
     row.className = 'btn-row';
     const indent = document.createElement('span');
-    indent.className = 'indent';
-    indent.textContent = `L2·${g + 1}`;
+    indent.className = 'indent'; indent.textContent = `L2·${g + 1}`;
     row.appendChild(indent);
     for (let j = 0; j < 4; j++) {
       const idx = g * 4 + j;
       const b = document.createElement('button');
       b.dataset.key = `1-${idx}`;
-
       const grp = document.createElement('span');
       grp.className = 'grp';
       const c = '#' + L1_GROUP_CENTERS[g].toString(16).padStart(6, '0');
-      grp.style.background = c;
-      grp.style.color = c;
+      grp.style.background = c; grp.style.color = c;
       b.appendChild(grp);
-
-      const txt = document.createTextNode(`D${idx + 1}`);
-      b.appendChild(txt);
-
+      b.appendChild(document.createTextNode(`D${idx + 1}`));
       b.addEventListener('click', () => goToDiagram(1, idx));
       row.appendChild(b);
     }
@@ -1685,13 +1610,11 @@ function buildUI() {
 
 function updateUI() {
   const card = document.getElementById('current');
-
   if (fadeState === 'overview') {
     card.innerHTML = `Overview<span class="sub">all diagrams visible</span>`;
   } else {
     const inst = diagrams[currentKey];
     const lo = LAYOUT[currentKey];
-
     let anchorNote = '';
     if (lo.parentKey) {
       const parent = LAYOUT[lo.parentKey];
@@ -1700,7 +1623,6 @@ function updateUI() {
     } else {
       anchorNote = `<span class="anchor-note">root — no parent</span>`;
     }
-
     card.innerHTML = `L${inst.level} · D${inst.index + 1}`
       + `<span class="sub">${LEVEL_NAMES[inst.level]} level</span>`
       + anchorNote;
@@ -1742,14 +1664,13 @@ document.getElementById('apply').addEventListener('click', () => {
   saveInputsToCurrentDiagram();
   rebuildLabels();
 });
+
 document.getElementById('reset').addEventListener('click', () => {
   if (flight) return;
-  for (const key of Object.keys(diagramData)) {
-    diagramData[key] = (key === '1-0') ? defaultDiagram() : blankDiagram();
-  }
-  for (const key of Object.keys(diagrams)) {
-    diagrams[key].expansionTarget = 0;
-  }
+  /* Reset returns to the baked-in initial structure */
+  for (const key of Object.keys(diagramData)) diagramData[key] = blankDiagram();
+  applyStructureObject(INITIAL_STRUCTURE);
+  for (const key of Object.keys(diagrams)) diagrams[key].expansionTarget = 0;
   syncInputsFromState();
   rebuildLabels();
   updateExpandButton();
@@ -1849,7 +1770,6 @@ for (const t of treeLinks) t.opacity = 0;
 }
 
 updateViewOffset();
-
 updateExpandButton();
 updateUI();
 animate();
