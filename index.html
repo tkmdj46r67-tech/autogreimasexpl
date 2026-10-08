@@ -155,10 +155,10 @@
   .row.sub input { font-size: 10.5px; color: #a8b3cc; }
   .row.sub { margin-bottom: 7px; }
 
-  /* JSON panel */
-  #json-input {
+  /* Shared style for the two code paste panels */
+  #json-input,
+  #full-structure-input {
     width: 100%;
-    min-height: 168px;
     padding: 8px 10px;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.05);
@@ -171,28 +171,38 @@
     resize: vertical;
     transition: border-color 0.15s, background 0.15s, opacity 0.2s;
   }
-  #json-input:focus {
+  #json-input { min-height: 168px; }
+  #full-structure-input { min-height: 220px; }
+
+  #json-input:focus,
+  #full-structure-input:focus {
     border-color: rgba(126, 160, 255, 0.5);
     background: rgba(126, 160, 255, 0.10);
   }
-  #json-input:disabled {
+  #json-input:disabled,
+  #full-structure-input:disabled {
     opacity: 0.35;
     cursor: not-allowed;
     background: rgba(255, 255, 255, 0.02);
   }
 
-  #json-status {
+  #json-status,
+  #full-structure-status {
     margin: 6px 2px 6px;
     font-size: 10px;
     letter-spacing: 0.03em;
     min-height: 13px;
     color: #7e8aa8;
     transition: color 0.2s;
+    word-break: break-word;
   }
-  #json-status.err { color: #ff9a9a; }
-  #json-status.ok  { color: #a8e8a8; }
+  #json-status.err,
+  #full-structure-status.err { color: #ff9a9a; }
+  #json-status.ok,
+  #full-structure-status.ok  { color: #a8e8a8; }
 
-  #json-apply {
+  #json-apply,
+  #full-structure-apply {
     display: block;
     width: 100%;
     padding: 8px 4px;
@@ -208,8 +218,10 @@
     border: 1px solid rgba(126, 160, 255, 0.4);
     transition: background 0.15s, border-color 0.15s, opacity 0.2s;
   }
-  #json-apply:hover:not(:disabled) { background: rgba(126, 160, 255, 0.32); }
-  #json-apply:disabled { opacity: 0.4; cursor: not-allowed; }
+  #json-apply:hover:not(:disabled),
+  #full-structure-apply:hover:not(:disabled) { background: rgba(126, 160, 255, 0.32); }
+  #json-apply:disabled,
+  #full-structure-apply:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .buttons { display: flex; gap: 7px; margin: 10px 0 6px; }
   button {
@@ -368,7 +380,7 @@
   </div>
 
   <div class="sec collapsed" data-sec>
-    <div class="sec-title"><span>Paste JSON</span><span class="chev">▾</span></div>
+    <div class="sec-title"><span>Paste JSON (this D)</span><span class="chev">▾</span></div>
     <div class="sec-body"><div class="sec-clip"><div class="sec-content">
       <textarea id="json-input" spellcheck="false" placeholder='{
   "S1": "Autonomy",
@@ -386,6 +398,33 @@
 }'></textarea>
       <div id="json-status"></div>
       <button id="json-apply">Apply JSON</button>
+    </div></div></div>
+  </div>
+
+  <div class="sec collapsed" data-sec>
+    <div class="sec-title"><span>Paste Full Structure (all Ds)</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-clip"><div class="sec-content">
+      <textarea id="full-structure-input" spellcheck="false" placeholder='{
+  "L1": {
+    "D1": { "S1": "Freedom", "S2": "Captivity", "~S1": "Restraint",
+            "~S2": "Obligation", "M1": "Autonomy", "M2": "Confinement",
+            "M3": "Submission", "M4": "Liberty", "C1": "Restraint",
+            "C2": "Obligation", "C3": "Submission", "C4": "Autonomy" },
+    "D2": { ... },
+    "D3": { ... }
+  },
+  "L2": {
+    "D1": { ... },
+    "D2": { ... },
+    "D3": { ... },
+    "D4": { ... }
+  },
+  "L3": {
+    "D1": { ... }
+  }
+}'></textarea>
+      <div id="full-structure-status"></div>
+      <button id="full-structure-apply">Apply Full Structure</button>
     </div></div></div>
   </div>
 
@@ -883,8 +922,8 @@ function goToDiagram(L, D) {
     for (const k of Object.keys(diagrams)) {
       diagrams[k].expansionTarget = 0;
     }
-    /* Clear any transient JSON status when changing diagrams */
     setJsonStatus('', '');
+    setFullStructureStatus('', '');
   }
 
   currentKey = key;
@@ -914,6 +953,7 @@ function goToOverview() {
   fadeState = 'overview';
   updateUI();
   setJsonStatus('', '');
+  setFullStructureStatus('', '');
 
   const overviewTarget = new THREE.Vector3(0, 0, 200);
   const overviewPos    = new THREE.Vector3(650, 520, 1500);
@@ -1115,17 +1155,11 @@ function saveInputsToCurrentDiagram() {
 }
 
 /* =====================================================================
-   JSON PANEL
+   JSON PANELS
    ---------------------------------------------------------------------
-   Parses JSON with the canonical Greimas position names and updates
-   the center-layer names of the current diagram. Keys in the JSON
-   must match the format S1, S2, ~S1, ~S2, M1-M4, C1-C4. Unknown keys
-   are ignored; missing keys leave the existing term untouched.
+   Shared key map used by both the single-D panel and the full-structure
+   panel. Both write only to `.name` (the center-layer term).
    ===================================================================== */
-const jsonInputEl  = document.getElementById('json-input');
-const jsonApplyEl  = document.getElementById('json-apply');
-const jsonStatusEl = document.getElementById('json-status');
-
 const JSON_KEY_MAP = {
   'S1':  's1',
   'S2':  's2',
@@ -1140,6 +1174,11 @@ const JSON_KEY_MAP = {
   'C3':  'c3',
   'C4':  'c4',
 };
+
+/* ---- Single-D panel ---- */
+const jsonInputEl  = document.getElementById('json-input');
+const jsonApplyEl  = document.getElementById('json-apply');
+const jsonStatusEl = document.getElementById('json-status');
 
 function setJsonStatus(text, cls) {
   jsonStatusEl.textContent = text || '';
@@ -1194,6 +1233,106 @@ function applyJSONInput() {
 }
 
 jsonApplyEl.addEventListener('click', applyJSONInput);
+
+/* ---- Full-structure panel ---- */
+const fullStructureInputEl  = document.getElementById('full-structure-input');
+const fullStructureApplyEl  = document.getElementById('full-structure-apply');
+const fullStructureStatusEl = document.getElementById('full-structure-status');
+
+function setFullStructureStatus(text, cls) {
+  fullStructureStatusEl.textContent = text || '';
+  fullStructureStatusEl.className = cls || '';
+}
+
+function applyFullStructure() {
+  if (flight || fadeState === 'overview') return;
+
+  const text = fullStructureInputEl.value.trim();
+  if (!text) {
+    setFullStructureStatus('Nothing to apply.', 'err');
+    return;
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    setFullStructureStatus('Invalid JSON: ' + e.message, 'err');
+    return;
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    setFullStructureStatus('JSON must be a single object.', 'err');
+    return;
+  }
+
+  let diagramsUpdated = 0;
+  let termsUpdated = 0;
+  const unknownDiagrams = [];
+
+  for (const levelKey of Object.keys(parsed)) {
+    const lvlMatch = /^L(\d+)$/.exec(levelKey);
+    if (!lvlMatch) continue;   // skips metadata and anything else
+    const level = parseInt(lvlMatch[1], 10);
+
+    const levelObj = parsed[levelKey];
+    if (!levelObj || typeof levelObj !== 'object' || Array.isArray(levelObj)) continue;
+
+    for (const dKey of Object.keys(levelObj)) {
+      const dMatch = /^D(\d+)$/.exec(dKey);
+      if (!dMatch) continue;
+      const dNum = parseInt(dMatch[1], 10);
+      const idx = dNum - 1;
+      const diagramKey = `${level}-${idx}`;
+
+      if (!diagramData[diagramKey]) {
+        unknownDiagrams.push(`${levelKey}.${dKey}`);
+        continue;
+      }
+
+      const dObj = levelObj[dKey];
+      if (!dObj || typeof dObj !== 'object' || Array.isArray(dObj)) continue;
+
+      const data = diagramData[diagramKey];
+      let changed = 0;
+
+      for (const jsonKey of Object.keys(JSON_KEY_MAP)) {
+        if (Object.prototype.hasOwnProperty.call(dObj, jsonKey)) {
+          const val = dObj[jsonKey];
+          if (typeof val === 'string') {
+            data[JSON_KEY_MAP[jsonKey]].name = val;
+            changed++;
+          }
+        }
+      }
+
+      if (changed > 0) {
+        diagramsUpdated++;
+        termsUpdated += changed;
+      }
+    }
+  }
+
+  if (diagramsUpdated === 0) {
+    setFullStructureStatus(
+      'No diagrams found. Expected keys like "L1": { "D1": { ... }, ... }, "L2": { ... }, "L3": { ... }.',
+      'err'
+    );
+    return;
+  }
+
+  /* Refresh the visible panel and labels for whatever D is current */
+  syncInputsFromState();
+  rebuildLabels();
+
+  let msg = `Applied ${termsUpdated} term${termsUpdated === 1 ? '' : 's'} across ${diagramsUpdated} diagram${diagramsUpdated === 1 ? '' : 's'}.`;
+  if (unknownDiagrams.length) {
+    msg += ` Skipped ${unknownDiagrams.length} unknown (${unknownDiagrams.slice(0, 4).join(', ')}${unknownDiagrams.length > 4 ? ', …' : ''}).`;
+  }
+  setFullStructureStatus(msg, 'ok');
+}
+
+fullStructureApplyEl.addEventListener('click', applyFullStructure);
 
 /* =====================================================================
    CSV EXPORT
@@ -1357,10 +1496,11 @@ function updateUI() {
   document.getElementById('export-current').disabled = !!flight;
   document.getElementById('export-all').disabled = !!flight;
 
-  /* JSON panel locks during flight and in overview */
-  const jsonLocked = !!flight || fadeState === 'overview';
-  jsonInputEl.disabled = jsonLocked;
-  jsonApplyEl.disabled = jsonLocked;
+  const codeLocked = !!flight || fadeState === 'overview';
+  jsonInputEl.disabled = codeLocked;
+  jsonApplyEl.disabled = codeLocked;
+  fullStructureInputEl.disabled = codeLocked;
+  fullStructureApplyEl.disabled = codeLocked;
 }
 
 document.getElementById('t-labels').addEventListener('change', e => {
@@ -1392,6 +1532,7 @@ document.getElementById('reset').addEventListener('click', () => {
   rebuildLabels();
   updateExpandButton();
   setJsonStatus('', '');
+  setFullStructureStatus('', '');
 });
 
 function updateExpandButton() {
