@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Autogreimas Explorer</title>
+<title>Greimas Squares — Nested</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -337,7 +337,7 @@
 <div id="app"></div>
 
 <div id="ui">
-  <h1>Autogreimas Explorer</h1>
+  <h1>Greimas Squares<span>Nested</span></h1>
   <p class="hint">drag to orbit · scroll to zoom</p>
 
   <div id="current"></div>
@@ -472,77 +472,77 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 /* =====================================================================
-   INITIAL STRUCTURE — baked in as the default state at boot.
+   INITIAL STRUCTURE — the irony cascade, baked in as the default.
    ===================================================================== */
 const INITIAL_STRUCTURE = {
   L1: {
-    D1: { "S1":"freedom","S2":"Captivity","~S1":"Enslavement","~S2":"Obligation",
-          "M1":"Liberty","M2":"Confinement","M3":"Restriction","M4":"Autonomy",
-          "C1":"Restraint","C2":"Subjugation","C3":"Limitation","C4":"Independence" },
-    D2: { "S1":"Subjugation","S2":"Empowerment","~S1":"Autonomy","~S2":"Submission",
-          "M1":"Dominance","M2":"Obligation","M3":"Enslavement","M4":"Freedom",
-          "C1":"Restriction","C2":"Confinement","C3":"Restraint","C4":"Empowerment" },
-    D3: { "S1":"Confinement","S2":"Liberty","~S1":"Escape","~S2":"Captivity",
-          "M1":"Containment","M2":"Rebellion","M3":"Escape Route","M4":"Imprisonment",
-          "C1":"Detention","C2":"Revolt","C3":"Flight","C4":"Rehabilitation" },
-    D4: { "S1":"Revolt","S2":"Compliance","~S1":"Submission","~S2":"Obedience",
-          "M1":"Uprising","M2":"Conformity","M3":"Resignation","M4":"Protest",
-          "C1":"Insurrection","C2":"Cohesion","C3":"Surrender","C4":"Perturbation" },
-    D5: { "S1":"Cohesion","S2":"Disintegration","~S1":"Dissolution","~S2":"Fragmentation",
-          "M1":"Synthesis","M2":"Dissolution","M3":"Fragmentation","M4":"Integration",
-          "C1":"Disunity","C2":"Dissolution","C3":"Fragmentation","C4":"Integration" },
-    D6: { "S1":"Dissolution","S2":"Solidification","~S1":"Stagnation","~S2":"Consolidation",
-          "M1":"Melting","M2":"Freezing","M3":"Rust","M4":"Cementation",
-          "C1":"Thawing","C2":"Freezing Point","C3":"Corrosion","C4":"Hardening" },
-    D7: { "S1":"Freezing Point","S2":"Thawing","~S1":"Sublimation","~S2":"Melting",
-          "M1":"Stasis","M2":"Instability","M3":"Solidification","M4":"Thawing",
-          "C1":"Transition","C2":"Instability","C3":"Solidification","C4":"Thawing" },
-    D8: { "S1":"Instability","S2":"Sustainability","~S1":"Immobility","~S2":"Unpredictability",
-          "M1":"Flux","M2":"Order","M3":"Crisis","M4":"Balance",
-          "C1":"Turbulence","C2":"Rigidity","C3":"Disorder","C4":"Harmony" },
-    D9: { "S1":"Rigidity","S2":"Flexibility","~S1":"Plasticity","~S2":"Rigidity",
-          "M1":"Stiffness","M2":"Compliance","M3":"Inflexibility","M4":"Adaptability",
-          "C1":"Stiffness","C2":"Compliance","C3":"Inflexibility","C4":"Adaptability" },
-    D10:{ "S1":"Compliance","S2":"Resistance","~S1":"Noncompliance","~S2":"Nonresistance",
-          "M1":"Obedience","M2":"Rebellion","M3":"Negation","M4":"Submission",
-          "C1":"Adaptation","C2":"Disobedience","C3":"Rejection","C4":"Conformity" },
-    D11:{ "S1":"Disobedience","S2":"Obedience","~S1":"Compliance","~S2":"Rebellion",
-          "M1":"Nonconformity","M2":"Submission","M3":"Negation","M4":"Freedom",
-          "C1":"Paradox","C2":"Deception","C3":"Subterfuge","C4":"Revolt" },
-    D12:{ "S1":"Deception","S2":"Authenticity","~S1":"Vulnerability","~S2":"Honesty",
-          "M1":"Misdirection","M2":"Dishonesty","M3":"Manipulation","M4":"Secrecy",
-          "C1":"Ambiguity","C2":"Deceit","C3":"Covert","C4":"Transparency" },
-    D13:{ "S1":"Deceit","S2":"Truth","~S1":"Honesty","~S2":"Lies",
-          "M1":"Integrity","M2":"Dishonesty","M3":"Falsehood","M4":"Secrecy",
-          "C1":"Ambiguity","C2":"Misdirection","C3":"Subterfuge","C4":"Revelation" },
-    D14:{ "S1":"Misdirection","S2":"Directness","~S1":"Clarity","~S2":"Indirectness",
-          "M1":"Misleading","M2":"Deception","M3":"Subterfuge","M4":"Ambiguity",
-          "C1":"Paradox","C2":"Deceit","C3":"Subterfuge","C4":"Uncertainty" },
-    D15:{ "S1":"Deceit","S2":"Truth","~S1":"Honesty","~S2":"Lies",
-          "M1":"Integrity","M2":"Disloyalty","M3":"Secrecy","M4":"Authenticity",
-          "C1":"Dishonesty","C2":"Covert","C3":"Manipulation","C4":"Transparency" },
-    D16:{ "S1":"Covert","S2":"Manifest","~S1":"Open","~S2":"Secret",
-          "M1":"Stealth","M2":"Guerrilla","M3":"Veil","M4":"Surveillance",
-          "C1":"Ambush","C2":"Sabotage","C3":"Concealment","C4":"Infiltration" },
+    D1: { "S1":"Irony","S2":"Straightforwardness","~S1":"Authenticity","~S2":"Naivety",
+          "M1":"Satire","M2":"Bluntness","M3":"Farce","M4":"Sarcasm",
+          "C1":"Ambiguity","C2":"Candor","C3":"Exaggeration","C4":"Wit" },
+    D2: { "S1":"Candor","S2":"Coarseness","~S1":"Insincerity","~S2":"Flattery",
+          "M1":"Sincerity","M2":"Flattery","M3":"Insincerity","M4":"Authenticity",
+          "C1":"Honesty","C2":"Deception","C3":"Genuineness","C4":"Artifice" },
+    D3: { "S1":"Deception","S2":"Truth","~S1":"Truthfulness","~S2":"Secrecy",
+          "M1":"Misdirection","M2":"Dishonesty","M3":"Duplicitousness","M4":"Concealment",
+          "C1":"Ambivalence","C2":"Misrepresentation","C3":"Subterfuge","C4":"Transparency" },
+    D4: { "S1":"Misrepresentation","S2":"Accuracy","~S1":"Genuine","~S2":"Error",
+          "M1":"Misinterpretation","M2":"Misleading","M3":"Fabrication","M4":"Distortion",
+          "C1":"Misrepresentative","C2":"Falsification","C3":"Red Herring","C4":"Clarification" },
+    D5: { "S1":"Falsification","S2":"Verification","~S1":"Legitimacy","~S2":"Discrediting",
+          "M1":"Validation","M2":"Denigration","M3":"Corroboration","M4":"Rebuttal",
+          "C1":"Vindication","C2":"Disproof","C3":"Confirmation","C4":"Counterargument" },
+    D6: { "S1":"Disproof","S2":"Proof","~S1":"Establishment","~S2":"Refutation",
+          "M1":"Assessment","M2":"Counterstatement","M3":"Indictment","M4":"Certification",
+          "C1":"Evaluation","C2":"Counterclaim","C3":"Accusation","C4":"Sanctioning" },
+    D7: { "S1":"Counterclaim","S2":"Denial","~S1":"Rebuttal","~S2":"Accusation",
+          "M1":"Counterclaim","M2":"Rejection","M3":"Concession","M4":"Compromise",
+          "C1":"Negation","C2":"Rebuttal","C3":"Concession","C4":"Mediation" },
+    D8: { "S1":"Rebuttal","S2":"Agreement","~S1":"Acceptance","~S2":"Disagreement",
+          "M1":"Counterpoint","M2":"Accommodation","M3":"Disavowal","M4":"Assertion",
+          "C1":"Omission","C2":"Mitigation","C3":"Dismissal","C4":"Affirmation" },
+    D9: { "S1":"Mitigation","S2":"Aggression","~S1":"Amplification","~S2":"Passivity",
+          "M1":"Moderation","M2":"Escalation","M3":"Indifference","M4":"Abatement",
+          "C1":"Tolerance","C2":"Harshness","C3":"Apathy","C4":"Relief" },
+    D10:{ "S1":"Harshness","S2":"Softness","~S1":"Mercy","~S2":"Roughness",
+          "M1":"Severity","M2":"Gentleness","M3":"Compassion","M4":"Toughness",
+          "C1":"Balance","C2":"Tenderness","C3":"Empathy","C4":"Firmness" },
+    D11:{ "S1":"Tenderness","S2":"Harshness","~S1":"Callousness","~S2":"Ruthlessness",
+          "M1":"Empathy","M2":"Indifference","M3":"Apathy","M4":"Compassion",
+          "C1":"Sympathy","C2":"Dispassion","C3":"Aloofness","C4":"Kindness" },
+    D12:{ "S1":"Dispassion","S2":"Passion","~S1":"Emotionalism","~S2":"Indolence",
+          "M1":"Detachment","M2":"Sentimentalism","M3":"Lethargy","M4":"Disengagement",
+          "C1":"Neutralism","C2":"Subjectivism","C3":"Lack of Interest","C4":"Asepsis" },
+    D13:{ "S1":"Subjectivism","S2":"Objectivity","~S1":"Impartiality","~S2":"Relativism",
+          "M1":"Subjective Experience","M2":"Objective Reality","M3":"Constructivism","M4":"Empiricism",
+          "C1":"Perspectivism","C2":"Determinism","C3":"Nihilism","C4":"Idealism" },
+    D14:{ "S1":"Determinism","S2":"Indeterminacy","~S1":"Liberty","~S2":"Chance",
+          "M1":"Fatalism","M2":"Indeterminism","M3":"Libertarianism","M4":"Predestination",
+          "C1":"Uncertainty","C2":"Indeterminacy","C3":"Fatalism","C4":"Liberty" },
+    D15:{ "S1":"Indeterminacy","S2":"Certainty","~S1":"Determination","~S2":"Vagueness",
+          "M1":"Probabilism","M2":"Dogmatism","M3":"Relativism","M4":"Determinism",
+          "C1":"Ambiguity","C2":"Paradox","C3":"Nihilism","C4":"Certitude" },
+    D16:{ "S1":"Paradox","S2":"Certainty","~S1":"Non-Paradox","~S2":"Uncertainty",
+          "M1":"Dilemma","M2":"Dogma","M3":"Enigma","M4":"Riddle",
+          "C1":"Ambiguity","C2":"Dogmatism","C3":"Enigma","C4":"Dilemma" },
   },
   L2: {
-    D1: { "S1":"Obligation","S2":"Submission","~S1":"Captivity","~S2":"Obedience",
-          "M1":"Compromise","M2":"Obedience","M3":"Submission","M4":"Captivity",
-          "C1":"Conformity","C2":"Dissolution","C3":"Noncompliance","C4":"Rebellion" },
-    D2: { "S1":"Fragmentation","S2":"Consolidation","~S1":"Melting","~S2":"Unpredictability",
-          "M1":"Unification","M2":"Uncertainty","M3":"Instability","M4":"Divergence",
-          "C1":"Tension","C2":"Instability","C3":"Disorder","C4":"Unity" },
-    D3: { "S1":"Rigidity","S2":"Nonresistance","~S1":"Rebellion","~S2":"Honesty",
-          "M1":"Moderation","M2":"Cooperation","M3":"Dialogue","M4":"Negotiation",
-          "C1":"Mediation","C2":"Combination","C3":"Diplomacy","C4":"Pragmatism" },
-    D4: { "S1":"Lies","S2":"Indirectness","~S1":"Lies","~S2":"Secret",
-          "M1":"Authenticity","M2":"Transparency","M3":"Manipulation","M4":"Compromise",
-          "C1":"Honesty","C2":"Deception","C3":"Integrity","C4":"Falsehood" },
+    D1: { "S1":"Naivety","S2":"Flattery","~S1":"Secrecy","~S2":"Error",
+          "M1":"Flattery","M2":"Error","M3":"Secrecy","M4":"Naivety",
+          "C1":"Flattery","C2":"Error","C3":"Secrecy","C4":"Naivety" },
+    D2: { "S1":"Discrediting","S2":"Refutation","~S1":"Accusation","~S2":"Disagreement",
+          "M1":"Reconciliation","M2":"Synthesis","M3":"Dialogue","M4":"Compromise",
+          "C1":"Tolerance","C2":"Moderation","C3":"Negotiation","C4":"Balance" },
+    D3: { "S1":"Passivity","S2":"Roughness","~S1":"Ruthlessness","~S2":"Indolence",
+          "M1":"Passivity","M2":"Rigor","M3":"Indolence","M4":"Ruthlessness",
+          "C1":"Stagnation","C2":"Lethargy","C3":"Torpor","C4":"Fatigue" },
+    D4: { "S1":"Relativism","S2":"Chance","~S1":"Vagueness","~S2":"Uncertainty",
+          "M1":"Relativism","M2":"Indeterminacy","M3":"Vagueness","M4":"Uncertainty",
+          "C1":"Ambiguity","C2":"Indolence","C3":"Apathy","C4":"Lethargy" },
   },
   L3: {
-    D1: { "S1":"Dissolution","S2":"Instability","~S1":"Combination","~S2":"Deception",
-          "M1":"Stabilization","M2":"Deception","M3":"Subterfuge","M4":"Reform",
-          "C1":"Negation","C2":"Infiltration","C3":"Covert","C4":"Revolution" },
+    D1: { "S1":"Error","S2":"Moderation","~S1":"Lethargy","~S2":"Indolence",
+          "M1":"Resolution","M2":"Temperance","M3":"Indulgence","M4":"Mistake",
+          "C1":"Countermeasure","C2":"Excessiveness","C3":"Decisiveness","C4":"Restraint" },
   },
 };
 
@@ -618,11 +618,8 @@ const GREIMAS_INNER  = 4;
 
 const LAYER_Z = 2.7;
 
-/* Label offset distances. Smaller = tighter to the vertex. The labels
-   are centered on their anchor point (three.js CSS2DObject default), so
-   the offset only needs to clear the vertex dot. */
-const LABEL_OFFSET_INNER = 0.55;
-const LABEL_OFFSET_MID   = 0.50;
+const LABEL_OFFSET_INNER  = 0.55;
+const LABEL_OFFSET_MID    = 0.50;
 const LABEL_OFFSET_CORNER = 0.50;
 
 const EDGES = [
@@ -1039,9 +1036,9 @@ function goToDiagram(L, D) {
     clearValidationReport();
   }
 
-    currentKey = key;
+  currentKey = key;
   fadeState = 'navigating';
-  syncInputsFromState();   // <-- add this
+  syncInputsFromState();
   updateUI();
   updateExpandButton();
   rebuildLabels();
@@ -1170,11 +1167,6 @@ function applyOpacities() {
 
 /* =====================================================================
    LABELS
-   ---------------------------------------------------------------------
-   Each label is offset from its vertex along a direction pointing
-   AWAY from the diagram centre for inner keys (S) and TOWARD the
-   centre for outer keys (M, C). This keeps the 12 labels evenly
-   distributed around the shape with no two anchored to the same point.
    ===================================================================== */
 let labelsOn = true;
 
@@ -1668,7 +1660,6 @@ document.getElementById('apply').addEventListener('click', () => {
 
 document.getElementById('reset').addEventListener('click', () => {
   if (flight) return;
-  /* Reset returns to the baked-in initial structure */
   for (const key of Object.keys(diagramData)) diagramData[key] = blankDiagram();
   applyStructureObject(INITIAL_STRUCTURE);
   for (const key of Object.keys(diagrams)) diagrams[key].expansionTarget = 0;
