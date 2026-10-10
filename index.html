@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Greimas Squares — Nested</title>
+<title>AutoGreimas Explorer</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -52,7 +52,7 @@
   /* ============ Minimap ============ */
   #minimap {
     position: fixed; bottom: 14px; left: 14px; z-index: 10;
-    width: 320px; height: 220px;
+    width: 300px; height: 300px;
     border-radius: 12px;
     background: rgba(9, 13, 22, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.07);
@@ -79,6 +79,9 @@
     color: #cfe0ff;
     text-shadow: 0 1px 2px rgba(0,0,0,0.9);
     pointer-events: none;
+  }
+  @media (max-width: 400px), (max-height: 400px) {
+    #minimap { display: none !important; }
   }
 
   #current {
@@ -355,12 +358,12 @@
 <div id="app"></div>
 
 <div id="minimap">
-  <div id="minimap-label">Overview</div>
+  <div id="minimap-label">MRSD</div>
   <div id="minimap-pos"></div>
 </div>
 
 <div id="ui">
-  <h1>Greimas Squares<span>Nested</span></h1>
+  <h1>AutoGreimas Explorer<span>Nested</span></h1>
   <p class="hint">drag to orbit · scroll to zoom</p>
 
   <div id="current"></div>
@@ -494,7 +497,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 /* =====================================================================
-   INITIAL STRUCTURE — the irony cascade, baked in as the default.
+   INITIAL STRUCTURE — irony cascade baked in as default.
    ===================================================================== */
 const INITIAL_STRUCTURE = {
   L1: {
@@ -682,21 +685,6 @@ const POS_ORDER = ['s1','s2','ns1','ns2','m1','m2','m3','m4','c1','c2','c3','c4'
 /* =====================================================================
    DATA
    ===================================================================== */
-const DEFAULTS = {
-  s1:  { name:'Being',       syn:'Existence',    ant:'Nothingness' },
-  s2:  { name:'Seeming',     syn:'Appearance',   ant:'Reality' },
-  ns1: { name:'Non-being',   syn:'Absence',      ant:'Presence' },
-  ns2: { name:'Non-seeming', syn:'Invisibility', ant:'Visibility' },
-  m1:  { name:'Truth',       syn:'Verity',       ant:'Falsehood' },
-  m2:  { name:'Lie',         syn:'Fabrication',  ant:'Truth' },
-  m3:  { name:'Falsehood',   syn:'Error',        ant:'Truth' },
-  m4:  { name:'Secret',      syn:'Concealment',  ant:'Disclosure' },
-  c1:  { name:'Paradox',     syn:'Contradiction',ant:'Consistency' },
-  c2:  { name:'Deception',   syn:'Trickery',     ant:'Honesty' },
-  c3:  { name:'Subterfuge',  syn:'Evasion',      ant:'Candor' },
-  c4:  { name:'Revelation',  syn:'Disclosure',   ant:'Concealment' },
-};
-
 function blankDiagram() {
   const d = {};
   for (const k of ALL_KEYS) d[k] = { name:'', syn:'', ant:'' };
@@ -782,14 +770,10 @@ controls.minDistance     = 4;
 controls.maxDistance     = 6000;
 
 /* =====================================================================
-   MINI RENDERER — separate WebGL context for the minimap
-   ---------------------------------------------------------------------
-   Uses the same scene with a second camera. Two renderers means the
-   geometry gets uploaded to two GPU contexts, which is a bit of extra
-   memory, but it avoids all the scissor/viewport juggling and keeps the
-   CSS2D labels out of the minimap automatically.
+   MINI RENDERER — 300×300, own camera, own layer for glow sprites
    ===================================================================== */
-const MINI_W = 320, MINI_H = 220;
+const MINI_W = 300, MINI_H = 300;
+let miniVisible = true;
 
 const miniRenderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 miniRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -801,29 +785,27 @@ miniRenderer.domElement.style.display = 'block';
 document.getElementById('minimap').appendChild(miniRenderer.domElement);
 
 const miniCamera = new THREE.PerspectiveCamera(45, MINI_W / MINI_H, 0.5, 12000);
+/* Enable layer 1 for the mini camera so it can see the per-D glow sprites */
+miniCamera.layers.enable(1);
 
-/* The fixed look-at point of the whole structure */
 const OVERVIEW_TARGET = new THREE.Vector3(0, 0, 200);
-/* Distance from the overview target — large enough to fit the whole
-   structure (which spans 0..400 on z). */
-const MINI_DIST = 900;
+const MINI_DIST = 780;
 
 function updateMiniCamera() {
-  /* Copy the main camera's viewing direction relative to its target */
   const dir = camera.position.clone().sub(controls.target).normalize();
   miniCamera.position.copy(OVERVIEW_TARGET).addScaledVector(dir, MINI_DIST);
   miniCamera.up.set(0, 1, 0);
   miniCamera.lookAt(OVERVIEW_TARGET);
 }
 
+function updateMiniVisibility() {
+  const tooSmall = innerWidth < 400 || innerHeight < 400;
+  miniVisible = !tooSmall;
+  document.getElementById('minimap').style.display = tooSmall ? 'none' : '';
+}
+
 /* =====================================================================
-   CURRENT-DIAGRAM GLOW
-   ---------------------------------------------------------------------
-   A single additive sprite, repositioned and resized on every render
-   pass. The sprite is drawn as a soft halo around the diagram the main
-   view is currently on. It's visible in both the main canvas and the
-   minimap; the size/opacity differ between them so it reads well in
-   each.
+   GLOW TEXTURES
    ===================================================================== */
 const glowTexture = (() => {
   const s = 256;
@@ -831,10 +813,10 @@ const glowTexture = (() => {
   cv.width = cv.height = s;
   const ctx = cv.getContext('2d');
   const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
-  g.addColorStop(0.00, 'rgba(190, 225, 255, 1.00)');
-  g.addColorStop(0.18, 'rgba(160, 210, 255, 0.55)');
-  g.addColorStop(0.45, 'rgba(120, 180, 240, 0.16)');
-  g.addColorStop(1.00, 'rgba(80, 140, 220, 0)');
+  g.addColorStop(0.00, 'rgba(255, 255, 255, 1.00)');
+  g.addColorStop(0.18, 'rgba(255, 255, 255, 0.55)');
+  g.addColorStop(0.45, 'rgba(255, 255, 255, 0.16)');
+  g.addColorStop(1.00, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, s, s);
   const t = new THREE.CanvasTexture(cv);
@@ -842,34 +824,58 @@ const glowTexture = (() => {
   return t;
 })();
 
+/* The current-diagram glow for the main view (layer 0) */
 const currentGlow = new THREE.Sprite(new THREE.SpriteMaterial({
   map: glowTexture,
   color: 0xffffff,
   blending: THREE.AdditiveBlending,
   transparent: true,
-  opacity: 0.35,
+  opacity: 0.28,
   depthWrite: false,
   depthTest: false,
 }));
 currentGlow.renderOrder = 999;
 scene.add(currentGlow);
 
-function positionGlow(forMini) {
-  const inst = diagrams[currentKey];
-  if (!inst) return;
-  currentGlow.position.copy(inst.center);
-  const s = inst.scale * GREIMAS_EXTENT;
-  if (forMini) {
-    currentGlow.scale.setScalar(s * 2.4);
-    currentGlow.material.opacity = 0.90;
-  } else {
-    currentGlow.scale.setScalar(s * 1.35);
-    currentGlow.material.opacity = 0.28;
+/* =====================================================================
+   PER-D GLOW SPRITES — mini-only (layer 1)
+   Each is a lighter tint of that diagram's center colour, sized to
+   stay within the bounds of its square.
+   ===================================================================== */
+const miniGlows = [];  // { key, sprite }
+for (const key of Object.keys(LAYOUT)) {
+  const lo = LAYOUT[key];
+  const centerHex = layerTripleFor(lo.level, lo.index).center;
+  const base = new THREE.Color(centerHex);
+  const light = base.clone().lerp(new THREE.Color(0xffffff), 0.5);
+
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: glowTexture,
+    color: light,
+    blending: THREE.AdditiveBlending,
+    transparent: true,
+    opacity: 0.35,
+    depthWrite: false,
+    depthTest: false,
+  }));
+  spr.position.copy(lo.center);
+  /* SIDE[level] is exactly the world extent of the square, so 0.9× stays within */
+  spr.scale.setScalar(SIDE[lo.level] * 0.9);
+  spr.renderOrder = 1000;
+  spr.layers.set(1);   // mini camera only
+  scene.add(spr);
+
+  miniGlows.push({ key, sprite: spr });
+}
+
+function updateMiniGlowOpacities() {
+  for (const g of miniGlows) {
+    g.sprite.material.opacity = (g.key === currentKey) ? 0.9 : 0.35;
   }
 }
 
 /* =====================================================================
-   VIEW OFFSET — recentre the main view to the free area left of the panel
+   VIEW OFFSET for main view
    ===================================================================== */
 function updateViewOffset() {
   const panel = document.getElementById('ui');
@@ -1180,17 +1186,19 @@ function updateLinks(dt) {
     t.line.visible = t.opacity > 0.004;
   }
 }
-function updateLabelFade(dt) {
-  /* Labels always on; kept as a variable in case we want to fade them later */
+function updateLabelFade() {
   labelFade = 1;
 }
 
 /* =====================================================================
    OPACITY APPLICATION
+   ---------------------------------------------------------------------
+   force = true bypasses the change cache. Used before the mini render
+   (which forces all alphas to 1) and after restoring them.
    ===================================================================== */
 const lastApply = { labelFade: -1, states: {} };
 
-function applyOpacities() {
+function applyOpacities(force) {
   const lfChanged = (labelFade !== lastApply.labelFade);
   lastApply.labelFade = labelFade;
 
@@ -1199,7 +1207,7 @@ function applyOpacities() {
     const a = inst.outerAlpha;
     const e = inst.expansion;
     const prev = lastApply.states[key];
-    if (!lfChanged && prev && prev.a === a && prev.e === e) continue;
+    if (!force && !lfChanged && prev && prev.a === a && prev.e === e) continue;
     lastApply.states[key] = { a, e };
 
     inst.group.visible = a > 0.004;
@@ -1679,7 +1687,7 @@ function updateUI() {
 
 document.getElementById('t-labels').addEventListener('change', e => {
   labelsOn = e.target.checked;
-  applyOpacities();
+  applyOpacities(true);
 });
 document.getElementById('t-rotate').addEventListener('change', e => {
   controls.autoRotate = e.target.checked;
@@ -1751,10 +1759,14 @@ function onResize() {
   renderer.setSize(innerWidth, innerHeight);
   labelRenderer.setSize(innerWidth, innerHeight);
   updateViewOffset();
+  updateMiniVisibility();
 }
 addEventListener('resize', onResize);
 
 const clock = new THREE.Clock();
+const savedAlphas = {};
+const savedExpansions = {};
+
 function animate() {
   requestAnimationFrame(animate);
   const now = performance.now();
@@ -1764,20 +1776,49 @@ function animate() {
   updateOuterAlphas(dt);
   updateExpansions(dt);
   updateLinks(dt);
-  updateLabelFade(dt);
-  applyOpacities();
+  updateLabelFade();
+  applyOpacities();          // normal — respects cache
 
   if (!flight) controls.update();
 
-  /* Main render — glow sized for close-up framing */
-  positionGlow(false);
+  /* ---- Main render ---- */
+  currentGlow.visible = true;
+  positionMainGlow();
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 
-  /* Mini render — glow sized for a wide overview */
-  updateMiniCamera();
-  positionGlow(true);
-  miniRenderer.render(scene, miniCamera);
+  /* ---- Mini render ---- */
+  if (miniVisible) {
+    /* Save state, force every diagram fully visible with no expansion */
+    for (const key of Object.keys(diagrams)) {
+      savedAlphas[key] = diagrams[key].outerAlpha;
+      savedExpansions[key] = diagrams[key].expansion;
+      diagrams[key].outerAlpha = 1;
+      diagrams[key].expansion = 0;
+    }
+    applyOpacities(true);
+
+    updateMiniGlowOpacities();
+
+    currentGlow.visible = false;   // main-view glow hidden from mini
+    updateMiniCamera();
+    miniRenderer.render(scene, miniCamera);
+
+    /* Restore state */
+    for (const key of Object.keys(diagrams)) {
+      diagrams[key].outerAlpha = savedAlphas[key];
+      diagrams[key].expansion = savedExpansions[key];
+    }
+    applyOpacities(true);
+  }
+}
+
+function positionMainGlow() {
+  const inst = diagrams[currentKey];
+  currentGlow.position.copy(inst.center);
+  const s = inst.scale * GREIMAS_EXTENT;
+  currentGlow.scale.setScalar(s * 1.35);
+  currentGlow.material.opacity = 0.28;
 }
 
 /* =====================================================================
@@ -1801,6 +1842,7 @@ for (const t of treeLinks) t.opacity = 0;
 }
 
 updateViewOffset();
+updateMiniVisibility();
 updateExpandButton();
 updateUI();
 animate();
