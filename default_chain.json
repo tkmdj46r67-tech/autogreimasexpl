@@ -1,0 +1,419 @@
+{
+  "metadata": {
+    "initial_concept": "freedom",
+    "model": "llama3.2:3b",
+    "model_preset": "fast",
+    "generated_at": "2026-10-10T11:20:29",
+    "structure": {
+      "L1": 16,
+      "L2": 4,
+      "L3": 1,
+      "total": 21
+    },
+    "synonym_step": "enabled",
+    "layout": {
+      "P1 (upper-left)": "S1",
+      "P2 (upper-right)": "S2",
+      "P3 (lower-left)": "~S2",
+      "P4 (lower-right)": "~S1"
+    },
+    "derivation_chain": "S1 --(antithesis)--> S2 --(negation)--> ~S2 --(antithesis)--> ~S1",
+    "settings": {
+      "max_exclusion_terms": 80,
+      "max_uniqueness_tries": 4,
+      "max_synonym_tries": 3,
+      "max_next_s1_tries": 2,
+      "next_s1_candidates": 5,
+      "temperature": 0.3,
+      "num_predict": 800
+    },
+    "uniqueness_strategy": "L1 chain: C2 → synonym → next S1 (default). Per diagram: retries → synonyms → accept duplicate (flagged).",
+    "relationships": {
+      "L1": "L1 D(n+1).S1 = synonym of L1 D(n).C2",
+      "L2 D1": "S1..S4 = ~S2 of L1 D1, D2, D3, D4",
+      "L2 D2": "S1..S4 = ~S2 of L1 D5, D6, D7, D8",
+      "L2 D3": "S1..S4 = ~S2 of L1 D9, D10, D11, D12",
+      "L2 D4": "S1..S4 = ~S2 of L1 D13, D14, D15, D16",
+      "L3 D1": "S1..S4 = C2 of L2 D1, D2, D3, D4"
+    }
+  },
+  "L1": {
+    "D1": {
+      "S1": "freedom",
+      "S2": "Confinement",
+      "~S2": "Openness",
+      "~S1": "Slavery",
+      "M1": "Autonomy",
+      "M2": "Restraint",
+      "M3": "Captive",
+      "M4": "Enslavement",
+      "C1": "Limitation",
+      "C2": "Restriction",
+      "C3": "Captivity",
+      "C4": "Liberation",
+      "_s1_source": {
+        "type": "initial",
+        "source_term": "freedom"
+      }
+    },
+    "D2": {
+      "S1": "Regulation",
+      "S2": "Anarchy",
+      "~S2": "Order",
+      "~S1": "Unregulated",
+      "M1": "Control",
+      "M2": "Chaos",
+      "M3": "Disorder",
+      "M4": "Unruliness",
+      "C1": "Governance",
+      "C2": "Lawlessness",
+      "C3": "Disorganization",
+      "C4": "Unstructured",
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Restriction"
+      }
+    },
+    "D3": {
+      "S1": "Mayhem",
+      "S2": "Order",
+      "~S2": "Chaos",
+      "~S1": "Stability",
+      "M1": "Anarchy",
+      "M2": "Structure",
+      "M3": "Disorganization",
+      "M4": "Control",
+      "C1": "Disarray",
+      "C2": "Regulation",
+      "C3": "Unrest",
+      "C4": "Governance",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Lawlessness"
+      }
+    },
+    "D4": {
+      "S1": "Ordinance",
+      "S2": "Anarchy",
+      "~S2": "Order",
+      "~S1": "Abrogation",
+      "M1": "Regulation",
+      "M2": "Disorder",
+      "M3": "Freedom",
+      "M4": "Control",
+      "C1": "Liberty",
+      "C2": "Repression",
+      "C3": "Unrest",
+      "C4": "Stability",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Regulation"
+      }
+    },
+    "D5": {
+      "S1": "Dissimulation",
+      "S2": "Authenticity",
+      "~S2": "Impersonation",
+      "~S1": "Revelation",
+      "M1": "Exposure",
+      "M2": "Deception",
+      "M3": "Concealment",
+      "M4": "Disclosure",
+      "C1": "Ambiguity",
+      "C2": "Misrepresentation",
+      "C3": "Secrecy",
+      "C4": "Transparency",
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Repression"
+      }
+    },
+    "D6": {
+      "S1": "Fabrication",
+      "S2": "Authenticity",
+      "~S2": "Imitation",
+      "~S1": "Non-fabrication",
+      "M1": "Fabrication",
+      "M2": "Authenticity",
+      "M3": "Imitation",
+      "M4": "Non-fabrication",
+      "C1": "Synthetic",
+      "C2": "Natural",
+      "C3": "Artificial",
+      "C4": "Genuine",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Misrepresentation"
+      }
+    },
+    "D7": {
+      "S1": "Organic",
+      "S2": "Inorganic",
+      "~S2": "Non-organic",
+      "~S1": "Artificial",
+      "M1": "Synthetic",
+      "M2": "Man-made",
+      "M3": "Artificial",
+      "M4": "Inorganic",
+      "C1": "Synthetic",
+      "C2": "Man-made",
+      "C3": "Artificial",
+      "C4": "Inorganic",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Natural"
+      }
+    },
+    "D8": {
+      "S1": "Engineered",
+      "S2": "Natural",
+      "~S2": "Unnatural",
+      "~S1": "Primitive",
+      "M1": "Synthetic",
+      "M2": "Organic",
+      "M3": "Unnatural",
+      "M4": "Artificial",
+      "C1": "Hybrid",
+      "C2": "Biological",
+      "C3": "Man-made",
+      "C4": "Organic",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Man-made"
+      }
+    },
+    "D9": {
+      "S1": "Living",
+      "S2": "Dying",
+      "~S1": "Dead",
+      "~S2": "Non-living",
+      "M1": "Vitality",
+      "M2": "Non-vitality",
+      "M3": "Inactivity",
+      "M4": "Non-existence",
+      "C1": "In-between",
+      "C2": "Transition",
+      "C3": "Nullity",
+      "C4": "Existence",
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Biological"
+      }
+    },
+    "D10": {
+      "S1": "Evolution",
+      "S2": "Stasis",
+      "~S2": "Reversion",
+      "~S1": "Atrophy",
+      "M1": "Progression",
+      "M2": "Regression",
+      "M3": "Degeneration",
+      "M4": "Stagnation",
+      "C1": "Plateau",
+      "C2": "Decay",
+      "C3": "Deterioration",
+      "C4": "Renewal",
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Transition"
+      }
+    },
+    "D11": {
+      "S1": "Degradation",
+      "S2": "Perfection",
+      "~S2": "Imperfection",
+      "~S1": "Stagnation",
+      "M1": "Deterioration",
+      "M2": "Renovation",
+      "M3": "Disarray",
+      "M4": "Restoration",
+      "C1": "Disorganization",
+      "C2": "Reorganization",
+      "C3": "Stagnation",
+      "C4": "Progression",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Decay"
+      }
+    },
+    "D12": {
+      "S1": "Reform",
+      "S2": "Resistance",
+      "~S2": "Complacency",
+      "~S1": "Rut",
+      "M1": "Progress",
+      "M2": "Lassitude",
+      "M3": "Reformism",
+      "M4": "Conservatism",
+      "C1": "Mediation",
+      "C2": "Stalemate",
+      "C3": "Reformulation",
+      "C4": "Revival",
+      "_resolved_by_synonym": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Reorganization"
+      }
+    },
+    "D13": {
+      "S1": "Impasse",
+      "S2": "Movement",
+      "~S2": "Stationary",
+      "~S1": "Free flow",
+      "M1": "Stalemate",
+      "M2": "Flow",
+      "M3": "Gridlock",
+      "M4": "Open road",
+      "C1": "Quagmire",
+      "C2": "Clearway",
+      "C3": "Traffic jam",
+      "C4": "Unobstructed path",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Stalemate"
+      }
+    },
+    "D14": {
+      "S1": "Road",
+      "S2": "Wilderness",
+      "~S2": "Urban",
+      "~S1": "Vacant",
+      "M1": "Path",
+      "M2": "Journey",
+      "M3": "Obstacle",
+      "M4": "Route",
+      "C1": "Trail",
+      "C2": "Detour",
+      "C3": "Blockade",
+      "C4": "Way",
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Clearway"
+      }
+    },
+    "D15": {
+      "S1": "Turnoff",
+      "S2": "Switch",
+      "~S2": "Off",
+      "~S1": "Activation",
+      "M1": "Switching",
+      "M2": "On",
+      "M3": "Unswitching",
+      "M4": "Activation",
+      "C1": "Deactivation",
+      "C2": "Switching",
+      "C3": "Unswitching",
+      "C4": "Activation",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Detour"
+      }
+    },
+    "D16": {
+      "S1": "Shifting",
+      "S2": "Stability",
+      "~S2": "Instability",
+      "~S1": "Stasis",
+      "M1": "Change",
+      "M2": "Fixation",
+      "M3": "Rigidity",
+      "M4": "Adaptation",
+      "C1": "Transition",
+      "C2": "Settling",
+      "C3": "Resistance",
+      "C4": "Adjustment",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Switching"
+      }
+    }
+  },
+  "L2": {
+    "D1": {
+      "S1": "Openness",
+      "S2": "Order",
+      "~S2": "Chaos",
+      "~S1": "Order",
+      "M1": "Harmony",
+      "M2": "Balance",
+      "M3": "Entropy",
+      "M4": "Freedom",
+      "C1": "Equilibrium",
+      "C2": "Stasis",
+      "C3": "Anarchy",
+      "C4": "Autonomy",
+      "_unresolved_collisions": true
+    },
+    "D2": {
+      "S1": "Impersonation",
+      "S2": "Imitation",
+      "~S2": "Non-organic",
+      "~S1": "Unnatural",
+      "M1": "Synthesis",
+      "M2": "Hybridization",
+      "M3": "Artifice",
+      "M4": "Aberrant",
+      "C1": "Composition",
+      "C2": "Mixture",
+      "C3": "Illusion",
+      "C4": "Abnormal",
+      "_resolved_by_synonym": true
+    },
+    "D3": {
+      "S1": "Non-living",
+      "S2": "Reversion",
+      "~S2": "Imperfection",
+      "~S1": "Complacency",
+      "M1": "Integration",
+      "M2": "Reconciliation",
+      "M3": "Dissonance",
+      "M4": "Dissolution",
+      "C1": "Combination",
+      "C2": "Negation",
+      "C3": "Polarity",
+      "C4": "Unity",
+      "_resolved_by_synonym": true
+    },
+    "D4": {
+      "S1": "Stationary",
+      "S2": "Urban",
+      "~S2": "Off",
+      "~S1": "Instability",
+      "M1": "Harmony",
+      "M2": "Urbanity",
+      "M3": "Instability",
+      "M4": "Perfection",
+      "C1": "Balance",
+      "C2": "Dissonance",
+      "C3": "Entropy",
+      "C4": "Decay",
+      "_unresolved_collisions": true
+    }
+  },
+  "L3": {
+    "D1": {
+      "S1": "Stasis",
+      "S2": "Mixture",
+      "~S2": "Negation",
+      "~S1": "Dissonance",
+      "M1": "Synthesis",
+      "M2": "Negation",
+      "M3": "Dissonance",
+      "M4": "Stasis",
+      "C1": "Mixture",
+      "C2": "Negation",
+      "C3": "Dissonance",
+      "C4": "Stasis",
+      "_unresolved_collisions": true
+    }
+  }
+}
