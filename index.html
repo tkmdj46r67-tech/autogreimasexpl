@@ -1644,4 +1644,166 @@ function updateMinimapLabel() {
 
 function updateUI() {
   const card = document.getElementById('current');
-  const inst = diagrams[currentKey
+  const inst = diagrams[currentKey];
+  const lo = LAYOUT[currentKey];
+  let anchorNote = '';
+  if (lo.parentKey) {
+    const parent = LAYOUT[lo.parentKey];
+    const corner = P_LOCAL[lo.parentCorner].label;
+    anchorNote = `<span class="anchor-note">sits at ${corner} of L${parent.level}·D${parent.index + 1}</span>`;
+  } else {
+    anchorNote = `<span class="anchor-note">root — no parent</span>`;
+  }
+  card.innerHTML = `L${inst.level} · D${inst.index + 1}`
+    + `<span class="sub">${LEVEL_NAMES[inst.level]} level</span>`
+    + anchorNote;
+
+  document.querySelectorAll('#ui button[data-key]').forEach(b => {
+    const active = b.dataset.key === currentKey;
+    b.classList.toggle('active', active);
+    b.disabled = !!flight;
+  });
+  document.getElementById('apply').disabled = !!flight;
+  document.getElementById('reset').disabled = !!flight;
+  document.getElementById('expand').disabled = !!flight;
+  document.getElementById('export-current').disabled = !!flight;
+  document.getElementById('export-all').disabled = !!flight;
+
+  jsonInputEl.disabled = !!flight;
+  jsonApplyEl.disabled = !!flight;
+  fullStructureInputEl.disabled = !!flight;
+  fullStructureApplyEl.disabled = !!flight;
+
+  updateMinimapLabel();
+}
+
+document.getElementById('t-labels').addEventListener('change', e => {
+  labelsOn = e.target.checked;
+  applyOpacities();
+});
+document.getElementById('t-rotate').addEventListener('change', e => {
+  controls.autoRotate = e.target.checked;
+  controls.autoRotateSpeed = 0.9;
+});
+document.querySelectorAll('.sec[data-sec]').forEach(sec => {
+  sec.querySelector('.sec-title').addEventListener('click', () => sec.classList.toggle('collapsed'));
+});
+
+document.getElementById('apply').addEventListener('click', () => {
+  if (flight) return;
+  saveInputsToCurrentDiagram();
+  rebuildLabels();
+});
+document.getElementById('reset').addEventListener('click', () => {
+  if (flight) return;
+  for (const key of Object.keys(diagramData)) diagramData[key] = blankDiagram();
+  applyStructureObject(INITIAL_STRUCTURE);
+  for (const key of Object.keys(diagrams)) diagrams[key].expansionTarget = 0;
+  syncInputsFromState();
+  rebuildLabels();
+  updateExpandButton();
+  setJsonStatus('', '');
+  setFullStructureStatus('', '');
+  clearValidationReport();
+});
+
+function updateExpandButton() {
+  const inst = diagrams[currentKey];
+  const expanded = inst.expansionTarget === 1;
+  const btn = document.getElementById('expand');
+  btn.classList.toggle('expanded', expanded);
+  document.getElementById('expand-label').textContent = expanded ? 'Collapse' : 'Expand';
+}
+document.getElementById('expand').addEventListener('click', () => {
+  if (flight) return;
+  const inst = diagrams[currentKey];
+  inst.expansionTarget = inst.expansionTarget === 1 ? 0 : 1;
+  updateExpandButton();
+});
+document.getElementById('export-current').addEventListener('click', () => {
+  if (flight) return;
+  exportCurrentD();
+});
+document.getElementById('export-all').addEventListener('click', () => {
+  if (flight) return;
+  exportAll();
+});
+document.getElementById('clear-cache').addEventListener('click', () => {
+  try { localStorage.removeItem('greimas-words-v3'); } catch (e) {}
+});
+document.querySelectorAll('#ui input[data-k]').forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveInputsToCurrentDiagram();
+      rebuildLabels();
+      el.blur();
+    }
+  });
+});
+
+/* =====================================================================
+   RESIZE + LOOP
+   ===================================================================== */
+function onResize() {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  labelRenderer.setSize(innerWidth, innerHeight);
+  updateViewOffset();
+}
+addEventListener('resize', onResize);
+
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const now = performance.now();
+  const dt  = Math.min(0.1, clock.getDelta());
+
+  updateFlight(now);
+  updateOuterAlphas(dt);
+  updateExpansions(dt);
+  updateLinks(dt);
+  updateLabelFade(dt);
+  applyOpacities();
+
+  if (!flight) controls.update();
+
+  /* Main render — glow sized for close-up framing */
+  positionGlow(false);
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+
+  /* Mini render — glow sized for a wide overview */
+  updateMiniCamera();
+  positionGlow(true);
+  miniRenderer.render(scene, miniCamera);
+}
+
+/* =====================================================================
+   BOOT
+   ===================================================================== */
+buildUI();
+currentKey = '1-0';
+syncInputsFromState();
+rebuildLabels();
+
+for (const key of Object.keys(diagrams)) {
+  diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
+}
+for (const t of treeLinks) t.opacity = 0;
+
+{
+  const inst = diagrams['1-0'];
+  controls.target.copy(inst.center);
+  camera.position.copy(inst.center).add(state0Offset('1-0'));
+  camera.lookAt(inst.center);
+}
+
+updateViewOffset();
+updateExpandButton();
+updateUI();
+animate();
+</script>
+</body>
+</html>
