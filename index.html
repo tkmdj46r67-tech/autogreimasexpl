@@ -828,13 +828,15 @@ const glowTexture = (() => {
 
 /* =====================================================================
    PER-D GLOW SPRITES — mini-only (layer 1)
+   Colour is 75% toward white from the diagram's centre colour — a
+   bright pale halo that still carries the level's hue.
    ===================================================================== */
 const miniGlows = [];
 for (const key of Object.keys(LAYOUT)) {
   const lo = LAYOUT[key];
   const centerHex = layerTripleFor(lo.level, lo.index).center;
   const base = new THREE.Color(centerHex);
-  const light = base.clone().lerp(new THREE.Color(0xffffff), 0.5);
+  const light = base.clone().lerp(new THREE.Color(0xffffff), 0.75);
 
   const spr = new THREE.Sprite(new THREE.SpriteMaterial({
     map: glowTexture,
@@ -856,7 +858,7 @@ for (const key of Object.keys(LAYOUT)) {
 
 function updateMiniGlowOpacities() {
   for (const g of miniGlows) {
-    g.sprite.material.opacity = (g.key === currentKey) ? 0.9 : 0;
+    g.sprite.material.opacity = (g.key === currentKey) ? 1.0 : 0;
     g.sprite.visible = (g.key === currentKey);
   }
 }
