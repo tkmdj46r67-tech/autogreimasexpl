@@ -1,0 +1,423 @@
+{
+  "metadata": {
+    "initial_concept": "chance",
+    "model": "llama3.2:3b",
+    "model_preset": "fast",
+    "generated_at": "2026-10-10T12:11:42",
+    "structure": {
+      "L1": 16,
+      "L2": 4,
+      "L3": 1,
+      "total": 21
+    },
+    "synonym_step": "enabled",
+    "layout": {
+      "P1 (upper-left)": "S1",
+      "P2 (upper-right)": "S2",
+      "P3 (lower-left)": "~S2",
+      "P4 (lower-right)": "~S1"
+    },
+    "derivation_chain": "S1 --(antithesis)--> S2 --(negation)--> ~S2 --(antithesis)--> ~S1",
+    "settings": {
+      "max_exclusion_terms": 80,
+      "max_uniqueness_tries": 4,
+      "max_synonym_tries": 3,
+      "max_next_s1_tries": 2,
+      "next_s1_candidates": 5,
+      "temperature": 0.3,
+      "num_predict": 800
+    },
+    "uniqueness_strategy": "L1 chain: C2 → synonym → next S1 (default). Per diagram: retries → synonyms → accept duplicate (flagged).",
+    "relationships": {
+      "L1": "L1 D(n+1).S1 = synonym of L1 D(n).C2",
+      "L2 D1": "S1..S4 = ~S2 of L1 D1, D2, D3, D4",
+      "L2 D2": "S1..S4 = ~S2 of L1 D5, D6, D7, D8",
+      "L2 D3": "S1..S4 = ~S2 of L1 D9, D10, D11, D12",
+      "L2 D4": "S1..S4 = ~S2 of L1 D13, D14, D15, D16",
+      "L3 D1": "S1..S4 = C2 of L2 D1, D2, D3, D4"
+    }
+  },
+  "L1": {
+    "D1": {
+      "S1": "chance",
+      "S2": "certainty",
+      "~S2": "non-certainty",
+      "~S1": "predetermination",
+      "M1": "luck",
+      "M2": "predestination",
+      "M3": "non-predetermination",
+      "M4": "ambiguity",
+      "C1": "destinization",
+      "C2": "indeterminacy",
+      "C3": "doubt",
+      "C4": "Fortune",
+      "_resolved_by_synonym": true,
+      "_s1_source": {
+        "type": "initial",
+        "source_term": "chance"
+      }
+    },
+    "D2": {
+      "S1": "openness",
+      "S2": "Closure",
+      "~S2": "Closedness",
+      "~S1": "Tightness",
+      "M1": "Transparency",
+      "M2": "Obstruction",
+      "M3": "Confinement",
+      "M4": "Secrecy",
+      "C1": "Vulnerability",
+      "C2": "Blockage",
+      "C3": "Containment",
+      "C4": "Protection",
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "indeterminacy"
+      }
+    },
+    "D3": {
+      "S1": "Impediment",
+      "S2": "Facilitation",
+      "~S2": "Blockage",
+      "~S1": "Certainty",
+      "M1": "Obstruction",
+      "M2": "Chance",
+      "M3": "Fortune",
+      "M4": "Luck",
+      "C1": "Predetermination",
+      "C2": "Destinization",
+      "C3": "Non-predetermination",
+      "C4": "Indeterminacy",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Blockage"
+      }
+    },
+    "D4": {
+      "S1": "Fate",
+      "S2": "Free Will",
+      "~S2": "Determinism",
+      "~S1": "Randomness",
+      "M1": "Destiny",
+      "M2": "Indeterminism",
+      "M3": "Fatalism",
+      "M4": "Chance",
+      "C1": "Predestination",
+      "C2": "Indeterminacy",
+      "C3": "Fortune",
+      "C4": "Luck",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Destinization"
+      }
+    },
+    "D5": {
+      "S1": "Chaos",
+      "S2": "Order",
+      "~S1": "Organization",
+      "~S2": "Disorder",
+      "M1": "Anarchy",
+      "M2": "Structure",
+      "M3": "Confusion",
+      "M4": "Control",
+      "C1": "Instability",
+      "C2": "Consistency",
+      "C3": "Disorganization",
+      "C4": "Orderliness",
+      "_resolved_by_synonym": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Indeterminacy"
+      }
+    },
+    "D6": {
+      "S1": "Predictability",
+      "S2": "Unpredictability",
+      "~S2": "Certainty",
+      "~S1": "Indeterminacy",
+      "M1": "Expectation",
+      "M2": "Chance",
+      "M3": "Surprise",
+      "M4": "Indeterminism",
+      "C1": "Indeterminacy",
+      "C2": "Surprise",
+      "C3": "Indeterminism",
+      "C4": "Expectation",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Consistency"
+      }
+    },
+    "D7": {
+      "S1": "Discovery",
+      "S2": "Obscurity",
+      "~S2": "Clarity",
+      "~S1": "Loss",
+      "M1": "Revelation",
+      "M2": "Concealment",
+      "M3": "Hiding",
+      "M4": "Exposure",
+      "C1": "Ambiguity",
+      "C2": "Secrecy",
+      "C3": "Deception",
+      "C4": "Transparency",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Surprise"
+      }
+    },
+    "D8": {
+      "S1": "Discretion",
+      "S2": "Intrusiveness",
+      "~S2": "Non-intrusiveness",
+      "~S1": "Lack of restraint",
+      "M1": "Prudence",
+      "M2": "Impulsiveness",
+      "M3": "Lack of prudence",
+      "M4": "Indiscretion",
+      "C1": "Overcautiousness",
+      "C2": "Impulsive behavior",
+      "C3": "Lack of foresight",
+      "C4": "Carelessness",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Secrecy"
+      }
+    },
+    "D9": {
+      "S1": "Hasty decision",
+      "S2": "Reflective decision",
+      "~S2": "Hasty action",
+      "~S1": "Rational choice",
+      "M1": "Careful consideration",
+      "M2": "Impulsive action",
+      "M3": "Prudent decision",
+      "M4": "Spontaneous choice",
+      "C1": "Lack of reflection",
+      "C2": "Spontaneity",
+      "C3": "Timidity",
+      "C4": "Reflective deliberation",
+      "_resolved_by_synonym": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Impulsive behavior"
+      }
+    },
+    "D10": {
+      "S1": "Suddenness",
+      "S2": "Slowness",
+      "~S2": "Speed",
+      "~S1": "Gradualness",
+      "M1": "Rapidness",
+      "M2": "Slowness",
+      "M3": "Gradualness",
+      "M4": "Impulsiveness",
+      "C1": "Rapid change",
+      "C2": "Gradual progression",
+      "C3": "Impulsive behavior",
+      "C4": "Predictable pace",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Spontaneity"
+      }
+    },
+    "D11": {
+      "S1": "Gradual increase",
+      "S2": "Abrupt change",
+      "~S2": "Non-change",
+      "~S1": "Sudden stop",
+      "M1": "Progression",
+      "M2": "Disruption",
+      "M3": "Stagnation",
+      "M4": "Regression",
+      "C1": "Transition",
+      "C2": "Disruption point",
+      "C3": "Plateau",
+      "C4": "Regression point",
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Gradual progression"
+      }
+    },
+    "D12": {
+      "S1": "Trigger",
+      "S2": "Inhibition",
+      "~S2": "Activation",
+      "~S1": "Deactivation",
+      "M1": "Initiation",
+      "M2": "Suppression",
+      "M3": "Disactivation",
+      "M4": "Stimulation",
+      "C1": "Regulation",
+      "C2": "Control",
+      "C3": "Disregulation",
+      "C4": "Stimulation",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Disruption point"
+      }
+    },
+    "D13": {
+      "S1": "Direction",
+      "S2": "Randomness",
+      "~S2": "Determinism",
+      "~S1": "Indeterminacy",
+      "M1": "Guidance",
+      "M2": "Uncertainty",
+      "M3": "Control",
+      "M4": "Disorder",
+      "C1": "Indirection",
+      "C2": "Structure",
+      "C3": "Chaos",
+      "C4": "Organization",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Control"
+      }
+    },
+    "D14": {
+      "S1": "Pattern",
+      "S2": "Randomness",
+      "~S2": "Order",
+      "~S1": "Disorganization",
+      "M1": "Structure",
+      "M2": "Chaos",
+      "M3": "Disorder",
+      "M4": "Organization",
+      "C1": "Instability",
+      "C2": "Confusion",
+      "C3": "Lack of restraint",
+      "C4": "Expectation",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Structure"
+      }
+    },
+    "D15": {
+      "S1": "Muddle",
+      "S2": "Clarity",
+      "~S2": "Obscurity",
+      "~S1": "Order",
+      "M1": "Muddle",
+      "M2": "Order",
+      "M3": "Obscurity",
+      "M4": "Clarity",
+      "C1": "Ambiguity",
+      "C2": "Certainty",
+      "C3": "Disorder",
+      "C4": "Organization",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Confusion"
+      }
+    },
+    "D16": {
+      "S1": "Satisfaction",
+      "S2": "Dissatisfaction",
+      "~S2": "Contentment",
+      "~S1": "Discontent",
+      "M1": "Contentment",
+      "M2": "Dissatisfaction",
+      "M3": "Discontent",
+      "M4": "Satisfaction",
+      "C1": "Discontentment",
+      "C2": "Contentment",
+      "C3": "Dissatisfaction",
+      "C4": "Discontent",
+      "_unresolved_collisions": true,
+      "_s1_source": {
+        "type": "synonym_of_c2",
+        "source_term": "Certainty"
+      }
+    }
+  },
+  "L2": {
+    "D1": {
+      "S1": "non-certainty",
+      "S2": "Closedness",
+      "~S2": "Blockage",
+      "~S1": "Determinism",
+      "M1": "Ambivalence",
+      "M2": "Containment",
+      "M3": "Stagnation",
+      "M4": "Determinism",
+      "C1": "Containment",
+      "C2": "Stagnation",
+      "C3": "Determinism",
+      "C4": "Ambivalence",
+      "_unresolved_collisions": true
+    },
+    "D2": {
+      "S1": "Disorder",
+      "S2": "Certainty",
+      "~S2": "Clarity",
+      "~S1": "Non-intrusiveness",
+      "M1": "Stability",
+      "M2": "Clarity",
+      "M3": "Non-intrusiveness",
+      "M4": "Non-intrusiveness",
+      "C1": "Balance",
+      "C2": "Harmony",
+      "C3": "Security",
+      "C4": "Stability",
+      "_unresolved_collisions": true
+    },
+    "D3": {
+      "S1": "Hasty action",
+      "S2": "Speed",
+      "~S2": "Non-change",
+      "~S1": "Activation",
+      "M1": "Acceleration",
+      "M2": "Stasis",
+      "M3": "Stagnation",
+      "M4": "Activation",
+      "C1": "Flux",
+      "C2": "Fixation",
+      "C3": "Stasis",
+      "C4": "Acceleration",
+      "_unresolved_collisions": true
+    },
+    "D4": {
+      "S1": "Determinism",
+      "S2": "Order",
+      "~S2": "Obscurity",
+      "~S1": "Contentment",
+      "M1": "Unity",
+      "M2": "Complexity",
+      "M3": "Dissonance",
+      "M4": "Freedom",
+      "C1": "Synthesis",
+      "C2": "Tension",
+      "C3": "Concord",
+      "C4": "Diversity",
+      "_resolved_by_synonym": true
+    }
+  },
+  "L3": {
+    "D1": {
+      "S1": "Stagnation",
+      "S2": "Harmony",
+      "~S2": "Fixation",
+      "~S1": "Tension",
+      "M1": "Stabilization",
+      "M2": "Fixation",
+      "M3": "Tension",
+      "M4": "Stagnation",
+      "C1": "Harmony",
+      "C2": "Fixation",
+      "C3": "Tension",
+      "C4": "Stagnation",
+      "_unresolved_collisions": true
+    }
+  }
+}
