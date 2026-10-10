@@ -38,8 +38,13 @@
   .lbl.layer { font-size: 10.5px; font-weight: 500; font-style: italic; letter-spacing: 0.03em; }
   .lbl.layer b { font-style: normal; font-weight: 600; font-size: 9.5px; margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em; }
 
-  #panel-toggle {
+  /* ============ Top bar — toggle + cycle buttons ============ */
+  #top-bar {
     position: fixed; top: 14px; left: 14px; z-index: 20;
+    display: flex; gap: 8px; align-items: stretch;
+  }
+
+  #panel-toggle {
     padding: 10px 14px;
     min-height: 40px;
     border-radius: 9px;
@@ -71,6 +76,40 @@
     transition: transform 0.35s ease;
   }
   body.panels-hidden #panel-toggle .icon { transform: rotate(180deg); }
+
+  #cycle-level, #cycle-d {
+    padding: 10px 12px;
+    min-height: 40px;
+    min-width: 48px;
+    border-radius: 9px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #c8d0e6;
+    background: rgba(9, 13, 22, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.25s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  #cycle-level:hover:not(:disabled),
+  #cycle-d:hover:not(:disabled) {
+    background: rgba(126,160,255,0.16);
+    border-color: rgba(126,160,255,0.4);
+    color: #fff;
+  }
+  #cycle-level:active:not(:disabled),
+  #cycle-d:active:not(:disabled) { transform: translateY(1px); }
+  #cycle-level:disabled, #cycle-d:disabled {
+    opacity: 0.32; cursor: not-allowed; pointer-events: none;
+  }
 
   #ui {
     position: fixed; top: 14px; right: 14px; z-index: 10;
@@ -438,10 +477,14 @@
 
 <div id="app"></div>
 
-<button id="panel-toggle" aria-label="Toggle panels">
-  <span class="icon">◱</span>
-  <span id="panel-toggle-label">Hide Panels</span>
-</button>
+<div id="top-bar">
+  <button id="panel-toggle" aria-label="Toggle panels">
+    <span class="icon">◱</span>
+    <span id="panel-toggle-label">Hide Panels</span>
+  </button>
+  <button id="cycle-level" aria-label="Cycle level" title="Cycle level — L1 → L2 → L3 → L1">↑&nbsp;L</button>
+  <button id="cycle-d" aria-label="Cycle diagram" title="Cycle diagram — next D in the current level">→&nbsp;D</button>
+</div>
 
 <div id="minimap">
   <div id="minimap-label">MRSD</div>
@@ -585,11 +628,6 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 
 /* =====================================================================
    DEFAULT STRUCTURE LOADER
-   ---------------------------------------------------------------------
-   Fetches default_chain.json from the same directory as index.html.
-   On success, returns the parsed object. On any failure (404, invalid
-   JSON, file:// protocol restrictions, network error), returns null so
-   the caller can fall back to blank diagrams.
    ===================================================================== */
 async function loadDefaultStructure() {
   if (location.protocol === 'file:') {
@@ -622,11 +660,6 @@ const M_KEYS     = ['m1','m2','m3','m4'];
 const C_KEYS     = ['c1','c2','c3','c4'];
 const ALL_KEYS   = [...INNER_KEYS, ...M_KEYS, ...C_KEYS];
 
-/* Position naming:
-     P1 (top-left)     = S₁
-     P2 (top-right)    = S₂  (antithesis of S₁)
-     P3 (bottom-left)  = ~S₂ (negation of S₂)
-     P4 (bottom-right) = ~S₁ (antithesis of ~S₂)                        */
 const SYMBOLS = {
   s1:'S₁', s2:'S₂', ns1:'~S₂', ns2:'~S₁',
   m1:'M₁', m2:'M₂', m3:'M₃', m4:'M₄',
@@ -901,10 +934,14 @@ for (const key of Object.keys(LAYOUT)) {
   miniGlows.push({ key, sprite: spr });
 }
 
+/* =====================================================================
+   MINI GLOW OPACITY — slow 30-second pulse
+   ---------------------------------------------------------------------
+   Only the currently-viewed diagram's glow is visible. Its opacity
+   swings between PULSE_LOW and PULSE_HIGH on a raised-cosine curve so
+   the pulse eases smoothly at both extremes rather than snapping.
+   ===================================================================== */
 function updateMiniGlowOpacities() {
-  /* Slow 30-second pulse: opacity swings between PULSE_LOW and PULSE_HIGH
-     on a raised-cosine curve, so it eases smoothly at both extremes and
-     never snaps. */
   const PULSE_PERIOD_MS = 30000;
   const PULSE_LOW  = 0.35;
   const PULSE_HIGH = 1.0;
@@ -1065,11 +1102,6 @@ for (const key of Object.keys(LAYOUT)) {
   diagramData[key] = blankDiagram();
 }
 
-/* JSON key → internal slot.
-     "S1"  → s1  (position P1, S₁)
-     "S2"  → s2  (position P2, S₂)
-     "~S2" → ns1 (position P3, ~S₂)
-     "~S1" → ns2 (position P4, ~S₁)                                  */
 const JSON_KEY_MAP = {
   'S1':'s1', 'S2':'s2', '~S2':'ns1', '~S1':'ns2',
   'M1':'m1', 'M2':'m2', 'M3':'m3', 'M4':'m4',
@@ -1469,7 +1501,6 @@ function validateStructure() {
     }
   }
 
-  /* L1 cascade: D(n+1).S1 = D(n).C2 */
   for (let i = 0; i < 15; i++) {
     cascadeTotal++;
     const cur = diagramData[`1-${i}`], nxt = diagramData[`1-${i+1}`];
@@ -1478,7 +1509,6 @@ function validateStructure() {
     else warnings.push(`L1 D${i+1}.C2 ("${cur.c2.name}") ≠ L1 D${i+2}.S1 ("${nxt.s1.name}") — cascade broken`);
   }
 
-  /* L2 cascade: L2 D_k.P_j = L1 D_(4(k-1)+j).~S₂   (ns1 holds ~S₂) */
   for (let k = 0; k < 4; k++) {
     const l2 = diagramData[`2-${k}`];
     for (let j = 0; j < 4; j++) {
@@ -1493,7 +1523,6 @@ function validateStructure() {
     }
   }
 
-  /* L3 cascade: L3 D1.P_j = L2 D_j.C2 */
   const l3 = diagramData['3-0'];
   for (let j = 0; j < 4; j++) {
     cascadeTotal++;
@@ -1739,6 +1768,13 @@ function updateUI() {
   fullStructureInputEl.disabled = !!flight;
   fullStructureApplyEl.disabled = !!flight;
 
+  /* Cycle buttons: both disabled during flight; the D button is also
+     disabled on L3 (only one diagram there, so nothing to cycle through). */
+  const cycleLevelBtn = document.getElementById('cycle-level');
+  const cycleDBtn = document.getElementById('cycle-d');
+  if (cycleLevelBtn) cycleLevelBtn.disabled = !!flight;
+  if (cycleDBtn) cycleDBtn.disabled = !!flight || (getCurrentLevel() === 3);
+
   updateMinimapLabel();
 }
 
@@ -1763,6 +1799,54 @@ panelToggleBtn.addEventListener('click', () => {
   panelToggleLabel.textContent = panelsVisible ? 'Hide Panels' : 'Show Panels';
   updateMiniVisibility();
 });
+
+/* =====================================================================
+   LEVEL + DIAGRAM CYCLING
+   ---------------------------------------------------------------------
+   Level cycle:
+     L1 Dn  →  L2 D(floor((n-1)/4))   (L1 D1–D4 → L2 D1, D5–D8 → L2 D2, …)
+     L2 Dn  →  L3 D1                  (always)
+     L3 D1  →  L1 D1                  (wrap to the default start)
+   Diagram cycle:
+     L1:  Dn → D(n+1), wraps D16 → D1
+     L2:  Dn → D(n+1), wraps D4  → D1
+     L3:  no-op (button disabled)
+   ===================================================================== */
+function getCurrentLevel() {
+  return parseInt(currentKey.split('-')[0], 10);
+}
+function getCurrentDiagramIndex() {
+  return parseInt(currentKey.split('-')[1], 10);
+}
+
+function cycleLevel() {
+  if (flight) return;
+  const L = getCurrentLevel();
+  const idx = getCurrentDiagramIndex();
+
+  if (L === 1) {
+    const targetD = Math.floor(idx / 4);
+    goToDiagram(2, targetD);
+  } else if (L === 2) {
+    goToDiagram(3, 0);
+  } else {
+    goToDiagram(1, 0);
+  }
+}
+
+function cycleDiagram() {
+  if (flight) return;
+  const L = getCurrentLevel();
+  if (L === 3) return;
+
+  const idx = getCurrentDiagramIndex();
+  const maxD = (L === 1) ? 16 : 4;
+  const nextIdx = (idx + 1) % maxD;
+  goToDiagram(L, nextIdx);
+}
+
+document.getElementById('cycle-level').addEventListener('click', cycleLevel);
+document.getElementById('cycle-d').addEventListener('click', cycleDiagram);
 
 document.getElementById('t-labels').addEventListener('change', e => {
   labelsOn = e.target.checked;
@@ -1889,6 +1973,8 @@ function animate() {
     }
     applyOpacities(true);
 
+    /* Pulse the current-diagram glow in the MRSD. Called every frame so
+       the opacity tracks the 30-second raised-cosine cycle. */
     updateMiniGlowOpacities();
 
     updateMiniCamera();
@@ -1906,7 +1992,6 @@ function animate() {
    BOOT
    ===================================================================== */
 async function boot() {
-  /* Try to load default_chain.json from the same directory as index.html */
   setLoadStatus('Loading default_chain.json…', '');
   const structure = await loadDefaultStructure();
   if (structure) {
