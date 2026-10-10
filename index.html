@@ -93,7 +93,13 @@
     color: #0a0e1c; vertical-align: 2px;
     background: linear-gradient(120deg, #4C8A8A, #A9D583);
   }
-  .hint { margin: 0 0 12px; font-size: 10px; color: #7e8aa8; }
+  .hint { margin: 0 0 4px; font-size: 10px; color: #7e8aa8; }
+  .load-status {
+    margin: 0 0 12px; font-size: 9.5px; letter-spacing: 0.03em;
+    color: #7e8aa8;
+  }
+  .load-status.ok  { color: #a8e8a8; }
+  .load-status.err { color: #ffb060; }
 
   #minimap {
     position: fixed; bottom: 14px; left: 14px; z-index: 10;
@@ -445,6 +451,7 @@
 <div id="ui">
   <h1>AutoGreimas Explorer<span>Nested</span></h1>
   <p class="hint">drag to orbit · scroll to zoom</p>
+  <p class="load-status" id="load-status">Loading default_chain.json…</p>
 
   <div id="current"></div>
 
@@ -521,8 +528,8 @@
       <textarea id="json-input" spellcheck="false" placeholder='{
   "S1": "Autonomy",
   "S2": "Determinism",
-  "~S1": "Dependence",
   "~S2": "Necessity",
+  "~S1": "Dependence",
   "M1": "Liberty",
   "M2": "Coercion",
   "M3": "Compulsion",
@@ -577,79 +584,35 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 /* =====================================================================
-   INITIAL STRUCTURE — placeholder until new data is pasted.
+   DEFAULT STRUCTURE LOADER
+   ---------------------------------------------------------------------
+   Fetches default_chain.json from the same directory as index.html.
+   On success, returns the parsed object. On any failure (404, invalid
+   JSON, file:// protocol restrictions, network error), returns null so
+   the caller can fall back to blank diagrams.
    ===================================================================== */
-const INITIAL_STRUCTURE = {
-  L1: {
-    D1: { "S1":"chance","S2":"predictability","~S1":"luck","~S2":"certainty",
-          "M1":"probability","M2":"predetermination","M3":"chaos","M4":"fate",
-          "C1":"indeterminacy","C2":"destiny","C3":"anarchy","C4":"predestination" },
-    D2: { "S1":"destiny","S2":"Free Will","~S1":"Randomness","~S2":"Control",
-          "M1":"Preordained","M2":"Autonomy","M3":"Indeterminism","M4":"Inevitability",
-          "C1":"Fatalism","C2":"Liberty","C3":"Ambiguity","C4":"Necessity" },
-    D3: { "S1":"Liberty","S2":"Slavery","~S1":"Captive","~S2":"Freedom",
-          "M1":"Equality","M2":"Discrimination","M3":"Oppression","M4":"Justice",
-          "C1":"Fairness","C2":"Injustice","C3":"Cruelty","C4":"Equality" },
-    D4: { "S1":"Injustice","S2":"Justice","~S1":"Equality","~S2":"Prejudice",
-          "M1":"Fairness","M2":"Discrimination","M3":"Predestination","M4":"Inequity",
-          "C1":"Bias","C2":"Preconception","C3":"Predetermination","C4":"Redemption" },
-    D5: { "S1":"Preconception","S2":"Disconception","~S1":"Ambivalence","~S2":"Surprise",
-          "M1":"Hypothesis","M2":"Misconception","M3":"Misunderstanding","M4":"Assumption",
-          "C1":"Speculation","C2":"Misinterpretation","C3":"Misjudgment","C4":"Inference" },
-    D6: { "S1":"Misinterpretation","S2":"Clear Understanding","~S1":"Accurate Perception","~S2":"Misunderstanding",
-          "M1":"Misconception","M2":"Misunderstanding","M3":"False Assumption","M4":"Preconceived Notion",
-          "C1":"Misconception","C2":"Misunderstanding","C3":"False Assumption","C4":"Preconceived Notion" },
-    D7: { "S1":"Misunderstanding","S2":"Understanding","~S1":"Clarity","~S2":"Miscomprehension",
-          "M1":"Misreading","M2":"Misapprehension","M3":"Falsehood","M4":"Secret",
-          "C1":"Paradox","C2":"Deception","C3":"Illusion","C4":"Simplicity" },
-    D8: { "S1":"Deception","S2":"Honesty","~S1":"Truth","~S2":"Integrity",
-          "M1":"Misdirection","M2":"Dishonesty","M3":"Duplicitousness","M4":"Secrecy",
-          "C1":"Misrepresentation","C2":"Betrayer","C3":"Evasion","C4":"Transparency" },
-    D9: { "S1":"Betrayer","S2":"Loyalist","~S1":"Non-betrayer","~S2":"Non-loyalist",
-          "M1":"Traitor","M2":"Loyal","M3":"False loyalty","M4":"Hidden allegiance",
-          "C1":"Deceit","C2":"Double agent","C3":"Secret loyalty","C4":"True loyalty" },
-    D10:{ "S1":"Double agent","S2":"Loyal agent","~S1":"False allegiance","~S2":"Betrayal",
-          "M1":"Double loyalty","M2":"Loyal allegiance","M3":"Subterfuge","M4":"Tactical allegiance",
-          "C1":"Double allegiance","C2":"Clandestine loyalty","C3":"Fidelity","C4":"Disloyalty" },
-    D11:{ "S1":"Clandestine loyalty","S2":"Treason","~S1":"Non-loyalty","~S2":"Devotion",
-          "M1":"Clandestine allegiance","M2":"Public disloyalty","M3":"Loyalty to a higher power","M4":"Self-serving loyalty",
-          "C1":"Multilocality","C2":"Loyalty by omission","C3":"Loyalty to a secret cause","C4":"Clandestine allegiance to a rival" },
-    D12:{ "S1":"Loyalty by omission","S2":"Public disloyalty","~S1":"Non-loyalty","~S2":"Loyal allegiance",
-          "M1":"Conditional loyalty","M2":"Public disloyalty","M3":"Hidden allegiance","M4":"Secret loyalty",
-          "C1":"Conditional loyalty","C2":"Hidden allegiance","C3":"Secret loyalty","C4":"Public disloyalty" },
-    D13:{ "S1":"Hidden allegiance","S2":"Public betrayal","~S1":"Open allegiance","~S2":"Public loyalty",
-          "M1":"Clandestine allegiance","M2":"Public loyalty","M3":"Loyal allegiance","M4":"Secret allegiance",
-          "C1":"Subterfuge","C2":"Deception","C3":"Duplicitousness","C4":"Transparency" },
-    D14:{ "S1":"Deception","S2":"Truth","~S1":"Authenticity","~S2":"Honesty",
-          "M1":"Misdirection","M2":"Evasion","M3":"Prejudice","M4":"Clarity",
-          "C1":"Ambiguity","C2":"Dishonesty","C3":"Integrity","C4":"Transparency" },
-    D15:{ "S1":"Dishonesty","S2":"Sincerity","~S1":"Authenticity","~S2":"Inauthenticity",
-          "M1":"Deceit","M2":"Honesty","M3":"Integrity","M4":"Secrecy",
-          "C1":"Misrepresentation","C2":"Loyalty","C3":"Transparency","C4":"Insincerity" },
-    D16:{ "S1":"Loyalty","S2":"Disloyalty","~S1":"Non-loyalty","~S2":"Loyalty",
-          "M1":"Devotion","M2":"Disloyalty","M3":"Non-loyalty","M4":"Fidelity",
-          "C1":"Treachery","C2":"False allegiance","C3":"Conditional loyalty","C4":"Loyal allegiance" },
-  },
-  L2: {
-    D1: { "S1":"certainty","S2":"Control","~S1":"Freedom","~S2":"Prejudice",
-          "M1":"Certainty","M2":"Prejudice","M3":"Freedom","M4":"Prejudice",
-          "C1":"Doubt","C2":"Preconception","C3":"Indeterminacy","C4":"Certainty" },
-    D2: { "S1":"Surprise","S2":"Misunderstanding","~S1":"Miscomprehension","~S2":"Integrity",
-          "M1":"Surprise Resolution","M2":"Misunderstanding Clarification","M3":"Miscomprehension Resolution","M4":"Integrity Verification",
-          "C1":"Resolution Clarity","C2":"Clarity Verification","C3":"Verification Resolution","C4":"Resolution Verification" },
-    D3: { "S1":"Non-loyalist","S2":"Betrayal","~S1":"Devotion","~S2":"Loyal allegiance",
-          "M1":"Rebellion","M2":"Obedience","M3":"Devotion","M4":"Disloyalty",
-          "C1":"Resistance","C2":"Submission","C3":"Conformity","C4":"Disobedience" },
-    D4: { "S1":"Public loyalty","S2":"Honesty","~S1":"Inauthenticity","~S2":"Loyalty",
-          "M1":"Authenticity","M2":"Loyalty","M3":"Inauthenticity","M4":"Deception",
-          "C1":"Ambiguity","C2":"Confusion","C3":"Doubt","C4":"Uncertainty" },
-  },
-  L3: {
-    D1: { "S1":"Preconception","S2":"Clarity Verification","~S1":"Submission","~S2":"Confusion",
-          "M1":"Awareness","M2":"Disorientation","M3":"Submission","M4":"Understanding",
-          "C1":"Ambiguity","C2":"Uncertainty","C3":"Confusion","C4":"Clarity" },
-  },
-};
+async function loadDefaultStructure() {
+  if (location.protocol === 'file:') {
+    console.warn('[default] file:// protocol blocks fetch — use a local server to load default_chain.json');
+    return null;
+  }
+  try {
+    const res = await fetch('default_chain.json', { cache: 'no-cache' });
+    if (!res.ok) {
+      console.warn('[default] default_chain.json not found (' + res.status + ')');
+      return null;
+    }
+    const parsed = await res.json();
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      console.warn('[default] default_chain.json is not a valid object');
+      return null;
+    }
+    return parsed;
+  } catch (e) {
+    console.warn('[default] could not load default_chain.json:', e.message);
+    return null;
+  }
+}
 
 /* =====================================================================
    CONSTANTS
@@ -659,11 +622,11 @@ const M_KEYS     = ['m1','m2','m3','m4'];
 const C_KEYS     = ['c1','c2','c3','c4'];
 const ALL_KEYS   = [...INNER_KEYS, ...M_KEYS, ...C_KEYS];
 
-/* Position naming, updated to the corrected semantics:
-     P1 (top-left)    = S₁
-     P2 (top-right)   = S₂  (antithesis of S₁)
-     P3 (bottom-left) = ~S₂ (negation of S₂)
-     P4 (bottom-right)= ~S₁ (antithesis of ~S₂)                        */
+/* Position naming:
+     P1 (top-left)     = S₁
+     P2 (top-right)    = S₂  (antithesis of S₁)
+     P3 (bottom-left)  = ~S₂ (negation of S₂)
+     P4 (bottom-right) = ~S₁ (antithesis of ~S₂)                        */
 const SYMBOLS = {
   s1:'S₁', s2:'S₂', ns1:'~S₂', ns2:'~S₁',
   m1:'M₁', m2:'M₂', m3:'M₃', m4:'M₄',
@@ -1083,20 +1046,18 @@ for (const key of Object.keys(LAYOUT)) {
 }
 
 /* =====================================================================
-   DATA PER DIAGRAM + initial structure
-   ---------------------------------------------------------------------
-   JSON_KEY_MAP routes the JSON keys to the internal slots. Under the
-   corrected semantics:
-     "S1"  → s1  (position P1, S₁)
-     "S2"  → s2  (position P2, S₂)
-     "~S2" → ns1 (position P3, ~S₂)
-     "~S1" → ns2 (position P4, ~S₁)
+   DATA PER DIAGRAM
    ===================================================================== */
 const diagramData = {};
 for (const key of Object.keys(LAYOUT)) {
   diagramData[key] = blankDiagram();
 }
 
+/* JSON key → internal slot.
+     "S1"  → s1  (position P1, S₁)
+     "S2"  → s2  (position P2, S₂)
+     "~S2" → ns1 (position P3, ~S₂)
+     "~S1" → ns2 (position P4, ~S₁)                                  */
 const JSON_KEY_MAP = {
   'S1':'s1', 'S2':'s2', '~S2':'ns1', '~S1':'ns2',
   'M1':'m1', 'M2':'m2', 'M3':'m3', 'M4':'m4',
@@ -1136,8 +1097,6 @@ function applyStructureObject(parsed) {
   }
   return { diagramsUpdated, termsUpdated, unknown };
 }
-
-applyStructureObject(INITIAL_STRUCTURE);
 
 /* =====================================================================
    NAVIGATION
@@ -1450,7 +1409,7 @@ function applyJSONInput() {
     }
   }
   if (updatedCount === 0) {
-    setJsonStatus('No recognized keys. Expected S1, S2, ~S1, ~S2, M1–M4, C1–C4.', 'err');
+    setJsonStatus('No recognized keys. Expected S1, S2, ~S2, ~S1, M1–M4, C1–C4.', 'err');
     return;
   }
   syncInputsFromState();
@@ -1487,15 +1446,12 @@ function validateStructure() {
     const lo = LAYOUT[key];
     const data = diagramData[key];
     const label = `L${lo.level} D${lo.index + 1}`;
-    /* Internal collapse checks — compare the appropriate negation slots.
-       Under the new scheme: ns1 = ~S₂, ns2 = ~S₁. */
     if (data.ns1.name && data.s2.name && data.ns1.name === data.s2.name) {
       issues.push(`${label}: ~S₂ equals S₂ ("${data.ns1.name}") — negation collapses`);
     }
     if (data.ns2.name && data.s1.name && data.ns2.name === data.s1.name) {
       issues.push(`${label}: ~S₁ equals S₁ ("${data.ns2.name}") — negation collapses`);
     }
-    /* C2 self-loop check for L1 (unchanged) */
     if (lo.level === 1 && data.c2.name && data.s1.name && data.c2.name === data.s1.name) {
       issues.push(`${label}: C2 equals S1 ("${data.c2.name}") — cascade will stall`);
     }
@@ -1510,7 +1466,7 @@ function validateStructure() {
     else warnings.push(`L1 D${i+1}.C2 ("${cur.c2.name}") ≠ L1 D${i+2}.S1 ("${nxt.s1.name}") — cascade broken`);
   }
 
-  /* L2 cascade: L2 D_k.P_j = L1 D_(4(k-1)+j).~S2   (ns1 holds ~S2) */
+  /* L2 cascade: L2 D_k.P_j = L1 D_(4(k-1)+j).~S₂   (ns1 holds ~S₂) */
   for (let k = 0; k < 4; k++) {
     const l2 = diagramData[`2-${k}`];
     for (let j = 0; j < 4; j++) {
@@ -1525,7 +1481,7 @@ function validateStructure() {
     }
   }
 
-  /* L3 cascade: L3 D1.P_j = L2 D_j.C2  (unchanged) */
+  /* L3 cascade: L3 D1.P_j = L2 D_j.C2 */
   const l3 = diagramData['3-0'];
   for (let j = 0; j < 4; j++) {
     cascadeTotal++;
@@ -1775,6 +1731,15 @@ function updateUI() {
 }
 
 /* =====================================================================
+   LOAD STATUS
+   ===================================================================== */
+const loadStatusEl = document.getElementById('load-status');
+function setLoadStatus(text, cls) {
+  loadStatusEl.textContent = text || '';
+  loadStatusEl.className = 'load-status ' + (cls || '');
+}
+
+/* =====================================================================
    PANEL TOGGLE
    ===================================================================== */
 const panelToggleBtn = document.getElementById('panel-toggle');
@@ -1804,10 +1769,17 @@ document.getElementById('apply').addEventListener('click', () => {
   saveInputsToCurrentDiagram();
   rebuildLabels();
 });
-document.getElementById('reset').addEventListener('click', () => {
+
+document.getElementById('reset').addEventListener('click', async () => {
   if (flight) return;
   for (const key of Object.keys(diagramData)) diagramData[key] = blankDiagram();
-  applyStructureObject(INITIAL_STRUCTURE);
+  const structure = await loadDefaultStructure();
+  if (structure) {
+    const r = applyStructureObject(structure);
+    setLoadStatus(`default_chain.json · ${r.diagramsUpdated} diagrams, ${r.termsUpdated} terms`, 'ok');
+  } else {
+    setLoadStatus('no default_chain.json · blank', 'err');
+  }
   for (const key of Object.keys(diagrams)) diagrams[key].expansionTarget = 0;
   syncInputsFromState();
   rebuildLabels();
@@ -1921,29 +1893,44 @@ function animate() {
 /* =====================================================================
    BOOT
    ===================================================================== */
-buildUI();
-currentKey = '1-0';
-syncInputsFromState();
-rebuildLabels();
-updateMiniGlowOpacities();
+async function boot() {
+  /* Try to load default_chain.json from the same directory as index.html */
+  setLoadStatus('Loading default_chain.json…', '');
+  const structure = await loadDefaultStructure();
+  if (structure) {
+    const r = applyStructureObject(structure);
+    setLoadStatus(`default_chain.json · ${r.diagramsUpdated} diagrams, ${r.termsUpdated} terms`, 'ok');
+    console.log(`[default] loaded ${r.termsUpdated} terms across ${r.diagramsUpdated} diagrams`);
+  } else {
+    setLoadStatus('no default_chain.json · starting blank', 'err');
+  }
 
-for (const key of Object.keys(diagrams)) {
-  diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
+  buildUI();
+  currentKey = '1-0';
+  syncInputsFromState();
+  rebuildLabels();
+  updateMiniGlowOpacities();
+
+  for (const key of Object.keys(diagrams)) {
+    diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
+  }
+  for (const t of treeLinks) t.opacity = 0;
+
+  {
+    const inst = diagrams['1-0'];
+    controls.target.copy(inst.center);
+    camera.position.copy(inst.center).add(state0Offset('1-0'));
+    camera.lookAt(inst.center);
+  }
+
+  updateViewOffset();
+  updateMiniVisibility();
+  updateExpandButton();
+  updateUI();
+  animate();
 }
-for (const t of treeLinks) t.opacity = 0;
 
-{
-  const inst = diagrams['1-0'];
-  controls.target.copy(inst.center);
-  camera.position.copy(inst.center).add(state0Offset('1-0'));
-  camera.lookAt(inst.center);
-}
-
-updateViewOffset();
-updateMiniVisibility();
-updateExpandButton();
-updateUI();
-animate();
+boot();
 </script>
 </body>
 </html>
