@@ -38,7 +38,6 @@
   .lbl.layer { font-size: 10.5px; font-weight: 500; font-style: italic; letter-spacing: 0.03em; }
   .lbl.layer b { font-style: normal; font-weight: 600; font-size: 9.5px; margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em; }
 
-  /* ============ Panel toggle (top-left) ============ */
   #panel-toggle {
     position: fixed; top: 14px; left: 14px; z-index: 20;
     padding: 10px 14px;
@@ -128,7 +127,6 @@
     pointer-events: none;
   }
 
-  /* ============ Panels hidden state ============ */
   body.panels-hidden #ui {
     opacity: 0;
     transform: translateX(28px);
@@ -143,7 +141,6 @@
   @media (max-width: 400px), (max-height: 400px) {
     #minimap { display: none !important; }
   }
-  /* iPad and similar tablet widths — slightly narrower panel */
   @media (max-width: 900px) and (min-width: 401px) {
     #ui { width: 300px; padding: 12px 13px; }
   }
@@ -483,9 +480,9 @@
       <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s1" data-f="subs" placeholder="syn, ant"></div>
       <div class="row"><span class="sym" style="color:#5bcfa0">S₂</span><input type="text" data-k="s2" data-f="name"></div>
       <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="s2" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">~S₁</span><input type="text" data-k="ns1" data-f="name"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">~S₂</span><input type="text" data-k="ns1" data-f="name"></div>
       <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns1" data-f="subs" placeholder="syn, ant"></div>
-      <div class="row"><span class="sym" style="color:#5bcfa0">~S₂</span><input type="text" data-k="ns2" data-f="name"></div>
+      <div class="row"><span class="sym" style="color:#5bcfa0">~S₁</span><input type="text" data-k="ns2" data-f="name"></div>
       <div class="row sub"><span class="sym dot" style="color:#fde725"><i></i></span><input type="text" data-k="ns2" data-f="subs" placeholder="syn, ant"></div>
     </div></div></div>
   </div>
@@ -580,7 +577,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 /* =====================================================================
-   INITIAL STRUCTURE — "chance" cascade, baked in as the default.
+   INITIAL STRUCTURE — placeholder until new data is pasted.
    ===================================================================== */
 const INITIAL_STRUCTURE = {
   L1: {
@@ -662,8 +659,13 @@ const M_KEYS     = ['m1','m2','m3','m4'];
 const C_KEYS     = ['c1','c2','c3','c4'];
 const ALL_KEYS   = [...INNER_KEYS, ...M_KEYS, ...C_KEYS];
 
+/* Position naming, updated to the corrected semantics:
+     P1 (top-left)    = S₁
+     P2 (top-right)   = S₂  (antithesis of S₁)
+     P3 (bottom-left) = ~S₂ (negation of S₂)
+     P4 (bottom-right)= ~S₁ (antithesis of ~S₂)                        */
 const SYMBOLS = {
-  s1:'S₁', s2:'S₂', ns1:'~S₁', ns2:'~S₂',
+  s1:'S₁', s2:'S₂', ns1:'~S₂', ns2:'~S₁',
   m1:'M₁', m2:'M₂', m3:'M₃', m4:'M₄',
   c1:'C₁', c2:'C₂', c3:'C₃', c4:'C₄',
 };
@@ -911,9 +913,6 @@ const glowTexture = (() => {
   return t;
 })();
 
-/* =====================================================================
-   PER-D GLOW SPRITES — mini-only (layer 1)
-   ===================================================================== */
 const miniGlows = [];
 for (const key of Object.keys(LAYOUT)) {
   const lo = LAYOUT[key];
@@ -948,12 +947,6 @@ function updateMiniGlowOpacities() {
 
 /* =====================================================================
    PANEL VISIBILITY + VIEW OFFSET
-   ---------------------------------------------------------------------
-   viewOffsetProgress interpolates between:
-     1 = panels shown (view offset to the free strip left of the panel)
-     0 = panels hidden (view centered on the whole window)
-   The animate loop advances this each frame, and updateViewOffset()
-   applies the interpolated value to the camera.
    ===================================================================== */
 let panelsVisible = true;
 let viewOffsetProgress = 1;
@@ -1091,6 +1084,13 @@ for (const key of Object.keys(LAYOUT)) {
 
 /* =====================================================================
    DATA PER DIAGRAM + initial structure
+   ---------------------------------------------------------------------
+   JSON_KEY_MAP routes the JSON keys to the internal slots. Under the
+   corrected semantics:
+     "S1"  → s1  (position P1, S₁)
+     "S2"  → s2  (position P2, S₂)
+     "~S2" → ns1 (position P3, ~S₂)
+     "~S1" → ns2 (position P4, ~S₁)
    ===================================================================== */
 const diagramData = {};
 for (const key of Object.keys(LAYOUT)) {
@@ -1098,7 +1098,7 @@ for (const key of Object.keys(LAYOUT)) {
 }
 
 const JSON_KEY_MAP = {
-  'S1':'s1', 'S2':'s2', '~S1':'ns1', '~S2':'ns2',
+  'S1':'s1', 'S2':'s2', '~S2':'ns1', '~S1':'ns2',
   'M1':'m1', 'M2':'m2', 'M3':'m3', 'M4':'m4',
   'C1':'c1', 'C2':'c2', 'C3':'c3', 'C4':'c4',
 };
@@ -1487,16 +1487,21 @@ function validateStructure() {
     const lo = LAYOUT[key];
     const data = diagramData[key];
     const label = `L${lo.level} D${lo.index + 1}`;
+    /* Internal collapse checks — compare the appropriate negation slots.
+       Under the new scheme: ns1 = ~S₂, ns2 = ~S₁. */
     if (data.ns1.name && data.s2.name && data.ns1.name === data.s2.name) {
-      issues.push(`${label}: ~S1 equals S2 ("${data.ns1.name}") — square collapses`);
+      issues.push(`${label}: ~S₂ equals S₂ ("${data.ns1.name}") — negation collapses`);
     }
     if (data.ns2.name && data.s1.name && data.ns2.name === data.s1.name) {
-      issues.push(`${label}: ~S2 equals S1 ("${data.ns2.name}") — square collapses`);
+      issues.push(`${label}: ~S₁ equals S₁ ("${data.ns2.name}") — negation collapses`);
     }
+    /* C2 self-loop check for L1 (unchanged) */
     if (lo.level === 1 && data.c2.name && data.s1.name && data.c2.name === data.s1.name) {
       issues.push(`${label}: C2 equals S1 ("${data.c2.name}") — cascade will stall`);
     }
   }
+
+  /* L1 cascade: D(n+1).S1 = D(n).C2 */
   for (let i = 0; i < 15; i++) {
     cascadeTotal++;
     const cur = diagramData[`1-${i}`], nxt = diagramData[`1-${i+1}`];
@@ -1504,6 +1509,8 @@ function validateStructure() {
     if (cur.c2.name === nxt.s1.name) cascadeOk++;
     else warnings.push(`L1 D${i+1}.C2 ("${cur.c2.name}") ≠ L1 D${i+2}.S1 ("${nxt.s1.name}") — cascade broken`);
   }
+
+  /* L2 cascade: L2 D_k.P_j = L1 D_(4(k-1)+j).~S2   (ns1 holds ~S2) */
   for (let k = 0; k < 4; k++) {
     const l2 = diagramData[`2-${k}`];
     for (let j = 0; j < 4; j++) {
@@ -1511,12 +1518,14 @@ function validateStructure() {
       const l1Index = k * 4 + j;
       const l1 = diagramData[`1-${l1Index}`];
       const l2Key = P_CORNER_KEYS[j];
-      const l2Val = l2[l2Key].name, l1Val = l1.ns2.name;
+      const l2Val = l2[l2Key].name, l1Val = l1.ns1.name;
       if (!l2Val || !l1Val) continue;
       if (l2Val === l1Val) cascadeOk++;
-      else warnings.push(`L2 D${k+1}.${SYMBOLS[l2Key]} ("${l2Val}") ≠ L1 D${l1Index+1}.~S2 ("${l1Val}") — cascade broken`);
+      else warnings.push(`L2 D${k+1}.${SYMBOLS[l2Key]} ("${l2Val}") ≠ L1 D${l1Index+1}.${SYMBOLS.ns1} ("${l1Val}") — cascade broken`);
     }
   }
+
+  /* L3 cascade: L3 D1.P_j = L2 D_j.C2  (unchanged) */
   const l3 = diagramData['3-0'];
   for (let j = 0; j < 4; j++) {
     cascadeTotal++;
@@ -1527,6 +1536,7 @@ function validateStructure() {
     if (l3Val === l2Val) cascadeOk++;
     else warnings.push(`L3 D1.${SYMBOLS[l3Key]} ("${l3Val}") ≠ L2 D${j+1}.C2 ("${l2Val}") — cascade broken`);
   }
+
   const termAppearances = new Map();
   for (let i = 0; i < 16; i++) {
     const data = diagramData[`1-${i}`];
@@ -1864,9 +1874,6 @@ function animate() {
   const now = performance.now();
   const dt  = Math.min(0.1, clock.getDelta());
 
-  /* View offset interpolation — moves the diagram's apparent center
-     between the free-strip position (panels shown) and the true window
-     center (panels hidden). */
   const targetProgress = panelsVisible ? 1 : 0;
   if (viewOffsetProgress !== targetProgress) {
     const k = 1 - Math.exp(-6.0 * dt);
@@ -1886,11 +1893,9 @@ function animate() {
 
   if (!flight) controls.update();
 
-  /* Main render — glows live on layer 1, main camera sees only layer 0. */
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 
-  /* Mini render — force everything visible with no expansion. */
   if (miniVisible) {
     for (const key of Object.keys(diagrams)) {
       savedAlphas[key] = diagrams[key].outerAlpha;
