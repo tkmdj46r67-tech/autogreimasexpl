@@ -902,9 +902,21 @@ for (const key of Object.keys(LAYOUT)) {
 }
 
 function updateMiniGlowOpacities() {
+  /* Slow 30-second pulse: opacity swings between PULSE_LOW and PULSE_HIGH
+     on a raised-cosine curve, so it eases smoothly at both extremes and
+     never snaps. */
+  const PULSE_PERIOD_MS = 30000;
+  const PULSE_LOW  = 0.35;
+  const PULSE_HIGH = 1.0;
+
+  const phase = (performance.now() % PULSE_PERIOD_MS) / PULSE_PERIOD_MS;
+  const pulse = (1 - Math.cos(phase * Math.PI * 2)) / 2;   // 0 → 1 → 0
+  const currentOpacity = PULSE_LOW + (PULSE_HIGH - PULSE_LOW) * pulse;
+
   for (const g of miniGlows) {
-    g.sprite.material.opacity = (g.key === currentKey) ? 1.0 : 0;
-    g.sprite.visible = (g.key === currentKey);
+    const isCurrent = (g.key === currentKey);
+    g.sprite.material.opacity = isCurrent ? currentOpacity : 0;
+    g.sprite.visible = isCurrent;
   }
 }
 
