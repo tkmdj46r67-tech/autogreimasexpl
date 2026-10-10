@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>AutoGreimas Explorer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,9 +13,16 @@
     margin: 0; height: 100%; overflow: hidden;
     background: #05070d; color: #e9edf7;
     font-family: 'Archivo', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  input, textarea {
+    -webkit-user-select: text; user-select: text;
+    -webkit-touch-callout: default;
   }
   #app { position: fixed; inset: 0; }
-  #app canvas { display: block; }
+  #app canvas { display: block; touch-action: none; }
 
   .lbl {
     pointer-events: none; user-select: none; white-space: nowrap;
@@ -31,6 +38,41 @@
   .lbl.layer { font-size: 10.5px; font-weight: 500; font-style: italic; letter-spacing: 0.03em; }
   .lbl.layer b { font-style: normal; font-weight: 600; font-size: 9.5px; margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em; }
 
+  /* ============ Panel toggle (top-left) ============ */
+  #panel-toggle {
+    position: fixed; top: 14px; left: 14px; z-index: 20;
+    padding: 10px 14px;
+    min-height: 40px;
+    border-radius: 9px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #c8d0e6;
+    background: rgba(9, 13, 22, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.3s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  #panel-toggle:hover { background: rgba(126,160,255,0.16); border-color: rgba(126,160,255,0.4); color: #fff; }
+  #panel-toggle:active { transform: translateY(1px); }
+  #panel-toggle .icon {
+    font-size: 13px;
+    line-height: 1;
+    opacity: 0.85;
+    display: inline-block;
+    transition: transform 0.35s ease;
+  }
+  body.panels-hidden #panel-toggle .icon { transform: rotate(180deg); }
+
   #ui {
     position: fixed; top: 14px; right: 14px; z-index: 10;
     width: 340px; max-height: calc(100vh - 28px); overflow-y: auto;
@@ -40,6 +82,8 @@
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 14px 40px rgba(0,0,0,0.5);
     font-size: 12px; line-height: 1.4;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    -webkit-overflow-scrolling: touch;
   }
   #ui::-webkit-scrollbar { width: 7px; }
   #ui::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 4px; }
@@ -62,6 +106,7 @@
     box-shadow: 0 14px 40px rgba(0,0,0,0.55);
     overflow: hidden;
     pointer-events: none;
+    transition: opacity 0.45s ease, transform 0.45s ease;
   }
   #minimap canvas {
     display: block;
@@ -82,8 +127,25 @@
     text-shadow: 0 1px 2px rgba(0,0,0,0.9);
     pointer-events: none;
   }
+
+  /* ============ Panels hidden state ============ */
+  body.panels-hidden #ui {
+    opacity: 0;
+    transform: translateX(28px);
+    pointer-events: none;
+  }
+  body.panels-hidden #minimap {
+    opacity: 0;
+    transform: translateY(28px);
+    pointer-events: none;
+  }
+
   @media (max-width: 400px), (max-height: 400px) {
     #minimap { display: none !important; }
+  }
+  /* iPad and similar tablet widths — slightly narrower panel */
+  @media (max-width: 900px) and (min-width: 401px) {
+    #ui { width: 300px; padding: 12px 13px; }
   }
 
   #current {
@@ -120,11 +182,13 @@
     display: flex; align-items: center; padding-right: 4px; justify-content: flex-end;
   }
   .btn-row button {
-    flex: 1; padding: 6px 4px; border-radius: 6px; cursor: pointer;
+    flex: 1; padding: 8px 4px; border-radius: 6px; cursor: pointer;
     font: inherit; font-size: 10.5px; letter-spacing: 0.04em; color: #c8d0e6;
     background: rgba(255,255,255,0.045);
     border: 1px solid rgba(255,255,255,0.08);
     transition: background 0.15s, border-color 0.15s, color 0.15s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   .btn-row button:hover:not(:disabled) {
     background: rgba(126,160,255,0.16);
@@ -152,6 +216,8 @@
     font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
     color: #7e8aa8;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   .sec-title:hover { color: #a3adff; }
   .sec-title .chev { display: inline-block; font-size: 9px; opacity: 0.65; transition: transform 0.28s ease; }
@@ -169,7 +235,7 @@
     background: currentColor; box-shadow: 0 0 6px currentColor;
   }
   .row input {
-    flex: 1; min-width: 0; padding: 5px 9px; border-radius: 6px;
+    flex: 1; min-width: 0; padding: 7px 9px; border-radius: 6px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #e9edf7; font: inherit; font-size: 11.5px; outline: none;
@@ -259,7 +325,7 @@
   #full-structure-apply {
     display: block;
     width: 100%;
-    padding: 8px 4px;
+    padding: 10px 4px;
     margin: 0;
     border-radius: 7px;
     cursor: pointer;
@@ -271,6 +337,8 @@
     background: rgba(126, 160, 255, 0.18);
     border: 1px solid rgba(126, 160, 255, 0.4);
     transition: background 0.15s, border-color 0.15s, opacity 0.2s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   #json-apply:hover:not(:disabled),
   #full-structure-apply:hover:not(:disabled) { background: rgba(126, 160, 255, 0.32); }
@@ -279,11 +347,13 @@
 
   .buttons { display: flex; gap: 7px; margin: 10px 0 6px; }
   button {
-    flex: 1; padding: 8px 4px; border-radius: 7px; cursor: pointer;
+    flex: 1; padding: 10px 4px; border-radius: 7px; cursor: pointer;
     font: inherit; font-size: 10.5px; letter-spacing: 0.1em;
     text-transform: uppercase; color: #e9edf7;
     background: rgba(126, 160, 255, 0.18);
     border: 1px solid rgba(126, 160, 255, 0.4);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   button:hover:not(:disabled) { background: rgba(126, 160, 255, 0.32); }
   button:disabled { opacity: 0.55; cursor: progress; }
@@ -296,12 +366,14 @@
 
   .export-row { display: flex; gap: 7px; margin: 0 0 6px; }
   .export-row button {
-    flex: 1; padding: 8px 4px; border-radius: 7px; cursor: pointer;
+    flex: 1; padding: 10px 4px; border-radius: 7px; cursor: pointer;
     font: inherit; font-size: 10.5px; letter-spacing: 0.1em;
     text-transform: uppercase; color: #b8e8c4;
     background: linear-gradient(135deg, rgba(34,168,132,0.14), rgba(110,200,140,0.08));
     border: 1px solid rgba(34,168,132,0.4);
     transition: background 0.15s, border-color 0.15s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   .export-row button:hover:not(:disabled) {
     background: linear-gradient(135deg, rgba(34,168,132,0.28), rgba(110,200,140,0.16));
@@ -312,13 +384,15 @@
 
   #expand {
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 9px 12px; margin: 0 0 8px;
+    width: 100%; padding: 11px 12px; margin: 0 0 8px;
     border-radius: 8px; cursor: pointer;
     font: inherit; font-size: 10.5px; font-weight: 600;
     letter-spacing: 0.16em; text-transform: uppercase;
     color: #fde725;
     background: linear-gradient(135deg, rgba(34,168,132,0.18), rgba(253,231,37,0.10));
     border: 1px solid rgba(253,231,37,0.35);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   #expand.expanded {
     color: #a3adff;
@@ -334,10 +408,12 @@
   }
   .toggles label {
     display: flex; align-items: center; gap: 5px;
-    padding: 5px 8px; border-radius: 7px; cursor: pointer; user-select: none;
+    padding: 7px 9px; border-radius: 7px; cursor: pointer; user-select: none;
     font-size: 10px; letter-spacing: 0.03em;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.06);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   .toggles label:hover { background: rgba(255, 255, 255, 0.09); }
   .toggles input { display: none; }
@@ -358,6 +434,11 @@
 <body>
 
 <div id="app"></div>
+
+<button id="panel-toggle" aria-label="Toggle panels">
+  <span class="icon">◱</span>
+  <span id="panel-toggle-label">Hide Panels</span>
+</button>
 
 <div id="minimap">
   <div id="minimap-label">MRSD</div>
@@ -801,8 +882,13 @@ function updateMiniCamera() {
 
 function updateMiniVisibility() {
   const tooSmall = innerWidth < 400 || innerHeight < 400;
-  miniVisible = !tooSmall;
-  document.getElementById('minimap').style.display = tooSmall ? 'none' : '';
+  const shouldRender = !tooSmall && panelsVisible;
+  miniVisible = shouldRender;
+  if (tooSmall) {
+    document.getElementById('minimap').style.display = 'none';
+  } else {
+    document.getElementById('minimap').style.display = '';
+  }
 }
 
 /* =====================================================================
@@ -861,13 +947,22 @@ function updateMiniGlowOpacities() {
 }
 
 /* =====================================================================
-   VIEW OFFSET for main view
+   PANEL VISIBILITY + VIEW OFFSET
+   ---------------------------------------------------------------------
+   viewOffsetProgress interpolates between:
+     1 = panels shown (view offset to the free strip left of the panel)
+     0 = panels hidden (view centered on the whole window)
+   The animate loop advances this each frame, and updateViewOffset()
+   applies the interpolated value to the camera.
    ===================================================================== */
+let panelsVisible = true;
+let viewOffsetProgress = 1;
+
 function updateViewOffset() {
   const panel = document.getElementById('ui');
   const rect = panel.getBoundingClientRect();
-  const freeCenterX = rect.left / 2;
-  const offsetX = (innerWidth / 2) - freeCenterX;
+  const fullOffset = (innerWidth / 2) - (rect.left / 2);
+  const offsetX = fullOffset * viewOffsetProgress;
   camera.setViewOffset(innerWidth, innerHeight, offsetX, 0, innerWidth, innerHeight);
 }
 
@@ -1669,6 +1764,19 @@ function updateUI() {
   updateMinimapLabel();
 }
 
+/* =====================================================================
+   PANEL TOGGLE
+   ===================================================================== */
+const panelToggleBtn = document.getElementById('panel-toggle');
+const panelToggleLabel = document.getElementById('panel-toggle-label');
+
+panelToggleBtn.addEventListener('click', () => {
+  panelsVisible = !panelsVisible;
+  document.body.classList.toggle('panels-hidden', !panelsVisible);
+  panelToggleLabel.textContent = panelsVisible ? 'Hide Panels' : 'Show Panels';
+  updateMiniVisibility();
+});
+
 document.getElementById('t-labels').addEventListener('change', e => {
   labelsOn = e.target.checked;
   applyOpacities(true);
@@ -1755,6 +1863,19 @@ function animate() {
   requestAnimationFrame(animate);
   const now = performance.now();
   const dt  = Math.min(0.1, clock.getDelta());
+
+  /* View offset interpolation — moves the diagram's apparent center
+     between the free-strip position (panels shown) and the true window
+     center (panels hidden). */
+  const targetProgress = panelsVisible ? 1 : 0;
+  if (viewOffsetProgress !== targetProgress) {
+    const k = 1 - Math.exp(-6.0 * dt);
+    viewOffsetProgress += (targetProgress - viewOffsetProgress) * k;
+    if (Math.abs(viewOffsetProgress - targetProgress) < 0.001) {
+      viewOffsetProgress = targetProgress;
+    }
+    updateViewOffset();
+  }
 
   updateFlight(now);
   updateOuterAlphas(dt);
