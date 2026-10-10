@@ -492,7 +492,7 @@
 </div>
 
 <div id="ui">
-  <h1>Concept Lattice<span>Explorer</span></h1>
+  <h1>Concept Lattice Explorer<span>Nested</span></h1>
   <p class="hint">drag to orbit · scroll to zoom</p>
   <p class="load-status" id="load-status">Loading default_chain.json…</p>
 
@@ -660,6 +660,11 @@ const M_KEYS     = ['m1','m2','m3','m4'];
 const C_KEYS     = ['c1','c2','c3','c4'];
 const ALL_KEYS   = [...INNER_KEYS, ...M_KEYS, ...C_KEYS];
 
+/* Position naming:
+     P1 (top-left)     = S₁
+     P2 (top-right)    = S₂  (antithesis of S₁)
+     P3 (bottom-left)  = ~S₂ (negation of S₂)
+     P4 (bottom-right) = ~S₁ (antithesis of ~S₂)                        */
 const SYMBOLS = {
   s1:'S₁', s2:'S₂', ns1:'~S₂', ns2:'~S₁',
   m1:'M₁', m2:'M₂', m3:'M₃', m4:'M₄',
@@ -851,7 +856,7 @@ controls.minDistance     = 4;
 controls.maxDistance     = 6000;
 
 /* =====================================================================
-   MINI RENDERER — 300×300, own camera, own layer for glow sprites
+   MINI RENDERER — 300×300, own camera, own layer for the highlight
    ===================================================================== */
 const MINI_W = 300, MINI_H = 300;
 let miniVisible = true;
@@ -890,71 +895,42 @@ function updateMiniVisibility() {
 }
 
 /* =====================================================================
-   GLOW TEXTURE
+   MINIMAP HIGHLIGHT — bright white outline on the current diagram
+   ---------------------------------------------------------------------
+   A single set of white LineSegments, replicating the same edge
+   geometry used everywhere else, lives on layer 1 so only the mini
+   camera renders it. On every navigation it is repositioned and
+   slightly scaled up so the white reads as a thick border around the
+   current D's coloured edges.
    ===================================================================== */
-const glowTexture = (() => {
-  const s = 256;
-  const cv = document.createElement('canvas');
-  cv.width = cv.height = s;
-  const ctx = cv.getContext('2d');
-  const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
-  g.addColorStop(0.00, 'rgba(255, 255, 255, 1.00)');
-  g.addColorStop(0.18, 'rgba(255, 255, 255, 0.55)');
-  g.addColorStop(0.45, 'rgba(255, 255, 255, 0.16)');
-  g.addColorStop(1.00, 'rgba(255, 255, 255, 0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, s, s);
-  const t = new THREE.CanvasTexture(cv);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-})();
-
-const miniGlows = [];
-for (const key of Object.keys(LAYOUT)) {
-  const lo = LAYOUT[key];
-  const centerHex = layerTripleFor(lo.level, lo.index).center;
-  const base = new THREE.Color(centerHex);
-  const light = base.clone().lerp(new THREE.Color(0xffffff), 0.75);
-
-  const spr = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: glowTexture,
-    color: light,
-    blending: THREE.AdditiveBlending,
+const highlightGroup = new THREE.Group();
+for (const kind of EDGE_KINDS) {
+  const positions = EDGE_POSITIONS_BY_KIND[kind];
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const mat = new THREE.LineBasicMaterial({
+    color: 0xffffff,
     transparent: true,
-    opacity: 0,
+    opacity: 1.0,
     depthWrite: false,
     depthTest: false,
-  }));
-  spr.position.copy(lo.center);
-  spr.scale.setScalar(SIDE[lo.level] * 0.9);
-  spr.renderOrder = 1000;
-  spr.layers.set(1);
-  scene.add(spr);
-
-  miniGlows.push({ key, sprite: spr });
+  });
+  const seg = new THREE.LineSegments(geo, mat);
+  seg.renderOrder = 900;
+  highlightGroup.add(seg);
 }
+highlightGroup.layers.set(1);
+highlightGroup.visible = false;
+scene.add(highlightGroup);
 
-/* =====================================================================
-   MINI GLOW OPACITY — slow 30-second pulse
-   ---------------------------------------------------------------------
-   Only the currently-viewed diagram's glow is visible. Its opacity
-   swings between PULSE_LOW and PULSE_HIGH on a raised-cosine curve so
-   the pulse eases smoothly at both extremes rather than snapping.
-   ===================================================================== */
-function updateMiniGlowOpacities() {
-  const PULSE_PERIOD_MS = 30000;
-  const PULSE_LOW  = 0.0;
-  const PULSE_HIGH = 1.0;
-
-  const phase = (performance.now() % PULSE_PERIOD_MS) / PULSE_PERIOD_MS;
-  const pulse = (1 - Math.cos(phase * Math.PI * 2)) / 2;   // 0 → 1 → 0
-  const currentOpacity = PULSE_LOW + (PULSE_HIGH - PULSE_LOW) * pulse;
-
-  for (const g of miniGlows) {
-    const isCurrent = (g.key === currentKey);
-    g.sprite.material.opacity = isCurrent ? currentOpacity : 0;
-    g.sprite.visible = isCurrent;
-  }
+function updateHighlight() {
+  const inst = diagrams[currentKey];
+  if (!inst) { highlightGroup.visible = false; return; }
+  highlightGroup.visible = true;
+  highlightGroup.position.copy(inst.center);
+  /* 1.5% scale-up so the white outline visibly protrudes past the
+     coloured edges underneath — a cheap stand-in for thicker lines. */
+  highlightGroup.scale.setScalar(inst.scale * 1.015);
 }
 
 /* =====================================================================
@@ -1223,7 +1199,7 @@ function goToDiagram(L, D) {
   updateExpandButton();
   rebuildLabels();
   updateMinimapLabel();
-  updateMiniGlowOpacities();
+  updateHighlight();
 
   startFlight(diagrams[key].center.clone(), state0Offset(key), 1.5, () => {
     fadeState = 'steady';
@@ -1973,10 +1949,7 @@ function animate() {
     }
     applyOpacities(true);
 
-    /* Pulse the current-diagram glow in the MRSD. Called every frame so
-       the opacity tracks the 30-second raised-cosine cycle. */
-    updateMiniGlowOpacities();
-
+    updateHighlight();
     updateMiniCamera();
     miniRenderer.render(scene, miniCamera);
 
@@ -2006,7 +1979,7 @@ async function boot() {
   currentKey = '1-0';
   syncInputsFromState();
   rebuildLabels();
-  updateMiniGlowOpacities();
+  updateHighlight();
 
   for (const key of Object.keys(diagrams)) {
     diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
