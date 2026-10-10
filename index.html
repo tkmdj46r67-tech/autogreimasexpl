@@ -785,7 +785,10 @@ miniRenderer.domElement.style.display = 'block';
 document.getElementById('minimap').appendChild(miniRenderer.domElement);
 
 const miniCamera = new THREE.PerspectiveCamera(45, MINI_W / MINI_H, 0.5, 12000);
-/* Enable layer 1 for the mini camera so it can see the per-D glow sprites */
+/* Only layer 0 in the mini camera. Glow sprites live on layer 1 and are
+   rendered by giving the mini camera access to layer 1 — but since we
+   want glows ONLY in the mini, they simply live on layer 1 and the main
+   camera (which only sees layer 0) never renders them. */
 miniCamera.layers.enable(1);
 
 const OVERVIEW_TARGET = new THREE.Vector3(0, 0, 200);
@@ -805,7 +808,7 @@ function updateMiniVisibility() {
 }
 
 /* =====================================================================
-   GLOW TEXTURES
+   GLOW TEXTURE
    ===================================================================== */
 const glowTexture = (() => {
   const s = 256;
@@ -824,23 +827,11 @@ const glowTexture = (() => {
   return t;
 })();
 
-/* The current-diagram glow for the main view (layer 0) */
-const currentGlow = new THREE.Sprite(new THREE.SpriteMaterial({
-  map: glowTexture,
-  color: 0xffffff,
-  blending: THREE.AdditiveBlending,
-  transparent: true,
-  opacity: 0.28,
-  depthWrite: false,
-  depthTest: false,
-}));
-currentGlow.renderOrder = 999;
-scene.add(currentGlow);
-
 /* =====================================================================
    PER-D GLOW SPRITES — mini-only (layer 1)
    Each is a lighter tint of that diagram's center colour, sized to
-   stay within the bounds of its square.
+   stay within the bounds of its square. Only the current diagram's
+   glow is visible at any moment.
    ===================================================================== */
 const miniGlows = [];  // { key, sprite }
 for (const key of Object.keys(LAYOUT)) {
@@ -854,7 +845,7 @@ for (const key of Object.keys(LAYOUT)) {
     color: light,
     blending: THREE.AdditiveBlending,
     transparent: true,
-    opacity: 0.35,
+    opacity: 0,
     depthWrite: false,
     depthTest: false,
   }));
@@ -870,7 +861,8 @@ for (const key of Object.keys(LAYOUT)) {
 
 function updateMiniGlowOpacities() {
   for (const g of miniGlows) {
-    g.sprite.material.opacity = (g.key === currentKey) ? 0.9 : 0.35;
+    g.sprite.material.opacity = (g.key === currentKey) ? 0.9 : 0;
+    g.sprite.visible = (g.key === currentKey);
   }
 }
 
@@ -1139,6 +1131,7 @@ function goToDiagram(L, D) {
   updateExpandButton();
   rebuildLabels();
   updateMinimapLabel();
+  updateMiniGlowOpacities();
 
   startFlight(diagrams[key].center.clone(), state0Offset(key), 1.5, () => {
     fadeState = 'steady';
@@ -1192,9 +1185,6 @@ function updateLabelFade() {
 
 /* =====================================================================
    OPACITY APPLICATION
-   ---------------------------------------------------------------------
-   force = true bypasses the change cache. Used before the mini render
-   (which forces all alphas to 1) and after restoring them.
    ===================================================================== */
 const lastApply = { labelFade: -1, states: {} };
 
@@ -1781,15 +1771,14 @@ function animate() {
 
   if (!flight) controls.update();
 
-  /* ---- Main render ---- */
-  currentGlow.visible = true;
-  positionMainGlow();
+  /* Main render — glows live on layer 1, main camera sees only layer 0,
+     so no glow sprites appear here. */
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 
-  /* ---- Mini render ---- */
+  /* Mini render — everything forced visible with no expansion, and only
+     the current diagram's glow visible. */
   if (miniVisible) {
-    /* Save state, force every diagram fully visible with no expansion */
     for (const key of Object.keys(diagrams)) {
       savedAlphas[key] = diagrams[key].outerAlpha;
       savedExpansions[key] = diagrams[key].expansion;
@@ -1800,25 +1789,15 @@ function animate() {
 
     updateMiniGlowOpacities();
 
-    currentGlow.visible = false;   // main-view glow hidden from mini
     updateMiniCamera();
     miniRenderer.render(scene, miniCamera);
 
-    /* Restore state */
     for (const key of Object.keys(diagrams)) {
       diagrams[key].outerAlpha = savedAlphas[key];
       diagrams[key].expansion = savedExpansions[key];
     }
     applyOpacities(true);
   }
-}
-
-function positionMainGlow() {
-  const inst = diagrams[currentKey];
-  currentGlow.position.copy(inst.center);
-  const s = inst.scale * GREIMAS_EXTENT;
-  currentGlow.scale.setScalar(s * 1.35);
-  currentGlow.material.opacity = 0.28;
 }
 
 /* =====================================================================
@@ -1828,6 +1807,7 @@ buildUI();
 currentKey = '1-0';
 syncInputsFromState();
 rebuildLabels();
+updateMiniGlowOpacities();
 
 for (const key of Object.keys(diagrams)) {
   diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
