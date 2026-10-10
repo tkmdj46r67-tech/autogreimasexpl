@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AutoGreimas Explorer</title>
+<title>Greimas Squares — Nested</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -48,6 +48,38 @@
     background: linear-gradient(120deg, #4C8A8A, #A9D583);
   }
   .hint { margin: 0 0 12px; font-size: 10px; color: #7e8aa8; }
+
+  /* ============ Minimap ============ */
+  #minimap {
+    position: fixed; bottom: 14px; left: 14px; z-index: 10;
+    width: 320px; height: 220px;
+    border-radius: 12px;
+    background: rgba(9, 13, 22, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.55);
+    overflow: hidden;
+    pointer-events: none;
+  }
+  #minimap canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  #minimap-label {
+    position: absolute; top: 8px; left: 12px;
+    font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #8a96b4;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+    pointer-events: none;
+  }
+  #minimap-pos {
+    position: absolute; bottom: 8px; left: 12px;
+    font-size: 10px; letter-spacing: 0.05em;
+    color: #cfe0ff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+    pointer-events: none;
+  }
 
   #current {
     margin: 0 0 10px; padding: 10px 12px;
@@ -107,20 +139,6 @@
     vertical-align: 1px;
     box-shadow: 0 0 5px currentColor;
   }
-
-  #overview {
-    width: 100%; padding: 9px 10px; margin: 6px 0 10px;
-    border-radius: 8px; cursor: pointer;
-    font: inherit; font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: #b6f0ff;
-    background: linear-gradient(135deg, rgba(56,189,248,0.16), rgba(167,139,250,0.14));
-    border: 1px solid rgba(56,189,248,0.42);
-  }
-  #overview:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(56,189,248,0.30), rgba(167,139,250,0.24));
-    border-color: rgba(56,189,248,0.75);
-  }
-  #overview:disabled { opacity: 0.4; cursor: progress; }
 
   .sec { margin-bottom: 4px; }
   .sec-title {
@@ -336,12 +354,16 @@
 
 <div id="app"></div>
 
+<div id="minimap">
+  <div id="minimap-label">Overview</div>
+  <div id="minimap-pos"></div>
+</div>
+
 <div id="ui">
-  <h1>AutoGreimas<span>Explorer</span></h1>
+  <h1>Greimas Squares<span>Nested</span></h1>
   <p class="hint">drag to orbit · scroll to zoom</p>
 
   <div id="current"></div>
-  <button id="overview">Overview</button>
 
   <div class="group">
     <div class="group-label"><i style="background:#FF7A45;color:#FF7A45"></i>L3 · Narrative</div>
@@ -568,7 +590,6 @@ const Z_PLANE = { 3: 400, 2: 200, 1: 0 };
 
 const L3_COLORS = { center: 0xFF7A45, front: 0xFFBB7A, back: 0xC7477A };
 const L2_COLORS = { center: 0xFDE725, front: 0xFF9A3D, back: 0x7ECB65 };
-
 const L1_GROUP_CENTERS = [0x4C6EAF, 0x4C9BA5, 0x70C89A, 0xA9D583];
 
 function l1TripleFor(index) {
@@ -583,13 +604,11 @@ function l1TripleFor(index) {
     hsl.h - 0.06, Math.min(1, hsl.s + 0.05), Math.max(0.18, hsl.l - 0.20));
   return { center, front: front.getHex(), back: back.getHex() };
 }
-
 function layerTripleFor(level, index) {
   if (level === 1) return l1TripleFor(index);
   if (level === 2) return L2_COLORS;
   return L3_COLORS;
 }
-
 function centerColorFor(level, index) {
   return layerTripleFor(level, index).center;
 }
@@ -615,7 +634,6 @@ const GREIMAS_LOCAL = {
 };
 const GREIMAS_EXTENT = 9;
 const GREIMAS_INNER  = 4;
-
 const LAYER_Z = 2.7;
 
 const LABEL_OFFSET_INNER  = 0.55;
@@ -684,13 +702,6 @@ function blankDiagram() {
   for (const k of ALL_KEYS) d[k] = { name:'', syn:'', ant:'' };
   return d;
 }
-function defaultDiagram() {
-  const d = {};
-  for (const k of ALL_KEYS) d[k] = {
-    name: DEFAULTS[k].name, syn: DEFAULTS[k].syn, ant: DEFAULTS[k].ant,
-  };
-  return d;
-}
 
 /* =====================================================================
    LAYOUT
@@ -711,7 +722,6 @@ LAYOUT['3-0'] = {
   center: new THREE.Vector3(0, 0, Z_PLANE[3]),
   scale: scaleFor(3),
 };
-
 for (let i = 0; i < 4; i++) {
   const p = P_LOCAL[i];
   const off = innerHalf(3) * SPREAD;
@@ -772,7 +782,94 @@ controls.minDistance     = 4;
 controls.maxDistance     = 6000;
 
 /* =====================================================================
-   VIEW OFFSET
+   MINI RENDERER — separate WebGL context for the minimap
+   ---------------------------------------------------------------------
+   Uses the same scene with a second camera. Two renderers means the
+   geometry gets uploaded to two GPU contexts, which is a bit of extra
+   memory, but it avoids all the scissor/viewport juggling and keeps the
+   CSS2D labels out of the minimap automatically.
+   ===================================================================== */
+const MINI_W = 320, MINI_H = 220;
+
+const miniRenderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+miniRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+miniRenderer.setSize(MINI_W, MINI_H, false);
+miniRenderer.setClearColor(0x05070d, 1);
+miniRenderer.domElement.style.width = '100%';
+miniRenderer.domElement.style.height = '100%';
+miniRenderer.domElement.style.display = 'block';
+document.getElementById('minimap').appendChild(miniRenderer.domElement);
+
+const miniCamera = new THREE.PerspectiveCamera(45, MINI_W / MINI_H, 0.5, 12000);
+
+/* The fixed look-at point of the whole structure */
+const OVERVIEW_TARGET = new THREE.Vector3(0, 0, 200);
+/* Distance from the overview target — large enough to fit the whole
+   structure (which spans 0..400 on z). */
+const MINI_DIST = 900;
+
+function updateMiniCamera() {
+  /* Copy the main camera's viewing direction relative to its target */
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  miniCamera.position.copy(OVERVIEW_TARGET).addScaledVector(dir, MINI_DIST);
+  miniCamera.up.set(0, 1, 0);
+  miniCamera.lookAt(OVERVIEW_TARGET);
+}
+
+/* =====================================================================
+   CURRENT-DIAGRAM GLOW
+   ---------------------------------------------------------------------
+   A single additive sprite, repositioned and resized on every render
+   pass. The sprite is drawn as a soft halo around the diagram the main
+   view is currently on. It's visible in both the main canvas and the
+   minimap; the size/opacity differ between them so it reads well in
+   each.
+   ===================================================================== */
+const glowTexture = (() => {
+  const s = 256;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = s;
+  const ctx = cv.getContext('2d');
+  const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
+  g.addColorStop(0.00, 'rgba(190, 225, 255, 1.00)');
+  g.addColorStop(0.18, 'rgba(160, 210, 255, 0.55)');
+  g.addColorStop(0.45, 'rgba(120, 180, 240, 0.16)');
+  g.addColorStop(1.00, 'rgba(80, 140, 220, 0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, s, s);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+
+const currentGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+  map: glowTexture,
+  color: 0xffffff,
+  blending: THREE.AdditiveBlending,
+  transparent: true,
+  opacity: 0.35,
+  depthWrite: false,
+  depthTest: false,
+}));
+currentGlow.renderOrder = 999;
+scene.add(currentGlow);
+
+function positionGlow(forMini) {
+  const inst = diagrams[currentKey];
+  if (!inst) return;
+  currentGlow.position.copy(inst.center);
+  const s = inst.scale * GREIMAS_EXTENT;
+  if (forMini) {
+    currentGlow.scale.setScalar(s * 2.4);
+    currentGlow.material.opacity = 0.90;
+  } else {
+    currentGlow.scale.setScalar(s * 1.35);
+    currentGlow.material.opacity = 0.28;
+  }
+}
+
+/* =====================================================================
+   VIEW OFFSET — recentre the main view to the free area left of the panel
    ===================================================================== */
 function updateViewOffset() {
   const panel = document.getElementById('ui');
@@ -794,7 +891,6 @@ function makePoint(pos, color, radius) {
   mesh.position.copy(pos);
   return mesh;
 }
-
 function makeLabel(symbol, name, textColor, cls) {
   const el = document.createElement('div');
   el.className = 'lbl ' + cls;
@@ -883,7 +979,6 @@ for (const key of Object.keys(LAYOUT)) {
   const lo = LAYOUT[key];
   if (!lo.parentKey) continue;
   const parent = LAYOUT[lo.parentKey];
-
   const childLocal = GREIMAS_LOCAL.ns2;
   const startWorld = new THREE.Vector3(
     lo.center.x + childLocal.x * lo.scale,
@@ -897,7 +992,6 @@ for (const key of Object.keys(LAYOUT)) {
     parent.center.y + parentLocal.y * parent.scale,
     parent.center.z + parentLocal.z * parent.scale
   );
-
   const geo = new THREE.BufferGeometry().setFromPoints([startWorld, endWorld]);
   const mat = new THREE.LineBasicMaterial({
     color: centerColorFor(lo.level, lo.index),
@@ -909,14 +1003,13 @@ for (const key of Object.keys(LAYOUT)) {
 }
 
 /* =====================================================================
-   DATA PER DIAGRAM
+   DATA PER DIAGRAM + initial structure
    ===================================================================== */
 const diagramData = {};
 for (const key of Object.keys(LAYOUT)) {
   diagramData[key] = blankDiagram();
 }
 
-/* Apply the baked-in initial structure */
 const JSON_KEY_MAP = {
   'S1':'s1', 'S2':'s2', '~S1':'ns1', '~S2':'ns2',
   'M1':'m1', 'M2':'m2', 'M3':'m3', 'M4':'m4',
@@ -963,7 +1056,7 @@ applyStructureObject(INITIAL_STRUCTURE);
    NAVIGATION
    ===================================================================== */
 let currentKey = '1-0';
-let fadeState  = 'steady';
+let fadeState  = 'steady';   // 'steady' | 'navigating'
 let flight     = null;
 let labelFade  = 1;
 
@@ -973,11 +1066,9 @@ function state0Offset(key) {
   const d = diagrams[key];
   return STATE0_DIR.clone().multiplyScalar(d.scale * GREIMAS_EXTENT * 2.2);
 }
-
 function easeInOutCubic(x) {
   return x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
 }
-
 function startFlight(endTarget, endOffset, duration, onArrive) {
   const startTarget = controls.target.clone();
   const startOffset = camera.position.clone().sub(startTarget);
@@ -998,7 +1089,6 @@ function startFlight(endTarget, endOffset, duration, onArrive) {
   };
   controls.enabled = false;
 }
-
 function updateFlight(now) {
   if (!flight) return;
   const t = Math.min(1, (now - flight.startTime) / flight.duration);
@@ -1042,6 +1132,7 @@ function goToDiagram(L, D) {
   updateUI();
   updateExpandButton();
   rebuildLabels();
+  updateMinimapLabel();
 
   startFlight(diagrams[key].center.clone(), state0Offset(key), 1.5, () => {
     fadeState = 'steady';
@@ -1049,32 +1140,16 @@ function goToDiagram(L, D) {
   });
 }
 
-function goToOverview() {
-  if (flight) return;
-  saveInputsToCurrentDiagram();
-  for (const k of Object.keys(diagrams)) diagrams[k].expansionTarget = 0;
-  updateExpandButton();
-  fadeState = 'overview';
-  updateUI();
-  setJsonStatus('', '');
-  setFullStructureStatus('', '');
-  clearValidationReport();
-  const overviewTarget = new THREE.Vector3(0, 0, 200);
-  const overviewPos    = new THREE.Vector3(650, 520, 1500);
-  startFlight(overviewTarget, overviewPos.clone().sub(overviewTarget), 1.8, () => {});
-}
-
 /* =====================================================================
    ALPHA ANIMATIONS
    ===================================================================== */
 function targetAlphaFor(key) {
-  if (fadeState === 'overview' || fadeState === 'navigating') return 1;
+  if (fadeState === 'navigating') return 1;
   if (key === currentKey) return 1;
   const lo = LAYOUT[currentKey];
   if (lo.parentKey === key) return 0.20;
   return 0;
 }
-
 function updateOuterAlphas(dt) {
   const k = 1 - Math.exp(-1.5 * dt);
   for (const key of Object.keys(diagrams)) {
@@ -1084,7 +1159,6 @@ function updateOuterAlphas(dt) {
     if (Math.abs(inst.outerAlpha - target) < 0.004) inst.outerAlpha = target;
   }
 }
-
 function updateExpansions(dt) {
   const k = 1 - Math.exp(-3.5 * dt);
   for (const key of Object.keys(diagrams)) {
@@ -1096,11 +1170,9 @@ function updateExpansions(dt) {
     inst.backGroup.position.z  = -inst.expansion * LAYER_Z;
   }
 }
-
 function updateLinks(dt) {
   const k = 1 - Math.exp(-3.0 * dt);
-  const ov = (fadeState === 'overview' || fadeState === 'navigating');
-  const target = ov ? (fadeState === 'overview' ? 0.55 : 0.35) : 0;
+  const target = (fadeState === 'navigating') ? 0.35 : 0;
   for (const t of treeLinks) {
     t.opacity += (target - t.opacity) * k;
     if (Math.abs(t.opacity - target) < 0.004) t.opacity = target;
@@ -1108,11 +1180,9 @@ function updateLinks(dt) {
     t.line.visible = t.opacity > 0.004;
   }
 }
-
 function updateLabelFade(dt) {
-  const target = fadeState === 'overview' ? 0 : 1;
-  labelFade += (target - labelFade) * (1 - Math.exp(-2.5 * dt));
-  if (Math.abs(labelFade - target) < 0.004) labelFade = target;
+  /* Labels always on; kept as a variable in case we want to fade them later */
+  labelFade = 1;
 }
 
 /* =====================================================================
@@ -1179,7 +1249,6 @@ function clearLabels() {
     inst.centerLabels = []; inst.frontLabels = []; inst.backLabels = [];
   }
 }
-
 function labelOffsetFor(k) {
   const pos = GREIMAS_LOCAL[k];
   if (INNER_KEYS.includes(k)) {
@@ -1190,7 +1259,6 @@ function labelOffsetFor(k) {
     return new THREE.Vector3(-pos.x, -pos.y, 0).normalize().multiplyScalar(LABEL_OFFSET_CORNER);
   }
 }
-
 function rebuildLabels() {
   clearLabels();
   const inst = diagrams[currentKey];
@@ -1235,7 +1303,6 @@ document.querySelectorAll('#ui input[data-k]').forEach(el => {
   if (!inputs[k]) inputs[k] = {};
   inputs[k][f] = el;
 });
-
 function syncInputsFromState() {
   const data = diagramData[currentKey];
   for (const k of ALL_KEYS) {
@@ -1247,7 +1314,6 @@ function syncInputsFromState() {
     }
   }
 }
-
 function saveInputsToCurrentDiagram() {
   const data = diagramData[currentKey];
   for (const k of ALL_KEYS) {
@@ -1266,14 +1332,12 @@ function saveInputsToCurrentDiagram() {
 const jsonInputEl  = document.getElementById('json-input');
 const jsonApplyEl  = document.getElementById('json-apply');
 const jsonStatusEl = document.getElementById('json-status');
-
 function setJsonStatus(text, cls) {
   jsonStatusEl.textContent = text || '';
   jsonStatusEl.className = cls || '';
 }
-
 function applyJSONInput() {
-  if (flight || fadeState === 'overview') return;
+  if (flight) return;
   const text = jsonInputEl.value.trim();
   if (!text) { setJsonStatus('Nothing to apply.', 'err'); return; }
 
@@ -1285,7 +1349,6 @@ function applyJSONInput() {
     setJsonStatus('JSON must be a single object.', 'err');
     return;
   }
-
   const data = diagramData[currentKey];
   let updatedCount = 0;
   const recognized = [];
@@ -1299,12 +1362,10 @@ function applyJSONInput() {
       }
     }
   }
-
   if (updatedCount === 0) {
     setJsonStatus('No recognized keys. Expected S1, S2, ~S1, ~S2, M1–M4, C1–C4.', 'err');
     return;
   }
-
   syncInputsFromState();
   rebuildLabels();
   setJsonStatus(`Updated this D — ${updatedCount} term${updatedCount === 1 ? '' : 's'} (${recognized.join(', ')}).`, 'ok');
@@ -1318,23 +1379,19 @@ const fullStructureInputEl  = document.getElementById('full-structure-input');
 const fullStructureApplyEl  = document.getElementById('full-structure-apply');
 const fullStructureStatusEl = document.getElementById('full-structure-status');
 const fullStructureReportEl = document.getElementById('full-structure-report');
-
 function setFullStructureStatus(text, cls) {
   fullStructureStatusEl.textContent = text || '';
   fullStructureStatusEl.className = cls || '';
 }
-
 function clearValidationReport() {
   fullStructureReportEl.innerHTML = '';
   fullStructureReportEl.classList.remove('visible');
 }
-
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[c]));
 }
-
 function validateStructure() {
   const issues = [], warnings = [], reuse = [];
   let cascadeOk = 0, cascadeTotal = 0;
@@ -1353,7 +1410,6 @@ function validateStructure() {
       issues.push(`${label}: C2 equals S1 ("${data.c2.name}") — cascade will stall`);
     }
   }
-
   for (let i = 0; i < 15; i++) {
     cascadeTotal++;
     const cur = diagramData[`1-${i}`], nxt = diagramData[`1-${i+1}`];
@@ -1384,7 +1440,6 @@ function validateStructure() {
     if (l3Val === l2Val) cascadeOk++;
     else warnings.push(`L3 D1.${SYMBOLS[l3Key]} ("${l3Val}") ≠ L2 D${j+1}.C2 ("${l2Val}") — cascade broken`);
   }
-
   const termAppearances = new Map();
   for (let i = 0; i < 16; i++) {
     const data = diagramData[`1-${i}`];
@@ -1402,14 +1457,11 @@ function validateStructure() {
     reuse.push({ term, appearances, dCount: ds.length });
   }
   reuse.sort((a, b) => (b.dCount - a.dCount) || a.term.localeCompare(b.term));
-
   return { issues, warnings, reuse, cascadeOk, cascadeTotal };
 }
-
 function renderValidationReport(report) {
   const { issues, warnings, reuse, cascadeOk, cascadeTotal } = report;
   let html = '';
-
   html += `<div class="rep-heading">Cascade Integrity</div>`;
   if (cascadeTotal === 0) {
     html += `<div class="rep-item rep-info">No cascade links to check.</div>`;
@@ -1418,7 +1470,6 @@ function renderValidationReport(report) {
   } else {
     html += `<div class="rep-item rep-warning">⚠ ${cascadeOk}/${cascadeTotal} cascade links satisfied</div>`;
   }
-
   if (issues.length) {
     html += `<div class="rep-heading">Issues (${issues.length})</div>`;
     for (const issue of issues) html += `<div class="rep-item rep-issue">✗ ${escapeHtml(issue)}</div>`;
@@ -1443,43 +1494,31 @@ function renderValidationReport(report) {
     html += `<div class="rep-heading">Result</div>`;
     html += `<div class="rep-item rep-ok">✓ Structure is clean — no issues, no warnings, no reuse.</div>`;
   }
-
   fullStructureReportEl.innerHTML = html;
   fullStructureReportEl.classList.add('visible');
 }
-
 function applyFullStructure() {
-  if (flight || fadeState === 'overview') return;
+  if (flight) return;
   const text = fullStructureInputEl.value.trim();
   if (!text) { setFullStructureStatus('Nothing to apply.', 'err'); clearValidationReport(); return; }
-
   let parsed;
   try { parsed = JSON.parse(text); }
   catch (e) { setFullStructureStatus('Invalid JSON: ' + e.message, 'err'); clearValidationReport(); return; }
-
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
     setFullStructureStatus('JSON must be a single object.', 'err');
     clearValidationReport();
     return;
   }
-
   const { diagramsUpdated, termsUpdated, unknown } = applyStructureObject(parsed);
-
   if (diagramsUpdated === 0) {
-    setFullStructureStatus(
-      'No diagrams found. Expected keys like "L1": { "D1": { ... }, ... }, "L2": { ... }, "L3": { ... }.',
-      'err'
-    );
+    setFullStructureStatus('No diagrams found. Expected keys like "L1": { "D1": { ... }, ... }, "L2": { ... }, "L3": { ... }.', 'err');
     clearValidationReport();
     return;
   }
-
   syncInputsFromState();
   rebuildLabels();
-
   const report = validateStructure();
   renderValidationReport(report);
-
   let msg = `Updated all D's — ${termsUpdated} term${termsUpdated === 1 ? '' : 's'} across ${diagramsUpdated} diagram${diagramsUpdated === 1 ? '' : 's'}.`;
   if (unknown.length) {
     msg += ` Skipped ${unknown.length} unknown (${unknown.slice(0, 4).join(', ')}${unknown.length > 4 ? ', …' : ''}).`;
@@ -1502,7 +1541,6 @@ function csvEscape(v) {
   if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
   return s;
 }
-
 function buildCSVRows(keys) {
   const rows = [[ 'L','D','Parent','Parent_P','Position','Diagram_P','Name','Expanded_Syn','Expanded_Ant' ]];
   for (const key of keys) {
@@ -1525,7 +1563,6 @@ function buildCSVRows(keys) {
   }
   return rows;
 }
-
 function downloadCSV(rows, filename) {
   const body = rows.map(r => r.map(csvEscape).join(',')).join('\r\n');
   const BOM = '\uFEFF';
@@ -1536,14 +1573,12 @@ function downloadCSV(rows, filename) {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-
 function exportCurrentD() {
   saveInputsToCurrentDiagram();
   const lo = LAYOUT[currentKey];
   const rows = buildCSVRows([currentKey]);
   downloadCSV(rows, `greimas-L${lo.level}-D${lo.index + 1}.csv`);
 }
-
 function exportAll() {
   saveInputsToCurrentDiagram();
   const keys = Object.keys(LAYOUT).sort((a, b) => {
@@ -1601,170 +1636,12 @@ function buildUI() {
   }
 }
 
+function updateMinimapLabel() {
+  const inst = diagrams[currentKey];
+  const el = document.getElementById('minimap-pos');
+  el.textContent = `L${inst.level} · D${inst.index + 1}`;
+}
+
 function updateUI() {
   const card = document.getElementById('current');
-  if (fadeState === 'overview') {
-    card.innerHTML = `Overview<span class="sub">all diagrams visible</span>`;
-  } else {
-    const inst = diagrams[currentKey];
-    const lo = LAYOUT[currentKey];
-    let anchorNote = '';
-    if (lo.parentKey) {
-      const parent = LAYOUT[lo.parentKey];
-      const corner = P_LOCAL[lo.parentCorner].label;
-      anchorNote = `<span class="anchor-note">sits at ${corner} of L${parent.level}·D${parent.index + 1}</span>`;
-    } else {
-      anchorNote = `<span class="anchor-note">root — no parent</span>`;
-    }
-    card.innerHTML = `L${inst.level} · D${inst.index + 1}`
-      + `<span class="sub">${LEVEL_NAMES[inst.level]} level</span>`
-      + anchorNote;
-  }
-
-  document.querySelectorAll('#ui button[data-key]').forEach(b => {
-    const active = fadeState !== 'overview' && b.dataset.key === currentKey;
-    b.classList.toggle('active', active);
-    b.disabled = !!flight;
-  });
-  document.getElementById('overview').disabled = !!flight;
-  document.getElementById('apply').disabled = !!flight;
-  document.getElementById('reset').disabled = !!flight;
-  document.getElementById('expand').disabled = !!flight || fadeState === 'overview';
-  document.getElementById('export-current').disabled = !!flight;
-  document.getElementById('export-all').disabled = !!flight;
-
-  const codeLocked = !!flight || fadeState === 'overview';
-  jsonInputEl.disabled = codeLocked;
-  jsonApplyEl.disabled = codeLocked;
-  fullStructureInputEl.disabled = codeLocked;
-  fullStructureApplyEl.disabled = codeLocked;
-}
-
-document.getElementById('t-labels').addEventListener('change', e => {
-  labelsOn = e.target.checked;
-  applyOpacities();
-});
-document.getElementById('t-rotate').addEventListener('change', e => {
-  controls.autoRotate = e.target.checked;
-  controls.autoRotateSpeed = 0.9;
-});
-document.querySelectorAll('.sec[data-sec]').forEach(sec => {
-  sec.querySelector('.sec-title').addEventListener('click', () => sec.classList.toggle('collapsed'));
-});
-
-document.getElementById('apply').addEventListener('click', () => {
-  if (flight) return;
-  saveInputsToCurrentDiagram();
-  rebuildLabels();
-});
-
-document.getElementById('reset').addEventListener('click', () => {
-  if (flight) return;
-  for (const key of Object.keys(diagramData)) diagramData[key] = blankDiagram();
-  applyStructureObject(INITIAL_STRUCTURE);
-  for (const key of Object.keys(diagrams)) diagrams[key].expansionTarget = 0;
-  syncInputsFromState();
-  rebuildLabels();
-  updateExpandButton();
-  setJsonStatus('', '');
-  setFullStructureStatus('', '');
-  clearValidationReport();
-});
-
-function updateExpandButton() {
-  const inst = diagrams[currentKey];
-  const expanded = inst.expansionTarget === 1;
-  const btn = document.getElementById('expand');
-  btn.classList.toggle('expanded', expanded);
-  document.getElementById('expand-label').textContent = expanded ? 'Collapse' : 'Expand';
-}
-
-document.getElementById('expand').addEventListener('click', () => {
-  if (flight || fadeState === 'overview') return;
-  const inst = diagrams[currentKey];
-  inst.expansionTarget = inst.expansionTarget === 1 ? 0 : 1;
-  updateExpandButton();
-});
-
-document.getElementById('export-current').addEventListener('click', () => {
-  if (flight) return;
-  exportCurrentD();
-});
-document.getElementById('export-all').addEventListener('click', () => {
-  if (flight) return;
-  exportAll();
-});
-
-document.getElementById('overview').addEventListener('click', goToOverview);
-document.getElementById('clear-cache').addEventListener('click', () => {
-  try { localStorage.removeItem('greimas-words-v3'); } catch (e) {}
-});
-document.querySelectorAll('#ui input[data-k]').forEach(el => {
-  el.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      saveInputsToCurrentDiagram();
-      rebuildLabels();
-      el.blur();
-    }
-  });
-});
-
-/* =====================================================================
-   RESIZE + LOOP
-   ===================================================================== */
-function onResize() {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-  labelRenderer.setSize(innerWidth, innerHeight);
-  updateViewOffset();
-}
-addEventListener('resize', onResize);
-
-const clock = new THREE.Clock();
-function animate() {
-  requestAnimationFrame(animate);
-  const now = performance.now();
-  const dt  = Math.min(0.1, clock.getDelta());
-
-  updateFlight(now);
-  updateOuterAlphas(dt);
-  updateExpansions(dt);
-  updateLinks(dt);
-  updateLabelFade(dt);
-  applyOpacities();
-
-  if (!flight) controls.update();
-
-  renderer.render(scene, camera);
-  labelRenderer.render(scene, camera);
-}
-
-/* =====================================================================
-   BOOT
-   ===================================================================== */
-buildUI();
-currentKey = '1-0';
-syncInputsFromState();
-rebuildLabels();
-
-for (const key of Object.keys(diagrams)) {
-  diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
-}
-for (const t of treeLinks) t.opacity = 0;
-
-{
-  const inst = diagrams['1-0'];
-  controls.target.copy(inst.center);
-  camera.position.copy(inst.center).add(state0Offset('1-0'));
-  camera.lookAt(inst.center);
-}
-
-updateViewOffset();
-updateExpandButton();
-updateUI();
-animate();
-</script>
-</body>
-</html>
+  const inst = diagrams[currentKey
