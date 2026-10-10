@@ -38,7 +38,6 @@
   .lbl.layer { font-size: 10.5px; font-weight: 500; font-style: italic; letter-spacing: 0.03em; }
   .lbl.layer b { font-style: normal; font-weight: 600; font-size: 9.5px; margin-right: 5px; opacity: 0.72; letter-spacing: 0.06em; }
 
-  /* ============ Top bar — toggle + cycle buttons ============ */
   #top-bar {
     position: fixed; top: 14px; left: 14px; z-index: 20;
     display: flex; gap: 8px; align-items: stretch;
@@ -856,7 +855,7 @@ controls.minDistance     = 4;
 controls.maxDistance     = 6000;
 
 /* =====================================================================
-   MINI RENDERER — 300×300, own camera, own layer for the highlight
+   MINI RENDERER — 300×300, own camera, own layer for glow sprites
    ===================================================================== */
 const MINI_W = 300, MINI_H = 300;
 let miniVisible = true;
@@ -895,42 +894,86 @@ function updateMiniVisibility() {
 }
 
 /* =====================================================================
-   MINIMAP HIGHLIGHT — bright white outline on the current diagram
+   GLOW TEXTURE
    ---------------------------------------------------------------------
-   A single set of white LineSegments, replicating the same edge
-   geometry used everywhere else, lives on layer 1 so only the mini
-   camera renders it. On every navigation it is repositioned and
-   slightly scaled up so the white reads as a thick border around the
-   current D's coloured edges.
+   Brighter alpha ramp than a typical soft glow — the falloff stays
+   high through the middle of the sprite so the halo reads as dense
+   and luminous rather than as a faint mist.
    ===================================================================== */
-const highlightGroup = new THREE.Group();
-for (const kind of EDGE_KINDS) {
-  const positions = EDGE_POSITIONS_BY_KIND[kind];
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  const mat = new THREE.LineBasicMaterial({
-    color: 0xffffff,
+const glowTexture = (() => {
+  const s = 256;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = s;
+  const ctx = cv.getContext('2d');
+  const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
+  g.addColorStop(0.00, 'rgba(255, 255, 255, 1.00)');
+  g.addColorStop(0.25, 'rgba(255, 255, 255, 0.92)');
+  g.addColorStop(0.50, 'rgba(255, 255, 255, 0.48)');
+  g.addColorStop(0.80, 'rgba(255, 255, 255, 0.12)');
+  g.addColorStop(1.00, 'rgba(255, 255, 255, 0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, s, s);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+
+/* =====================================================================
+   PER-D GLOW SPRITES — mini-only (layer 1)
+   ---------------------------------------------------------------------
+   Colour: each glow is the diagram's centre colour pushed 85% toward
+   white, so it reads as a luminous pale tint of the level's hue.
+   Size:   slightly larger than the square itself (1.15× its world
+   extent) so the halo spills a little past the edges.
+   ===================================================================== */
+const miniGlows = [];
+for (const key of Object.keys(LAYOUT)) {
+  const lo = LAYOUT[key];
+  const centerHex = layerTripleFor(lo.level, lo.index).center;
+  const base = new THREE.Color(centerHex);
+  const light = base.clone().lerp(new THREE.Color(0xffffff), 0.85);
+
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: glowTexture,
+    color: light,
+    blending: THREE.AdditiveBlending,
     transparent: true,
-    opacity: 1.0,
+    opacity: 0,
     depthWrite: false,
     depthTest: false,
-  });
-  const seg = new THREE.LineSegments(geo, mat);
-  seg.renderOrder = 900;
-  highlightGroup.add(seg);
-}
-highlightGroup.layers.set(1);
-highlightGroup.visible = false;
-scene.add(highlightGroup);
+  }));
+  spr.position.copy(lo.center);
+  spr.scale.setScalar(SIDE[lo.level] * 1.15);
+  spr.renderOrder = 1000;
+  spr.layers.set(1);
+  scene.add(spr);
 
-function updateHighlight() {
-  const inst = diagrams[currentKey];
-  if (!inst) { highlightGroup.visible = false; return; }
-  highlightGroup.visible = true;
-  highlightGroup.position.copy(inst.center);
-  /* 1.5% scale-up so the white outline visibly protrudes past the
-     coloured edges underneath — a cheap stand-in for thicker lines. */
-  highlightGroup.scale.setScalar(inst.scale * 1.015);
+  miniGlows.push({ key, sprite: spr });
+}
+
+/* =====================================================================
+   MINI GLOW OPACITY — slow 30-second pulse, high-brightness range
+   ---------------------------------------------------------------------
+   Only the currently-viewed diagram's glow is visible. Its opacity
+   swings between PULSE_LOW and PULSE_HIGH on a raised-cosine curve so
+   the pulse eases smoothly at both extremes rather than snapping.
+   PULSE_LOW is set high (0.7) so the glow never dims much — the pulse
+   is a subtle breathing between bright and brighter.
+   ===================================================================== */
+function updateMiniGlowOpacities() {
+  const PULSE_PERIOD_MS = 30000;
+  const PULSE_LOW  = 0.70;
+  const PULSE_HIGH = 1.0;
+
+  const phase = (performance.now() % PULSE_PERIOD_MS) / PULSE_PERIOD_MS;
+  const pulse = (1 - Math.cos(phase * Math.PI * 2)) / 2;   // 0 → 1 → 0
+  const currentOpacity = PULSE_LOW + (PULSE_HIGH - PULSE_LOW) * pulse;
+
+  for (const g of miniGlows) {
+    const isCurrent = (g.key === currentKey);
+    g.sprite.material.opacity = isCurrent ? currentOpacity : 0;
+    g.sprite.visible = isCurrent;
+  }
 }
 
 /* =====================================================================
@@ -1199,7 +1242,7 @@ function goToDiagram(L, D) {
   updateExpandButton();
   rebuildLabels();
   updateMinimapLabel();
-  updateHighlight();
+  updateMiniGlowOpacities();
 
   startFlight(diagrams[key].center.clone(), state0Offset(key), 1.5, () => {
     fadeState = 'steady';
@@ -1744,8 +1787,6 @@ function updateUI() {
   fullStructureInputEl.disabled = !!flight;
   fullStructureApplyEl.disabled = !!flight;
 
-  /* Cycle buttons: both disabled during flight; the D button is also
-     disabled on L3 (only one diagram there, so nothing to cycle through). */
   const cycleLevelBtn = document.getElementById('cycle-level');
   const cycleDBtn = document.getElementById('cycle-d');
   if (cycleLevelBtn) cycleLevelBtn.disabled = !!flight;
@@ -1778,15 +1819,6 @@ panelToggleBtn.addEventListener('click', () => {
 
 /* =====================================================================
    LEVEL + DIAGRAM CYCLING
-   ---------------------------------------------------------------------
-   Level cycle:
-     L1 Dn  →  L2 D(floor((n-1)/4))   (L1 D1–D4 → L2 D1, D5–D8 → L2 D2, …)
-     L2 Dn  →  L3 D1                  (always)
-     L3 D1  →  L1 D1                  (wrap to the default start)
-   Diagram cycle:
-     L1:  Dn → D(n+1), wraps D16 → D1
-     L2:  Dn → D(n+1), wraps D4  → D1
-     L3:  no-op (button disabled)
    ===================================================================== */
 function getCurrentLevel() {
   return parseInt(currentKey.split('-')[0], 10);
@@ -1949,7 +1981,10 @@ function animate() {
     }
     applyOpacities(true);
 
-    updateHighlight();
+    /* Pulse the current-diagram glow in the MRSD. Called every frame so
+       the opacity tracks the 30-second raised-cosine cycle. */
+    updateMiniGlowOpacities();
+
     updateMiniCamera();
     miniRenderer.render(scene, miniCamera);
 
@@ -1979,7 +2014,7 @@ async function boot() {
   currentKey = '1-0';
   syncInputsFromState();
   rebuildLabels();
-  updateHighlight();
+  updateMiniGlowOpacities();
 
   for (const key of Object.keys(diagrams)) {
     diagrams[key].outerAlpha = (key === '1-0') ? 1 : 0;
