@@ -4,12 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AutoGreimas Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
   html, body {
     margin: 0; height: 100%; overflow: hidden;
     background: #05070d; color: #e9edf7;
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Archivo', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
   #app { position: fixed; inset: 0; }
   #app canvas { display: block; }
@@ -785,10 +788,6 @@ miniRenderer.domElement.style.display = 'block';
 document.getElementById('minimap').appendChild(miniRenderer.domElement);
 
 const miniCamera = new THREE.PerspectiveCamera(45, MINI_W / MINI_H, 0.5, 12000);
-/* Only layer 0 in the mini camera. Glow sprites live on layer 1 and are
-   rendered by giving the mini camera access to layer 1 — but since we
-   want glows ONLY in the mini, they simply live on layer 1 and the main
-   camera (which only sees layer 0) never renders them. */
 miniCamera.layers.enable(1);
 
 const OVERVIEW_TARGET = new THREE.Vector3(0, 0, 200);
@@ -829,11 +828,8 @@ const glowTexture = (() => {
 
 /* =====================================================================
    PER-D GLOW SPRITES — mini-only (layer 1)
-   Each is a lighter tint of that diagram's center colour, sized to
-   stay within the bounds of its square. Only the current diagram's
-   glow is visible at any moment.
    ===================================================================== */
-const miniGlows = [];  // { key, sprite }
+const miniGlows = [];
 for (const key of Object.keys(LAYOUT)) {
   const lo = LAYOUT[key];
   const centerHex = layerTripleFor(lo.level, lo.index).center;
@@ -850,10 +846,9 @@ for (const key of Object.keys(LAYOUT)) {
     depthTest: false,
   }));
   spr.position.copy(lo.center);
-  /* SIDE[level] is exactly the world extent of the square, so 0.9× stays within */
   spr.scale.setScalar(SIDE[lo.level] * 0.9);
   spr.renderOrder = 1000;
-  spr.layers.set(1);   // mini camera only
+  spr.layers.set(1);
   scene.add(spr);
 
   miniGlows.push({ key, sprite: spr });
@@ -1054,7 +1049,7 @@ applyStructureObject(INITIAL_STRUCTURE);
    NAVIGATION
    ===================================================================== */
 let currentKey = '1-0';
-let fadeState  = 'steady';   // 'steady' | 'navigating'
+let fadeState  = 'steady';
 let flight     = null;
 let labelFade  = 1;
 
@@ -1767,17 +1762,15 @@ function animate() {
   updateExpansions(dt);
   updateLinks(dt);
   updateLabelFade();
-  applyOpacities();          // normal — respects cache
+  applyOpacities();
 
   if (!flight) controls.update();
 
-  /* Main render — glows live on layer 1, main camera sees only layer 0,
-     so no glow sprites appear here. */
+  /* Main render — glows live on layer 1, main camera sees only layer 0. */
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 
-  /* Mini render — everything forced visible with no expansion, and only
-     the current diagram's glow visible. */
+  /* Mini render — force everything visible with no expansion. */
   if (miniVisible) {
     for (const key of Object.keys(diagrams)) {
       savedAlphas[key] = diagrams[key].outerAlpha;
