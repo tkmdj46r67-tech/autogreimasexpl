@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Architectonic Greimas Viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: #05070d; color: #e9edf7;
+    font-family: 'Archivo', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  input, textarea { font-family: inherit; }
+
+  #app { position: fixed; inset: 0; display: flex; flex-direction: column; }
+
+  #top-bar {
+    position: fixed; top: 14px; left: 14px; z-index: 20;
+    display: flex; gap: 8px;
+  }
+  .btn {
+    padding: 10px 14px; min-height: 40px;
+    border-radius: 9px; cursor: pointer;
+    font: inherit; font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #c8d0e6; background: rgba(9,13,22,0.85);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    touch-action: manipulation; user-select: none;
+  }
+  .btn:hover { background: rgba(126,160,255,0.16); border-color: rgba(126,160,255,0.4); color: #fff; }
+  .btn:active { transform: translateY(1px); }
+
+  #ui {
+    position: fixed; top: 14px; right: 14px; z-index: 10;
+    width: 380px; max-height: calc(100vh - 28px); overflow-y: auto;
+    padding: 14px 16px; border-radius: 12px;
+    background: rgba(9,13,22,0.92);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  body.panels-hidden #ui { transform: translateX(calc(100% + 30px)); opacity: 0; pointer-events: none; }
+
+  .sec { border-bottom: 1px solid rgba(255,255,255,0.06); padding: 10px 0; }
+  .sec:last-child { border-bottom: none; }
+  .sec-title {
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; color: #8a93ab;
+    user-select: none;
+  }
+  .sec-title:hover { color: #c8d0e6; }
+  .sec-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .sec.open .sec-body { max-height: 2000px; }
+  .sec-content { padding: 10px 0 4px; }
+  .chev { font-size: 10px; transition: transform 0.25s; }
+  .sec.open .chev { transform: rotate(180deg); }
+
+  #json-input, #json-output {
+    width: 100%; min-height: 120px; resize: vertical;
+    background: #0a0d1a; color: #e9edf7;
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+    padding: 10px 12px; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11px; line-height: 1.5;
+  }
+  #json-status { font-size: 11px; margin-top: 6px; }
+  #json-status.ok { color: #6fdc8c; }
+  #json-status.err { color: #ff6b6b; }
+
+  #main-view {
+    flex: 1; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #squares-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px;
+    padding: 80px 30px 30px;
+    width: 100%; height: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .square-card {
+    background: rgba(15,20,32,0.6);
+    border-radius: 12px;
+    border: 1.5px solid rgba(255,255,255,0.06);
+    padding: 12px;
+    display: flex; flex-direction: column;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    overflow: hidden;
+  }
+  .square-card.active {
+    border-color: #ffd23f;
+    box-shadow: 0 0 24px rgba(255,210,63,0.25);
+  }
+  .square-card .sq-header {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .sq-key {
+    display: inline-block; padding: 2px 8px; border-radius: 6px;
+    background: #22304d; color: #cce0ff; font-size: 10px;
+    font-weight: 700; letter-spacing: 0.08em;
+  }
+  .sq-title { font-size: 12px; font-weight: 600; color: #e9edf7; }
+  .sq-parent { font-size: 10.5px; color: #8a93ab; font-style: italic; }
+  .sq-svg { flex: 1; min-height: 0; width: 100%; }
+
+  /* Grid layout: A on top spanning, B's below */
+  #card-A   { grid-column: 1 / 4; grid-row: 1; }
+  #card-S1  { grid-column: 1; grid-row: 2; }
+  #card-S2  { grid-column: 2; grid-row: 2; }
+  #card-~S1 { grid-column: 3; grid-row: 2; }
+  #card-~S2 { grid-column: 4; grid-row: 2; }
+
+  /* Adjust to 4 columns for bottom row */
+  #squares-container { grid-template-columns: repeat(4, 1fr); }
+
+  .sq-node { cursor: pointer; transition: opacity 0.2s; }
+  .sq-node circle { transition: fill 0.2s, stroke 0.2s, r 0.2s; }
+  .sq-node.hl circle {
+    stroke: #fff3c4; stroke-width: 3;
+    filter: drop-shadow(0 0 8px rgba(255,210,63,1));
+  }
+  .sq-node.dim { opacity: 0.25; }
+
+  .sq-node text.pos {
+    pointer-events: none; user-select: none;
+    font-size: 7px; font-weight: 600;
+  }
+  .sq-node text.term {
+    pointer-events: none; user-select: none;
+    font-size: 8px; font-weight: 700;
+  }
+  .sq-node text.hover-label {
+    pointer-events: none; user-select: none;
+    font-size: 9px; font-weight: 600;
+    fill: #e9edf7;
+  }
+
+  #node-info {
+    margin-top: 8px; padding: 10px 12px;
+    background: rgba(15,20,32,0.8); border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+    font-size: 11px; line-height: 1.5;
+    max-height: 220px; overflow-y: auto;
+  }
+  #node-info h4 { margin: 0 0 6px; font-size: 12px; color: #ffd23f; }
+  #node-info .kv { margin-bottom: 4px; }
+  #node-info .k { color: #8a93ab; }
+  #node-info .chip {
+    display: inline-block; padding: 1px 7px; border-radius: 8px;
+    background: #22304d; color: #cce0ff; font-size: 10px; margin: 2px 3px 2px 0;
+  }
+
+  @media (max-width: 900px) {
+    #ui { width: calc(100vw - 28px); }
+    #squares-container { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; }
+    #card-A, #card-S1, #card-S2, #card-~S1, #card-~S2 { grid-column: 1; grid-row: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div id="top-bar">
+  <button class="btn" id="panel-toggle">◱ Hide Panels</button>
+</div>
+
+<div id="ui">
+  <div class="sec open" data-sec>
+    <div class="sec-title"><span>Load JSON</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-content">
+      <textarea id="json-input" spellcheck="false" placeholder='Paste the architectonic JSON from greimas_architectonic.py here.'></textarea>
+      <div id="json-status"></div>
+      <button class="btn" id="json-apply" style="margin-top:8px;">Update</button>
+    </div></div>
+  </div>
+
+  <div class="sec open" data-sec>
+    <div class="sec-title"><span>Node Info</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-content">
+      <div id="node-info"><em style="color:#8a93ab;">Click a node to see details.</em></div>
+    </div></div>
+  </div>
+
+  <div class="sec" data-sec>
+    <div class="sec-title"><span>Export</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-content">
+      <button class="btn" id="export-all" style="width:100%;">Download JSON</button>
+    </div></div>
+  </div>
+</div>
+
+<div id="main-view">
+  <div id="squares-container"></div>
+</div>
+
+<script>
+// =========================================================
+// CONSTANTS
+// =========================================================
+
+const POSITIONS = ['S1','S2','~S2','~S1','M11','M12','M13','M14','M21','M22','M23','M24','Mixed1','Mixed2','top','bottom'];
+
+// Layout coordinates for each position in a 2D SVG viewbox (0 0 400 580)
+const SQ_POS = {
+  top:      [200, 30],
+  M21:      [ 50, 100],
+  M22:      [150, 100],
+  M23:      [250, 100],
+  M24:      [350, 100],
+  M11:      [200, 170],
+  S1:       [110, 250],
+  S2:       [290, 250],
+  M13:      [ 40, 335],
+  Mixed1:   [130, 335],
+  Mixed2:   [270, 335],
+  M14:      [360, 335],
+  '~S2':    [110, 420],
+  '~S1':    [290, 420],
+  M12:      [200, 500],
+  bottom:   [200, 560],
+};
+
+const SQ_EDGES = [
+  // top to M2s
+  ['top','M21'],['top','M22'],['top','M23'],['top','M24'],
+  // M2s to pairs
+  ['M21','M11'],['M21','M13'],
+  ['M22','M11'],['M22','M14'],
+  ['M23','M12'],['M23','M13'],
+  ['M24','M12'],['M24','M14'],
+  // pairs to inner semes
+  ['M11','S1'],['M11','S2'],
+  ['M12','~S2'],['M12','~S1'],
+  ['M13','S1'],['M13','~S2'],
+  ['M14','S2'],['M14','~S1'],
+  // mixed terms
+  ['Mixed1','S1'],['Mixed1','~S1'],
+  ['Mixed2','S2'],['Mixed2','~S2'],
+  // inner semes to bottom
+  ['S1','bottom'],['S2','bottom'],['~S1','bottom'],['~S2','bottom'],
+  // inner square relations (dashed)
+  ['S1','S2'],['~S2','~S1'],
+  ['S1','~S2'],['S2','~S1'],
+  ['S1','~S1'],['S2','~S2'],
+];
+
+// =========================================================
+// STATE
+// =========================================================
+
+const state = {
+  data: null,             // full parsed JSON
+  squares: [],            // [{key, title, parentTerm, squareData, cardEl, svgEl, nodeEls}]
+  squareNodeEls: {},      // {squareKey: {position: SVGElement}}
+  hoverId: null,          // {squareKey, position} or null
+  pinnedId: null,         // {squareKey, position} or null
+};
+
+// =========================================================
+// JSON PARSING
+// =========================================================
+
+function parseArchitectonic(parsed) {
+  if (!parsed || typeof parsed !== 'object') throw new Error('Not an object.');
+  const { layer_1, layer_2 } = parsed;
+  if (!layer_1 || !layer_1.square) throw new Error('Missing layer_1.square.');
+  if (!layer_2 || typeof layer_2 !== 'object') throw new Error('Missing layer_2.');
+
+  const squares = [];
+
+  // Base square A
+  squares.push({
+    key: 'A',
+    title: 'A (Layer 1)',
+    parentTerm: null,
+    squareData: layer_1.square,
+    lattice: layer_1.lattice || null,
+  });
+
+  // Layer-2 squares
+  for (const semeKey of ['S1','S2','~S1','~S2']) {
+    const b = layer_2[semeKey];
+    if (b && b.square) {
+      squares.push({
+        key: semeKey,
+        title: `B[${semeKey}]`,
+        parentTerm: b.parent_term || '',
+        squareData: b.square,
+        lattice: b.lattice || null,
+      });
+    }
+  }
+
+  return { squares, raw: parsed };
+}
+
+// =========================================================
+// RENDERING
+// =========================================================
+
+function renderAll(parsed) {
+  const { squares, raw } = parseArchitectonic(parsed);
+  state.data = raw;
+  state.squares = squares;
+  state.squareNodeEls = {};
+
+  const container = document.getElementById('squares-container');
+  container.innerHTML = '';
+
+  for (const sq of squares) {
+    const card = document.createElement('div');
+    card.className = 'square-card';
+    card.id = 'card-' + sq.key;
+
+    const header = document.createElement('div');
+    header.className = 'sq-header';
+    const keyTag = document.createElement('span');
+    keyTag.className = 'sq-key';
+    keyTag.textContent = sq.key;
+    header.appendChild(keyTag);
+    const title = document.createElement('span');
+    title.className = 'sq-title';
+    title.textContent = sq.title;
+    header.appendChild(title);
+    if (sq.parentTerm) {
+      const parent = document.createElement('span');
+      parent.className = 'sq-parent';
+      parent.textContent = `of ${sq.parentTerm}`;
+      header.appendChild(parent);
+    }
+    card.appendChild(header);
+
+    const svgEl = renderSquare(sq.squareData, sq.key);
+    svgEl.setAttribute('class', 'sq-svg');
+    card.appendChild(svgEl);
+
+    container.appendChild(card);
+
+    sq.cardEl = card;
+    sq.svgEl = svgEl;
+  }
+
+  renderNodeInfo(null);
+}
+
+function renderSquare(squareData, squareKey) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 400 590');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  svg.style.display = 'block';
+  svg.style.width = '100%';
+  svg.style.height = '100%';
+
+  const nodeEls = {};
+  const nodeR = 14;
+
+  // --- edges first ---
+  const innerSq = new Set(['S1','S2','~S2','~S1']);
+  SQ_EDGES.forEach(([a, b]) => {
+    if (!SQ_POS[a] || !SQ_POS[b]) return;
+    const [x1, y1] = SQ_POS[a];
+    const [x2, y2] = SQ_POS[b];
+
+    let stroke = '#333a55';
+    let dash = null;
+    let width = 1.2;
+    let opacity = 0.8;
+
+    if (innerSq.has(a) && innerSq.has(b)) {
+      stroke = '#c9a227'; dash = '4 2'; width = 1.4; opacity = 0.9;
+    } else if (a.startsWith('M1') || b.startsWith('M1')) {
+      stroke = '#4a7bb5'; width = 1.2; opacity = 0.75;
+    } else if (a.startsWith('M2') || b.startsWith('M2')) {
+      stroke = '#3a8544'; width = 1.1; opacity = 0.65;
+    } else if (a.startsWith('Mixed') || b.startsWith('Mixed')) {
+      stroke = '#8a7033'; width = 1.1; opacity = 0.65;
+    } else if (a === 'top' || b === 'top' || a === 'bottom' || b === 'bottom') {
+      stroke = '#555'; width = 0.9; opacity = 0.5;
+    }
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('stroke', stroke);
+    line.setAttribute('stroke-width', width);
+    line.setAttribute('opacity', opacity);
+    if (dash) line.setAttribute('stroke-dasharray', dash);
+    svg.appendChild(line);
+  });
+
+  // --- nodes ---
+  Object.entries(SQ_POS).forEach(([pos, [cx, cy]]) => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'sq-node');
+    g.dataset.squareKey = squareKey;
+    g.dataset.position = pos;
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', cx);
+    circle.setAttribute('cy', cy);
+    circle.setAttribute('r', nodeR);
+
+    let fill = '#5b9bd5';
+    if (['S1','S2','~S1','~S2'].includes(pos)) fill = '#ffd23f';
+    else if (pos.startsWith('M2')) fill = '#3fa34d';
+    else if (pos.startsWith('M1')) fill = '#5b9bd5';
+    else if (pos.startsWith('Mixed')) fill = '#c9a227';
+    else if (pos === 'top' || pos === 'bottom') fill = '#555';
+
+    circle.setAttribute('fill', fill);
+    circle.setAttribute('stroke', '#1a1a1a');
+    circle.setAttribute('stroke-width', '1.4');
+    g.appendChild(circle);
+
+    // Term text (short)
+    const termText = squareData[pos] || '';
+    const shortTerm = termText.length > 10 ? termText.slice(0, 9) + '…' : termText;
+    const term = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    term.setAttribute('x', cx);
+    term.setAttribute('y', cy + 3);
+    term.setAttribute('text-anchor', 'middle');
+    term.setAttribute('class', 'term');
+    term.setAttribute('fill', '#1a1a1a');
+    term.textContent = shortTerm;
+    g.appendChild(term);
+
+    // Position label (below)
+    const posLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    posLabel.setAttribute('x', cx);
+    posLabel.setAttribute('y', cy + nodeR + 11);
+    posLabel.setAttribute('text-anchor', 'middle');
+    posLabel.setAttribute('class', 'pos');
+    posLabel.setAttribute('fill', '#8a93ab');
+    posLabel.textContent = pos;
+    g.appendChild(posLabel);
+
+    svg.appendChild(g);
+    nodeEls[pos] = g;
+
+    g.addEventListener('mouseenter', () => onEnter(squareKey, pos));
+    g.addEventListener('mouseleave', () => onLeave());
+    g.addEventListener('click', (ev) => { ev.stopPropagation(); onToggle(squareKey, pos); });
+  });
+
+  state.squareNodeEls[squareKey] = nodeEls;
+  return svg;
+}
+
+// =========================================================
+// HIGHLIGHTING
+// =========================================================
+
+function applyHighlights(target) {
+  // target = {squareKey, position} or null
+  state.squares.forEach(sq => {
+    sq.cardEl.classList.remove('active');
+    const nodeMap = state.squareNodeEls[sq.key] || {};
+    Object.values(nodeMap).forEach(el => {
+      el.classList.remove('hl');
+      el.classList.remove('dim');
+    });
+  });
+
+  if (!target) return;
+
+  // The base square A is active; highlight the same position on all squares
+  // where the corresponding term exists.
+  const baseSquare = state.squares.find(s => s.key === 'A');
+  if (!baseSquare) return;
+
+  // Find the term being hovered in A
+  const baseTerm = baseSquare.squareData[target.position];
+
+  state.squares.forEach(sq => {
+    const nodeMap = state.squareNodeEls[sq.key] || {};
+    const matchingPositions = [];
+
+    // For each position in this square, check if its term matches
+    Object.entries(sq.squareData).forEach(([pos, term]) => {
+      if (term && term === baseTerm) matchingPositions.push(pos);
+    });
+
+    // Also highlight the same structural position
+    if (nodeMap[target.position]) matchingPositions.push(target.position);
+
+    if (matchingPositions.length > 0) {
+      sq.cardEl.classList.add('active');
+      Object.entries(nodeMap).forEach(([pos, el]) => {
+        if (matchingPositions.includes(pos)) el.classList.add('hl');
+        else el.classList.add('dim');
+      });
+    } else {
+      Object.values(nodeMap).forEach(el => el.classList.add('dim'));
+    }
+  });
+}
+
+function onEnter(squareKey, pos) {
+  state.hoverId = { squareKey, position: pos };
+  applyHighlights(state.hoverId);
+  renderNodeInfo(state.hoverId);
+}
+
+function onLeave() {
+  state.hoverId = null;
+  if (state.pinnedId) {
+    applyHighlights(state.pinnedId);
+    renderNodeInfo(state.pinnedId);
+  } else {
+    applyHighlights(null);
+    renderNodeInfo(null);
+  }
+}
+
+function onToggle(squareKey, pos) {
+  if (state.pinnedId && state.pinnedId.squareKey === squareKey && state.pinnedId.position === pos) {
+    state.pinnedId = null;
+    if (state.hoverId) {
+      applyHighlights(state.hoverId);
+      renderNodeInfo(state.hoverId);
+    } else {
+      applyHighlights(null);
+      renderNodeInfo(null);
+    }
+  } else {
+    state.pinnedId = { squareKey, position: pos };
+    applyHighlights(state.pinnedId);
+    renderNodeInfo(state.pinnedId);
+  }
+}
+
+// =========================================================
+// NODE INFO PANEL
+// =========================================================
+
+function renderNodeInfo(target) {
+  const el = document.getElementById('node-info');
+  if (!target) {
+    el.innerHTML = '<em style="color:#8a93ab;">Click a node to see details.</em>';
+    return;
+  }
+
+  const sq = state.squares.find(s => s.key === target.squareKey);
+  if (!sq) return;
+  const pos = target.position;
+  const term = sq.squareData[pos] || '';
+
+  let html = `<h4>${sq.key} · ${pos}</h4>`;
+  html += `<div class="kv"><span class="k">Term:</span> ${term || '—'}</div>`;
+  if (sq.parentTerm) {
+    html += `<div class="kv"><span class="k">Decomposes:</span> ${sq.parentTerm}</div>`;
+  }
+
+  // Show what this position composes in the square
+  const compositions = {
+    'S1': 'S1 + S2 → M11; S1 + ~S2 → M13; S1 + ~S1 → Mixed1',
+    'S2': 'S1 + S2 → M11; S2 + ~S1 → M14; S2 + ~S2 → Mixed2',
+    '~S2': '~S1 + ~S2 → M12; S1 + ~S2 → M13; ~S2 + S2 → Mixed2',
+    '~S1': '~S1 + ~S2 → M12; S2 + ~S1 → M14; ~S1 + S1 → Mixed1',
+    'M11': 'S1 + S2 (complex axis)',
+    'M12': '~S1 + ~S2 (neutral axis)',
+    'M13': 'S1 + ~S2 (positive deixis)',
+    'M14': 'S2 + ~S1 (negative deixis)',
+    'M21': 'S1 + S2 + ~S2 (omits ~S1)',
+    'M22': 'S1 + S2 + ~S1 (omits ~S2)',
+    'M23': 'S1 + ~S1 + ~S2 (omits S2)',
+    'M24': 'S2 + ~S1 + ~S2 (omits S1)',
+    'Mixed1': 'S1 + ~S1 (axis 1, undifferentiated)',
+    'Mixed2': 'S2 + ~S2 (axis 2, undifferentiated)',
+    'top': 'All four inner semes',
+    'bottom': 'Empty extent, all M2 attributes',
+  };
+  if (compositions[pos]) {
+    html += `<div class="kv"><span class="k">Structure:</span> ${compositions[pos]}</div>`;
+  }
+
+  // Show where this term appears in other squares
+  if (term) {
+    const appearances = [];
+    state.squares.forEach(other => {
+      if (other.key === target.squareKey) return;
+      Object.entries(other.squareData).forEach(([p, t]) => {
+        if (t === term) appearances.push(`${other.key}·${p}`);
+      });
+    });
+    if (appearances.length > 0) {
+      html += `<div class="kv"><span class="k">Also on:</span><br>`;
+      appearances.forEach(a => { html += `<span class="chip">${a}</span>`; });
+      html += `</div>`;
+    }
+  }
+
+  el.innerHTML = html;
+}
+
+// =========================================================
+// JSON HANDLING
+// =========================================================
+
+function handleJsonApply() {
+  const ta = document.getElementById('json-input');
+  const status = document.getElementById('json-status');
+  const raw = ta.value.trim();
+  if (!raw) {
+    status.className = 'err';
+    status.textContent = 'Paste JSON first.';
+    return;
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (e) {
+    status.className = 'err';
+    status.textContent = `JSON parse error: ${e.message}`;
+    return;
+  }
+  try {
+    renderAll(parsed);
+    status.className = 'ok';
+    status.textContent = `Loaded ${state.squares.length} squares.`;
+  } catch (e) {
+    status.className = 'err';
+    status.textContent = `Structure error: ${e.message}`;
+  }
+}
+
+// =========================================================
+// EXPORT
+// =========================================================
+
+function exportJson() {
+  if (!state.data) {
+    alert('No data loaded.');
+    return;
+  }
+  const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'architectonic.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// =========================================================
+// UI WIRING
+// =========================================================
+
+document.getElementById('panel-toggle').addEventListener('click', () => {
+  document.body.classList.toggle('panels-hidden');
+});
+
+document.querySelectorAll('.sec-title').forEach(t => {
+  t.addEventListener('click', () => {
+    t.closest('.sec').classList.toggle('open');
+  });
+});
+
+document.getElementById('json-apply').addEventListener('click', handleJsonApply);
+document.getElementById('export-all').addEventListener('click', exportJson);
+
+// =========================================================
+// DEMO DATA
+// =========================================================
+
+const DEMO = {
+  metadata: { seed: 'A1', seed_s1: 'being', seed_s2: 'seeming' },
+  layer_1: {
+    square: {
+      S1: 'being', S2: 'seeming', '~S2': 'not seeming', '~S1': 'nonbeing',
+      M11: 'beingness', M12: 'nonexistence', M13: 'beinglessness', M14: 'seemingness',
+      M21: 'Revelation', M22: 'Paradox', M23: 'Subterfuge', M24: 'Deception',
+      Mixed1: 'Mixed beingness', Mixed2: 'Mixed seemingness',
+    },
+  },
+  layer_2: {
+    S1: { parent_seme: 'S1', parent_term: 'being', square: {
+      S1: 'presence', S2: 'absence', '~S2': 'Nullity', '~S1': 'Existence',
+      M11: 'Presencelessness', M12: 'Existentiality', M13: 'Presencefulness', M14: 'Absencefulness',
+      M21: 'Presence Nullity', M22: 'Existence Absence', M23: 'Existence Presence', M24: 'Absence Nullity',
+      Mixed1: 'Mixed presence', Mixed2: 'Mixed absence',
+    }},
+    S2: { parent_seme: 'S2', parent_term: 'seeming', square: {
+      S1: 'Appearance', S2: 'Authenticity', '~S2': 'Falsehood', '~S1': 'Presencefulness',
+      M11: 'Authenticity', M12: 'Falsehood', M13: 'Appearance', M14: 'Presencefulness',
+      M21: 'Authentic Appearance', M22: 'Presenceful Seeming', M23: 'Falsehood Presence', M24: 'Seeming Nullity',
+      Mixed1: 'Mixed appearance', Mixed2: 'Mixed authenticity',
+    }},
+    '~S1': { parent_seme: '~S1', parent_term: 'nonbeing', square: {
+      S1: 'voidness', S2: 'emptiness', '~S2': 'Fullness', '~S1': 'Existence',
+      M11: 'Vacuity', M12: 'Plenitude', M13: 'Vacantness', M14: 'Emptinessness',
+      M21: 'Voidfulness', M22: 'Existence', M23: 'Emptiness', M24: 'Nullitylessness',
+      Mixed1: 'Mixed voidness', Mixed2: 'Mixed emptiness',
+    }},
+    '~S2': { parent_seme: '~S2', parent_term: 'not seeming', square: {
+      S1: 'obscuration', S2: 'inconspicuousness', '~S2': 'Visibility', '~S1': 'Transparency',
+      M11: 'Obscurity', M12: 'Clarity', M13: 'Manifestation', M14: 'Hiding',
+      M21: 'Illumination', M22: 'Clarity', M23: 'Hollowness', M24: 'Suffusion',
+      Mixed1: 'Mixed obscuration', Mixed2: 'Mixed visibility',
+    }},
+  },
+};
+
+// =========================================================
+// INIT
+// =========================================================
+
+(function init() {
+  const ta = document.getElementById('json-input');
+  ta.value = JSON.stringify(DEMO, null, 2);
+  renderAll(DEMO);
+})();
+
+</script>
+</body>
+</html>
