@@ -264,11 +264,11 @@ const NEUTRAL_HEX = '#888888';
 function colorForSquare(k) { return VIRIDIS[k] ?? 0xB4DE2C; }
 function hexForSquare(k)   { return VIRIDIS_HEX[k] ?? '#B4DE2C'; }
 
-const HIGHLIGHT_HOVER = 0xFDE725;   // yellow
-const HIGHLIGHT_ABOVE = 0xF08C42;   // orange (joins / ancestors)
-const HIGHLIGHT_BELOW = 0xE0555A;   // red (meets / descendants)
-const HIGHLIGHT_OTHER = 0x707070;   // light gray
-const HIGHLIGHT_DIMMED = 0x2a2e3d;  // very dim gray
+const HIGHLIGHT_HOVER = 0xFDE725;
+const HIGHLIGHT_ABOVE = 0xF08C42;
+const HIGHLIGHT_BELOW = 0xE0555A;
+const HIGHLIGHT_OTHER = 0x707070;
+const HIGHLIGHT_DIMMED = 0x2a2e3d;
 
 // =========================================================
 // GREIMAS SQUARE GEOMETRY
@@ -427,7 +427,6 @@ function buildOverviewProxies() {
     overviewProxies[sq.key] = { dot, label };
   });
 
-  // Lattice proxy at center
   const lGeom = new THREE.RingGeometry(1.6, 2.2, 24);
   const lMat = new THREE.MeshBasicMaterial({ color: 0x7A9AD6, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
   overviewLatticeProxy = new THREE.Mesh(lGeom, lMat);
@@ -435,7 +434,6 @@ function buildOverviewProxies() {
   overviewLatticeProxy.position.set(0, 0, 2);
   overviewScene.add(overviewLatticeProxy);
 
-  // Focus ring
   const frGeom = new THREE.RingGeometry(2.5, 2.95, 32);
   const frMat = new THREE.MeshBasicMaterial({ color: HIGHLIGHT_HOVER, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
   overviewFocusRing = new THREE.Mesh(frGeom, frMat);
@@ -473,25 +471,22 @@ const state = {
   level: 'A',
   lastDiagramKey: 'A',
 
-  viewMode: 'diagram',  // 'diagram' | 'lattice'
+  viewMode: 'diagram',
 
   diagramGroup: new THREE.Group(),
   latticeGroup: null,
-  latticeData: null,      // {meshes, positions, concepts, edges, ancestors, descendants, idToIdx, labels}
+  latticeData: null,
   latticeHoverTarget: null,
   latticePinnedTarget: null,
 
-  // Opacity states for cross-fade
   diagramOpacity: 1.0,
   latticeOpacity: 0.0,
 
-  // Camera animation
   anim: { active: false, t: 0, duration: 0.5,
     fromCam: new THREE.Vector3(), toCam: new THREE.Vector3(),
     fromLook: new THREE.Vector3(), toLook: new THREE.Vector3(),
     lastTime: 0 },
 
-  // Opacity animation
   fade: { active: false, t: 0, duration: 1.4, to: 'lattice', lastTime: 0 },
 };
 
@@ -501,7 +496,7 @@ scene.add(state.diagramGroup);
 // SQUARE CONSTRUCTION
 // =========================================================
 
-const CUBE_SIZE = 0.09;      // small cubes
+const CUBE_SIZE = 0.09;
 const NODE_OPACITY = 0.88;
 const EDGE_OPACITY = 0.55;
 const EDGE_OPACITY_INNER = 0.72;
@@ -529,8 +524,7 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
       new THREE.Vector3(x2, y2, 0),
     ]);
 
-    let mat;
-    let obj;
+    let mat, obj;
     if (dashed) {
       mat = new THREE.LineDashedMaterial({ color: squareColor, dashSize: 0.18, gapSize: 0.10,
         transparent: true, opacity, depthWrite: false });
@@ -605,7 +599,6 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
 }
 
 function clearScene() {
-  // Clear diagram group
   while (state.diagramGroup.children.length > 0) {
     const c = state.diagramGroup.children[0];
     state.diagramGroup.remove(c);
@@ -617,7 +610,6 @@ function clearScene() {
       }
     });
   }
-  // Clear lattice group
   if (state.latticeGroup) {
     scene.remove(state.latticeGroup);
     state.latticeGroup.traverse(obj => {
@@ -658,7 +650,8 @@ function computeLatticeLayout(concepts, edges) {
     children[ai].push(bi);
   });
 
-  // Rank from bottom
+  // Rank from bottom: a node's rank is 1 + max rank of its children.
+  // Propagate upward by raising parents' ranks until stable.
   const rank = Array(concepts.length).fill(0);
   let changed = true;
   let guard = 0;
@@ -666,7 +659,7 @@ function computeLatticeLayout(concepts, edges) {
     changed = false;
     for (let i = 0; i < concepts.length; i++) {
       for (const p of parents[i]) {
-        if (rank[i] < rank[p] + 1) { rank[i] = rank[p] + 1; changed = true; }
+        if (rank[p] < rank[i] + 1) { rank[p] = rank[i] + 1; changed = true; }
       }
     }
   }
@@ -677,7 +670,6 @@ function computeLatticeLayout(concepts, edges) {
     (byRank[r] ||= []).push(i);
   });
 
-  // Within rank, order by origin then id
   for (const r in byRank) {
     byRank[r].sort((a, b) => {
       const oa = concepts[a].origin || 'A';
@@ -720,7 +712,6 @@ function buildLatticeScene(parsed) {
   const labels = {};
   const labelObjs = {};
 
-  // Compute ancestors and descendants
   const ancestors = [];
   const descendants = [];
   for (let i = 0; i < arch.concepts.length; i++) {
@@ -752,8 +743,7 @@ function buildLatticeScene(parsed) {
     if (!p) return;
 
     let colorKey = c.origin || 'A';
-    let baseColor;
-    let hex;
+    let baseColor, hex;
     if (c.role === 'shared_bottom' || c.role === 'architectonic_top') {
       baseColor = NEUTRAL_COLOR; hex = NEUTRAL_HEX;
     } else {
@@ -787,7 +777,7 @@ function buildLatticeScene(parsed) {
     labelObjs[c.id] = label;
   });
 
-  // Edges
+  const edgeLines = [];
   arch.edges.forEach(([a, b]) => {
     const pa = layout.positions[a], pb = layout.positions[b];
     if (!pa || !pb) return;
@@ -801,6 +791,7 @@ function buildLatticeScene(parsed) {
     const line = new THREE.Line(geom, mat);
     line.userData.baseOpacity = 0.55;
     group.add(line);
+    edgeLines.push(line);
   });
 
   scene.add(group);
@@ -810,8 +801,7 @@ function buildLatticeScene(parsed) {
     concepts: arch.concepts, edges: arch.edges,
     idToIdx: layout.idToIdx,
     parents: layout.parents, children: layout.children,
-    ancestors, descendants,
-    edgeLines: group.children.filter(o => o.type === 'Line'),
+    ancestors, descendants, edgeLines,
   };
 }
 
@@ -840,11 +830,9 @@ function buildArchitectonic(parsed) {
     state.squares.push(sq);
   });
 
-  // Build lattice scene from architectonic section
   state.latticeGroup = buildLatticeScene(parsed);
   state.latticeData = state.latticeGroup;
 
-  // Apply current opacity states
   applyGroupOpacity(state.diagramGroup, state.diagramOpacity);
   if (state.latticeGroup) applyGroupOpacity(state.latticeGroup, state.latticeOpacity);
 
@@ -870,7 +858,6 @@ function applyGroupOpacity(group, opacity) {
   group.traverse(obj => {
     if (obj.material) {
       const base = obj.userData.baseOpacity ?? 1.0;
-      // preserve any highlight-specific opacity
       if (obj.userData.overrideOpacity !== undefined) {
         obj.material.opacity = obj.userData.overrideOpacity * rootOpacity;
       } else {
@@ -890,7 +877,6 @@ function applyGroupOpacity(group, opacity) {
 function setNodeState(mesh, mode) {
   const mat = mesh.material;
   const baseColor = mesh.userData.baseColor;
-  const baseOpacity = mesh.userData.baseOpacity;
   if (mode === 'highlight') {
     mat.color.setHex(HIGHLIGHT_HOVER);
     mesh.userData.overrideOpacity = 1.0;
@@ -949,7 +935,6 @@ function applyLatticeHighlight(conceptId) {
   const L = state.latticeData;
   if (!L) return;
 
-  // Reset all
   Object.values(L.meshes).forEach(m => {
     m.material.color.setHex(m.userData.baseColor);
     m.userData.overrideOpacity = 1.0;
@@ -993,18 +978,6 @@ function applyLatticeHighlight(conceptId) {
     }
   });
 
-  // Edge coloring: edges above or below the selected concept get colored
-  L.edgeLines.forEach(line => {
-    // Find which edge this is by matching positions
-    // Simpler: color edges whose endpoints are both in ancSet ∪ {conceptId}, etc.
-    // We stored no endpoint ids, so we need to identify by position match
-    const a = line.geometry.attributes.position.array;
-    // Find a matching architectonic edge
-    // (see below for a direct approach)
-  });
-
-  // Direct edge highlight: rebuild from L.edges
-  // We already iterated edgeLines above; now apply colors by index matching
   L.edges.forEach((e, i) => {
     const line = L.edgeLines[i];
     if (!line) return;
@@ -1083,15 +1056,11 @@ function updateNodeInfo(target) {
       html += concept.intent.map(e => `<span class="chip">${e}</span>`).join(' ');
       html += `</div>`;
     }
-
     const idx = L.idToIdx[concept.id];
     if (idx !== undefined) {
-      const ancN = L.ancestors[idx].size;
-      const descN = L.descendants[idx].size;
-      html += `<div class="kv"><span class="k">ancestors (joins above):</span> ${ancN}</div>`;
-      html += `<div class="kv"><span class="k">descendants (meets below):</span> ${descN}</div>`;
+      html += `<div class="kv"><span class="k">ancestors (joins above):</span> ${L.ancestors[idx].size}</div>`;
+      html += `<div class="kv"><span class="k">descendants (meets below):</span> ${L.descendants[idx].size}</div>`;
     }
-
     el.innerHTML = html;
     return;
   }
@@ -1182,7 +1151,6 @@ renderer.domElement.addEventListener('pointermove', (ev) => {
       return;
     }
 
-    // Diagram mode
     if (state.pinnedTarget) return;
     const hit = pickNode();
     if (hit) {
@@ -1309,7 +1277,6 @@ function setFocus(key, animate=true, mode='default') {
 
 function setViewMode(mode) {
   if (state.viewMode === 'lattice') {
-    // In lattice mode, use lattice-appropriate offsets
     const target = computeLatticeCamera(mode);
     state.anim.active = true;
     state.anim.t = 0;
@@ -1376,19 +1343,15 @@ function toggleLatticeView() {
   if (!state.latticeData) return;
 
   const entering = state.viewMode === 'diagram';
-
-  // Remember last diagram
   if (entering) state.lastDiagramKey = state.focusedKey;
 
   state.viewMode = entering ? 'lattice' : 'diagram';
 
-  // Fade animation
   state.fade.active = true;
   state.fade.t = 0;
   state.fade.lastTime = performance.now();
   state.fade.to = entering ? 'lattice' : 'diagram';
 
-  // Camera animation
   const target = entering ? computeLatticeCamera('lattice') : computeFocusCamera(state.lastDiagramKey, 'default');
   if (target) {
     state.anim.active = true;
@@ -1400,10 +1363,8 @@ function toggleLatticeView() {
     state.anim.toLook.copy(target.focusPos);
   }
 
-  // Show/hide lattice badge
   document.getElementById('lattice-mode-badge').classList.toggle('visible', entering);
 
-  // Clear any existing highlight
   applyHighlight(null);
   applyLatticeHighlight(null);
   state.latticeHoverTarget = null;
@@ -1503,7 +1464,6 @@ function smoothstep(t) { return t * t * (3 - 2 * t); }
 function animate(now) {
   requestAnimationFrame(animate);
 
-  // Camera animation
   if (state.anim.active) {
     const dt = (now - state.anim.lastTime) / 1000;
     state.anim.lastTime = now;
@@ -1515,7 +1475,6 @@ function animate(now) {
     if (t >= 1) state.anim.active = false;
   }
 
-  // Fade animation between diagram/lattice
   if (state.fade.active) {
     const dt = (now - state.fade.lastTime) / 1000;
     state.fade.lastTime = now;
@@ -1536,7 +1495,6 @@ function animate(now) {
 
     if (t >= 1) {
       state.fade.active = false;
-      // Ensure final states
       if (state.fade.to === 'lattice') {
         state.diagramGroup.visible = false;
       } else if (state.latticeGroup) {
@@ -1594,18 +1552,14 @@ const DEMO = {
     }},
   },
   architectonic: (() => {
-    // Minimal demo architectonic — enough to render a lattice.
-    // Real runs will have the full 72-node architectonic.
     const concepts = [];
     const edges = [];
-    let idc = 0;
 
     const add = (id, label, short, role, origin, layer, extent) => {
       concepts.push({ id, label, short, name: label, role, origin, layer, extent, intent: [] });
       return id;
     };
 
-    // Use actual architectonic-style ids
     add('A:0', 'bottom', 'Bottom', 'shared_bottom', 'A', 1, []);
     const A_semes = [['A:1','being','S1'],['A:2','seeming','S2'],['A:3','not seeming','~S2'],['A:4','nonbeing','~S1']];
     A_semes.forEach(([id, l, s]) => add(id, l, s, 'layer_1_internal', 'A', 1, [l]));
@@ -1615,12 +1569,10 @@ const DEMO = {
     A_m2.forEach(([id, l, s]) => add(id, l, s, 'layer_1_internal', 'A', 1, []));
     add('A:15', 'top', 'Top', 'architectonic_top', 'A', 1, []);
 
-    // Interfaces
     ['S1','S2','~S1','~S2'].forEach(k => {
       add(`${k}:15`, `${k}*`, k, 'interface', k, 2, []);
     });
 
-    // B internal nodes (subset for demo)
     ['S1','S2','~S1','~S2'].forEach(k => {
       for (let i = 1; i <= 14; i++) {
         if (i === 15) continue;
@@ -1628,34 +1580,27 @@ const DEMO = {
       }
     });
 
-    // Edges: top to A_m2
     A_m2.forEach(([id]) => edges.push(['A:15', id]));
-    // A_m2 to A_m1
     edges.push(['A:11','A:9'],['A:11','A:7'],['A:11','A:10']);
     edges.push(['A:12','A:9'],['A:12','A:10']);
     edges.push(['A:13','A:6'],['A:13','A:7'],['A:13','A:9']);
     edges.push(['A:14','A:6'],['A:14','A:10']);
-    // A_m1 to interfaces
     edges.push(['A:9','S1:15'],['A:9','S2:15'],['A:9','~S1:15'],['A:9','~S2:15']);
     edges.push(['A:6','~S1:15'],['A:6','~S2:15']);
     edges.push(['A:7','S1:15'],['A:7','~S2:15']);
     edges.push(['A:10','S2:15'],['A:10','~S1:15']);
-    // interfaces to B M2
     ['S1','S2','~S1','~S2'].forEach(k => {
       for (let i = 11; i <= 14; i++) edges.push([`${k}:15`, `${k}:${i}`]);
-      // B M2 to B M1/mixed
       edges.push([`${k}:11`,`${k}:5`],[`${k}:11`,`${k}:7`],[`${k}:11`,`${k}:10`]);
       edges.push([`${k}:12`,`${k}:5`],[`${k}:12`,`${k}:8`],[`${k}:12`,`${k}:9`]);
       edges.push([`${k}:13`,`${k}:6`],[`${k}:13`,`${k}:7`],[`${k}:13`,`${k}:9`]);
       edges.push([`${k}:14`,`${k}:6`],[`${k}:14`,`${k}:8`],[`${k}:14`,`${k}:10`]);
-      // B M1/mixed to inner semes
       edges.push([`${k}:5`,`${k}:1`],[`${k}:5`,`${k}:2`]);
       edges.push([`${k}:6`,`${k}:4`],[`${k}:6`,`${k}:3`]);
       edges.push([`${k}:7`,`${k}:1`],[`${k}:7`,`${k}:3`]);
       edges.push([`${k}:8`,`${k}:2`],[`${k}:8`,`${k}:4`]);
       edges.push([`${k}:9`,`${k}:1`],[`${k}:9`,`${k}:4`]);
       edges.push([`${k}:10`,`${k}:2`],[`${k}:10`,`${k}:3`]);
-      // B semes to bottom
       edges.push([`${k}:1`,'A:0'],[`${k}:2`,'A:0'],[`${k}:3`,'A:0'],[`${k}:4`,'A:0']);
     });
 
@@ -1664,21 +1609,37 @@ const DEMO = {
 };
 
 // =========================================================
-// INIT
+// INIT (wrapped in try/catch so failures are visible)
 // =========================================================
 
 (function init() {
-  const ta = document.getElementById('json-input');
-  ta.value = JSON.stringify(DEMO, null, 2);
+  try {
+    const ta = document.getElementById('json-input');
+    ta.value = JSON.stringify(DEMO, null, 2);
 
-  updateOverviewSize();
-  buildArchitectonic(DEMO);
+    updateOverviewSize();
+    buildArchitectonic(DEMO);
 
-  setFocus('A', false, 'default');
-  updateNavButtons();
+    setFocus('A', false, 'default');
+    updateNavButtons();
+  } catch (err) {
+    console.error('Init error:', err);
+    const el = document.getElementById('loading');
+    if (el) {
+      el.innerHTML = '<div style="text-align:center; max-width:640px; padding:20px;">'
+        + '<div style="color:#ff6b6b;font-size:14px;margin-bottom:10px;">Init error</div>'
+        + '<div style="font-family:ui-monospace,monospace;font-size:11px;color:#8a93ab;'
+        + 'white-space:pre-wrap;text-align:left;">'
+        + (err.message || String(err))
+        + '\n\n' + (err.stack || '')
+        + '</div></div>';
+      return;
+    }
+  }
 
   setTimeout(() => {
-    document.getElementById('loading').classList.add('hidden');
+    const el = document.getElementById('loading');
+    if (el) el.classList.add('hidden');
   }, 300);
 })();
 
