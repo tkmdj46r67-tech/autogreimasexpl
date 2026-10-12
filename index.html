@@ -12,7 +12,7 @@
     --panel: rgba(9,13,22,0.92);
     --text: #e9edf7;
     --text-dim: #8a93ab;
-    --accent: #9676c8;
+    --accent: #1F9E89;
   }
   * { box-sizing: border-box; }
   html, body {
@@ -33,14 +33,14 @@
     border-radius: 9px; cursor: pointer;
     font-size: 10.5px; font-weight: 600;
     letter-spacing: 0.14em; text-transform: uppercase;
-    color: #c8c0e0; background: var(--panel);
-    border: 1px solid rgba(150,118,200,0.18);
+    color: #c8d0e6; background: var(--panel);
+    border: 1px solid rgba(31,158,137,0.20);
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     transition: background .15s, border-color .15s, color .15s;
     user-select: none;
   }
-  .btn:hover { background: rgba(150,118,200,.18); border-color: rgba(150,118,200,.5); color: #fff; }
+  .btn:hover { background: rgba(31,158,137,.20); border-color: rgba(31,158,137,.55); color: #fff; }
   .btn:active { transform: translateY(1px); }
 
   #ui {
@@ -48,7 +48,7 @@
     width: 380px; max-height: calc(100vh - 28px); overflow-y: auto;
     padding: 14px 16px; border-radius: 12px;
     background: var(--panel);
-    border: 1px solid rgba(150,118,200,0.14);
+    border: 1px solid rgba(31,158,137,0.16);
     backdrop-filter: blur(14px);
     box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     transition: transform .3s, opacity .3s;
@@ -63,7 +63,7 @@
     letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim);
     user-select: none;
   }
-  .sec-title:hover { color: #c8c0e0; }
+  .sec-title:hover { color: #c8d0e6; }
   .sec-body { max-height: 0; overflow: hidden; transition: max-height .3s; }
   .sec.open .sec-body { max-height: 2000px; }
   .sec-content { padding: 10px 0 4px; }
@@ -73,46 +73,46 @@
   #json-input {
     width: 100%; min-height: 120px; resize: vertical;
     background: #0a0d1a; color: var(--text);
-    border: 1px solid rgba(150,118,200,0.15); border-radius: 8px;
+    border: 1px solid rgba(31,158,137,0.18); border-radius: 8px;
     padding: 10px 12px;
     font-family: ui-monospace, 'SF Mono', Menlo, monospace;
     font-size: 11px; line-height: 1.5;
   }
   #json-status { font-size: 11px; margin-top: 6px; }
-  #json-status.ok { color: #9676c8; }
+  #json-status.ok { color: #35B779; }
   #json-status.err { color: #ff6b6b; }
 
   #node-info {
     padding: 10px 12px;
     background: rgba(15,20,32,0.8); border-radius: 8px;
-    border: 1px solid rgba(150,118,200,0.1);
+    border: 1px solid rgba(31,158,137,0.12);
     font-size: 11.5px; line-height: 1.55;
     max-height: 260px; overflow-y: auto;
     min-height: 80px;
   }
-  #node-info h4 { margin: 0 0 6px; font-size: 12.5px; color: #ECE0EE; }
+  #node-info h4 { margin: 0 0 6px; font-size: 12.5px; color: #FDE725; }
   #node-info .kv { margin-bottom: 5px; }
   #node-info .k { color: var(--text-dim); }
   #node-info .chip {
     display: inline-block; padding: 1px 7px; border-radius: 8px;
-    background: rgba(150,118,200,0.18); color: #C0A4DA; font-size: 10.5px;
+    background: rgba(31,158,137,0.18); color: #35B779; font-size: 10.5px;
     margin: 2px 3px 2px 0;
   }
 
   .legend {
-    display: flex; flex-wrap: wrap; gap: 12px;
-    font-size: 10.5px; color: var(--text-dim);
+    display: flex; flex-direction: column; gap: 6px;
+    font-size: 11px; color: var(--text-dim);
     padding: 8px 0;
   }
+  .legend span { display: flex; align-items: center; }
   .legend .dot {
     display: inline-block; width: 10px; height: 10px;
-    margin-right: 5px; vertical-align: middle;
-    position: relative; top: -1px;
-    border: 1px solid currentColor;
+    margin-right: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
   }
 
   .label {
-    color: #C0A4DA;
+    color: #B4DE2C;
     font-size: 11px;
     font-weight: 600;
     text-shadow: 0 0 8px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,1);
@@ -125,7 +125,6 @@
     transition: color .15s, opacity .15s;
   }
   .label.square-header {
-    color: #ECE0EE;
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -135,8 +134,8 @@
     color: var(--text-dim); font-weight: 500; font-style: italic;
     text-transform: none; letter-spacing: 0; font-size: 11.5px;
   }
-  .label.highlighted { color: #F2E8F5 !important; text-shadow: 0 0 12px rgba(236,224,238,0.9), 0 0 3px rgba(0,0,0,1); }
-  .label.dimmed { color: #3B2746 !important; }
+  .label.highlighted { color: #FDE725 !important; text-shadow: 0 0 12px rgba(253,231,37,0.9), 0 0 3px rgba(0,0,0,1); }
+  .label.dimmed { color: #1c3a48 !important; }
 
   .loading {
     position: fixed; inset: 0; display: flex;
@@ -179,9 +178,7 @@
   <div class="sec open" data-sec>
     <div class="sec-title"><span>Legend</span><span class="chev">▾</span></div>
     <div class="sec-body"><div class="sec-content">
-      <div class="legend" id="legend">
-        <!-- Filled in by JS based on loaded squares -->
-      </div>
+      <div class="legend" id="legend"></div>
     </div></div>
   </div>
 </div>
@@ -203,37 +200,37 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 // =========================================================
-// MAKO PALETTE — ONE COLOR PER SQUARE
+// VIRIDIS PALETTE — ONE COLOR PER SQUARE
 // =========================================================
-// Five distinct tones from the Mako range, light to dark.
-// A (front) is the lightest, the four B's get progressively
-// deeper tones. All five are distinct from each other.
+// Five points spanning the visible range of the Viridis map
+// (0.25 to 0.95), from bright yellow through green and teal
+// to blue-purple. All five are clearly distinct against the
+// near-black background.
 
-const MAKO = {
-  'A':   0xF2E8F5,   // very light lavender — Layer 1 base
-  'S1':  0xD8B4E2,   // light orchid
-  'S2':  0xB088D4,   // medium orchid
-  '~S1': 0x8C68B8,   // medium purple
-  '~S2': 0x6E5294,   // deep purple
+const VIRIDIS = {
+  'A':   0xFDE725,   // viridis 0.95 — bright yellow (front, most prominent)
+  'S1':  0xB4DE2C,   // viridis 0.85 — yellow-green
+  'S2':  0x35B779,   // viridis 0.65 — green
+  '~S1': 0x1F9E89,   // viridis 0.55 — teal
+  '~S2': 0x3E4A89,   // viridis 0.25 — blue-purple (deepest)
 };
 
-const MAKO_HEX = {
-  'A':   '#F2E8F5',
-  'S1':  '#D8B4E2',
-  'S2':  '#B088D4',
-  '~S1': '#8C68B8',
-  '~S2': '#6E5294',
+const VIRIDIS_HEX = {
+  'A':   '#FDE725',
+  'S1':  '#B4DE2C',
+  'S2':  '#35B779',
+  '~S1': '#1F9E89',
+  '~S2': '#3E4A89',
 };
 
 function colorForSquare(squareKey) {
-  return MAKO[squareKey] ?? 0xC0A4DA;
+  return VIRIDIS[squareKey] ?? 0xB4DE2C;
 }
 function hexForSquare(squareKey) {
-  return MAKO_HEX[squareKey] ?? '#C0A4DA';
+  return VIRIDIS_HEX[squareKey] ?? '#B4DE2C';
 }
 
-// Slightly brighter version for highlights
-const HIGHLIGHT_COLOR = 0xF2E8F5;
+const HIGHLIGHT_COLOR = 0xFDE725;
 
 // =========================================================
 // GREIMAS SQUARE GEOMETRY
@@ -276,7 +273,6 @@ const SQ_EDGES = [
   ['S1','~S1'], ['S2','~S2'],
 ];
 
-// Whether an edge is part of the "inner square" (dashed)
 function isInnerSquareEdge(a, b) {
   const inner = new Set(['S1','S2','~S2','~S1']);
   return inner.has(a) && inner.has(b);
@@ -347,10 +343,10 @@ const LAYOUT = {
 // SQUARE CONSTRUCTION
 // =========================================================
 
-const NODE_RADIUS = 0.13;      // smaller wireframe spheres
-const NODE_OPACITY = 0.88;     // nodes slightly more opaque
-const EDGE_OPACITY = 0.55;     // edges slightly more transparent
-const EDGE_OPACITY_INNER = 0.72; // dashed inner-square edges a bit brighter
+const NODE_RADIUS = 0.13;
+const NODE_OPACITY = 0.88;
+const EDGE_OPACITY = 0.55;
+const EDGE_OPACITY_INNER = 0.72;
 
 function buildSquare(squareData, squareKey, title, parentTerm, position, scale) {
   const group = new THREE.Group();
@@ -364,7 +360,7 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
   const squareColor = colorForSquare(squareKey);
   const labelColor = hexForSquare(squareKey);
 
-  // Edges first (behind nodes)
+  // Edges first
   SQ_EDGES.forEach(([a, b]) => {
     if (!SQ_POS[a] || !SQ_POS[b]) return;
     const [x1, y1] = SQ_POS[a];
@@ -401,7 +397,7 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
     }
   });
 
-  // Nodes: small wireframe icosahedra, all in the square's color
+  // Nodes
   Object.entries(SQ_POS).forEach(([pos, [x, y]]) => {
     const geom = new THREE.IcosahedronGeometry(NODE_RADIUS, 0);
     const mat = new THREE.MeshBasicMaterial({
@@ -422,7 +418,6 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
     };
     group.add(mesh);
 
-    // Term label below node
     const labelEl = document.createElement('div');
     labelEl.className = 'label';
     labelEl.style.color = labelColor;
@@ -432,7 +427,6 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
     label.position.set(x, y - NODE_RADIUS - 0.22, 0);
     group.add(label);
 
-    // Position marker above node
     const posEl = document.createElement('div');
     posEl.className = 'label';
     posEl.style.fontSize = '9px';
@@ -450,7 +444,7 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
     state.nodesById.set(mesh.uuid, { squareKey, position: pos, term: squareData[pos] });
   });
 
-  // Square header
+  // Header
   const headerEl = document.createElement('div');
   headerEl.className = 'label square-header';
   headerEl.style.color = labelColor;
@@ -528,7 +522,7 @@ function buildArchitectonic(parsed) {
 }
 
 // =========================================================
-// LEGEND — generated from loaded squares
+// LEGEND
 // =========================================================
 
 function renderLegend() {
@@ -540,7 +534,6 @@ function renderLegend() {
     const dot = document.createElement('span');
     dot.className = 'dot';
     dot.style.background = hexForSquare(sq.key);
-    dot.style.color = hexForSquare(sq.key);
     span.appendChild(dot);
     const label = sq.key === 'A'
       ? 'A — Layer 1'
@@ -580,9 +573,6 @@ function applyHighlight(target) {
       const lbl = sq.nodeLabels[pos];
       if (lbl) {
         lbl.termEl.classList.remove('highlighted', 'dimmed');
-        if (!lbl.termEl.style.color || lbl.termEl.dataset.baseColor === undefined) {
-          // no-op; we rely on the CSS variable set at build time
-        }
       }
     });
   });
