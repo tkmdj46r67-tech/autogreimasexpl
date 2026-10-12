@@ -1,0 +1,3886 @@
+{
+  "metadata": {
+    "seed": "A1",
+    "seed_s1": "being",
+    "seed_s2": "seeming",
+    "model": "mistral-nemo:12b",
+    "generated_at": "2026-10-11T18:02:30",
+    "collisions": [
+      {
+        "label": "L2[S1]:M2",
+        "key": "M21_prime",
+        "term": "Actualization"
+      },
+      {
+        "label": "L2[S1]:M2",
+        "key": "M23_prime",
+        "term": "Actual Impossibility"
+      },
+      {
+        "label": "L2[S1]:M2",
+        "key": "M24_prime",
+        "term": "Potential Nonactuality"
+      }
+    ]
+  },
+  "layer_1": {
+    "square": {
+      "S1": "being",
+      "S2": "seeming",
+      "~S2": "unbeing",
+      "~S1": "nonbeing",
+      "M11": "Existence",
+      "M12": "Absence",
+      "M13": "Emergence",
+      "M14": "Illusion",
+      "M21": "Manifestation",
+      "M22": "Appearing",
+      "M23": "Concealment",
+      "M24": "Misrepresentation",
+      "Mixed1": "Mixed being",
+      "Mixed2": "Mixed seeming"
+    },
+    "lattice": {
+      "concepts": [
+        {
+          "id": 0,
+          "label": "bottom",
+          "short": "Bottom",
+          "name": "Bottom — empty extent, all four M2 attributes",
+          "extent": [],
+          "intent": [
+            "Manifestation",
+            "Appearing",
+            "Concealment",
+            "Misrepresentation"
+          ]
+        },
+        {
+          "id": 1,
+          "label": "being",
+          "short": "S1",
+          "name": "being — inner term S1",
+          "extent": [
+            "being"
+          ],
+          "intent": [
+            "Manifestation",
+            "Appearing",
+            "Concealment"
+          ]
+        },
+        {
+          "id": 2,
+          "label": "seeming",
+          "short": "S2",
+          "name": "seeming — inner term S2",
+          "extent": [
+            "seeming"
+          ],
+          "intent": [
+            "Manifestation",
+            "Appearing",
+            "Misrepresentation"
+          ]
+        },
+        {
+          "id": 3,
+          "label": "nonbeing",
+          "short": "~S1",
+          "name": "nonbeing — inner term ~S1",
+          "extent": [
+            "nonbeing"
+          ],
+          "intent": [
+            "Appearing",
+            "Concealment",
+            "Misrepresentation"
+          ]
+        },
+        {
+          "id": 4,
+          "label": "unbeing",
+          "short": "~S2",
+          "name": "unbeing — inner term ~S2",
+          "extent": [
+            "unbeing"
+          ],
+          "intent": [
+            "Manifestation",
+            "Concealment",
+            "Misrepresentation"
+          ]
+        },
+        {
+          "id": 5,
+          "label": "Existence",
+          "short": "M1:Existence",
+          "name": "Existence — M1 meta-term of being, seeming",
+          "extent": [
+            "being",
+            "seeming"
+          ],
+          "intent": [
+            "Manifestation",
+            "Appearing"
+          ]
+        },
+        {
+          "id": 6,
+          "label": "Absence",
+          "short": "M1:Absence",
+          "name": "Absence — M1 meta-term of nonbeing, unbeing",
+          "extent": [
+            "nonbeing",
+            "unbeing"
+          ],
+          "intent": [
+            "Concealment",
+            "Misrepresentation"
+          ]
+        },
+        {
+          "id": 7,
+          "label": "Emergence",
+          "short": "M1:Emergence",
+          "name": "Emergence — M1 meta-term of being, unbeing",
+          "extent": [
+            "being",
+            "unbeing"
+          ],
+          "intent": [
+            "Manifestation",
+            "Concealment"
+          ]
+        },
+        {
+          "id": 8,
+          "label": "Illusion",
+          "short": "M1:Illusion",
+          "name": "Illusion — M1 meta-term of seeming, nonbeing",
+          "extent": [
+            "seeming",
+            "nonbeing"
+          ],
+          "intent": [
+            "Appearing",
+            "Misrepresentation"
+          ]
+        },
+        {
+          "id": 9,
+          "label": "Mixed being",
+          "short": "Mix:Mixed being",
+          "name": "Mixed being — mixed meta-term of being, nonbeing",
+          "extent": [
+            "being",
+            "nonbeing"
+          ],
+          "intent": [
+            "Appearing",
+            "Concealment"
+          ]
+        },
+        {
+          "id": 10,
+          "label": "Mixed seeming",
+          "short": "Mix:Mixed seeming",
+          "name": "Mixed seeming — mixed meta-term of seeming, unbeing",
+          "extent": [
+            "seeming",
+            "unbeing"
+          ],
+          "intent": [
+            "Manifestation",
+            "Misrepresentation"
+          ]
+        },
+        {
+          "id": 11,
+          "label": "Manifestation",
+          "short": "M2:Manifestation",
+          "name": "Manifestation — M2 meta-term containing being, seeming, unbeing",
+          "extent": [
+            "being",
+            "seeming",
+            "unbeing"
+          ],
+          "intent": [
+            "Manifestation"
+          ]
+        },
+        {
+          "id": 12,
+          "label": "Appearing",
+          "short": "M2:Appearing",
+          "name": "Appearing — M2 meta-term containing being, seeming, nonbeing",
+          "extent": [
+            "being",
+            "seeming",
+            "nonbeing"
+          ],
+          "intent": [
+            "Appearing"
+          ]
+        },
+        {
+          "id": 13,
+          "label": "Concealment",
+          "short": "M2:Concealment",
+          "name": "Concealment — M2 meta-term containing nonbeing, unbeing, being",
+          "extent": [
+            "nonbeing",
+            "unbeing",
+            "being"
+          ],
+          "intent": [
+            "Concealment"
+          ]
+        },
+        {
+          "id": 14,
+          "label": "Misrepresentation",
+          "short": "M2:Misrepresentation",
+          "name": "Misrepresentation — M2 meta-term containing nonbeing, unbeing, seeming",
+          "extent": [
+            "nonbeing",
+            "unbeing",
+            "seeming"
+          ],
+          "intent": [
+            "Misrepresentation"
+          ]
+        },
+        {
+          "id": 15,
+          "label": "top",
+          "short": "Top",
+          "name": "Top — all inner terms, no shared attribute",
+          "extent": [
+            "being",
+            "seeming",
+            "nonbeing",
+            "unbeing"
+          ],
+          "intent": []
+        }
+      ],
+      "edges": [
+        [
+          15,
+          11
+        ],
+        [
+          15,
+          12
+        ],
+        [
+          15,
+          13
+        ],
+        [
+          15,
+          14
+        ],
+        [
+          11,
+          5
+        ],
+        [
+          11,
+          7
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          12,
+          8
+        ],
+        [
+          12,
+          9
+        ],
+        [
+          13,
+          6
+        ],
+        [
+          13,
+          7
+        ],
+        [
+          13,
+          9
+        ],
+        [
+          14,
+          6
+        ],
+        [
+          14,
+          8
+        ],
+        [
+          14,
+          10
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          10,
+          2
+        ],
+        [
+          10,
+          4
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ]
+    }
+  },
+  "layer_2": {
+    "S1": {
+      "parent_seme": "S1",
+      "parent_term": "being",
+      "square": {
+        "S1": "Actuality",
+        "S2": "Potentiality",
+        "~S2": "Impossibility",
+        "~S1": "Nonactuality",
+        "M11": "Actualization",
+        "M12": "Nonimpossibility",
+        "M13": "Actual Impossibility",
+        "M14": "Potential Nonactuality",
+        "M21": "Actualization",
+        "M22": "Potential Actuality",
+        "M23": "Actual Impossibility",
+        "M24": "Potential Nonactuality",
+        "Mixed1": "Actuality-Nonactuality",
+        "Mixed2": "Potentiality-Impossibility"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Actualization",
+              "Potential Actuality",
+              "Actual Impossibility",
+              "Potential Nonactuality"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Actuality",
+            "short": "S1",
+            "name": "Actuality — inner term S1",
+            "extent": [
+              "Actuality"
+            ],
+            "intent": [
+              "Actualization",
+              "Potential Actuality",
+              "Actual Impossibility"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Potentiality",
+            "short": "S2",
+            "name": "Potentiality — inner term S2",
+            "extent": [
+              "Potentiality"
+            ],
+            "intent": [
+              "Actualization",
+              "Potential Actuality",
+              "Potential Nonactuality"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Nonactuality",
+            "short": "~S1",
+            "name": "Nonactuality — inner term ~S1",
+            "extent": [
+              "Nonactuality"
+            ],
+            "intent": [
+              "Potential Actuality",
+              "Actual Impossibility",
+              "Potential Nonactuality"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Impossibility",
+            "short": "~S2",
+            "name": "Impossibility — inner term ~S2",
+            "extent": [
+              "Impossibility"
+            ],
+            "intent": [
+              "Actualization",
+              "Actual Impossibility",
+              "Potential Nonactuality"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Actualization",
+            "short": "M1:Actualization",
+            "name": "Actualization — M1 meta-term of Actuality, Potentiality",
+            "extent": [
+              "Actuality",
+              "Potentiality"
+            ],
+            "intent": [
+              "Actualization",
+              "Potential Actuality"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Nonimpossibility",
+            "short": "M1:Nonimpossibility",
+            "name": "Nonimpossibility — M1 meta-term of Nonactuality, Impossibility",
+            "extent": [
+              "Nonactuality",
+              "Impossibility"
+            ],
+            "intent": [
+              "Actual Impossibility",
+              "Potential Nonactuality"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Actual Impossibility",
+            "short": "M1:Actual Impossibility",
+            "name": "Actual Impossibility — M1 meta-term of Actuality, Impossibility",
+            "extent": [
+              "Actuality",
+              "Impossibility"
+            ],
+            "intent": [
+              "Actualization",
+              "Actual Impossibility"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Potential Nonactuality",
+            "short": "M1:Potential Nonactuality",
+            "name": "Potential Nonactuality — M1 meta-term of Potentiality, Nonactuality",
+            "extent": [
+              "Potentiality",
+              "Nonactuality"
+            ],
+            "intent": [
+              "Potential Actuality",
+              "Potential Nonactuality"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Actuality-Nonactuality",
+            "short": "Mix:Actuality-Nonactuality",
+            "name": "Actuality-Nonactuality — mixed meta-term of Actuality, Nonactuality",
+            "extent": [
+              "Actuality",
+              "Nonactuality"
+            ],
+            "intent": [
+              "Potential Actuality",
+              "Actual Impossibility"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Potentiality-Impossibility",
+            "short": "Mix:Potentiality-Impossibility",
+            "name": "Potentiality-Impossibility — mixed meta-term of Potentiality, Impossibility",
+            "extent": [
+              "Potentiality",
+              "Impossibility"
+            ],
+            "intent": [
+              "Actualization",
+              "Potential Nonactuality"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Actualization",
+            "short": "M2:Actualization",
+            "name": "Actualization — M2 meta-term containing Actuality, Potentiality, Impossibility",
+            "extent": [
+              "Actuality",
+              "Potentiality",
+              "Impossibility"
+            ],
+            "intent": [
+              "Actualization"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Potential Actuality",
+            "short": "M2:Potential Actuality",
+            "name": "Potential Actuality — M2 meta-term containing Actuality, Potentiality, Nonactuality",
+            "extent": [
+              "Actuality",
+              "Potentiality",
+              "Nonactuality"
+            ],
+            "intent": [
+              "Potential Actuality"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Actual Impossibility",
+            "short": "M2:Actual Impossibility",
+            "name": "Actual Impossibility — M2 meta-term containing Nonactuality, Impossibility, Actuality",
+            "extent": [
+              "Nonactuality",
+              "Impossibility",
+              "Actuality"
+            ],
+            "intent": [
+              "Actual Impossibility"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Potential Nonactuality",
+            "short": "M2:Potential Nonactuality",
+            "name": "Potential Nonactuality — M2 meta-term containing Nonactuality, Impossibility, Potentiality",
+            "extent": [
+              "Nonactuality",
+              "Impossibility",
+              "Potentiality"
+            ],
+            "intent": [
+              "Potential Nonactuality"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Actuality",
+              "Potentiality",
+              "Nonactuality",
+              "Impossibility"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "S2": {
+      "parent_seme": "S2",
+      "parent_term": "seeming",
+      "square": {
+        "S1": "Perceived reality",
+        "S2": "Deceptive appearance",
+        "~S2": "Genuine Reality",
+        "~S1": "Unperceived Reality",
+        "M11": "Appearance",
+        "M12": "Essence",
+        "M13": "Revelation",
+        "M14": "Obscurity",
+        "M21": "Perceived Deception",
+        "M22": "Seeming Reality",
+        "M23": "Unseen Truth",
+        "M24": "Deceptive Unreality",
+        "Mixed1": "Perceived Reality + Unperceived Reality",
+        "Mixed2": "Deceptive Appearance + Genuine Reality"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Perceived Deception",
+              "Seeming Reality",
+              "Unseen Truth",
+              "Deceptive Unreality"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Perceived reality",
+            "short": "S1",
+            "name": "Perceived reality — inner term S1",
+            "extent": [
+              "Perceived reality"
+            ],
+            "intent": [
+              "Perceived Deception",
+              "Seeming Reality",
+              "Unseen Truth"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Deceptive appearance",
+            "short": "S2",
+            "name": "Deceptive appearance — inner term S2",
+            "extent": [
+              "Deceptive appearance"
+            ],
+            "intent": [
+              "Perceived Deception",
+              "Seeming Reality",
+              "Deceptive Unreality"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Unperceived Reality",
+            "short": "~S1",
+            "name": "Unperceived Reality — inner term ~S1",
+            "extent": [
+              "Unperceived Reality"
+            ],
+            "intent": [
+              "Seeming Reality",
+              "Unseen Truth",
+              "Deceptive Unreality"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Genuine Reality",
+            "short": "~S2",
+            "name": "Genuine Reality — inner term ~S2",
+            "extent": [
+              "Genuine Reality"
+            ],
+            "intent": [
+              "Perceived Deception",
+              "Unseen Truth",
+              "Deceptive Unreality"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Appearance",
+            "short": "M1:Appearance",
+            "name": "Appearance — M1 meta-term of Perceived reality, Deceptive appearance",
+            "extent": [
+              "Perceived reality",
+              "Deceptive appearance"
+            ],
+            "intent": [
+              "Perceived Deception",
+              "Seeming Reality"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Essence",
+            "short": "M1:Essence",
+            "name": "Essence — M1 meta-term of Unperceived Reality, Genuine Reality",
+            "extent": [
+              "Unperceived Reality",
+              "Genuine Reality"
+            ],
+            "intent": [
+              "Unseen Truth",
+              "Deceptive Unreality"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Revelation",
+            "short": "M1:Revelation",
+            "name": "Revelation — M1 meta-term of Perceived reality, Genuine Reality",
+            "extent": [
+              "Perceived reality",
+              "Genuine Reality"
+            ],
+            "intent": [
+              "Perceived Deception",
+              "Unseen Truth"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Obscurity",
+            "short": "M1:Obscurity",
+            "name": "Obscurity — M1 meta-term of Deceptive appearance, Unperceived Reality",
+            "extent": [
+              "Deceptive appearance",
+              "Unperceived Reality"
+            ],
+            "intent": [
+              "Seeming Reality",
+              "Deceptive Unreality"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Perceived Reality + Unperceived Reality",
+            "short": "Mix:Perceived Reality + Unperceived Reality",
+            "name": "Perceived Reality + Unperceived Reality — mixed meta-term of Perceived reality, Unperceived Reality",
+            "extent": [
+              "Perceived reality",
+              "Unperceived Reality"
+            ],
+            "intent": [
+              "Seeming Reality",
+              "Unseen Truth"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Deceptive Appearance + Genuine Reality",
+            "short": "Mix:Deceptive Appearance + Genuine Reality",
+            "name": "Deceptive Appearance + Genuine Reality — mixed meta-term of Deceptive appearance, Genuine Reality",
+            "extent": [
+              "Deceptive appearance",
+              "Genuine Reality"
+            ],
+            "intent": [
+              "Perceived Deception",
+              "Deceptive Unreality"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Perceived Deception",
+            "short": "M2:Perceived Deception",
+            "name": "Perceived Deception — M2 meta-term containing Perceived reality, Deceptive appearance, Genuine Reality",
+            "extent": [
+              "Perceived reality",
+              "Deceptive appearance",
+              "Genuine Reality"
+            ],
+            "intent": [
+              "Perceived Deception"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Seeming Reality",
+            "short": "M2:Seeming Reality",
+            "name": "Seeming Reality — M2 meta-term containing Perceived reality, Deceptive appearance, Unperceived Reality",
+            "extent": [
+              "Perceived reality",
+              "Deceptive appearance",
+              "Unperceived Reality"
+            ],
+            "intent": [
+              "Seeming Reality"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Unseen Truth",
+            "short": "M2:Unseen Truth",
+            "name": "Unseen Truth — M2 meta-term containing Unperceived Reality, Genuine Reality, Perceived reality",
+            "extent": [
+              "Unperceived Reality",
+              "Genuine Reality",
+              "Perceived reality"
+            ],
+            "intent": [
+              "Unseen Truth"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Deceptive Unreality",
+            "short": "M2:Deceptive Unreality",
+            "name": "Deceptive Unreality — M2 meta-term containing Unperceived Reality, Genuine Reality, Deceptive appearance",
+            "extent": [
+              "Unperceived Reality",
+              "Genuine Reality",
+              "Deceptive appearance"
+            ],
+            "intent": [
+              "Deceptive Unreality"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Perceived reality",
+              "Deceptive appearance",
+              "Unperceived Reality",
+              "Genuine Reality"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "~S1": {
+      "parent_seme": "~S1",
+      "parent_term": "nonbeing",
+      "square": {
+        "S1": "Nihility",
+        "S2": "Vacuity",
+        "~S2": "Plenitude",
+        "~S1": "Entitativity",
+        "M11": "Voidness",
+        "M12": "Fulgent Plenitude",
+        "M13": "Transcendent Profusion",
+        "M14": "Essential Scarcity",
+        "M21": "Nihilistic Void",
+        "M22": "Vacuous Entitativity",
+        "M23": "Plenitudinous Nihility",
+        "M24": "Vacuous Entitativity",
+        "Mixed1": "Nihilitativity",
+        "Mixed2": "Vacuoplentitude"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Nihilistic Void",
+              "Vacuous Entitativity",
+              "Plenitudinous Nihility",
+              "Vacuous Entitativity"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Nihility",
+            "short": "S1",
+            "name": "Nihility — inner term S1",
+            "extent": [
+              "Nihility"
+            ],
+            "intent": [
+              "Nihilistic Void",
+              "Vacuous Entitativity",
+              "Plenitudinous Nihility"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Vacuity",
+            "short": "S2",
+            "name": "Vacuity — inner term S2",
+            "extent": [
+              "Vacuity"
+            ],
+            "intent": [
+              "Nihilistic Void",
+              "Vacuous Entitativity",
+              "Vacuous Entitativity"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Entitativity",
+            "short": "~S1",
+            "name": "Entitativity — inner term ~S1",
+            "extent": [
+              "Entitativity"
+            ],
+            "intent": [
+              "Vacuous Entitativity",
+              "Plenitudinous Nihility",
+              "Vacuous Entitativity"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Plenitude",
+            "short": "~S2",
+            "name": "Plenitude — inner term ~S2",
+            "extent": [
+              "Plenitude"
+            ],
+            "intent": [
+              "Nihilistic Void",
+              "Plenitudinous Nihility",
+              "Vacuous Entitativity"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Voidness",
+            "short": "M1:Voidness",
+            "name": "Voidness — M1 meta-term of Nihility, Vacuity",
+            "extent": [
+              "Nihility",
+              "Vacuity"
+            ],
+            "intent": [
+              "Nihilistic Void",
+              "Vacuous Entitativity"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Fulgent Plenitude",
+            "short": "M1:Fulgent Plenitude",
+            "name": "Fulgent Plenitude — M1 meta-term of Entitativity, Plenitude",
+            "extent": [
+              "Entitativity",
+              "Plenitude"
+            ],
+            "intent": [
+              "Plenitudinous Nihility",
+              "Vacuous Entitativity"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Transcendent Profusion",
+            "short": "M1:Transcendent Profusion",
+            "name": "Transcendent Profusion — M1 meta-term of Nihility, Plenitude",
+            "extent": [
+              "Nihility",
+              "Plenitude"
+            ],
+            "intent": [
+              "Nihilistic Void",
+              "Plenitudinous Nihility"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Essential Scarcity",
+            "short": "M1:Essential Scarcity",
+            "name": "Essential Scarcity — M1 meta-term of Vacuity, Entitativity",
+            "extent": [
+              "Vacuity",
+              "Entitativity"
+            ],
+            "intent": [
+              "Vacuous Entitativity",
+              "Vacuous Entitativity"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Nihilitativity",
+            "short": "Mix:Nihilitativity",
+            "name": "Nihilitativity — mixed meta-term of Nihility, Entitativity",
+            "extent": [
+              "Nihility",
+              "Entitativity"
+            ],
+            "intent": [
+              "Vacuous Entitativity",
+              "Plenitudinous Nihility"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Vacuoplentitude",
+            "short": "Mix:Vacuoplentitude",
+            "name": "Vacuoplentitude — mixed meta-term of Vacuity, Plenitude",
+            "extent": [
+              "Vacuity",
+              "Plenitude"
+            ],
+            "intent": [
+              "Nihilistic Void",
+              "Vacuous Entitativity"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Nihilistic Void",
+            "short": "M2:Nihilistic Void",
+            "name": "Nihilistic Void — M2 meta-term containing Nihility, Vacuity, Plenitude",
+            "extent": [
+              "Nihility",
+              "Vacuity",
+              "Plenitude"
+            ],
+            "intent": [
+              "Nihilistic Void"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Vacuous Entitativity",
+            "short": "M2:Vacuous Entitativity",
+            "name": "Vacuous Entitativity — M2 meta-term containing Nihility, Vacuity, Entitativity",
+            "extent": [
+              "Nihility",
+              "Vacuity",
+              "Entitativity"
+            ],
+            "intent": [
+              "Vacuous Entitativity"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Plenitudinous Nihility",
+            "short": "M2:Plenitudinous Nihility",
+            "name": "Plenitudinous Nihility — M2 meta-term containing Entitativity, Plenitude, Nihility",
+            "extent": [
+              "Entitativity",
+              "Plenitude",
+              "Nihility"
+            ],
+            "intent": [
+              "Plenitudinous Nihility"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Vacuous Entitativity",
+            "short": "M2:Vacuous Entitativity",
+            "name": "Vacuous Entitativity — M2 meta-term containing Entitativity, Plenitude, Vacuity",
+            "extent": [
+              "Entitativity",
+              "Plenitude",
+              "Vacuity"
+            ],
+            "intent": [
+              "Vacuous Entitativity"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Nihility",
+              "Vacuity",
+              "Entitativity",
+              "Plenitude"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "~S2": {
+      "parent_seme": "~S2",
+      "parent_term": "unbeing",
+      "square": {
+        "S1": "Annihilation",
+        "S2": "Neglect",
+        "~S2": "Acknowledgment",
+        "~S1": "Creation",
+        "M11": "Oblivion",
+        "M12": "Recognition",
+        "M13": "Reckoning",
+        "M14": "Revival",
+        "M21": "Annihilative Neglect",
+        "M22": "Creative Annihilation",
+        "M23": "Resurgent Oblivion",
+        "M24": "Acknowledged Neglect",
+        "Mixed1": "Annihicreation",
+        "Mixed2": "Neglectacknowledgment"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Annihilative Neglect",
+              "Creative Annihilation",
+              "Resurgent Oblivion",
+              "Acknowledged Neglect"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Annihilation",
+            "short": "S1",
+            "name": "Annihilation — inner term S1",
+            "extent": [
+              "Annihilation"
+            ],
+            "intent": [
+              "Annihilative Neglect",
+              "Creative Annihilation",
+              "Resurgent Oblivion"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Neglect",
+            "short": "S2",
+            "name": "Neglect — inner term S2",
+            "extent": [
+              "Neglect"
+            ],
+            "intent": [
+              "Annihilative Neglect",
+              "Creative Annihilation",
+              "Acknowledged Neglect"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Creation",
+            "short": "~S1",
+            "name": "Creation — inner term ~S1",
+            "extent": [
+              "Creation"
+            ],
+            "intent": [
+              "Creative Annihilation",
+              "Resurgent Oblivion",
+              "Acknowledged Neglect"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Acknowledgment",
+            "short": "~S2",
+            "name": "Acknowledgment — inner term ~S2",
+            "extent": [
+              "Acknowledgment"
+            ],
+            "intent": [
+              "Annihilative Neglect",
+              "Resurgent Oblivion",
+              "Acknowledged Neglect"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Oblivion",
+            "short": "M1:Oblivion",
+            "name": "Oblivion — M1 meta-term of Annihilation, Neglect",
+            "extent": [
+              "Annihilation",
+              "Neglect"
+            ],
+            "intent": [
+              "Annihilative Neglect",
+              "Creative Annihilation"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Recognition",
+            "short": "M1:Recognition",
+            "name": "Recognition — M1 meta-term of Creation, Acknowledgment",
+            "extent": [
+              "Creation",
+              "Acknowledgment"
+            ],
+            "intent": [
+              "Resurgent Oblivion",
+              "Acknowledged Neglect"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Reckoning",
+            "short": "M1:Reckoning",
+            "name": "Reckoning — M1 meta-term of Annihilation, Acknowledgment",
+            "extent": [
+              "Annihilation",
+              "Acknowledgment"
+            ],
+            "intent": [
+              "Annihilative Neglect",
+              "Resurgent Oblivion"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Revival",
+            "short": "M1:Revival",
+            "name": "Revival — M1 meta-term of Neglect, Creation",
+            "extent": [
+              "Neglect",
+              "Creation"
+            ],
+            "intent": [
+              "Creative Annihilation",
+              "Acknowledged Neglect"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Annihicreation",
+            "short": "Mix:Annihicreation",
+            "name": "Annihicreation — mixed meta-term of Annihilation, Creation",
+            "extent": [
+              "Annihilation",
+              "Creation"
+            ],
+            "intent": [
+              "Creative Annihilation",
+              "Resurgent Oblivion"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Neglectacknowledgment",
+            "short": "Mix:Neglectacknowledgment",
+            "name": "Neglectacknowledgment — mixed meta-term of Neglect, Acknowledgment",
+            "extent": [
+              "Neglect",
+              "Acknowledgment"
+            ],
+            "intent": [
+              "Annihilative Neglect",
+              "Acknowledged Neglect"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Annihilative Neglect",
+            "short": "M2:Annihilative Neglect",
+            "name": "Annihilative Neglect — M2 meta-term containing Annihilation, Neglect, Acknowledgment",
+            "extent": [
+              "Annihilation",
+              "Neglect",
+              "Acknowledgment"
+            ],
+            "intent": [
+              "Annihilative Neglect"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Creative Annihilation",
+            "short": "M2:Creative Annihilation",
+            "name": "Creative Annihilation — M2 meta-term containing Annihilation, Neglect, Creation",
+            "extent": [
+              "Annihilation",
+              "Neglect",
+              "Creation"
+            ],
+            "intent": [
+              "Creative Annihilation"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Resurgent Oblivion",
+            "short": "M2:Resurgent Oblivion",
+            "name": "Resurgent Oblivion — M2 meta-term containing Creation, Acknowledgment, Annihilation",
+            "extent": [
+              "Creation",
+              "Acknowledgment",
+              "Annihilation"
+            ],
+            "intent": [
+              "Resurgent Oblivion"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Acknowledged Neglect",
+            "short": "M2:Acknowledged Neglect",
+            "name": "Acknowledged Neglect — M2 meta-term containing Creation, Acknowledgment, Neglect",
+            "extent": [
+              "Creation",
+              "Acknowledgment",
+              "Neglect"
+            ],
+            "intent": [
+              "Acknowledged Neglect"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Annihilation",
+              "Neglect",
+              "Creation",
+              "Acknowledgment"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "validation": {
+    "layer_1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 ('being') and S2 ('seeming') can both hold together (e.g., something can be and seem), both can fail together (e.g., nothing is and seems), and one can hold alone (e.g., something can be without seeming, or seem without being)."
+      },
+      "rule2": {
+        "pass": false,
+        "explanation": "S1 ('being') and ~S1 ('nonbeing') are not contradictories because 'nonbeing' does not negate 'being' directly. Instead, they are contraries."
+      },
+      "rule3": {
+        "pass": false,
+        "explanation": "S2 ('seeming') and ~S2 ('unbeing') are not contradictories because 'unbeing' does not negate 'seeming' directly. Instead, they are contraries."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "~S2 ('unbeing') does not imply S1 ('being'). For example, something can unbe without being, such as an illusion disappearing without anything being there."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "~S1 ('nonbeing') does not imply S2 ('seeming'). For example, nothing can seem without being, such as a void."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('nonbeing') and ~S2 ('unbeing') are contraries because they both deny existence in different ways, but they are not contradictories because they do not directly negate each other."
+      }
+    },
+    "layer_2_S1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 ('Actuality') and S2 ('Potentiality') can both hold together (e.g., something is actual and could be more), both can fail together (e.g., nothing is actual or potential), and one can hold alone (e.g., something is actual but not potential)."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 ('Actuality') and ~S1 ('Nonactuality') are contradictories. If one is true, the other is false."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 ('Potentiality') and ~S2 ('Impossibility') are contradictories. If one is true, the other is false."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "~S2 ('Impossibility') does not imply S1 ('Actuality'). For example, something might be impossible without being actual."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "~S1 ('Nonactuality') does not imply S2 ('Potentiality'). For example, something might not be actual without being potential."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('Nonactuality') and ~S2 ('Impossibility') are contraries. Both can hold together (e.g., nothing is actual or possible), both can fail together (e.g., something is actual or possible), and one can hold alone (e.g., something is actual but impossible)."
+      }
+    },
+    "layer_2_S2": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 ('Perceived reality') and S2 ('Deceptive appearance') can both hold together (e.g., someone might perceive reality as deceptive), both can fail together (e.g., neither is perceived), and one can hold alone (e.g., perceived reality is genuine but not deceptive)."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 ('Perceived reality') and ~S1 ('Unperceived reality') are contradictories; if one is true, the other must be false."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 ('Deceptive appearance') and ~S2 ('Genuine Reality') are contradictories; if one is true, the other must be false."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "~S2 ('Genuine Reality') does not necessarily imply S1 ('Perceived reality'); one could perceive reality as genuine without it being deceptive initially."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "~S1 ('Unperceived reality') does not necessarily imply S2 ('Deceptive appearance'); something might be unperceived without it being deceptive."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('Unperceived reality') and ~S2 ('Genuine Reality') are contraries; both can hold together (e.g., neither is perceived and both are genuine), both can fail together (e.g., both are perceived), and one can hold alone (e.g., one is perceived as genuine but not the other)."
+      }
+    },
+    "layer_2_~S1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "Nihility (S1) and Vacuity (S2) can both be absent (e.g., in a full room), both can be present (e.g., in an empty room), and one can be present without the other (e.g., a room can be empty but not nihil, or vice versa). They are indeed contraries."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "Nihility (S1) and its negation Entitativity (~S1) are contradictories. If one is true, the other must be false, and vice versa."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "Vacuity (S2) and its negation Plenitude (~S2) are contradictories. If one is true, the other must be false, and vice versa."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "Plenitude (~S2) does not necessarily imply Nihility (S1). A room can be full (plenitude) but not nihil (e.g., it could be full of meaningful objects or people)."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "Entitativity (~S1) does not necessarily imply Vacuity (S2). A room can have entities (entitativity) but not be vacuous (e.g., it could be full of meaningful entities)."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "Entitativity (~S1) and Plenitude (~S2) are contraries. Both can be absent (e.g., in an empty room), both can be present (e.g., in a full room with meaningful entities), and one can be present without the other (e.g., a room can be full but not meaningful, or vice versa)."
+      }
+    },
+    "layer_2_~S2": {
+      "rule1": {
+        "pass": true,
+        "explanation": "Annihilation (S1) and Neglect (S2) can both be present or absent independently, as they represent different actions."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "Creation (~S1) and Annihilation (S1) are contradictories, as one cancels out the other."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "Acknowledgment (~S2) and Neglect (S2) are contradictories, as one negates the other."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "Acknowledgment (~S2) does not necessarily imply Annihilation (S1), as one can acknowledge without annihilating."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "Neglect (S2) does not necessarily imply Creation (~S1), as neglect does not inherently lead to creation."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "Creation (~S1) and Neglect (S2) are contraries, as they represent opposite actions (creating vs. neglecting)."
+      }
+    }
+  },
+  "architectonic": {
+    "concepts": [
+      {
+        "id": "A:0",
+        "label": "bottom",
+        "short": "Bottom",
+        "name": "Bottom — empty extent, all four M2 attributes",
+        "extent": [],
+        "intent": [
+          "Manifestation",
+          "Appearing",
+          "Concealment",
+          "Misrepresentation"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "shared_bottom"
+      },
+      {
+        "id": "A:5",
+        "label": "Existence",
+        "short": "M1:Existence",
+        "name": "Existence — M1 meta-term of being, seeming",
+        "extent": [
+          "being",
+          "seeming"
+        ],
+        "intent": [
+          "Manifestation",
+          "Appearing"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:6",
+        "label": "Absence",
+        "short": "M1:Absence",
+        "name": "Absence — M1 meta-term of nonbeing, unbeing",
+        "extent": [
+          "nonbeing",
+          "unbeing"
+        ],
+        "intent": [
+          "Concealment",
+          "Misrepresentation"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:7",
+        "label": "Emergence",
+        "short": "M1:Emergence",
+        "name": "Emergence — M1 meta-term of being, unbeing",
+        "extent": [
+          "being",
+          "unbeing"
+        ],
+        "intent": [
+          "Manifestation",
+          "Concealment"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:8",
+        "label": "Illusion",
+        "short": "M1:Illusion",
+        "name": "Illusion — M1 meta-term of seeming, nonbeing",
+        "extent": [
+          "seeming",
+          "nonbeing"
+        ],
+        "intent": [
+          "Appearing",
+          "Misrepresentation"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:9",
+        "label": "Mixed being",
+        "short": "Mix:Mixed being",
+        "name": "Mixed being — mixed meta-term of being, nonbeing",
+        "extent": [
+          "being",
+          "nonbeing"
+        ],
+        "intent": [
+          "Appearing",
+          "Concealment"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:10",
+        "label": "Mixed seeming",
+        "short": "Mix:Mixed seeming",
+        "name": "Mixed seeming — mixed meta-term of seeming, unbeing",
+        "extent": [
+          "seeming",
+          "unbeing"
+        ],
+        "intent": [
+          "Manifestation",
+          "Misrepresentation"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:11",
+        "label": "Manifestation",
+        "short": "M2:Manifestation",
+        "name": "Manifestation — M2 meta-term containing being, seeming, unbeing",
+        "extent": [
+          "being",
+          "seeming",
+          "unbeing"
+        ],
+        "intent": [
+          "Manifestation"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:12",
+        "label": "Appearing",
+        "short": "M2:Appearing",
+        "name": "Appearing — M2 meta-term containing being, seeming, nonbeing",
+        "extent": [
+          "being",
+          "seeming",
+          "nonbeing"
+        ],
+        "intent": [
+          "Appearing"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:13",
+        "label": "Concealment",
+        "short": "M2:Concealment",
+        "name": "Concealment — M2 meta-term containing nonbeing, unbeing, being",
+        "extent": [
+          "nonbeing",
+          "unbeing",
+          "being"
+        ],
+        "intent": [
+          "Concealment"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:14",
+        "label": "Misrepresentation",
+        "short": "M2:Misrepresentation",
+        "name": "Misrepresentation — M2 meta-term containing nonbeing, unbeing, seeming",
+        "extent": [
+          "nonbeing",
+          "unbeing",
+          "seeming"
+        ],
+        "intent": [
+          "Misrepresentation"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:15",
+        "label": "top",
+        "short": "Top",
+        "name": "Top — all inner terms, no shared attribute",
+        "extent": [
+          "being",
+          "seeming",
+          "nonbeing",
+          "unbeing"
+        ],
+        "intent": [],
+        "layer": 1,
+        "origin": "A",
+        "role": "architectonic_top"
+      },
+      {
+        "id": "S1:1",
+        "label": "Actuality",
+        "short": "S1",
+        "name": "Actuality — inner term S1",
+        "extent": [
+          "Actuality"
+        ],
+        "intent": [
+          "Actualization",
+          "Potential Actuality",
+          "Actual Impossibility"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:2",
+        "label": "Potentiality",
+        "short": "S2",
+        "name": "Potentiality — inner term S2",
+        "extent": [
+          "Potentiality"
+        ],
+        "intent": [
+          "Actualization",
+          "Potential Actuality",
+          "Potential Nonactuality"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:3",
+        "label": "Nonactuality",
+        "short": "~S1",
+        "name": "Nonactuality — inner term ~S1",
+        "extent": [
+          "Nonactuality"
+        ],
+        "intent": [
+          "Potential Actuality",
+          "Actual Impossibility",
+          "Potential Nonactuality"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:4",
+        "label": "Impossibility",
+        "short": "~S2",
+        "name": "Impossibility — inner term ~S2",
+        "extent": [
+          "Impossibility"
+        ],
+        "intent": [
+          "Actualization",
+          "Actual Impossibility",
+          "Potential Nonactuality"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:5",
+        "label": "Actualization",
+        "short": "M1:Actualization",
+        "name": "Actualization — M1 meta-term of Actuality, Potentiality",
+        "extent": [
+          "Actuality",
+          "Potentiality"
+        ],
+        "intent": [
+          "Actualization",
+          "Potential Actuality"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:6",
+        "label": "Nonimpossibility",
+        "short": "M1:Nonimpossibility",
+        "name": "Nonimpossibility — M1 meta-term of Nonactuality, Impossibility",
+        "extent": [
+          "Nonactuality",
+          "Impossibility"
+        ],
+        "intent": [
+          "Actual Impossibility",
+          "Potential Nonactuality"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:7",
+        "label": "Actual Impossibility",
+        "short": "M1:Actual Impossibility",
+        "name": "Actual Impossibility — M1 meta-term of Actuality, Impossibility",
+        "extent": [
+          "Actuality",
+          "Impossibility"
+        ],
+        "intent": [
+          "Actualization",
+          "Actual Impossibility"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:8",
+        "label": "Potential Nonactuality",
+        "short": "M1:Potential Nonactuality",
+        "name": "Potential Nonactuality — M1 meta-term of Potentiality, Nonactuality",
+        "extent": [
+          "Potentiality",
+          "Nonactuality"
+        ],
+        "intent": [
+          "Potential Actuality",
+          "Potential Nonactuality"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:9",
+        "label": "Actuality-Nonactuality",
+        "short": "Mix:Actuality-Nonactuality",
+        "name": "Actuality-Nonactuality — mixed meta-term of Actuality, Nonactuality",
+        "extent": [
+          "Actuality",
+          "Nonactuality"
+        ],
+        "intent": [
+          "Potential Actuality",
+          "Actual Impossibility"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:10",
+        "label": "Potentiality-Impossibility",
+        "short": "Mix:Potentiality-Impossibility",
+        "name": "Potentiality-Impossibility — mixed meta-term of Potentiality, Impossibility",
+        "extent": [
+          "Potentiality",
+          "Impossibility"
+        ],
+        "intent": [
+          "Actualization",
+          "Potential Nonactuality"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:11",
+        "label": "Actualization",
+        "short": "M2:Actualization",
+        "name": "Actualization — M2 meta-term containing Actuality, Potentiality, Impossibility",
+        "extent": [
+          "Actuality",
+          "Potentiality",
+          "Impossibility"
+        ],
+        "intent": [
+          "Actualization"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:12",
+        "label": "Potential Actuality",
+        "short": "M2:Potential Actuality",
+        "name": "Potential Actuality — M2 meta-term containing Actuality, Potentiality, Nonactuality",
+        "extent": [
+          "Actuality",
+          "Potentiality",
+          "Nonactuality"
+        ],
+        "intent": [
+          "Potential Actuality"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:13",
+        "label": "Actual Impossibility",
+        "short": "M2:Actual Impossibility",
+        "name": "Actual Impossibility — M2 meta-term containing Nonactuality, Impossibility, Actuality",
+        "extent": [
+          "Nonactuality",
+          "Impossibility",
+          "Actuality"
+        ],
+        "intent": [
+          "Actual Impossibility"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:14",
+        "label": "Potential Nonactuality",
+        "short": "M2:Potential Nonactuality",
+        "name": "Potential Nonactuality — M2 meta-term containing Nonactuality, Impossibility, Potentiality",
+        "extent": [
+          "Nonactuality",
+          "Impossibility",
+          "Potentiality"
+        ],
+        "intent": [
+          "Potential Nonactuality"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:15",
+        "label": "being*",
+        "short": "being",
+        "name": "Fully-articulated being",
+        "extent": [
+          "Actuality",
+          "Potentiality",
+          "Nonactuality",
+          "Impossibility"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "S1",
+        "role": "interface"
+      },
+      {
+        "id": "S2:1",
+        "label": "Perceived reality",
+        "short": "S1",
+        "name": "Perceived reality — inner term S1",
+        "extent": [
+          "Perceived reality"
+        ],
+        "intent": [
+          "Perceived Deception",
+          "Seeming Reality",
+          "Unseen Truth"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:2",
+        "label": "Deceptive appearance",
+        "short": "S2",
+        "name": "Deceptive appearance — inner term S2",
+        "extent": [
+          "Deceptive appearance"
+        ],
+        "intent": [
+          "Perceived Deception",
+          "Seeming Reality",
+          "Deceptive Unreality"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:3",
+        "label": "Unperceived Reality",
+        "short": "~S1",
+        "name": "Unperceived Reality — inner term ~S1",
+        "extent": [
+          "Unperceived Reality"
+        ],
+        "intent": [
+          "Seeming Reality",
+          "Unseen Truth",
+          "Deceptive Unreality"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:4",
+        "label": "Genuine Reality",
+        "short": "~S2",
+        "name": "Genuine Reality — inner term ~S2",
+        "extent": [
+          "Genuine Reality"
+        ],
+        "intent": [
+          "Perceived Deception",
+          "Unseen Truth",
+          "Deceptive Unreality"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:5",
+        "label": "Appearance",
+        "short": "M1:Appearance",
+        "name": "Appearance — M1 meta-term of Perceived reality, Deceptive appearance",
+        "extent": [
+          "Perceived reality",
+          "Deceptive appearance"
+        ],
+        "intent": [
+          "Perceived Deception",
+          "Seeming Reality"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:6",
+        "label": "Essence",
+        "short": "M1:Essence",
+        "name": "Essence — M1 meta-term of Unperceived Reality, Genuine Reality",
+        "extent": [
+          "Unperceived Reality",
+          "Genuine Reality"
+        ],
+        "intent": [
+          "Unseen Truth",
+          "Deceptive Unreality"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:7",
+        "label": "Revelation",
+        "short": "M1:Revelation",
+        "name": "Revelation — M1 meta-term of Perceived reality, Genuine Reality",
+        "extent": [
+          "Perceived reality",
+          "Genuine Reality"
+        ],
+        "intent": [
+          "Perceived Deception",
+          "Unseen Truth"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:8",
+        "label": "Obscurity",
+        "short": "M1:Obscurity",
+        "name": "Obscurity — M1 meta-term of Deceptive appearance, Unperceived Reality",
+        "extent": [
+          "Deceptive appearance",
+          "Unperceived Reality"
+        ],
+        "intent": [
+          "Seeming Reality",
+          "Deceptive Unreality"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:9",
+        "label": "Perceived Reality + Unperceived Reality",
+        "short": "Mix:Perceived Reality + Unperceived Reality",
+        "name": "Perceived Reality + Unperceived Reality — mixed meta-term of Perceived reality, Unperceived Reality",
+        "extent": [
+          "Perceived reality",
+          "Unperceived Reality"
+        ],
+        "intent": [
+          "Seeming Reality",
+          "Unseen Truth"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:10",
+        "label": "Deceptive Appearance + Genuine Reality",
+        "short": "Mix:Deceptive Appearance + Genuine Reality",
+        "name": "Deceptive Appearance + Genuine Reality — mixed meta-term of Deceptive appearance, Genuine Reality",
+        "extent": [
+          "Deceptive appearance",
+          "Genuine Reality"
+        ],
+        "intent": [
+          "Perceived Deception",
+          "Deceptive Unreality"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:11",
+        "label": "Perceived Deception",
+        "short": "M2:Perceived Deception",
+        "name": "Perceived Deception — M2 meta-term containing Perceived reality, Deceptive appearance, Genuine Reality",
+        "extent": [
+          "Perceived reality",
+          "Deceptive appearance",
+          "Genuine Reality"
+        ],
+        "intent": [
+          "Perceived Deception"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:12",
+        "label": "Seeming Reality",
+        "short": "M2:Seeming Reality",
+        "name": "Seeming Reality — M2 meta-term containing Perceived reality, Deceptive appearance, Unperceived Reality",
+        "extent": [
+          "Perceived reality",
+          "Deceptive appearance",
+          "Unperceived Reality"
+        ],
+        "intent": [
+          "Seeming Reality"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:13",
+        "label": "Unseen Truth",
+        "short": "M2:Unseen Truth",
+        "name": "Unseen Truth — M2 meta-term containing Unperceived Reality, Genuine Reality, Perceived reality",
+        "extent": [
+          "Unperceived Reality",
+          "Genuine Reality",
+          "Perceived reality"
+        ],
+        "intent": [
+          "Unseen Truth"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:14",
+        "label": "Deceptive Unreality",
+        "short": "M2:Deceptive Unreality",
+        "name": "Deceptive Unreality — M2 meta-term containing Unperceived Reality, Genuine Reality, Deceptive appearance",
+        "extent": [
+          "Unperceived Reality",
+          "Genuine Reality",
+          "Deceptive appearance"
+        ],
+        "intent": [
+          "Deceptive Unreality"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:15",
+        "label": "seeming*",
+        "short": "seeming",
+        "name": "Fully-articulated seeming",
+        "extent": [
+          "Perceived reality",
+          "Deceptive appearance",
+          "Unperceived Reality",
+          "Genuine Reality"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "S2",
+        "role": "interface"
+      },
+      {
+        "id": "~S1:1",
+        "label": "Nihility",
+        "short": "S1",
+        "name": "Nihility — inner term S1",
+        "extent": [
+          "Nihility"
+        ],
+        "intent": [
+          "Nihilistic Void",
+          "Vacuous Entitativity",
+          "Plenitudinous Nihility"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:2",
+        "label": "Vacuity",
+        "short": "S2",
+        "name": "Vacuity — inner term S2",
+        "extent": [
+          "Vacuity"
+        ],
+        "intent": [
+          "Nihilistic Void",
+          "Vacuous Entitativity",
+          "Vacuous Entitativity"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:3",
+        "label": "Entitativity",
+        "short": "~S1",
+        "name": "Entitativity — inner term ~S1",
+        "extent": [
+          "Entitativity"
+        ],
+        "intent": [
+          "Vacuous Entitativity",
+          "Plenitudinous Nihility",
+          "Vacuous Entitativity"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:4",
+        "label": "Plenitude",
+        "short": "~S2",
+        "name": "Plenitude — inner term ~S2",
+        "extent": [
+          "Plenitude"
+        ],
+        "intent": [
+          "Nihilistic Void",
+          "Plenitudinous Nihility",
+          "Vacuous Entitativity"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:5",
+        "label": "Voidness",
+        "short": "M1:Voidness",
+        "name": "Voidness — M1 meta-term of Nihility, Vacuity",
+        "extent": [
+          "Nihility",
+          "Vacuity"
+        ],
+        "intent": [
+          "Nihilistic Void",
+          "Vacuous Entitativity"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:6",
+        "label": "Fulgent Plenitude",
+        "short": "M1:Fulgent Plenitude",
+        "name": "Fulgent Plenitude — M1 meta-term of Entitativity, Plenitude",
+        "extent": [
+          "Entitativity",
+          "Plenitude"
+        ],
+        "intent": [
+          "Plenitudinous Nihility",
+          "Vacuous Entitativity"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:7",
+        "label": "Transcendent Profusion",
+        "short": "M1:Transcendent Profusion",
+        "name": "Transcendent Profusion — M1 meta-term of Nihility, Plenitude",
+        "extent": [
+          "Nihility",
+          "Plenitude"
+        ],
+        "intent": [
+          "Nihilistic Void",
+          "Plenitudinous Nihility"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:8",
+        "label": "Essential Scarcity",
+        "short": "M1:Essential Scarcity",
+        "name": "Essential Scarcity — M1 meta-term of Vacuity, Entitativity",
+        "extent": [
+          "Vacuity",
+          "Entitativity"
+        ],
+        "intent": [
+          "Vacuous Entitativity",
+          "Vacuous Entitativity"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:9",
+        "label": "Nihilitativity",
+        "short": "Mix:Nihilitativity",
+        "name": "Nihilitativity — mixed meta-term of Nihility, Entitativity",
+        "extent": [
+          "Nihility",
+          "Entitativity"
+        ],
+        "intent": [
+          "Vacuous Entitativity",
+          "Plenitudinous Nihility"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:10",
+        "label": "Vacuoplentitude",
+        "short": "Mix:Vacuoplentitude",
+        "name": "Vacuoplentitude — mixed meta-term of Vacuity, Plenitude",
+        "extent": [
+          "Vacuity",
+          "Plenitude"
+        ],
+        "intent": [
+          "Nihilistic Void",
+          "Vacuous Entitativity"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:11",
+        "label": "Nihilistic Void",
+        "short": "M2:Nihilistic Void",
+        "name": "Nihilistic Void — M2 meta-term containing Nihility, Vacuity, Plenitude",
+        "extent": [
+          "Nihility",
+          "Vacuity",
+          "Plenitude"
+        ],
+        "intent": [
+          "Nihilistic Void"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:12",
+        "label": "Vacuous Entitativity",
+        "short": "M2:Vacuous Entitativity",
+        "name": "Vacuous Entitativity — M2 meta-term containing Nihility, Vacuity, Entitativity",
+        "extent": [
+          "Nihility",
+          "Vacuity",
+          "Entitativity"
+        ],
+        "intent": [
+          "Vacuous Entitativity"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:13",
+        "label": "Plenitudinous Nihility",
+        "short": "M2:Plenitudinous Nihility",
+        "name": "Plenitudinous Nihility — M2 meta-term containing Entitativity, Plenitude, Nihility",
+        "extent": [
+          "Entitativity",
+          "Plenitude",
+          "Nihility"
+        ],
+        "intent": [
+          "Plenitudinous Nihility"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:14",
+        "label": "Vacuous Entitativity",
+        "short": "M2:Vacuous Entitativity",
+        "name": "Vacuous Entitativity — M2 meta-term containing Entitativity, Plenitude, Vacuity",
+        "extent": [
+          "Entitativity",
+          "Plenitude",
+          "Vacuity"
+        ],
+        "intent": [
+          "Vacuous Entitativity"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:15",
+        "label": "nonbeing*",
+        "short": "nonbeing",
+        "name": "Fully-articulated nonbeing",
+        "extent": [
+          "Nihility",
+          "Vacuity",
+          "Entitativity",
+          "Plenitude"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "interface"
+      },
+      {
+        "id": "~S2:1",
+        "label": "Annihilation",
+        "short": "S1",
+        "name": "Annihilation — inner term S1",
+        "extent": [
+          "Annihilation"
+        ],
+        "intent": [
+          "Annihilative Neglect",
+          "Creative Annihilation",
+          "Resurgent Oblivion"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:2",
+        "label": "Neglect",
+        "short": "S2",
+        "name": "Neglect — inner term S2",
+        "extent": [
+          "Neglect"
+        ],
+        "intent": [
+          "Annihilative Neglect",
+          "Creative Annihilation",
+          "Acknowledged Neglect"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:3",
+        "label": "Creation",
+        "short": "~S1",
+        "name": "Creation — inner term ~S1",
+        "extent": [
+          "Creation"
+        ],
+        "intent": [
+          "Creative Annihilation",
+          "Resurgent Oblivion",
+          "Acknowledged Neglect"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:4",
+        "label": "Acknowledgment",
+        "short": "~S2",
+        "name": "Acknowledgment — inner term ~S2",
+        "extent": [
+          "Acknowledgment"
+        ],
+        "intent": [
+          "Annihilative Neglect",
+          "Resurgent Oblivion",
+          "Acknowledged Neglect"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:5",
+        "label": "Oblivion",
+        "short": "M1:Oblivion",
+        "name": "Oblivion — M1 meta-term of Annihilation, Neglect",
+        "extent": [
+          "Annihilation",
+          "Neglect"
+        ],
+        "intent": [
+          "Annihilative Neglect",
+          "Creative Annihilation"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:6",
+        "label": "Recognition",
+        "short": "M1:Recognition",
+        "name": "Recognition — M1 meta-term of Creation, Acknowledgment",
+        "extent": [
+          "Creation",
+          "Acknowledgment"
+        ],
+        "intent": [
+          "Resurgent Oblivion",
+          "Acknowledged Neglect"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:7",
+        "label": "Reckoning",
+        "short": "M1:Reckoning",
+        "name": "Reckoning — M1 meta-term of Annihilation, Acknowledgment",
+        "extent": [
+          "Annihilation",
+          "Acknowledgment"
+        ],
+        "intent": [
+          "Annihilative Neglect",
+          "Resurgent Oblivion"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:8",
+        "label": "Revival",
+        "short": "M1:Revival",
+        "name": "Revival — M1 meta-term of Neglect, Creation",
+        "extent": [
+          "Neglect",
+          "Creation"
+        ],
+        "intent": [
+          "Creative Annihilation",
+          "Acknowledged Neglect"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:9",
+        "label": "Annihicreation",
+        "short": "Mix:Annihicreation",
+        "name": "Annihicreation — mixed meta-term of Annihilation, Creation",
+        "extent": [
+          "Annihilation",
+          "Creation"
+        ],
+        "intent": [
+          "Creative Annihilation",
+          "Resurgent Oblivion"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:10",
+        "label": "Neglectacknowledgment",
+        "short": "Mix:Neglectacknowledgment",
+        "name": "Neglectacknowledgment — mixed meta-term of Neglect, Acknowledgment",
+        "extent": [
+          "Neglect",
+          "Acknowledgment"
+        ],
+        "intent": [
+          "Annihilative Neglect",
+          "Acknowledged Neglect"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:11",
+        "label": "Annihilative Neglect",
+        "short": "M2:Annihilative Neglect",
+        "name": "Annihilative Neglect — M2 meta-term containing Annihilation, Neglect, Acknowledgment",
+        "extent": [
+          "Annihilation",
+          "Neglect",
+          "Acknowledgment"
+        ],
+        "intent": [
+          "Annihilative Neglect"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:12",
+        "label": "Creative Annihilation",
+        "short": "M2:Creative Annihilation",
+        "name": "Creative Annihilation — M2 meta-term containing Annihilation, Neglect, Creation",
+        "extent": [
+          "Annihilation",
+          "Neglect",
+          "Creation"
+        ],
+        "intent": [
+          "Creative Annihilation"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:13",
+        "label": "Resurgent Oblivion",
+        "short": "M2:Resurgent Oblivion",
+        "name": "Resurgent Oblivion — M2 meta-term containing Creation, Acknowledgment, Annihilation",
+        "extent": [
+          "Creation",
+          "Acknowledgment",
+          "Annihilation"
+        ],
+        "intent": [
+          "Resurgent Oblivion"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:14",
+        "label": "Acknowledged Neglect",
+        "short": "M2:Acknowledged Neglect",
+        "name": "Acknowledged Neglect — M2 meta-term containing Creation, Acknowledgment, Neglect",
+        "extent": [
+          "Creation",
+          "Acknowledgment",
+          "Neglect"
+        ],
+        "intent": [
+          "Acknowledged Neglect"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:15",
+        "label": "unbeing*",
+        "short": "unbeing",
+        "name": "Fully-articulated unbeing",
+        "extent": [
+          "Annihilation",
+          "Neglect",
+          "Creation",
+          "Acknowledgment"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "interface"
+      }
+    ],
+    "edges": [
+      [
+        "A:15",
+        "A:11"
+      ],
+      [
+        "A:15",
+        "A:12"
+      ],
+      [
+        "A:15",
+        "A:13"
+      ],
+      [
+        "A:15",
+        "A:14"
+      ],
+      [
+        "A:11",
+        "A:5"
+      ],
+      [
+        "A:11",
+        "A:7"
+      ],
+      [
+        "A:11",
+        "A:10"
+      ],
+      [
+        "A:12",
+        "A:5"
+      ],
+      [
+        "A:12",
+        "A:8"
+      ],
+      [
+        "A:12",
+        "A:9"
+      ],
+      [
+        "A:13",
+        "A:6"
+      ],
+      [
+        "A:13",
+        "A:7"
+      ],
+      [
+        "A:13",
+        "A:9"
+      ],
+      [
+        "A:14",
+        "A:6"
+      ],
+      [
+        "A:14",
+        "A:8"
+      ],
+      [
+        "A:14",
+        "A:10"
+      ],
+      [
+        "A:5",
+        "S1:15"
+      ],
+      [
+        "A:5",
+        "S2:15"
+      ],
+      [
+        "A:6",
+        "~S1:15"
+      ],
+      [
+        "A:6",
+        "~S2:15"
+      ],
+      [
+        "A:7",
+        "S1:15"
+      ],
+      [
+        "A:7",
+        "~S2:15"
+      ],
+      [
+        "A:8",
+        "S2:15"
+      ],
+      [
+        "A:8",
+        "~S1:15"
+      ],
+      [
+        "A:9",
+        "S1:15"
+      ],
+      [
+        "A:9",
+        "~S1:15"
+      ],
+      [
+        "A:10",
+        "S2:15"
+      ],
+      [
+        "A:10",
+        "~S2:15"
+      ],
+      [
+        "S1:15",
+        "S1:11"
+      ],
+      [
+        "S1:15",
+        "S1:12"
+      ],
+      [
+        "S1:15",
+        "S1:13"
+      ],
+      [
+        "S1:15",
+        "S1:14"
+      ],
+      [
+        "S1:11",
+        "S1:5"
+      ],
+      [
+        "S1:11",
+        "S1:7"
+      ],
+      [
+        "S1:11",
+        "S1:10"
+      ],
+      [
+        "S1:12",
+        "S1:5"
+      ],
+      [
+        "S1:12",
+        "S1:8"
+      ],
+      [
+        "S1:12",
+        "S1:9"
+      ],
+      [
+        "S1:13",
+        "S1:6"
+      ],
+      [
+        "S1:13",
+        "S1:7"
+      ],
+      [
+        "S1:13",
+        "S1:9"
+      ],
+      [
+        "S1:14",
+        "S1:6"
+      ],
+      [
+        "S1:14",
+        "S1:8"
+      ],
+      [
+        "S1:14",
+        "S1:10"
+      ],
+      [
+        "S1:5",
+        "S1:1"
+      ],
+      [
+        "S1:5",
+        "S1:2"
+      ],
+      [
+        "S1:6",
+        "S1:3"
+      ],
+      [
+        "S1:6",
+        "S1:4"
+      ],
+      [
+        "S1:7",
+        "S1:1"
+      ],
+      [
+        "S1:7",
+        "S1:4"
+      ],
+      [
+        "S1:8",
+        "S1:2"
+      ],
+      [
+        "S1:8",
+        "S1:3"
+      ],
+      [
+        "S1:9",
+        "S1:1"
+      ],
+      [
+        "S1:9",
+        "S1:3"
+      ],
+      [
+        "S1:10",
+        "S1:2"
+      ],
+      [
+        "S1:10",
+        "S1:4"
+      ],
+      [
+        "S1:1",
+        "A:0"
+      ],
+      [
+        "S1:2",
+        "A:0"
+      ],
+      [
+        "S1:3",
+        "A:0"
+      ],
+      [
+        "S1:4",
+        "A:0"
+      ],
+      [
+        "S2:15",
+        "S2:11"
+      ],
+      [
+        "S2:15",
+        "S2:12"
+      ],
+      [
+        "S2:15",
+        "S2:13"
+      ],
+      [
+        "S2:15",
+        "S2:14"
+      ],
+      [
+        "S2:11",
+        "S2:5"
+      ],
+      [
+        "S2:11",
+        "S2:7"
+      ],
+      [
+        "S2:11",
+        "S2:10"
+      ],
+      [
+        "S2:12",
+        "S2:5"
+      ],
+      [
+        "S2:12",
+        "S2:8"
+      ],
+      [
+        "S2:12",
+        "S2:9"
+      ],
+      [
+        "S2:13",
+        "S2:6"
+      ],
+      [
+        "S2:13",
+        "S2:7"
+      ],
+      [
+        "S2:13",
+        "S2:9"
+      ],
+      [
+        "S2:14",
+        "S2:6"
+      ],
+      [
+        "S2:14",
+        "S2:8"
+      ],
+      [
+        "S2:14",
+        "S2:10"
+      ],
+      [
+        "S2:5",
+        "S2:1"
+      ],
+      [
+        "S2:5",
+        "S2:2"
+      ],
+      [
+        "S2:6",
+        "S2:3"
+      ],
+      [
+        "S2:6",
+        "S2:4"
+      ],
+      [
+        "S2:7",
+        "S2:1"
+      ],
+      [
+        "S2:7",
+        "S2:4"
+      ],
+      [
+        "S2:8",
+        "S2:2"
+      ],
+      [
+        "S2:8",
+        "S2:3"
+      ],
+      [
+        "S2:9",
+        "S2:1"
+      ],
+      [
+        "S2:9",
+        "S2:3"
+      ],
+      [
+        "S2:10",
+        "S2:2"
+      ],
+      [
+        "S2:10",
+        "S2:4"
+      ],
+      [
+        "S2:1",
+        "A:0"
+      ],
+      [
+        "S2:2",
+        "A:0"
+      ],
+      [
+        "S2:3",
+        "A:0"
+      ],
+      [
+        "S2:4",
+        "A:0"
+      ],
+      [
+        "~S1:15",
+        "~S1:11"
+      ],
+      [
+        "~S1:15",
+        "~S1:12"
+      ],
+      [
+        "~S1:15",
+        "~S1:13"
+      ],
+      [
+        "~S1:15",
+        "~S1:14"
+      ],
+      [
+        "~S1:11",
+        "~S1:5"
+      ],
+      [
+        "~S1:11",
+        "~S1:7"
+      ],
+      [
+        "~S1:11",
+        "~S1:10"
+      ],
+      [
+        "~S1:12",
+        "~S1:5"
+      ],
+      [
+        "~S1:12",
+        "~S1:8"
+      ],
+      [
+        "~S1:12",
+        "~S1:9"
+      ],
+      [
+        "~S1:13",
+        "~S1:6"
+      ],
+      [
+        "~S1:13",
+        "~S1:7"
+      ],
+      [
+        "~S1:13",
+        "~S1:9"
+      ],
+      [
+        "~S1:14",
+        "~S1:6"
+      ],
+      [
+        "~S1:14",
+        "~S1:8"
+      ],
+      [
+        "~S1:14",
+        "~S1:10"
+      ],
+      [
+        "~S1:5",
+        "~S1:1"
+      ],
+      [
+        "~S1:5",
+        "~S1:2"
+      ],
+      [
+        "~S1:6",
+        "~S1:3"
+      ],
+      [
+        "~S1:6",
+        "~S1:4"
+      ],
+      [
+        "~S1:7",
+        "~S1:1"
+      ],
+      [
+        "~S1:7",
+        "~S1:4"
+      ],
+      [
+        "~S1:8",
+        "~S1:2"
+      ],
+      [
+        "~S1:8",
+        "~S1:3"
+      ],
+      [
+        "~S1:9",
+        "~S1:1"
+      ],
+      [
+        "~S1:9",
+        "~S1:3"
+      ],
+      [
+        "~S1:10",
+        "~S1:2"
+      ],
+      [
+        "~S1:10",
+        "~S1:4"
+      ],
+      [
+        "~S1:1",
+        "A:0"
+      ],
+      [
+        "~S1:2",
+        "A:0"
+      ],
+      [
+        "~S1:3",
+        "A:0"
+      ],
+      [
+        "~S1:4",
+        "A:0"
+      ],
+      [
+        "~S2:15",
+        "~S2:11"
+      ],
+      [
+        "~S2:15",
+        "~S2:12"
+      ],
+      [
+        "~S2:15",
+        "~S2:13"
+      ],
+      [
+        "~S2:15",
+        "~S2:14"
+      ],
+      [
+        "~S2:11",
+        "~S2:5"
+      ],
+      [
+        "~S2:11",
+        "~S2:7"
+      ],
+      [
+        "~S2:11",
+        "~S2:10"
+      ],
+      [
+        "~S2:12",
+        "~S2:5"
+      ],
+      [
+        "~S2:12",
+        "~S2:8"
+      ],
+      [
+        "~S2:12",
+        "~S2:9"
+      ],
+      [
+        "~S2:13",
+        "~S2:6"
+      ],
+      [
+        "~S2:13",
+        "~S2:7"
+      ],
+      [
+        "~S2:13",
+        "~S2:9"
+      ],
+      [
+        "~S2:14",
+        "~S2:6"
+      ],
+      [
+        "~S2:14",
+        "~S2:8"
+      ],
+      [
+        "~S2:14",
+        "~S2:10"
+      ],
+      [
+        "~S2:5",
+        "~S2:1"
+      ],
+      [
+        "~S2:5",
+        "~S2:2"
+      ],
+      [
+        "~S2:6",
+        "~S2:3"
+      ],
+      [
+        "~S2:6",
+        "~S2:4"
+      ],
+      [
+        "~S2:7",
+        "~S2:1"
+      ],
+      [
+        "~S2:7",
+        "~S2:4"
+      ],
+      [
+        "~S2:8",
+        "~S2:2"
+      ],
+      [
+        "~S2:8",
+        "~S2:3"
+      ],
+      [
+        "~S2:9",
+        "~S2:1"
+      ],
+      [
+        "~S2:9",
+        "~S2:3"
+      ],
+      [
+        "~S2:10",
+        "~S2:2"
+      ],
+      [
+        "~S2:10",
+        "~S2:4"
+      ],
+      [
+        "~S2:1",
+        "A:0"
+      ],
+      [
+        "~S2:2",
+        "A:0"
+      ],
+      [
+        "~S2:3",
+        "A:0"
+      ],
+      [
+        "~S2:4",
+        "A:0"
+      ]
+    ]
+  }
+}

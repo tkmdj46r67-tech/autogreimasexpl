@@ -1,0 +1,3992 @@
+{
+  "metadata": {
+    "seed": "A1",
+    "seed_s1": "being",
+    "seed_s2": "seeming",
+    "model": "mistral:7b",
+    "generated_at": "2026-10-11T17:30:35",
+    "collisions": [
+      {
+        "label": "L2[S2]:M2",
+        "key": "M21_prime",
+        "term": "Authenticity"
+      },
+      {
+        "label": "L2[S2]:M2",
+        "key": "M23_prime",
+        "term": "Integrity"
+      },
+      {
+        "label": "L2[~S1]:inner",
+        "key": "S1_prime",
+        "term": "Existence"
+      },
+      {
+        "label": "L2[~S1]:inner",
+        "key": "S2_prime",
+        "term": "Non-existence"
+      },
+      {
+        "label": "L2[~S1]:~S2",
+        "key": "~S2_prime",
+        "term": "Existence"
+      }
+    ]
+  },
+  "layer_1": {
+    "square": {
+      "S1": "being",
+      "S2": "seeming",
+      "~S2": "real",
+      "~S1": "unbeing",
+      "M11": "Existence",
+      "M12": "Non-existence",
+      "M13": "Reality",
+      "M14": "Illusion",
+      "M21": "Reality Mask",
+      "M22": "Illusory Existence",
+      "M23": "Unreality Veil",
+      "M24": "Deceptive Appearance",
+      "Mixed1": "Mixed Existence",
+      "Mixed2": "Mixed Appearance"
+    },
+    "lattice": {
+      "concepts": [
+        {
+          "id": 0,
+          "label": "bottom",
+          "short": "Bottom",
+          "name": "Bottom — empty extent, all four M2 attributes",
+          "extent": [],
+          "intent": [
+            "Reality Mask",
+            "Illusory Existence",
+            "Unreality Veil",
+            "Deceptive Appearance"
+          ]
+        },
+        {
+          "id": 1,
+          "label": "being",
+          "short": "S1",
+          "name": "being — inner term S1",
+          "extent": [
+            "being"
+          ],
+          "intent": [
+            "Reality Mask",
+            "Illusory Existence",
+            "Unreality Veil"
+          ]
+        },
+        {
+          "id": 2,
+          "label": "seeming",
+          "short": "S2",
+          "name": "seeming — inner term S2",
+          "extent": [
+            "seeming"
+          ],
+          "intent": [
+            "Reality Mask",
+            "Illusory Existence",
+            "Deceptive Appearance"
+          ]
+        },
+        {
+          "id": 3,
+          "label": "unbeing",
+          "short": "~S1",
+          "name": "unbeing — inner term ~S1",
+          "extent": [
+            "unbeing"
+          ],
+          "intent": [
+            "Illusory Existence",
+            "Unreality Veil",
+            "Deceptive Appearance"
+          ]
+        },
+        {
+          "id": 4,
+          "label": "real",
+          "short": "~S2",
+          "name": "real — inner term ~S2",
+          "extent": [
+            "real"
+          ],
+          "intent": [
+            "Reality Mask",
+            "Unreality Veil",
+            "Deceptive Appearance"
+          ]
+        },
+        {
+          "id": 5,
+          "label": "Existence",
+          "short": "M1:Existence",
+          "name": "Existence — M1 meta-term of being, seeming",
+          "extent": [
+            "being",
+            "seeming"
+          ],
+          "intent": [
+            "Reality Mask",
+            "Illusory Existence"
+          ]
+        },
+        {
+          "id": 6,
+          "label": "Non-existence",
+          "short": "M1:Non-existence",
+          "name": "Non-existence — M1 meta-term of unbeing, real",
+          "extent": [
+            "unbeing",
+            "real"
+          ],
+          "intent": [
+            "Unreality Veil",
+            "Deceptive Appearance"
+          ]
+        },
+        {
+          "id": 7,
+          "label": "Reality",
+          "short": "M1:Reality",
+          "name": "Reality — M1 meta-term of being, real",
+          "extent": [
+            "being",
+            "real"
+          ],
+          "intent": [
+            "Reality Mask",
+            "Unreality Veil"
+          ]
+        },
+        {
+          "id": 8,
+          "label": "Illusion",
+          "short": "M1:Illusion",
+          "name": "Illusion — M1 meta-term of seeming, unbeing",
+          "extent": [
+            "seeming",
+            "unbeing"
+          ],
+          "intent": [
+            "Illusory Existence",
+            "Deceptive Appearance"
+          ]
+        },
+        {
+          "id": 9,
+          "label": "Mixed Existence",
+          "short": "Mix:Mixed Existence",
+          "name": "Mixed Existence — mixed meta-term of being, unbeing",
+          "extent": [
+            "being",
+            "unbeing"
+          ],
+          "intent": [
+            "Illusory Existence",
+            "Unreality Veil"
+          ]
+        },
+        {
+          "id": 10,
+          "label": "Mixed Appearance",
+          "short": "Mix:Mixed Appearance",
+          "name": "Mixed Appearance — mixed meta-term of seeming, real",
+          "extent": [
+            "seeming",
+            "real"
+          ],
+          "intent": [
+            "Reality Mask",
+            "Deceptive Appearance"
+          ]
+        },
+        {
+          "id": 11,
+          "label": "Reality Mask",
+          "short": "M2:Reality Mask",
+          "name": "Reality Mask — M2 meta-term containing being, seeming, real",
+          "extent": [
+            "being",
+            "seeming",
+            "real"
+          ],
+          "intent": [
+            "Reality Mask"
+          ]
+        },
+        {
+          "id": 12,
+          "label": "Illusory Existence",
+          "short": "M2:Illusory Existence",
+          "name": "Illusory Existence — M2 meta-term containing being, seeming, unbeing",
+          "extent": [
+            "being",
+            "seeming",
+            "unbeing"
+          ],
+          "intent": [
+            "Illusory Existence"
+          ]
+        },
+        {
+          "id": 13,
+          "label": "Unreality Veil",
+          "short": "M2:Unreality Veil",
+          "name": "Unreality Veil — M2 meta-term containing unbeing, real, being",
+          "extent": [
+            "unbeing",
+            "real",
+            "being"
+          ],
+          "intent": [
+            "Unreality Veil"
+          ]
+        },
+        {
+          "id": 14,
+          "label": "Deceptive Appearance",
+          "short": "M2:Deceptive Appearance",
+          "name": "Deceptive Appearance — M2 meta-term containing unbeing, real, seeming",
+          "extent": [
+            "unbeing",
+            "real",
+            "seeming"
+          ],
+          "intent": [
+            "Deceptive Appearance"
+          ]
+        },
+        {
+          "id": 15,
+          "label": "top",
+          "short": "Top",
+          "name": "Top — all inner terms, no shared attribute",
+          "extent": [
+            "being",
+            "seeming",
+            "unbeing",
+            "real"
+          ],
+          "intent": []
+        }
+      ],
+      "edges": [
+        [
+          15,
+          11
+        ],
+        [
+          15,
+          12
+        ],
+        [
+          15,
+          13
+        ],
+        [
+          15,
+          14
+        ],
+        [
+          11,
+          5
+        ],
+        [
+          11,
+          7
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          12,
+          8
+        ],
+        [
+          12,
+          9
+        ],
+        [
+          13,
+          6
+        ],
+        [
+          13,
+          7
+        ],
+        [
+          13,
+          9
+        ],
+        [
+          14,
+          6
+        ],
+        [
+          14,
+          8
+        ],
+        [
+          14,
+          10
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          10,
+          2
+        ],
+        [
+          10,
+          4
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ]
+    }
+  },
+  "layer_2": {
+    "S1": {
+      "parent_seme": "S1",
+      "parent_term": "being",
+      "square": {
+        "S1": "Presence",
+        "S2": "Absence",
+        "~S2": "Present",
+        "~S1": "A-presence",
+        "M11": "Completeness",
+        "M12": "Neutrality",
+        "M13": "Manifestation",
+        "M14": "Vacancy",
+        "M21": "Manifest Presence",
+        "M22": "Unmanifest Presence",
+        "M23": "A-manifest Absence",
+        "M24": "Unmanifest Absence",
+        "Mixed1": "Co-presence",
+        "Mixed2": "Co-absence"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Manifest Presence",
+              "Unmanifest Presence",
+              "A-manifest Absence",
+              "Unmanifest Absence"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Presence",
+            "short": "S1",
+            "name": "Presence — inner term S1",
+            "extent": [
+              "Presence"
+            ],
+            "intent": [
+              "Manifest Presence",
+              "Unmanifest Presence",
+              "A-manifest Absence"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Absence",
+            "short": "S2",
+            "name": "Absence — inner term S2",
+            "extent": [
+              "Absence"
+            ],
+            "intent": [
+              "Manifest Presence",
+              "Unmanifest Presence",
+              "Unmanifest Absence"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "A-presence",
+            "short": "~S1",
+            "name": "A-presence — inner term ~S1",
+            "extent": [
+              "A-presence"
+            ],
+            "intent": [
+              "Unmanifest Presence",
+              "A-manifest Absence",
+              "Unmanifest Absence"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Present",
+            "short": "~S2",
+            "name": "Present — inner term ~S2",
+            "extent": [
+              "Present"
+            ],
+            "intent": [
+              "Manifest Presence",
+              "A-manifest Absence",
+              "Unmanifest Absence"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Completeness",
+            "short": "M1:Completeness",
+            "name": "Completeness — M1 meta-term of Presence, Absence",
+            "extent": [
+              "Presence",
+              "Absence"
+            ],
+            "intent": [
+              "Manifest Presence",
+              "Unmanifest Presence"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Neutrality",
+            "short": "M1:Neutrality",
+            "name": "Neutrality — M1 meta-term of A-presence, Present",
+            "extent": [
+              "A-presence",
+              "Present"
+            ],
+            "intent": [
+              "A-manifest Absence",
+              "Unmanifest Absence"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Manifestation",
+            "short": "M1:Manifestation",
+            "name": "Manifestation — M1 meta-term of Presence, Present",
+            "extent": [
+              "Presence",
+              "Present"
+            ],
+            "intent": [
+              "Manifest Presence",
+              "A-manifest Absence"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Vacancy",
+            "short": "M1:Vacancy",
+            "name": "Vacancy — M1 meta-term of Absence, A-presence",
+            "extent": [
+              "Absence",
+              "A-presence"
+            ],
+            "intent": [
+              "Unmanifest Presence",
+              "Unmanifest Absence"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Co-presence",
+            "short": "Mix:Co-presence",
+            "name": "Co-presence — mixed meta-term of Presence, A-presence",
+            "extent": [
+              "Presence",
+              "A-presence"
+            ],
+            "intent": [
+              "Unmanifest Presence",
+              "A-manifest Absence"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Co-absence",
+            "short": "Mix:Co-absence",
+            "name": "Co-absence — mixed meta-term of Absence, Present",
+            "extent": [
+              "Absence",
+              "Present"
+            ],
+            "intent": [
+              "Manifest Presence",
+              "Unmanifest Absence"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Manifest Presence",
+            "short": "M2:Manifest Presence",
+            "name": "Manifest Presence — M2 meta-term containing Presence, Absence, Present",
+            "extent": [
+              "Presence",
+              "Absence",
+              "Present"
+            ],
+            "intent": [
+              "Manifest Presence"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Unmanifest Presence",
+            "short": "M2:Unmanifest Presence",
+            "name": "Unmanifest Presence — M2 meta-term containing Presence, Absence, A-presence",
+            "extent": [
+              "Presence",
+              "Absence",
+              "A-presence"
+            ],
+            "intent": [
+              "Unmanifest Presence"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "A-manifest Absence",
+            "short": "M2:A-manifest Absence",
+            "name": "A-manifest Absence — M2 meta-term containing A-presence, Present, Presence",
+            "extent": [
+              "A-presence",
+              "Present",
+              "Presence"
+            ],
+            "intent": [
+              "A-manifest Absence"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Unmanifest Absence",
+            "short": "M2:Unmanifest Absence",
+            "name": "Unmanifest Absence — M2 meta-term containing A-presence, Present, Absence",
+            "extent": [
+              "A-presence",
+              "Present",
+              "Absence"
+            ],
+            "intent": [
+              "Unmanifest Absence"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Presence",
+              "Absence",
+              "A-presence",
+              "Present"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "S2": {
+      "parent_seme": "S2",
+      "parent_term": "seeming",
+      "square": {
+        "S1": "Truth",
+        "S2": "Deception",
+        "~S2": "Honesty",
+        "~S1": "Misrepresentation",
+        "M11": "Integrity",
+        "M12": "Paradox",
+        "M13": "Authenticity",
+        "M14": "Discrepancy",
+        "M21": "Authenticity",
+        "M22": "Misdirection",
+        "M23": "Integrity",
+        "M24": "Dissemblance",
+        "Mixed1": "Truthful Misrepresentation",
+        "Mixed2": "Deceptive Honesty"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Authenticity",
+              "Misdirection",
+              "Integrity",
+              "Dissemblance"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Truth",
+            "short": "S1",
+            "name": "Truth — inner term S1",
+            "extent": [
+              "Truth"
+            ],
+            "intent": [
+              "Authenticity",
+              "Misdirection",
+              "Integrity"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Deception",
+            "short": "S2",
+            "name": "Deception — inner term S2",
+            "extent": [
+              "Deception"
+            ],
+            "intent": [
+              "Authenticity",
+              "Misdirection",
+              "Dissemblance"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Misrepresentation",
+            "short": "~S1",
+            "name": "Misrepresentation — inner term ~S1",
+            "extent": [
+              "Misrepresentation"
+            ],
+            "intent": [
+              "Misdirection",
+              "Integrity",
+              "Dissemblance"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Honesty",
+            "short": "~S2",
+            "name": "Honesty — inner term ~S2",
+            "extent": [
+              "Honesty"
+            ],
+            "intent": [
+              "Authenticity",
+              "Integrity",
+              "Dissemblance"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Integrity",
+            "short": "M1:Integrity",
+            "name": "Integrity — M1 meta-term of Truth, Deception",
+            "extent": [
+              "Truth",
+              "Deception"
+            ],
+            "intent": [
+              "Authenticity",
+              "Misdirection"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Paradox",
+            "short": "M1:Paradox",
+            "name": "Paradox — M1 meta-term of Misrepresentation, Honesty",
+            "extent": [
+              "Misrepresentation",
+              "Honesty"
+            ],
+            "intent": [
+              "Integrity",
+              "Dissemblance"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Authenticity",
+            "short": "M1:Authenticity",
+            "name": "Authenticity — M1 meta-term of Truth, Honesty",
+            "extent": [
+              "Truth",
+              "Honesty"
+            ],
+            "intent": [
+              "Authenticity",
+              "Integrity"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Discrepancy",
+            "short": "M1:Discrepancy",
+            "name": "Discrepancy — M1 meta-term of Deception, Misrepresentation",
+            "extent": [
+              "Deception",
+              "Misrepresentation"
+            ],
+            "intent": [
+              "Misdirection",
+              "Dissemblance"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Truthful Misrepresentation",
+            "short": "Mix:Truthful Misrepresentation",
+            "name": "Truthful Misrepresentation — mixed meta-term of Truth, Misrepresentation",
+            "extent": [
+              "Truth",
+              "Misrepresentation"
+            ],
+            "intent": [
+              "Misdirection",
+              "Integrity"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Deceptive Honesty",
+            "short": "Mix:Deceptive Honesty",
+            "name": "Deceptive Honesty — mixed meta-term of Deception, Honesty",
+            "extent": [
+              "Deception",
+              "Honesty"
+            ],
+            "intent": [
+              "Authenticity",
+              "Dissemblance"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Authenticity",
+            "short": "M2:Authenticity",
+            "name": "Authenticity — M2 meta-term containing Truth, Deception, Honesty",
+            "extent": [
+              "Truth",
+              "Deception",
+              "Honesty"
+            ],
+            "intent": [
+              "Authenticity"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Misdirection",
+            "short": "M2:Misdirection",
+            "name": "Misdirection — M2 meta-term containing Truth, Deception, Misrepresentation",
+            "extent": [
+              "Truth",
+              "Deception",
+              "Misrepresentation"
+            ],
+            "intent": [
+              "Misdirection"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Integrity",
+            "short": "M2:Integrity",
+            "name": "Integrity — M2 meta-term containing Misrepresentation, Honesty, Truth",
+            "extent": [
+              "Misrepresentation",
+              "Honesty",
+              "Truth"
+            ],
+            "intent": [
+              "Integrity"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Dissemblance",
+            "short": "M2:Dissemblance",
+            "name": "Dissemblance — M2 meta-term containing Misrepresentation, Honesty, Deception",
+            "extent": [
+              "Misrepresentation",
+              "Honesty",
+              "Deception"
+            ],
+            "intent": [
+              "Dissemblance"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Truth",
+              "Deception",
+              "Misrepresentation",
+              "Honesty"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "~S1": {
+      "parent_seme": "~S1",
+      "parent_term": "unbeing",
+      "square": {
+        "S1": "Existence",
+        "S2": "Non-existence",
+        "~S2": "Existence",
+        "~S1": "Non-existence (in a positive sense)",
+        "M11": "Comprehensive Existence",
+        "M12": "Vacant Presence",
+        "M13": "Dual Existence",
+        "M14": "Non-existent Reality",
+        "M21": "Existent Non-existent",
+        "M22": "Existent Non-existent Existent-negation",
+        "M23": "Existent-negation Non-existent-negation Non-existent",
+        "M24": "Non-existent Non-existent-negation Non-existent-negation",
+        "Mixed1": "Co-existence",
+        "Mixed2": "Contradictory Existence"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Existent Non-existent",
+              "Existent Non-existent Existent-negation",
+              "Existent-negation Non-existent-negation Non-existent",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Existence",
+            "short": "S1",
+            "name": "Existence — inner term S1",
+            "extent": [
+              "Existence"
+            ],
+            "intent": [
+              "Existent Non-existent",
+              "Existent Non-existent Existent-negation",
+              "Existent-negation Non-existent-negation Non-existent",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Non-existence",
+            "short": "S2",
+            "name": "Non-existence — inner term S2",
+            "extent": [
+              "Non-existence"
+            ],
+            "intent": [
+              "Existent Non-existent",
+              "Existent Non-existent Existent-negation",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Non-existence (in a positive sense)",
+            "short": "~S1",
+            "name": "Non-existence (in a positive sense) — inner term ~S1",
+            "extent": [
+              "Non-existence (in a positive sense)"
+            ],
+            "intent": [
+              "Existent Non-existent Existent-negation",
+              "Existent-negation Non-existent-negation Non-existent",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Existence",
+            "short": "~S2",
+            "name": "Existence — inner term ~S2",
+            "extent": [
+              "Existence"
+            ],
+            "intent": [
+              "Existent Non-existent",
+              "Existent Non-existent Existent-negation",
+              "Existent-negation Non-existent-negation Non-existent",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Comprehensive Existence",
+            "short": "M1:Comprehensive Existence",
+            "name": "Comprehensive Existence — M1 meta-term of Existence, Non-existence",
+            "extent": [
+              "Existence",
+              "Non-existence"
+            ],
+            "intent": [
+              "Existent Non-existent",
+              "Existent Non-existent Existent-negation",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Vacant Presence",
+            "short": "M1:Vacant Presence",
+            "name": "Vacant Presence — M1 meta-term of Non-existence (in a positive sense), Existence",
+            "extent": [
+              "Non-existence (in a positive sense)",
+              "Existence"
+            ],
+            "intent": [
+              "Existent Non-existent Existent-negation",
+              "Existent-negation Non-existent-negation Non-existent",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Dual Existence",
+            "short": "M1:Dual Existence",
+            "name": "Dual Existence — M1 meta-term of Existence, Existence",
+            "extent": [
+              "Existence",
+              "Existence"
+            ],
+            "intent": [
+              "Existent Non-existent",
+              "Existent Non-existent Existent-negation",
+              "Existent-negation Non-existent-negation Non-existent",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Non-existent Reality",
+            "short": "M1:Non-existent Reality",
+            "name": "Non-existent Reality — M1 meta-term of Non-existence, Non-existence (in a positive sense)",
+            "extent": [
+              "Non-existence",
+              "Non-existence (in a positive sense)"
+            ],
+            "intent": [
+              "Existent Non-existent Existent-negation",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Co-existence",
+            "short": "Mix:Co-existence",
+            "name": "Co-existence — mixed meta-term of Existence, Non-existence (in a positive sense)",
+            "extent": [
+              "Existence",
+              "Non-existence (in a positive sense)"
+            ],
+            "intent": [
+              "Existent Non-existent Existent-negation",
+              "Existent-negation Non-existent-negation Non-existent",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Contradictory Existence",
+            "short": "Mix:Contradictory Existence",
+            "name": "Contradictory Existence — mixed meta-term of Non-existence, Existence",
+            "extent": [
+              "Non-existence",
+              "Existence"
+            ],
+            "intent": [
+              "Existent Non-existent",
+              "Existent Non-existent Existent-negation",
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Existent Non-existent",
+            "short": "M2:Existent Non-existent",
+            "name": "Existent Non-existent — M2 meta-term containing Existence, Non-existence, Existence",
+            "extent": [
+              "Existence",
+              "Non-existence",
+              "Existence"
+            ],
+            "intent": [
+              "Existent Non-existent"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Existent Non-existent Existent-negation",
+            "short": "M2:Existent Non-existent Existent-negation",
+            "name": "Existent Non-existent Existent-negation — M2 meta-term containing Existence, Non-existence, Non-existence (in a positive sense)",
+            "extent": [
+              "Existence",
+              "Non-existence",
+              "Non-existence (in a positive sense)"
+            ],
+            "intent": [
+              "Existent Non-existent Existent-negation"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Existent-negation Non-existent-negation Non-existent",
+            "short": "M2:Existent-negation Non-existent-negation Non-existent",
+            "name": "Existent-negation Non-existent-negation Non-existent — M2 meta-term containing Non-existence (in a positive sense), Existence, Existence",
+            "extent": [
+              "Non-existence (in a positive sense)",
+              "Existence",
+              "Existence"
+            ],
+            "intent": [
+              "Existent-negation Non-existent-negation Non-existent"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Non-existent Non-existent-negation Non-existent-negation",
+            "short": "M2:Non-existent Non-existent-negation Non-existent-negation",
+            "name": "Non-existent Non-existent-negation Non-existent-negation — M2 meta-term containing Non-existence (in a positive sense), Existence, Non-existence",
+            "extent": [
+              "Non-existence (in a positive sense)",
+              "Existence",
+              "Non-existence"
+            ],
+            "intent": [
+              "Non-existent Non-existent-negation Non-existent-negation"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Existence",
+              "Non-existence",
+              "Non-existence (in a positive sense)",
+              "Existence"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            6
+          ],
+          [
+            12,
+            7
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            12,
+            10
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            5
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            7
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            9
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            9,
+            4
+          ],
+          [
+            10,
+            1
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "~S2": {
+      "parent_seme": "~S2",
+      "parent_term": "real",
+      "square": {
+        "S1": "Concrete Reality",
+        "S2": "Abstract Reality",
+        "~S2": "Pure Concreteness",
+        "~S1": "Pure Abstraction",
+        "M11": "Holistic Reality",
+        "M12": "Pure Ideation",
+        "M13": "Concrete Idealism",
+        "M14": "Abstract Concreteness",
+        "M21": "Concrete-Abstract-Pure-Concreteness",
+        "M22": "Concrete-Abstract-Pure-Abstraction",
+        "M23": "Concrete-Pure-Concreteness-Pure-Abstraction",
+        "M24": "Abstract-Pure-Abstraction-Pure-Concreteness",
+        "Mixed1": "Concrete-Abstract Reality",
+        "Mixed2": "Abstract-Concrete Reality"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Concrete-Abstract-Pure-Concreteness",
+              "Concrete-Abstract-Pure-Abstraction",
+              "Concrete-Pure-Concreteness-Pure-Abstraction",
+              "Abstract-Pure-Abstraction-Pure-Concreteness"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Concrete Reality",
+            "short": "S1",
+            "name": "Concrete Reality — inner term S1",
+            "extent": [
+              "Concrete Reality"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Concreteness",
+              "Concrete-Abstract-Pure-Abstraction",
+              "Concrete-Pure-Concreteness-Pure-Abstraction"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Abstract Reality",
+            "short": "S2",
+            "name": "Abstract Reality — inner term S2",
+            "extent": [
+              "Abstract Reality"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Concreteness",
+              "Concrete-Abstract-Pure-Abstraction",
+              "Abstract-Pure-Abstraction-Pure-Concreteness"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Pure Abstraction",
+            "short": "~S1",
+            "name": "Pure Abstraction — inner term ~S1",
+            "extent": [
+              "Pure Abstraction"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Abstraction",
+              "Concrete-Pure-Concreteness-Pure-Abstraction",
+              "Abstract-Pure-Abstraction-Pure-Concreteness"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Pure Concreteness",
+            "short": "~S2",
+            "name": "Pure Concreteness — inner term ~S2",
+            "extent": [
+              "Pure Concreteness"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Concreteness",
+              "Concrete-Pure-Concreteness-Pure-Abstraction",
+              "Abstract-Pure-Abstraction-Pure-Concreteness"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Holistic Reality",
+            "short": "M1:Holistic Reality",
+            "name": "Holistic Reality — M1 meta-term of Concrete Reality, Abstract Reality",
+            "extent": [
+              "Concrete Reality",
+              "Abstract Reality"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Concreteness",
+              "Concrete-Abstract-Pure-Abstraction"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Pure Ideation",
+            "short": "M1:Pure Ideation",
+            "name": "Pure Ideation — M1 meta-term of Pure Abstraction, Pure Concreteness",
+            "extent": [
+              "Pure Abstraction",
+              "Pure Concreteness"
+            ],
+            "intent": [
+              "Concrete-Pure-Concreteness-Pure-Abstraction",
+              "Abstract-Pure-Abstraction-Pure-Concreteness"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Concrete Idealism",
+            "short": "M1:Concrete Idealism",
+            "name": "Concrete Idealism — M1 meta-term of Concrete Reality, Pure Concreteness",
+            "extent": [
+              "Concrete Reality",
+              "Pure Concreteness"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Concreteness",
+              "Concrete-Pure-Concreteness-Pure-Abstraction"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Abstract Concreteness",
+            "short": "M1:Abstract Concreteness",
+            "name": "Abstract Concreteness — M1 meta-term of Abstract Reality, Pure Abstraction",
+            "extent": [
+              "Abstract Reality",
+              "Pure Abstraction"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Abstraction",
+              "Abstract-Pure-Abstraction-Pure-Concreteness"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Concrete-Abstract Reality",
+            "short": "Mix:Concrete-Abstract Reality",
+            "name": "Concrete-Abstract Reality — mixed meta-term of Concrete Reality, Pure Abstraction",
+            "extent": [
+              "Concrete Reality",
+              "Pure Abstraction"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Abstraction",
+              "Concrete-Pure-Concreteness-Pure-Abstraction"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Abstract-Concrete Reality",
+            "short": "Mix:Abstract-Concrete Reality",
+            "name": "Abstract-Concrete Reality — mixed meta-term of Abstract Reality, Pure Concreteness",
+            "extent": [
+              "Abstract Reality",
+              "Pure Concreteness"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Concreteness",
+              "Abstract-Pure-Abstraction-Pure-Concreteness"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Concrete-Abstract-Pure-Concreteness",
+            "short": "M2:Concrete-Abstract-Pure-Concreteness",
+            "name": "Concrete-Abstract-Pure-Concreteness — M2 meta-term containing Concrete Reality, Abstract Reality, Pure Concreteness",
+            "extent": [
+              "Concrete Reality",
+              "Abstract Reality",
+              "Pure Concreteness"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Concreteness"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Concrete-Abstract-Pure-Abstraction",
+            "short": "M2:Concrete-Abstract-Pure-Abstraction",
+            "name": "Concrete-Abstract-Pure-Abstraction — M2 meta-term containing Concrete Reality, Abstract Reality, Pure Abstraction",
+            "extent": [
+              "Concrete Reality",
+              "Abstract Reality",
+              "Pure Abstraction"
+            ],
+            "intent": [
+              "Concrete-Abstract-Pure-Abstraction"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Concrete-Pure-Concreteness-Pure-Abstraction",
+            "short": "M2:Concrete-Pure-Concreteness-Pure-Abstraction",
+            "name": "Concrete-Pure-Concreteness-Pure-Abstraction — M2 meta-term containing Pure Abstraction, Pure Concreteness, Concrete Reality",
+            "extent": [
+              "Pure Abstraction",
+              "Pure Concreteness",
+              "Concrete Reality"
+            ],
+            "intent": [
+              "Concrete-Pure-Concreteness-Pure-Abstraction"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Abstract-Pure-Abstraction-Pure-Concreteness",
+            "short": "M2:Abstract-Pure-Abstraction-Pure-Concreteness",
+            "name": "Abstract-Pure-Abstraction-Pure-Concreteness — M2 meta-term containing Pure Abstraction, Pure Concreteness, Abstract Reality",
+            "extent": [
+              "Pure Abstraction",
+              "Pure Concreteness",
+              "Abstract Reality"
+            ],
+            "intent": [
+              "Abstract-Pure-Abstraction-Pure-Concreteness"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Concrete Reality",
+              "Abstract Reality",
+              "Pure Abstraction",
+              "Pure Concreteness"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "validation": {
+    "layer_1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "Both 'being' and 'seeming' can hold together, both can fail together, and one can hold alone. They are not antonyms, contradictories, or synonyms."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "'Unbeing' and 'being' are contradictories because the existence of one implies the absence of the other."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "'Real' and 'not real' (~S2) are contradictories because the existence of one implies the absence of the other."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "'Real' (S2) does not imply 'unbeing' (~S1). 'Real' refers to something existing as it appears, while 'unbeing' refers to the absence of being."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "'Unbeing' (~S1) does not imply 'seeming' (S2). 'Unbeing' refers to the absence of being, while 'seeming' refers to something appearing a certain way."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "'Unbeing' (~S1) and 'not real' (~S2) are contraries because the absence of both being and reality is possible."
+      }
+    },
+    "layer_2_S1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "Both 'Presence' and 'Absence' can coexist, can fail together, and one can hold alone."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "'Presence' and 'A-presence' are contradictories because if one is present, the other cannot be."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "'Absence' and 'Present' are contradictories because if one is present, the other cannot be."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "'Present' does not imply 'Presence'. 'Present' means something is there, but it doesn't specify whether it's 'Presence' or 'Absence'."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "'A-presence' does not imply 'Absence'. 'A-presence' means something is not 'Presence', but it doesn't specify whether it's 'Absence' or 'Present'."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "'A-presence' and 'Absence' are contraries because they cannot both be true at the same time, but one can exist without the other."
+      }
+    },
+    "layer_2_S2": {
+      "rule1": {
+        "pass": true,
+        "explanation": "Both 'Truth' and 'Deception' can hold together (someone can be truthful and deceptive in different contexts), both can fail together (a person can be neither truthful nor deceptive), and one can hold alone (a person can be truthful without being deceptive)."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "'Truth' and 'Misrepresentation' are contradictories because if a statement is true, it cannot be a misrepresentation, and if a statement is a misrepresentation, it cannot be true."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "'Deception' and 'Honesty' are contradictories because if a statement is a deception, it cannot be honest, and if a statement is honest, it cannot be a deception."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "'Honesty' does not imply 'Truth'. A honest statement can be a misstatement or a lie if it is about something false."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "'Misrepresentation' does not imply 'Deception'. A misrepresentation can be unintentional or due to ignorance, not necessarily a deception."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "'Misrepresentation' and 'Honesty' are contraries because they cannot both be true at the same time. However, they can both be false (a person can be neither honest nor misrepresenting)."
+      }
+    },
+    "layer_2_~S1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "Both 'Existence' and 'Non-existence' can hold together (e.g., in different domains or aspects), both can fail together (e.g., in the absence of both), and one can hold alone (e.g., only 'Existence' in a positive universe, only 'Non-existence' in a negative one)."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "'Existence' and 'Non-existence (in a positive sense)' are contradictories because if one is true, the other must be false."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "'Non-existence' and 'Non-existence (in a positive sense)' are contradictories because if one is true, the other must be false."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "'Non-existence' does not imply 'Existence'. If 'Non-existence' is true, it means 'Existence' is not present, not that 'Existence' is true."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "'Existence' does not imply 'Non-existence (in a positive sense)'. If 'Existence' is true, it means 'Non-existence (in a positive sense)' is not present, not that 'Non-existence (in a positive sense)' is true."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "'Non-existence' and 'Non-existence (in a positive sense)' are contraries because they cannot both be true (both would imply the absence of existence), but they can both be false (both would imply the absence of positive non-existence)."
+      }
+    },
+    "layer_2_~S2": {
+      "rule1": {
+        "pass": true,
+        "explanation": "Both S1 and S2 can hold together (representing a world with both concrete and abstract elements), both can fail together (a world devoid of both concrete and abstract elements), and one can hold alone (a world with only concrete or abstract elements)."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 and ~S1 are contradictories because if S1 (Concrete Reality) is true, then ~S1 (Pure Concreteness) must be false, and vice versa."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 and ~S2 are contradictories because if S2 (Abstract Reality) is true, then ~S2 (Pure Abstraction) must be false, and vice versa."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "~S2 (Pure Abstraction) does not necessarily imply S1 (Concrete Reality). A world of pure abstraction does not guarantee the presence of concrete reality."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "~S1 (Pure Abstraction) does not necessarily imply S2 (Abstract Reality). A world of pure abstraction does not guarantee the presence of abstract reality in its entirety."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 and ~S2 are contraries because if one is true (a world of pure concreteness or pure abstraction), the other must be false (a world of the opposite nature)."
+      }
+    }
+  },
+  "architectonic": {
+    "concepts": [
+      {
+        "id": "A:0",
+        "label": "bottom",
+        "short": "Bottom",
+        "name": "Bottom — empty extent, all four M2 attributes",
+        "extent": [],
+        "intent": [
+          "Reality Mask",
+          "Illusory Existence",
+          "Unreality Veil",
+          "Deceptive Appearance"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "shared_bottom"
+      },
+      {
+        "id": "A:5",
+        "label": "Existence",
+        "short": "M1:Existence",
+        "name": "Existence — M1 meta-term of being, seeming",
+        "extent": [
+          "being",
+          "seeming"
+        ],
+        "intent": [
+          "Reality Mask",
+          "Illusory Existence"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:6",
+        "label": "Non-existence",
+        "short": "M1:Non-existence",
+        "name": "Non-existence — M1 meta-term of unbeing, real",
+        "extent": [
+          "unbeing",
+          "real"
+        ],
+        "intent": [
+          "Unreality Veil",
+          "Deceptive Appearance"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:7",
+        "label": "Reality",
+        "short": "M1:Reality",
+        "name": "Reality — M1 meta-term of being, real",
+        "extent": [
+          "being",
+          "real"
+        ],
+        "intent": [
+          "Reality Mask",
+          "Unreality Veil"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:8",
+        "label": "Illusion",
+        "short": "M1:Illusion",
+        "name": "Illusion — M1 meta-term of seeming, unbeing",
+        "extent": [
+          "seeming",
+          "unbeing"
+        ],
+        "intent": [
+          "Illusory Existence",
+          "Deceptive Appearance"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:9",
+        "label": "Mixed Existence",
+        "short": "Mix:Mixed Existence",
+        "name": "Mixed Existence — mixed meta-term of being, unbeing",
+        "extent": [
+          "being",
+          "unbeing"
+        ],
+        "intent": [
+          "Illusory Existence",
+          "Unreality Veil"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:10",
+        "label": "Mixed Appearance",
+        "short": "Mix:Mixed Appearance",
+        "name": "Mixed Appearance — mixed meta-term of seeming, real",
+        "extent": [
+          "seeming",
+          "real"
+        ],
+        "intent": [
+          "Reality Mask",
+          "Deceptive Appearance"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:11",
+        "label": "Reality Mask",
+        "short": "M2:Reality Mask",
+        "name": "Reality Mask — M2 meta-term containing being, seeming, real",
+        "extent": [
+          "being",
+          "seeming",
+          "real"
+        ],
+        "intent": [
+          "Reality Mask"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:12",
+        "label": "Illusory Existence",
+        "short": "M2:Illusory Existence",
+        "name": "Illusory Existence — M2 meta-term containing being, seeming, unbeing",
+        "extent": [
+          "being",
+          "seeming",
+          "unbeing"
+        ],
+        "intent": [
+          "Illusory Existence"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:13",
+        "label": "Unreality Veil",
+        "short": "M2:Unreality Veil",
+        "name": "Unreality Veil — M2 meta-term containing unbeing, real, being",
+        "extent": [
+          "unbeing",
+          "real",
+          "being"
+        ],
+        "intent": [
+          "Unreality Veil"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:14",
+        "label": "Deceptive Appearance",
+        "short": "M2:Deceptive Appearance",
+        "name": "Deceptive Appearance — M2 meta-term containing unbeing, real, seeming",
+        "extent": [
+          "unbeing",
+          "real",
+          "seeming"
+        ],
+        "intent": [
+          "Deceptive Appearance"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:15",
+        "label": "top",
+        "short": "Top",
+        "name": "Top — all inner terms, no shared attribute",
+        "extent": [
+          "being",
+          "seeming",
+          "unbeing",
+          "real"
+        ],
+        "intent": [],
+        "layer": 1,
+        "origin": "A",
+        "role": "architectonic_top"
+      },
+      {
+        "id": "S1:1",
+        "label": "Presence",
+        "short": "S1",
+        "name": "Presence — inner term S1",
+        "extent": [
+          "Presence"
+        ],
+        "intent": [
+          "Manifest Presence",
+          "Unmanifest Presence",
+          "A-manifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:2",
+        "label": "Absence",
+        "short": "S2",
+        "name": "Absence — inner term S2",
+        "extent": [
+          "Absence"
+        ],
+        "intent": [
+          "Manifest Presence",
+          "Unmanifest Presence",
+          "Unmanifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:3",
+        "label": "A-presence",
+        "short": "~S1",
+        "name": "A-presence — inner term ~S1",
+        "extent": [
+          "A-presence"
+        ],
+        "intent": [
+          "Unmanifest Presence",
+          "A-manifest Absence",
+          "Unmanifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:4",
+        "label": "Present",
+        "short": "~S2",
+        "name": "Present — inner term ~S2",
+        "extent": [
+          "Present"
+        ],
+        "intent": [
+          "Manifest Presence",
+          "A-manifest Absence",
+          "Unmanifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:5",
+        "label": "Completeness",
+        "short": "M1:Completeness",
+        "name": "Completeness — M1 meta-term of Presence, Absence",
+        "extent": [
+          "Presence",
+          "Absence"
+        ],
+        "intent": [
+          "Manifest Presence",
+          "Unmanifest Presence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:6",
+        "label": "Neutrality",
+        "short": "M1:Neutrality",
+        "name": "Neutrality — M1 meta-term of A-presence, Present",
+        "extent": [
+          "A-presence",
+          "Present"
+        ],
+        "intent": [
+          "A-manifest Absence",
+          "Unmanifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:7",
+        "label": "Manifestation",
+        "short": "M1:Manifestation",
+        "name": "Manifestation — M1 meta-term of Presence, Present",
+        "extent": [
+          "Presence",
+          "Present"
+        ],
+        "intent": [
+          "Manifest Presence",
+          "A-manifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:8",
+        "label": "Vacancy",
+        "short": "M1:Vacancy",
+        "name": "Vacancy — M1 meta-term of Absence, A-presence",
+        "extent": [
+          "Absence",
+          "A-presence"
+        ],
+        "intent": [
+          "Unmanifest Presence",
+          "Unmanifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:9",
+        "label": "Co-presence",
+        "short": "Mix:Co-presence",
+        "name": "Co-presence — mixed meta-term of Presence, A-presence",
+        "extent": [
+          "Presence",
+          "A-presence"
+        ],
+        "intent": [
+          "Unmanifest Presence",
+          "A-manifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:10",
+        "label": "Co-absence",
+        "short": "Mix:Co-absence",
+        "name": "Co-absence — mixed meta-term of Absence, Present",
+        "extent": [
+          "Absence",
+          "Present"
+        ],
+        "intent": [
+          "Manifest Presence",
+          "Unmanifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:11",
+        "label": "Manifest Presence",
+        "short": "M2:Manifest Presence",
+        "name": "Manifest Presence — M2 meta-term containing Presence, Absence, Present",
+        "extent": [
+          "Presence",
+          "Absence",
+          "Present"
+        ],
+        "intent": [
+          "Manifest Presence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:12",
+        "label": "Unmanifest Presence",
+        "short": "M2:Unmanifest Presence",
+        "name": "Unmanifest Presence — M2 meta-term containing Presence, Absence, A-presence",
+        "extent": [
+          "Presence",
+          "Absence",
+          "A-presence"
+        ],
+        "intent": [
+          "Unmanifest Presence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:13",
+        "label": "A-manifest Absence",
+        "short": "M2:A-manifest Absence",
+        "name": "A-manifest Absence — M2 meta-term containing A-presence, Present, Presence",
+        "extent": [
+          "A-presence",
+          "Present",
+          "Presence"
+        ],
+        "intent": [
+          "A-manifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:14",
+        "label": "Unmanifest Absence",
+        "short": "M2:Unmanifest Absence",
+        "name": "Unmanifest Absence — M2 meta-term containing A-presence, Present, Absence",
+        "extent": [
+          "A-presence",
+          "Present",
+          "Absence"
+        ],
+        "intent": [
+          "Unmanifest Absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:15",
+        "label": "being*",
+        "short": "being",
+        "name": "Fully-articulated being",
+        "extent": [
+          "Presence",
+          "Absence",
+          "A-presence",
+          "Present"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "S1",
+        "role": "interface"
+      },
+      {
+        "id": "S2:1",
+        "label": "Truth",
+        "short": "S1",
+        "name": "Truth — inner term S1",
+        "extent": [
+          "Truth"
+        ],
+        "intent": [
+          "Authenticity",
+          "Misdirection",
+          "Integrity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:2",
+        "label": "Deception",
+        "short": "S2",
+        "name": "Deception — inner term S2",
+        "extent": [
+          "Deception"
+        ],
+        "intent": [
+          "Authenticity",
+          "Misdirection",
+          "Dissemblance"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:3",
+        "label": "Misrepresentation",
+        "short": "~S1",
+        "name": "Misrepresentation — inner term ~S1",
+        "extent": [
+          "Misrepresentation"
+        ],
+        "intent": [
+          "Misdirection",
+          "Integrity",
+          "Dissemblance"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:4",
+        "label": "Honesty",
+        "short": "~S2",
+        "name": "Honesty — inner term ~S2",
+        "extent": [
+          "Honesty"
+        ],
+        "intent": [
+          "Authenticity",
+          "Integrity",
+          "Dissemblance"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:5",
+        "label": "Integrity",
+        "short": "M1:Integrity",
+        "name": "Integrity — M1 meta-term of Truth, Deception",
+        "extent": [
+          "Truth",
+          "Deception"
+        ],
+        "intent": [
+          "Authenticity",
+          "Misdirection"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:6",
+        "label": "Paradox",
+        "short": "M1:Paradox",
+        "name": "Paradox — M1 meta-term of Misrepresentation, Honesty",
+        "extent": [
+          "Misrepresentation",
+          "Honesty"
+        ],
+        "intent": [
+          "Integrity",
+          "Dissemblance"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:7",
+        "label": "Authenticity",
+        "short": "M1:Authenticity",
+        "name": "Authenticity — M1 meta-term of Truth, Honesty",
+        "extent": [
+          "Truth",
+          "Honesty"
+        ],
+        "intent": [
+          "Authenticity",
+          "Integrity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:8",
+        "label": "Discrepancy",
+        "short": "M1:Discrepancy",
+        "name": "Discrepancy — M1 meta-term of Deception, Misrepresentation",
+        "extent": [
+          "Deception",
+          "Misrepresentation"
+        ],
+        "intent": [
+          "Misdirection",
+          "Dissemblance"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:9",
+        "label": "Truthful Misrepresentation",
+        "short": "Mix:Truthful Misrepresentation",
+        "name": "Truthful Misrepresentation — mixed meta-term of Truth, Misrepresentation",
+        "extent": [
+          "Truth",
+          "Misrepresentation"
+        ],
+        "intent": [
+          "Misdirection",
+          "Integrity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:10",
+        "label": "Deceptive Honesty",
+        "short": "Mix:Deceptive Honesty",
+        "name": "Deceptive Honesty — mixed meta-term of Deception, Honesty",
+        "extent": [
+          "Deception",
+          "Honesty"
+        ],
+        "intent": [
+          "Authenticity",
+          "Dissemblance"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:11",
+        "label": "Authenticity",
+        "short": "M2:Authenticity",
+        "name": "Authenticity — M2 meta-term containing Truth, Deception, Honesty",
+        "extent": [
+          "Truth",
+          "Deception",
+          "Honesty"
+        ],
+        "intent": [
+          "Authenticity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:12",
+        "label": "Misdirection",
+        "short": "M2:Misdirection",
+        "name": "Misdirection — M2 meta-term containing Truth, Deception, Misrepresentation",
+        "extent": [
+          "Truth",
+          "Deception",
+          "Misrepresentation"
+        ],
+        "intent": [
+          "Misdirection"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:13",
+        "label": "Integrity",
+        "short": "M2:Integrity",
+        "name": "Integrity — M2 meta-term containing Misrepresentation, Honesty, Truth",
+        "extent": [
+          "Misrepresentation",
+          "Honesty",
+          "Truth"
+        ],
+        "intent": [
+          "Integrity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:14",
+        "label": "Dissemblance",
+        "short": "M2:Dissemblance",
+        "name": "Dissemblance — M2 meta-term containing Misrepresentation, Honesty, Deception",
+        "extent": [
+          "Misrepresentation",
+          "Honesty",
+          "Deception"
+        ],
+        "intent": [
+          "Dissemblance"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:15",
+        "label": "seeming*",
+        "short": "seeming",
+        "name": "Fully-articulated seeming",
+        "extent": [
+          "Truth",
+          "Deception",
+          "Misrepresentation",
+          "Honesty"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "S2",
+        "role": "interface"
+      },
+      {
+        "id": "~S1:1",
+        "label": "Existence",
+        "short": "S1",
+        "name": "Existence — inner term S1",
+        "extent": [
+          "Existence"
+        ],
+        "intent": [
+          "Existent Non-existent",
+          "Existent Non-existent Existent-negation",
+          "Existent-negation Non-existent-negation Non-existent",
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:2",
+        "label": "Non-existence",
+        "short": "S2",
+        "name": "Non-existence — inner term S2",
+        "extent": [
+          "Non-existence"
+        ],
+        "intent": [
+          "Existent Non-existent",
+          "Existent Non-existent Existent-negation",
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:3",
+        "label": "Non-existence (in a positive sense)",
+        "short": "~S1",
+        "name": "Non-existence (in a positive sense) — inner term ~S1",
+        "extent": [
+          "Non-existence (in a positive sense)"
+        ],
+        "intent": [
+          "Existent Non-existent Existent-negation",
+          "Existent-negation Non-existent-negation Non-existent",
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:4",
+        "label": "Existence",
+        "short": "~S2",
+        "name": "Existence — inner term ~S2",
+        "extent": [
+          "Existence"
+        ],
+        "intent": [
+          "Existent Non-existent",
+          "Existent Non-existent Existent-negation",
+          "Existent-negation Non-existent-negation Non-existent",
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:5",
+        "label": "Comprehensive Existence",
+        "short": "M1:Comprehensive Existence",
+        "name": "Comprehensive Existence — M1 meta-term of Existence, Non-existence",
+        "extent": [
+          "Existence",
+          "Non-existence"
+        ],
+        "intent": [
+          "Existent Non-existent",
+          "Existent Non-existent Existent-negation",
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:6",
+        "label": "Vacant Presence",
+        "short": "M1:Vacant Presence",
+        "name": "Vacant Presence — M1 meta-term of Non-existence (in a positive sense), Existence",
+        "extent": [
+          "Non-existence (in a positive sense)",
+          "Existence"
+        ],
+        "intent": [
+          "Existent Non-existent Existent-negation",
+          "Existent-negation Non-existent-negation Non-existent",
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:7",
+        "label": "Dual Existence",
+        "short": "M1:Dual Existence",
+        "name": "Dual Existence — M1 meta-term of Existence, Existence",
+        "extent": [
+          "Existence",
+          "Existence"
+        ],
+        "intent": [
+          "Existent Non-existent",
+          "Existent Non-existent Existent-negation",
+          "Existent-negation Non-existent-negation Non-existent",
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:8",
+        "label": "Non-existent Reality",
+        "short": "M1:Non-existent Reality",
+        "name": "Non-existent Reality — M1 meta-term of Non-existence, Non-existence (in a positive sense)",
+        "extent": [
+          "Non-existence",
+          "Non-existence (in a positive sense)"
+        ],
+        "intent": [
+          "Existent Non-existent Existent-negation",
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:9",
+        "label": "Co-existence",
+        "short": "Mix:Co-existence",
+        "name": "Co-existence — mixed meta-term of Existence, Non-existence (in a positive sense)",
+        "extent": [
+          "Existence",
+          "Non-existence (in a positive sense)"
+        ],
+        "intent": [
+          "Existent Non-existent Existent-negation",
+          "Existent-negation Non-existent-negation Non-existent",
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:10",
+        "label": "Contradictory Existence",
+        "short": "Mix:Contradictory Existence",
+        "name": "Contradictory Existence — mixed meta-term of Non-existence, Existence",
+        "extent": [
+          "Non-existence",
+          "Existence"
+        ],
+        "intent": [
+          "Existent Non-existent",
+          "Existent Non-existent Existent-negation",
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:11",
+        "label": "Existent Non-existent",
+        "short": "M2:Existent Non-existent",
+        "name": "Existent Non-existent — M2 meta-term containing Existence, Non-existence, Existence",
+        "extent": [
+          "Existence",
+          "Non-existence",
+          "Existence"
+        ],
+        "intent": [
+          "Existent Non-existent"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:12",
+        "label": "Existent Non-existent Existent-negation",
+        "short": "M2:Existent Non-existent Existent-negation",
+        "name": "Existent Non-existent Existent-negation — M2 meta-term containing Existence, Non-existence, Non-existence (in a positive sense)",
+        "extent": [
+          "Existence",
+          "Non-existence",
+          "Non-existence (in a positive sense)"
+        ],
+        "intent": [
+          "Existent Non-existent Existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:13",
+        "label": "Existent-negation Non-existent-negation Non-existent",
+        "short": "M2:Existent-negation Non-existent-negation Non-existent",
+        "name": "Existent-negation Non-existent-negation Non-existent — M2 meta-term containing Non-existence (in a positive sense), Existence, Existence",
+        "extent": [
+          "Non-existence (in a positive sense)",
+          "Existence",
+          "Existence"
+        ],
+        "intent": [
+          "Existent-negation Non-existent-negation Non-existent"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:14",
+        "label": "Non-existent Non-existent-negation Non-existent-negation",
+        "short": "M2:Non-existent Non-existent-negation Non-existent-negation",
+        "name": "Non-existent Non-existent-negation Non-existent-negation — M2 meta-term containing Non-existence (in a positive sense), Existence, Non-existence",
+        "extent": [
+          "Non-existence (in a positive sense)",
+          "Existence",
+          "Non-existence"
+        ],
+        "intent": [
+          "Non-existent Non-existent-negation Non-existent-negation"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:15",
+        "label": "unbeing*",
+        "short": "unbeing",
+        "name": "Fully-articulated unbeing",
+        "extent": [
+          "Existence",
+          "Non-existence",
+          "Non-existence (in a positive sense)",
+          "Existence"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "interface"
+      },
+      {
+        "id": "~S2:1",
+        "label": "Concrete Reality",
+        "short": "S1",
+        "name": "Concrete Reality — inner term S1",
+        "extent": [
+          "Concrete Reality"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Concreteness",
+          "Concrete-Abstract-Pure-Abstraction",
+          "Concrete-Pure-Concreteness-Pure-Abstraction"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:2",
+        "label": "Abstract Reality",
+        "short": "S2",
+        "name": "Abstract Reality — inner term S2",
+        "extent": [
+          "Abstract Reality"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Concreteness",
+          "Concrete-Abstract-Pure-Abstraction",
+          "Abstract-Pure-Abstraction-Pure-Concreteness"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:3",
+        "label": "Pure Abstraction",
+        "short": "~S1",
+        "name": "Pure Abstraction — inner term ~S1",
+        "extent": [
+          "Pure Abstraction"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Abstraction",
+          "Concrete-Pure-Concreteness-Pure-Abstraction",
+          "Abstract-Pure-Abstraction-Pure-Concreteness"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:4",
+        "label": "Pure Concreteness",
+        "short": "~S2",
+        "name": "Pure Concreteness — inner term ~S2",
+        "extent": [
+          "Pure Concreteness"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Concreteness",
+          "Concrete-Pure-Concreteness-Pure-Abstraction",
+          "Abstract-Pure-Abstraction-Pure-Concreteness"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:5",
+        "label": "Holistic Reality",
+        "short": "M1:Holistic Reality",
+        "name": "Holistic Reality — M1 meta-term of Concrete Reality, Abstract Reality",
+        "extent": [
+          "Concrete Reality",
+          "Abstract Reality"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Concreteness",
+          "Concrete-Abstract-Pure-Abstraction"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:6",
+        "label": "Pure Ideation",
+        "short": "M1:Pure Ideation",
+        "name": "Pure Ideation — M1 meta-term of Pure Abstraction, Pure Concreteness",
+        "extent": [
+          "Pure Abstraction",
+          "Pure Concreteness"
+        ],
+        "intent": [
+          "Concrete-Pure-Concreteness-Pure-Abstraction",
+          "Abstract-Pure-Abstraction-Pure-Concreteness"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:7",
+        "label": "Concrete Idealism",
+        "short": "M1:Concrete Idealism",
+        "name": "Concrete Idealism — M1 meta-term of Concrete Reality, Pure Concreteness",
+        "extent": [
+          "Concrete Reality",
+          "Pure Concreteness"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Concreteness",
+          "Concrete-Pure-Concreteness-Pure-Abstraction"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:8",
+        "label": "Abstract Concreteness",
+        "short": "M1:Abstract Concreteness",
+        "name": "Abstract Concreteness — M1 meta-term of Abstract Reality, Pure Abstraction",
+        "extent": [
+          "Abstract Reality",
+          "Pure Abstraction"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Abstraction",
+          "Abstract-Pure-Abstraction-Pure-Concreteness"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:9",
+        "label": "Concrete-Abstract Reality",
+        "short": "Mix:Concrete-Abstract Reality",
+        "name": "Concrete-Abstract Reality — mixed meta-term of Concrete Reality, Pure Abstraction",
+        "extent": [
+          "Concrete Reality",
+          "Pure Abstraction"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Abstraction",
+          "Concrete-Pure-Concreteness-Pure-Abstraction"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:10",
+        "label": "Abstract-Concrete Reality",
+        "short": "Mix:Abstract-Concrete Reality",
+        "name": "Abstract-Concrete Reality — mixed meta-term of Abstract Reality, Pure Concreteness",
+        "extent": [
+          "Abstract Reality",
+          "Pure Concreteness"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Concreteness",
+          "Abstract-Pure-Abstraction-Pure-Concreteness"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:11",
+        "label": "Concrete-Abstract-Pure-Concreteness",
+        "short": "M2:Concrete-Abstract-Pure-Concreteness",
+        "name": "Concrete-Abstract-Pure-Concreteness — M2 meta-term containing Concrete Reality, Abstract Reality, Pure Concreteness",
+        "extent": [
+          "Concrete Reality",
+          "Abstract Reality",
+          "Pure Concreteness"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Concreteness"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:12",
+        "label": "Concrete-Abstract-Pure-Abstraction",
+        "short": "M2:Concrete-Abstract-Pure-Abstraction",
+        "name": "Concrete-Abstract-Pure-Abstraction — M2 meta-term containing Concrete Reality, Abstract Reality, Pure Abstraction",
+        "extent": [
+          "Concrete Reality",
+          "Abstract Reality",
+          "Pure Abstraction"
+        ],
+        "intent": [
+          "Concrete-Abstract-Pure-Abstraction"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:13",
+        "label": "Concrete-Pure-Concreteness-Pure-Abstraction",
+        "short": "M2:Concrete-Pure-Concreteness-Pure-Abstraction",
+        "name": "Concrete-Pure-Concreteness-Pure-Abstraction — M2 meta-term containing Pure Abstraction, Pure Concreteness, Concrete Reality",
+        "extent": [
+          "Pure Abstraction",
+          "Pure Concreteness",
+          "Concrete Reality"
+        ],
+        "intent": [
+          "Concrete-Pure-Concreteness-Pure-Abstraction"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:14",
+        "label": "Abstract-Pure-Abstraction-Pure-Concreteness",
+        "short": "M2:Abstract-Pure-Abstraction-Pure-Concreteness",
+        "name": "Abstract-Pure-Abstraction-Pure-Concreteness — M2 meta-term containing Pure Abstraction, Pure Concreteness, Abstract Reality",
+        "extent": [
+          "Pure Abstraction",
+          "Pure Concreteness",
+          "Abstract Reality"
+        ],
+        "intent": [
+          "Abstract-Pure-Abstraction-Pure-Concreteness"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:15",
+        "label": "real*",
+        "short": "real",
+        "name": "Fully-articulated real",
+        "extent": [
+          "Concrete Reality",
+          "Abstract Reality",
+          "Pure Abstraction",
+          "Pure Concreteness"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "interface"
+      }
+    ],
+    "edges": [
+      [
+        "A:15",
+        "A:11"
+      ],
+      [
+        "A:15",
+        "A:12"
+      ],
+      [
+        "A:15",
+        "A:13"
+      ],
+      [
+        "A:15",
+        "A:14"
+      ],
+      [
+        "A:11",
+        "A:5"
+      ],
+      [
+        "A:11",
+        "A:7"
+      ],
+      [
+        "A:11",
+        "A:10"
+      ],
+      [
+        "A:12",
+        "A:5"
+      ],
+      [
+        "A:12",
+        "A:8"
+      ],
+      [
+        "A:12",
+        "A:9"
+      ],
+      [
+        "A:13",
+        "A:6"
+      ],
+      [
+        "A:13",
+        "A:7"
+      ],
+      [
+        "A:13",
+        "A:9"
+      ],
+      [
+        "A:14",
+        "A:6"
+      ],
+      [
+        "A:14",
+        "A:8"
+      ],
+      [
+        "A:14",
+        "A:10"
+      ],
+      [
+        "A:5",
+        "S1:15"
+      ],
+      [
+        "A:5",
+        "S2:15"
+      ],
+      [
+        "A:6",
+        "~S1:15"
+      ],
+      [
+        "A:6",
+        "~S2:15"
+      ],
+      [
+        "A:7",
+        "S1:15"
+      ],
+      [
+        "A:7",
+        "~S2:15"
+      ],
+      [
+        "A:8",
+        "S2:15"
+      ],
+      [
+        "A:8",
+        "~S1:15"
+      ],
+      [
+        "A:9",
+        "S1:15"
+      ],
+      [
+        "A:9",
+        "~S1:15"
+      ],
+      [
+        "A:10",
+        "S2:15"
+      ],
+      [
+        "A:10",
+        "~S2:15"
+      ],
+      [
+        "S1:15",
+        "S1:11"
+      ],
+      [
+        "S1:15",
+        "S1:12"
+      ],
+      [
+        "S1:15",
+        "S1:13"
+      ],
+      [
+        "S1:15",
+        "S1:14"
+      ],
+      [
+        "S1:11",
+        "S1:5"
+      ],
+      [
+        "S1:11",
+        "S1:7"
+      ],
+      [
+        "S1:11",
+        "S1:10"
+      ],
+      [
+        "S1:12",
+        "S1:5"
+      ],
+      [
+        "S1:12",
+        "S1:8"
+      ],
+      [
+        "S1:12",
+        "S1:9"
+      ],
+      [
+        "S1:13",
+        "S1:6"
+      ],
+      [
+        "S1:13",
+        "S1:7"
+      ],
+      [
+        "S1:13",
+        "S1:9"
+      ],
+      [
+        "S1:14",
+        "S1:6"
+      ],
+      [
+        "S1:14",
+        "S1:8"
+      ],
+      [
+        "S1:14",
+        "S1:10"
+      ],
+      [
+        "S1:5",
+        "S1:1"
+      ],
+      [
+        "S1:5",
+        "S1:2"
+      ],
+      [
+        "S1:6",
+        "S1:3"
+      ],
+      [
+        "S1:6",
+        "S1:4"
+      ],
+      [
+        "S1:7",
+        "S1:1"
+      ],
+      [
+        "S1:7",
+        "S1:4"
+      ],
+      [
+        "S1:8",
+        "S1:2"
+      ],
+      [
+        "S1:8",
+        "S1:3"
+      ],
+      [
+        "S1:9",
+        "S1:1"
+      ],
+      [
+        "S1:9",
+        "S1:3"
+      ],
+      [
+        "S1:10",
+        "S1:2"
+      ],
+      [
+        "S1:10",
+        "S1:4"
+      ],
+      [
+        "S1:1",
+        "A:0"
+      ],
+      [
+        "S1:2",
+        "A:0"
+      ],
+      [
+        "S1:3",
+        "A:0"
+      ],
+      [
+        "S1:4",
+        "A:0"
+      ],
+      [
+        "S2:15",
+        "S2:11"
+      ],
+      [
+        "S2:15",
+        "S2:12"
+      ],
+      [
+        "S2:15",
+        "S2:13"
+      ],
+      [
+        "S2:15",
+        "S2:14"
+      ],
+      [
+        "S2:11",
+        "S2:5"
+      ],
+      [
+        "S2:11",
+        "S2:7"
+      ],
+      [
+        "S2:11",
+        "S2:10"
+      ],
+      [
+        "S2:12",
+        "S2:5"
+      ],
+      [
+        "S2:12",
+        "S2:8"
+      ],
+      [
+        "S2:12",
+        "S2:9"
+      ],
+      [
+        "S2:13",
+        "S2:6"
+      ],
+      [
+        "S2:13",
+        "S2:7"
+      ],
+      [
+        "S2:13",
+        "S2:9"
+      ],
+      [
+        "S2:14",
+        "S2:6"
+      ],
+      [
+        "S2:14",
+        "S2:8"
+      ],
+      [
+        "S2:14",
+        "S2:10"
+      ],
+      [
+        "S2:5",
+        "S2:1"
+      ],
+      [
+        "S2:5",
+        "S2:2"
+      ],
+      [
+        "S2:6",
+        "S2:3"
+      ],
+      [
+        "S2:6",
+        "S2:4"
+      ],
+      [
+        "S2:7",
+        "S2:1"
+      ],
+      [
+        "S2:7",
+        "S2:4"
+      ],
+      [
+        "S2:8",
+        "S2:2"
+      ],
+      [
+        "S2:8",
+        "S2:3"
+      ],
+      [
+        "S2:9",
+        "S2:1"
+      ],
+      [
+        "S2:9",
+        "S2:3"
+      ],
+      [
+        "S2:10",
+        "S2:2"
+      ],
+      [
+        "S2:10",
+        "S2:4"
+      ],
+      [
+        "S2:1",
+        "A:0"
+      ],
+      [
+        "S2:2",
+        "A:0"
+      ],
+      [
+        "S2:3",
+        "A:0"
+      ],
+      [
+        "S2:4",
+        "A:0"
+      ],
+      [
+        "~S1:15",
+        "~S1:11"
+      ],
+      [
+        "~S1:15",
+        "~S1:12"
+      ],
+      [
+        "~S1:15",
+        "~S1:13"
+      ],
+      [
+        "~S1:15",
+        "~S1:14"
+      ],
+      [
+        "~S1:11",
+        "~S1:5"
+      ],
+      [
+        "~S1:11",
+        "~S1:7"
+      ],
+      [
+        "~S1:11",
+        "~S1:10"
+      ],
+      [
+        "~S1:12",
+        "~S1:5"
+      ],
+      [
+        "~S1:12",
+        "~S1:6"
+      ],
+      [
+        "~S1:12",
+        "~S1:7"
+      ],
+      [
+        "~S1:12",
+        "~S1:8"
+      ],
+      [
+        "~S1:12",
+        "~S1:9"
+      ],
+      [
+        "~S1:12",
+        "~S1:10"
+      ],
+      [
+        "~S1:13",
+        "~S1:6"
+      ],
+      [
+        "~S1:13",
+        "~S1:7"
+      ],
+      [
+        "~S1:13",
+        "~S1:9"
+      ],
+      [
+        "~S1:14",
+        "~S1:5"
+      ],
+      [
+        "~S1:14",
+        "~S1:6"
+      ],
+      [
+        "~S1:14",
+        "~S1:7"
+      ],
+      [
+        "~S1:14",
+        "~S1:8"
+      ],
+      [
+        "~S1:14",
+        "~S1:9"
+      ],
+      [
+        "~S1:14",
+        "~S1:10"
+      ],
+      [
+        "~S1:5",
+        "~S1:1"
+      ],
+      [
+        "~S1:5",
+        "~S1:2"
+      ],
+      [
+        "~S1:5",
+        "~S1:4"
+      ],
+      [
+        "~S1:6",
+        "~S1:1"
+      ],
+      [
+        "~S1:6",
+        "~S1:3"
+      ],
+      [
+        "~S1:6",
+        "~S1:4"
+      ],
+      [
+        "~S1:7",
+        "~S1:1"
+      ],
+      [
+        "~S1:7",
+        "~S1:4"
+      ],
+      [
+        "~S1:8",
+        "~S1:2"
+      ],
+      [
+        "~S1:8",
+        "~S1:3"
+      ],
+      [
+        "~S1:9",
+        "~S1:1"
+      ],
+      [
+        "~S1:9",
+        "~S1:3"
+      ],
+      [
+        "~S1:9",
+        "~S1:4"
+      ],
+      [
+        "~S1:10",
+        "~S1:1"
+      ],
+      [
+        "~S1:10",
+        "~S1:2"
+      ],
+      [
+        "~S1:10",
+        "~S1:4"
+      ],
+      [
+        "~S1:1",
+        "A:0"
+      ],
+      [
+        "~S1:2",
+        "A:0"
+      ],
+      [
+        "~S1:3",
+        "A:0"
+      ],
+      [
+        "~S1:4",
+        "A:0"
+      ],
+      [
+        "~S2:15",
+        "~S2:11"
+      ],
+      [
+        "~S2:15",
+        "~S2:12"
+      ],
+      [
+        "~S2:15",
+        "~S2:13"
+      ],
+      [
+        "~S2:15",
+        "~S2:14"
+      ],
+      [
+        "~S2:11",
+        "~S2:5"
+      ],
+      [
+        "~S2:11",
+        "~S2:7"
+      ],
+      [
+        "~S2:11",
+        "~S2:10"
+      ],
+      [
+        "~S2:12",
+        "~S2:5"
+      ],
+      [
+        "~S2:12",
+        "~S2:8"
+      ],
+      [
+        "~S2:12",
+        "~S2:9"
+      ],
+      [
+        "~S2:13",
+        "~S2:6"
+      ],
+      [
+        "~S2:13",
+        "~S2:7"
+      ],
+      [
+        "~S2:13",
+        "~S2:9"
+      ],
+      [
+        "~S2:14",
+        "~S2:6"
+      ],
+      [
+        "~S2:14",
+        "~S2:8"
+      ],
+      [
+        "~S2:14",
+        "~S2:10"
+      ],
+      [
+        "~S2:5",
+        "~S2:1"
+      ],
+      [
+        "~S2:5",
+        "~S2:2"
+      ],
+      [
+        "~S2:6",
+        "~S2:3"
+      ],
+      [
+        "~S2:6",
+        "~S2:4"
+      ],
+      [
+        "~S2:7",
+        "~S2:1"
+      ],
+      [
+        "~S2:7",
+        "~S2:4"
+      ],
+      [
+        "~S2:8",
+        "~S2:2"
+      ],
+      [
+        "~S2:8",
+        "~S2:3"
+      ],
+      [
+        "~S2:9",
+        "~S2:1"
+      ],
+      [
+        "~S2:9",
+        "~S2:3"
+      ],
+      [
+        "~S2:10",
+        "~S2:2"
+      ],
+      [
+        "~S2:10",
+        "~S2:4"
+      ],
+      [
+        "~S2:1",
+        "A:0"
+      ],
+      [
+        "~S2:2",
+        "A:0"
+      ],
+      [
+        "~S2:3",
+        "A:0"
+      ],
+      [
+        "~S2:4",
+        "A:0"
+      ]
+    ]
+  }
+}

@@ -1,0 +1,3891 @@
+{
+  "metadata": {
+    "seed": "A1",
+    "seed_s1": "necessity",
+    "seed_s2": "contingency",
+    "model": "phi4:14b",
+    "generated_at": "2026-10-11T18:25:12",
+    "collisions": [
+      {
+        "label": "L1:M2",
+        "key": "M21",
+        "term": "Necessity"
+      },
+      {
+        "label": "L1:M2",
+        "key": "M22",
+        "term": "Possibility"
+      },
+      {
+        "label": "L1:M2",
+        "key": "M23",
+        "term": "Certainty"
+      },
+      {
+        "label": "L1:M2",
+        "key": "M24",
+        "term": "Contingency"
+      }
+    ]
+  },
+  "layer_1": {
+    "square": {
+      "S1": "necessity",
+      "S2": "contingency",
+      "~S2": "certainty",
+      "~S1": "possibility",
+      "M11": "Determination",
+      "M12": "Equilibrium",
+      "M13": "Assurance",
+      "M14": "Flexibility",
+      "M21": "Necessity",
+      "M22": "Possibility",
+      "M23": "Certainty",
+      "M24": "Contingency",
+      "Mixed1": "Mixed necessity",
+      "Mixed2": "Mixed contingency"
+    },
+    "lattice": {
+      "concepts": [
+        {
+          "id": 0,
+          "label": "bottom",
+          "short": "Bottom",
+          "name": "Bottom — empty extent, all four M2 attributes",
+          "extent": [],
+          "intent": [
+            "Necessity",
+            "Possibility",
+            "Certainty",
+            "Contingency"
+          ]
+        },
+        {
+          "id": 1,
+          "label": "necessity",
+          "short": "S1",
+          "name": "necessity — inner term S1",
+          "extent": [
+            "necessity"
+          ],
+          "intent": [
+            "Necessity",
+            "Possibility",
+            "Certainty"
+          ]
+        },
+        {
+          "id": 2,
+          "label": "contingency",
+          "short": "S2",
+          "name": "contingency — inner term S2",
+          "extent": [
+            "contingency"
+          ],
+          "intent": [
+            "Necessity",
+            "Possibility",
+            "Contingency"
+          ]
+        },
+        {
+          "id": 3,
+          "label": "possibility",
+          "short": "~S1",
+          "name": "possibility — inner term ~S1",
+          "extent": [
+            "possibility"
+          ],
+          "intent": [
+            "Possibility",
+            "Certainty",
+            "Contingency"
+          ]
+        },
+        {
+          "id": 4,
+          "label": "certainty",
+          "short": "~S2",
+          "name": "certainty — inner term ~S2",
+          "extent": [
+            "certainty"
+          ],
+          "intent": [
+            "Necessity",
+            "Certainty",
+            "Contingency"
+          ]
+        },
+        {
+          "id": 5,
+          "label": "Determination",
+          "short": "M1:Determination",
+          "name": "Determination — M1 meta-term of necessity, contingency",
+          "extent": [
+            "necessity",
+            "contingency"
+          ],
+          "intent": [
+            "Necessity",
+            "Possibility"
+          ]
+        },
+        {
+          "id": 6,
+          "label": "Equilibrium",
+          "short": "M1:Equilibrium",
+          "name": "Equilibrium — M1 meta-term of possibility, certainty",
+          "extent": [
+            "possibility",
+            "certainty"
+          ],
+          "intent": [
+            "Certainty",
+            "Contingency"
+          ]
+        },
+        {
+          "id": 7,
+          "label": "Assurance",
+          "short": "M1:Assurance",
+          "name": "Assurance — M1 meta-term of necessity, certainty",
+          "extent": [
+            "necessity",
+            "certainty"
+          ],
+          "intent": [
+            "Necessity",
+            "Certainty"
+          ]
+        },
+        {
+          "id": 8,
+          "label": "Flexibility",
+          "short": "M1:Flexibility",
+          "name": "Flexibility — M1 meta-term of contingency, possibility",
+          "extent": [
+            "contingency",
+            "possibility"
+          ],
+          "intent": [
+            "Possibility",
+            "Contingency"
+          ]
+        },
+        {
+          "id": 9,
+          "label": "Mixed necessity",
+          "short": "Mix:Mixed necessity",
+          "name": "Mixed necessity — mixed meta-term of necessity, possibility",
+          "extent": [
+            "necessity",
+            "possibility"
+          ],
+          "intent": [
+            "Possibility",
+            "Certainty"
+          ]
+        },
+        {
+          "id": 10,
+          "label": "Mixed contingency",
+          "short": "Mix:Mixed contingency",
+          "name": "Mixed contingency — mixed meta-term of contingency, certainty",
+          "extent": [
+            "contingency",
+            "certainty"
+          ],
+          "intent": [
+            "Necessity",
+            "Contingency"
+          ]
+        },
+        {
+          "id": 11,
+          "label": "Necessity",
+          "short": "M2:Necessity",
+          "name": "Necessity — M2 meta-term containing necessity, contingency, certainty",
+          "extent": [
+            "necessity",
+            "contingency",
+            "certainty"
+          ],
+          "intent": [
+            "Necessity"
+          ]
+        },
+        {
+          "id": 12,
+          "label": "Possibility",
+          "short": "M2:Possibility",
+          "name": "Possibility — M2 meta-term containing necessity, contingency, possibility",
+          "extent": [
+            "necessity",
+            "contingency",
+            "possibility"
+          ],
+          "intent": [
+            "Possibility"
+          ]
+        },
+        {
+          "id": 13,
+          "label": "Certainty",
+          "short": "M2:Certainty",
+          "name": "Certainty — M2 meta-term containing possibility, certainty, necessity",
+          "extent": [
+            "possibility",
+            "certainty",
+            "necessity"
+          ],
+          "intent": [
+            "Certainty"
+          ]
+        },
+        {
+          "id": 14,
+          "label": "Contingency",
+          "short": "M2:Contingency",
+          "name": "Contingency — M2 meta-term containing possibility, certainty, contingency",
+          "extent": [
+            "possibility",
+            "certainty",
+            "contingency"
+          ],
+          "intent": [
+            "Contingency"
+          ]
+        },
+        {
+          "id": 15,
+          "label": "top",
+          "short": "Top",
+          "name": "Top — all inner terms, no shared attribute",
+          "extent": [
+            "necessity",
+            "contingency",
+            "possibility",
+            "certainty"
+          ],
+          "intent": []
+        }
+      ],
+      "edges": [
+        [
+          15,
+          11
+        ],
+        [
+          15,
+          12
+        ],
+        [
+          15,
+          13
+        ],
+        [
+          15,
+          14
+        ],
+        [
+          11,
+          5
+        ],
+        [
+          11,
+          7
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          12,
+          8
+        ],
+        [
+          12,
+          9
+        ],
+        [
+          13,
+          6
+        ],
+        [
+          13,
+          7
+        ],
+        [
+          13,
+          9
+        ],
+        [
+          14,
+          6
+        ],
+        [
+          14,
+          8
+        ],
+        [
+          14,
+          10
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          10,
+          2
+        ],
+        [
+          10,
+          4
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ]
+    }
+  },
+  "layer_2": {
+    "S1": {
+      "parent_seme": "S1",
+      "parent_term": "necessity",
+      "square": {
+        "S1": "Compulsion",
+        "S2": "Essentiality",
+        "~S2": "Nonessentiality",
+        "~S1": "Volition",
+        "M11": "Imperative",
+        "M12": "Autonomy",
+        "M13": "Coercion",
+        "M14": "Freedom",
+        "M21": "Inevitable Necessity",
+        "M22": "Compelled Choice",
+        "M23": "Obligatory Freedom",
+        "M24": "Essential Volition",
+        "Mixed1": "Compulsivity",
+        "Mixed2": "EssentialityDivergence"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Inevitable Necessity",
+              "Compelled Choice",
+              "Obligatory Freedom",
+              "Essential Volition"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Compulsion",
+            "short": "S1",
+            "name": "Compulsion — inner term S1",
+            "extent": [
+              "Compulsion"
+            ],
+            "intent": [
+              "Inevitable Necessity",
+              "Compelled Choice",
+              "Obligatory Freedom"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Essentiality",
+            "short": "S2",
+            "name": "Essentiality — inner term S2",
+            "extent": [
+              "Essentiality"
+            ],
+            "intent": [
+              "Inevitable Necessity",
+              "Compelled Choice",
+              "Essential Volition"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Volition",
+            "short": "~S1",
+            "name": "Volition — inner term ~S1",
+            "extent": [
+              "Volition"
+            ],
+            "intent": [
+              "Compelled Choice",
+              "Obligatory Freedom",
+              "Essential Volition"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Nonessentiality",
+            "short": "~S2",
+            "name": "Nonessentiality — inner term ~S2",
+            "extent": [
+              "Nonessentiality"
+            ],
+            "intent": [
+              "Inevitable Necessity",
+              "Obligatory Freedom",
+              "Essential Volition"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Imperative",
+            "short": "M1:Imperative",
+            "name": "Imperative — M1 meta-term of Compulsion, Essentiality",
+            "extent": [
+              "Compulsion",
+              "Essentiality"
+            ],
+            "intent": [
+              "Inevitable Necessity",
+              "Compelled Choice"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Autonomy",
+            "short": "M1:Autonomy",
+            "name": "Autonomy — M1 meta-term of Volition, Nonessentiality",
+            "extent": [
+              "Volition",
+              "Nonessentiality"
+            ],
+            "intent": [
+              "Obligatory Freedom",
+              "Essential Volition"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Coercion",
+            "short": "M1:Coercion",
+            "name": "Coercion — M1 meta-term of Compulsion, Nonessentiality",
+            "extent": [
+              "Compulsion",
+              "Nonessentiality"
+            ],
+            "intent": [
+              "Inevitable Necessity",
+              "Obligatory Freedom"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Freedom",
+            "short": "M1:Freedom",
+            "name": "Freedom — M1 meta-term of Essentiality, Volition",
+            "extent": [
+              "Essentiality",
+              "Volition"
+            ],
+            "intent": [
+              "Compelled Choice",
+              "Essential Volition"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Compulsivity",
+            "short": "Mix:Compulsivity",
+            "name": "Compulsivity — mixed meta-term of Compulsion, Volition",
+            "extent": [
+              "Compulsion",
+              "Volition"
+            ],
+            "intent": [
+              "Compelled Choice",
+              "Obligatory Freedom"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "EssentialityDivergence",
+            "short": "Mix:EssentialityDivergence",
+            "name": "EssentialityDivergence — mixed meta-term of Essentiality, Nonessentiality",
+            "extent": [
+              "Essentiality",
+              "Nonessentiality"
+            ],
+            "intent": [
+              "Inevitable Necessity",
+              "Essential Volition"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Inevitable Necessity",
+            "short": "M2:Inevitable Necessity",
+            "name": "Inevitable Necessity — M2 meta-term containing Compulsion, Essentiality, Nonessentiality",
+            "extent": [
+              "Compulsion",
+              "Essentiality",
+              "Nonessentiality"
+            ],
+            "intent": [
+              "Inevitable Necessity"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Compelled Choice",
+            "short": "M2:Compelled Choice",
+            "name": "Compelled Choice — M2 meta-term containing Compulsion, Essentiality, Volition",
+            "extent": [
+              "Compulsion",
+              "Essentiality",
+              "Volition"
+            ],
+            "intent": [
+              "Compelled Choice"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Obligatory Freedom",
+            "short": "M2:Obligatory Freedom",
+            "name": "Obligatory Freedom — M2 meta-term containing Volition, Nonessentiality, Compulsion",
+            "extent": [
+              "Volition",
+              "Nonessentiality",
+              "Compulsion"
+            ],
+            "intent": [
+              "Obligatory Freedom"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Essential Volition",
+            "short": "M2:Essential Volition",
+            "name": "Essential Volition — M2 meta-term containing Volition, Nonessentiality, Essentiality",
+            "extent": [
+              "Volition",
+              "Nonessentiality",
+              "Essentiality"
+            ],
+            "intent": [
+              "Essential Volition"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Compulsion",
+              "Essentiality",
+              "Volition",
+              "Nonessentiality"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "S2": {
+      "parent_seme": "S2",
+      "parent_term": "contingency",
+      "square": {
+        "S1": "Unpredictability",
+        "S2": "Dependence",
+        "~S2": "Independence",
+        "~S1": "Predictability",
+        "M11": "Chaos",
+        "M12": "Certitude",
+        "M13": "Spontaneity",
+        "M14": "Orderliness",
+        "M21": "Adaptive Reliance",
+        "M22": "Dynamic Interdependence",
+        "M23": "Calculated Adaptability",
+        "M24": "Strategic Autonomy",
+        "Mixed1": "Ambiguity",
+        "Mixed2": "Interdependence"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Adaptive Reliance",
+              "Dynamic Interdependence",
+              "Calculated Adaptability",
+              "Strategic Autonomy"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Unpredictability",
+            "short": "S1",
+            "name": "Unpredictability — inner term S1",
+            "extent": [
+              "Unpredictability"
+            ],
+            "intent": [
+              "Adaptive Reliance",
+              "Dynamic Interdependence",
+              "Calculated Adaptability"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Dependence",
+            "short": "S2",
+            "name": "Dependence — inner term S2",
+            "extent": [
+              "Dependence"
+            ],
+            "intent": [
+              "Adaptive Reliance",
+              "Dynamic Interdependence",
+              "Strategic Autonomy"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Predictability",
+            "short": "~S1",
+            "name": "Predictability — inner term ~S1",
+            "extent": [
+              "Predictability"
+            ],
+            "intent": [
+              "Dynamic Interdependence",
+              "Calculated Adaptability",
+              "Strategic Autonomy"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Independence",
+            "short": "~S2",
+            "name": "Independence — inner term ~S2",
+            "extent": [
+              "Independence"
+            ],
+            "intent": [
+              "Adaptive Reliance",
+              "Calculated Adaptability",
+              "Strategic Autonomy"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Chaos",
+            "short": "M1:Chaos",
+            "name": "Chaos — M1 meta-term of Unpredictability, Dependence",
+            "extent": [
+              "Unpredictability",
+              "Dependence"
+            ],
+            "intent": [
+              "Adaptive Reliance",
+              "Dynamic Interdependence"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Certitude",
+            "short": "M1:Certitude",
+            "name": "Certitude — M1 meta-term of Predictability, Independence",
+            "extent": [
+              "Predictability",
+              "Independence"
+            ],
+            "intent": [
+              "Calculated Adaptability",
+              "Strategic Autonomy"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Spontaneity",
+            "short": "M1:Spontaneity",
+            "name": "Spontaneity — M1 meta-term of Unpredictability, Independence",
+            "extent": [
+              "Unpredictability",
+              "Independence"
+            ],
+            "intent": [
+              "Adaptive Reliance",
+              "Calculated Adaptability"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Orderliness",
+            "short": "M1:Orderliness",
+            "name": "Orderliness — M1 meta-term of Dependence, Predictability",
+            "extent": [
+              "Dependence",
+              "Predictability"
+            ],
+            "intent": [
+              "Dynamic Interdependence",
+              "Strategic Autonomy"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Ambiguity",
+            "short": "Mix:Ambiguity",
+            "name": "Ambiguity — mixed meta-term of Unpredictability, Predictability",
+            "extent": [
+              "Unpredictability",
+              "Predictability"
+            ],
+            "intent": [
+              "Dynamic Interdependence",
+              "Calculated Adaptability"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Interdependence",
+            "short": "Mix:Interdependence",
+            "name": "Interdependence — mixed meta-term of Dependence, Independence",
+            "extent": [
+              "Dependence",
+              "Independence"
+            ],
+            "intent": [
+              "Adaptive Reliance",
+              "Strategic Autonomy"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Adaptive Reliance",
+            "short": "M2:Adaptive Reliance",
+            "name": "Adaptive Reliance — M2 meta-term containing Unpredictability, Dependence, Independence",
+            "extent": [
+              "Unpredictability",
+              "Dependence",
+              "Independence"
+            ],
+            "intent": [
+              "Adaptive Reliance"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Dynamic Interdependence",
+            "short": "M2:Dynamic Interdependence",
+            "name": "Dynamic Interdependence — M2 meta-term containing Unpredictability, Dependence, Predictability",
+            "extent": [
+              "Unpredictability",
+              "Dependence",
+              "Predictability"
+            ],
+            "intent": [
+              "Dynamic Interdependence"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Calculated Adaptability",
+            "short": "M2:Calculated Adaptability",
+            "name": "Calculated Adaptability — M2 meta-term containing Predictability, Independence, Unpredictability",
+            "extent": [
+              "Predictability",
+              "Independence",
+              "Unpredictability"
+            ],
+            "intent": [
+              "Calculated Adaptability"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Strategic Autonomy",
+            "short": "M2:Strategic Autonomy",
+            "name": "Strategic Autonomy — M2 meta-term containing Predictability, Independence, Dependence",
+            "extent": [
+              "Predictability",
+              "Independence",
+              "Dependence"
+            ],
+            "intent": [
+              "Strategic Autonomy"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Unpredictability",
+              "Dependence",
+              "Predictability",
+              "Independence"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "~S1": {
+      "parent_seme": "~S1",
+      "parent_term": "possibility",
+      "square": {
+        "S1": "Potentiality",
+        "S2": "Viability",
+        "~S2": "Impracticability",
+        "~S1": "Infeasibility",
+        "M11": "Feasibility",
+        "M12": "Inviability",
+        "M13": "Speculative",
+        "M14": "Unrealizable",
+        "M21": "Adaptive Potential",
+        "M22": "Feasible Potential",
+        "M23": "Infeasible Potential",
+        "M24": "Viable Impracticability",
+        "Mixed1": "Potential Infeasibility",
+        "Mixed2": "Viability Impracticability"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Adaptive Potential",
+              "Feasible Potential",
+              "Infeasible Potential",
+              "Viable Impracticability"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Potentiality",
+            "short": "S1",
+            "name": "Potentiality — inner term S1",
+            "extent": [
+              "Potentiality"
+            ],
+            "intent": [
+              "Adaptive Potential",
+              "Feasible Potential",
+              "Infeasible Potential"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Viability",
+            "short": "S2",
+            "name": "Viability — inner term S2",
+            "extent": [
+              "Viability"
+            ],
+            "intent": [
+              "Adaptive Potential",
+              "Feasible Potential",
+              "Viable Impracticability"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Infeasibility",
+            "short": "~S1",
+            "name": "Infeasibility — inner term ~S1",
+            "extent": [
+              "Infeasibility"
+            ],
+            "intent": [
+              "Feasible Potential",
+              "Infeasible Potential",
+              "Viable Impracticability"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Impracticability",
+            "short": "~S2",
+            "name": "Impracticability — inner term ~S2",
+            "extent": [
+              "Impracticability"
+            ],
+            "intent": [
+              "Adaptive Potential",
+              "Infeasible Potential",
+              "Viable Impracticability"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Feasibility",
+            "short": "M1:Feasibility",
+            "name": "Feasibility — M1 meta-term of Potentiality, Viability",
+            "extent": [
+              "Potentiality",
+              "Viability"
+            ],
+            "intent": [
+              "Adaptive Potential",
+              "Feasible Potential"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Inviability",
+            "short": "M1:Inviability",
+            "name": "Inviability — M1 meta-term of Infeasibility, Impracticability",
+            "extent": [
+              "Infeasibility",
+              "Impracticability"
+            ],
+            "intent": [
+              "Infeasible Potential",
+              "Viable Impracticability"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Speculative",
+            "short": "M1:Speculative",
+            "name": "Speculative — M1 meta-term of Potentiality, Impracticability",
+            "extent": [
+              "Potentiality",
+              "Impracticability"
+            ],
+            "intent": [
+              "Adaptive Potential",
+              "Infeasible Potential"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Unrealizable",
+            "short": "M1:Unrealizable",
+            "name": "Unrealizable — M1 meta-term of Viability, Infeasibility",
+            "extent": [
+              "Viability",
+              "Infeasibility"
+            ],
+            "intent": [
+              "Feasible Potential",
+              "Viable Impracticability"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Potential Infeasibility",
+            "short": "Mix:Potential Infeasibility",
+            "name": "Potential Infeasibility — mixed meta-term of Potentiality, Infeasibility",
+            "extent": [
+              "Potentiality",
+              "Infeasibility"
+            ],
+            "intent": [
+              "Feasible Potential",
+              "Infeasible Potential"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Viability Impracticability",
+            "short": "Mix:Viability Impracticability",
+            "name": "Viability Impracticability — mixed meta-term of Viability, Impracticability",
+            "extent": [
+              "Viability",
+              "Impracticability"
+            ],
+            "intent": [
+              "Adaptive Potential",
+              "Viable Impracticability"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Adaptive Potential",
+            "short": "M2:Adaptive Potential",
+            "name": "Adaptive Potential — M2 meta-term containing Potentiality, Viability, Impracticability",
+            "extent": [
+              "Potentiality",
+              "Viability",
+              "Impracticability"
+            ],
+            "intent": [
+              "Adaptive Potential"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Feasible Potential",
+            "short": "M2:Feasible Potential",
+            "name": "Feasible Potential — M2 meta-term containing Potentiality, Viability, Infeasibility",
+            "extent": [
+              "Potentiality",
+              "Viability",
+              "Infeasibility"
+            ],
+            "intent": [
+              "Feasible Potential"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Infeasible Potential",
+            "short": "M2:Infeasible Potential",
+            "name": "Infeasible Potential — M2 meta-term containing Infeasibility, Impracticability, Potentiality",
+            "extent": [
+              "Infeasibility",
+              "Impracticability",
+              "Potentiality"
+            ],
+            "intent": [
+              "Infeasible Potential"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Viable Impracticability",
+            "short": "M2:Viable Impracticability",
+            "name": "Viable Impracticability — M2 meta-term containing Infeasibility, Impracticability, Viability",
+            "extent": [
+              "Infeasibility",
+              "Impracticability",
+              "Viability"
+            ],
+            "intent": [
+              "Viable Impracticability"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Potentiality",
+              "Viability",
+              "Infeasibility",
+              "Impracticability"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "~S2": {
+      "parent_seme": "~S2",
+      "parent_term": "certainty",
+      "square": {
+        "S1": "Empirical Assurance",
+        "S2": "Conceptual Assurance",
+        "~S2": "Conceptual Doubt",
+        "~S1": "Empirical Uncertainty",
+        "M11": "Empirical Clarity",
+        "M12": "Epistemic Ambivalence",
+        "M13": "Empirical Skepticism",
+        "M14": "Conceptual Ambiguity",
+        "M21": "Empirical Ambiguity",
+        "M22": "Assured Inquiry",
+        "M23": "Uncertain Certainty",
+        "M24": "Doubtful Assurance",
+        "Mixed1": "Empirical Ambivalence",
+        "Mixed2": "Conceptual Paradox"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Empirical Ambiguity",
+              "Assured Inquiry",
+              "Uncertain Certainty",
+              "Doubtful Assurance"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Empirical Assurance",
+            "short": "S1",
+            "name": "Empirical Assurance — inner term S1",
+            "extent": [
+              "Empirical Assurance"
+            ],
+            "intent": [
+              "Empirical Ambiguity",
+              "Assured Inquiry",
+              "Uncertain Certainty"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Conceptual Assurance",
+            "short": "S2",
+            "name": "Conceptual Assurance — inner term S2",
+            "extent": [
+              "Conceptual Assurance"
+            ],
+            "intent": [
+              "Empirical Ambiguity",
+              "Assured Inquiry",
+              "Doubtful Assurance"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Empirical Uncertainty",
+            "short": "~S1",
+            "name": "Empirical Uncertainty — inner term ~S1",
+            "extent": [
+              "Empirical Uncertainty"
+            ],
+            "intent": [
+              "Assured Inquiry",
+              "Uncertain Certainty",
+              "Doubtful Assurance"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Conceptual Doubt",
+            "short": "~S2",
+            "name": "Conceptual Doubt — inner term ~S2",
+            "extent": [
+              "Conceptual Doubt"
+            ],
+            "intent": [
+              "Empirical Ambiguity",
+              "Uncertain Certainty",
+              "Doubtful Assurance"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Empirical Clarity",
+            "short": "M1:Empirical Clarity",
+            "name": "Empirical Clarity — M1 meta-term of Empirical Assurance, Conceptual Assurance",
+            "extent": [
+              "Empirical Assurance",
+              "Conceptual Assurance"
+            ],
+            "intent": [
+              "Empirical Ambiguity",
+              "Assured Inquiry"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Epistemic Ambivalence",
+            "short": "M1:Epistemic Ambivalence",
+            "name": "Epistemic Ambivalence — M1 meta-term of Empirical Uncertainty, Conceptual Doubt",
+            "extent": [
+              "Empirical Uncertainty",
+              "Conceptual Doubt"
+            ],
+            "intent": [
+              "Uncertain Certainty",
+              "Doubtful Assurance"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Empirical Skepticism",
+            "short": "M1:Empirical Skepticism",
+            "name": "Empirical Skepticism — M1 meta-term of Empirical Assurance, Conceptual Doubt",
+            "extent": [
+              "Empirical Assurance",
+              "Conceptual Doubt"
+            ],
+            "intent": [
+              "Empirical Ambiguity",
+              "Uncertain Certainty"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Conceptual Ambiguity",
+            "short": "M1:Conceptual Ambiguity",
+            "name": "Conceptual Ambiguity — M1 meta-term of Conceptual Assurance, Empirical Uncertainty",
+            "extent": [
+              "Conceptual Assurance",
+              "Empirical Uncertainty"
+            ],
+            "intent": [
+              "Assured Inquiry",
+              "Doubtful Assurance"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Empirical Ambivalence",
+            "short": "Mix:Empirical Ambivalence",
+            "name": "Empirical Ambivalence — mixed meta-term of Empirical Assurance, Empirical Uncertainty",
+            "extent": [
+              "Empirical Assurance",
+              "Empirical Uncertainty"
+            ],
+            "intent": [
+              "Assured Inquiry",
+              "Uncertain Certainty"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Conceptual Paradox",
+            "short": "Mix:Conceptual Paradox",
+            "name": "Conceptual Paradox — mixed meta-term of Conceptual Assurance, Conceptual Doubt",
+            "extent": [
+              "Conceptual Assurance",
+              "Conceptual Doubt"
+            ],
+            "intent": [
+              "Empirical Ambiguity",
+              "Doubtful Assurance"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Empirical Ambiguity",
+            "short": "M2:Empirical Ambiguity",
+            "name": "Empirical Ambiguity — M2 meta-term containing Empirical Assurance, Conceptual Assurance, Conceptual Doubt",
+            "extent": [
+              "Empirical Assurance",
+              "Conceptual Assurance",
+              "Conceptual Doubt"
+            ],
+            "intent": [
+              "Empirical Ambiguity"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Assured Inquiry",
+            "short": "M2:Assured Inquiry",
+            "name": "Assured Inquiry — M2 meta-term containing Empirical Assurance, Conceptual Assurance, Empirical Uncertainty",
+            "extent": [
+              "Empirical Assurance",
+              "Conceptual Assurance",
+              "Empirical Uncertainty"
+            ],
+            "intent": [
+              "Assured Inquiry"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Uncertain Certainty",
+            "short": "M2:Uncertain Certainty",
+            "name": "Uncertain Certainty — M2 meta-term containing Empirical Uncertainty, Conceptual Doubt, Empirical Assurance",
+            "extent": [
+              "Empirical Uncertainty",
+              "Conceptual Doubt",
+              "Empirical Assurance"
+            ],
+            "intent": [
+              "Uncertain Certainty"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Doubtful Assurance",
+            "short": "M2:Doubtful Assurance",
+            "name": "Doubtful Assurance — M2 meta-term containing Empirical Uncertainty, Conceptual Doubt, Conceptual Assurance",
+            "extent": [
+              "Empirical Uncertainty",
+              "Conceptual Doubt",
+              "Conceptual Assurance"
+            ],
+            "intent": [
+              "Doubtful Assurance"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Empirical Assurance",
+              "Conceptual Assurance",
+              "Empirical Uncertainty",
+              "Conceptual Doubt"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "validation": {
+    "layer_1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 ('necessity') and S2 ('contingency') are contraries. They can both fail together (neither is necessary nor contingent), and one can hold alone (something can be necessary without being contingent, or contingent without being necessary). They are not antonyms, contradictories, or synonyms."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 ('necessity') and ~S1 ('possibility') are contradictories. If something is necessary, it cannot merely be possible, and if something is merely possible, it cannot be necessary."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 ('contingency') and ~S2 ('certainty') are contradictories. If something is contingent, it cannot be certain, and if something is certain, it cannot be contingent."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "~S2 ('certainty') implies S1 ('necessity'). If something is certain, it is necessary."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "~S1 ('possibility') implies S2 ('contingency'). If something is possible, it is not necessary, thus it is contingent."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('possibility') and ~S2 ('certainty') are contraries. Both can fail together (something can be neither possible nor certain), and one can hold alone (something can be possible without being certain, or certain without being possible)."
+      }
+    },
+    "layer_2_S1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 ('Compulsion') and S2 ('Essentiality') are contraries. They can both hold together (something can be both compulsory and essential), both fail together (something can be neither compulsory nor essential), or one can hold alone (something can be compulsory but not essential, or essential but not compulsory)."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 ('Compulsion') and ~S1 ('Volition') are contradictories. If something is compulsory, it cannot be voluntary, and vice versa. They cannot both hold or both fail at the same time."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 ('Essentiality') and ~S2 ('Nonessentiality') are contradictories. If something is essential, it cannot be nonessential, and vice versa. They cannot both hold or both fail at the same time."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "~S2 ('Nonessentiality') implies S1 ('Compulsion'). If something is nonessential, it can still be compulsory, as compulsion does not depend on essentiality."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "~S1 ('Volition') implies S2 ('Essentiality'). If something is voluntary, it does not imply essentiality, but if it is not voluntary (i.e., compulsory), it can be essential."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('Volition') and ~S2 ('Nonessentiality') are contraries. They can both hold together (something can be voluntary and nonessential), both fail together (something can be neither voluntary nor nonessential), or one can hold alone (something can be voluntary but essential, or essential but not voluntary)."
+      }
+    },
+    "layer_2_S2": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 ('Unpredictability') and S2 ('Dependence') are contraries. They can both hold together (something can be unpredictable and dependent), both fail together (something can be predictable and independent), or one can hold alone (something can be unpredictable and independent or predictable and dependent)."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 ('Unpredictability') and ~S1 ('Predictability') are contradictories. They cannot both hold or both fail; one must be true and the other false."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 ('Dependence') and ~S2 ('Independence') are contradictories. They cannot both hold or both fail; one must be true and the other false."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "~S2 ('Independence') implies S1 ('Unpredictability'). If something is independent, it can be unpredictable, satisfying the implication."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "~S1 ('Predictability') implies S2 ('Dependence'). If something is predictable, it tends to be dependent, satisfying the implication."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('Predictability') and ~S2 ('Independence') are contraries. They can both hold together (something can be predictable and independent), both fail together (something can be unpredictable and dependent), or one can hold alone (something can be unpredictable and independent or predictable and dependent)."
+      }
+    },
+    "layer_2_~S1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 ('Potentiality') and S2 ('Viability') are contraries. Both can hold together (something can be both potentially and viably achievable), both can fail together (something can be neither potentially nor viably achievable), and one can hold alone (something can be potentially achievable but not viable, or vice versa)."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 ('Potentiality') and ~S1 ('Infeasibility') are contradictories. If something is potentially achievable, it cannot be infeasible, and if it is infeasible, it cannot be potentially achievable."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 ('Viability') and ~S2 ('Impracticability') are contradictories. If something is viable, it cannot be impracticable, and if it is impracticable, it cannot be viable."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "~S2 ('Impracticability') implies S1 ('Potentiality'). If something is impracticable, it can still be potentially achievable, as impracticability refers to current feasibility rather than potential."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "~S1 ('Infeasibility') implies S2 ('Viability'). If something is infeasible, it can still be viable in some contexts, as infeasibility refers to potential rather than current viability."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('Infeasibility') and ~S2 ('Impracticability') are contraries. Both can hold together (something can be both infeasible and impracticable), both can fail together (something can be neither infeasible nor impracticable), and one can hold alone (something can be infeasible but not impracticable, or vice versa)."
+      }
+    },
+    "layer_2_~S2": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 ('Empirical Assurance') and S2 ('Conceptual Assurance') are contraries. They can both hold together (someone can have both empirical and conceptual assurance), both fail together (someone can lack both empirical and conceptual assurance), or one can hold alone (someone can have empirical assurance without conceptual assurance, or vice versa)."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 ('Empirical Assurance') and ~S1 ('Empirical Uncertainty') are contradictories. They cannot both hold or both fail; if one is true, the other must be false."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 ('Conceptual Assurance') and ~S2 ('Conceptual Doubt') are contradictories. They cannot both hold or both fail; if one is true, the other must be false."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "~S2 ('Conceptual Doubt') implies S1 ('Empirical Assurance'). If there is conceptual doubt, it suggests that empirical assurance is present to compensate or address the doubt."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "~S1 ('Empirical Uncertainty') implies S2 ('Conceptual Assurance'). If there is empirical uncertainty, it suggests that conceptual assurance is present to provide understanding or confidence."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('Empirical Uncertainty') and ~S2 ('Conceptual Doubt') are contraries. They can both hold together (someone can have both empirical uncertainty and conceptual doubt), both fail together (someone can have neither empirical uncertainty nor conceptual doubt), or one can hold alone (someone can have empirical uncertainty without conceptual doubt, or vice versa)."
+      }
+    }
+  },
+  "architectonic": {
+    "concepts": [
+      {
+        "id": "A:0",
+        "label": "bottom",
+        "short": "Bottom",
+        "name": "Bottom — empty extent, all four M2 attributes",
+        "extent": [],
+        "intent": [
+          "Necessity",
+          "Possibility",
+          "Certainty",
+          "Contingency"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "shared_bottom"
+      },
+      {
+        "id": "A:5",
+        "label": "Determination",
+        "short": "M1:Determination",
+        "name": "Determination — M1 meta-term of necessity, contingency",
+        "extent": [
+          "necessity",
+          "contingency"
+        ],
+        "intent": [
+          "Necessity",
+          "Possibility"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:6",
+        "label": "Equilibrium",
+        "short": "M1:Equilibrium",
+        "name": "Equilibrium — M1 meta-term of possibility, certainty",
+        "extent": [
+          "possibility",
+          "certainty"
+        ],
+        "intent": [
+          "Certainty",
+          "Contingency"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:7",
+        "label": "Assurance",
+        "short": "M1:Assurance",
+        "name": "Assurance — M1 meta-term of necessity, certainty",
+        "extent": [
+          "necessity",
+          "certainty"
+        ],
+        "intent": [
+          "Necessity",
+          "Certainty"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:8",
+        "label": "Flexibility",
+        "short": "M1:Flexibility",
+        "name": "Flexibility — M1 meta-term of contingency, possibility",
+        "extent": [
+          "contingency",
+          "possibility"
+        ],
+        "intent": [
+          "Possibility",
+          "Contingency"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:9",
+        "label": "Mixed necessity",
+        "short": "Mix:Mixed necessity",
+        "name": "Mixed necessity — mixed meta-term of necessity, possibility",
+        "extent": [
+          "necessity",
+          "possibility"
+        ],
+        "intent": [
+          "Possibility",
+          "Certainty"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:10",
+        "label": "Mixed contingency",
+        "short": "Mix:Mixed contingency",
+        "name": "Mixed contingency — mixed meta-term of contingency, certainty",
+        "extent": [
+          "contingency",
+          "certainty"
+        ],
+        "intent": [
+          "Necessity",
+          "Contingency"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:11",
+        "label": "Necessity",
+        "short": "M2:Necessity",
+        "name": "Necessity — M2 meta-term containing necessity, contingency, certainty",
+        "extent": [
+          "necessity",
+          "contingency",
+          "certainty"
+        ],
+        "intent": [
+          "Necessity"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:12",
+        "label": "Possibility",
+        "short": "M2:Possibility",
+        "name": "Possibility — M2 meta-term containing necessity, contingency, possibility",
+        "extent": [
+          "necessity",
+          "contingency",
+          "possibility"
+        ],
+        "intent": [
+          "Possibility"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:13",
+        "label": "Certainty",
+        "short": "M2:Certainty",
+        "name": "Certainty — M2 meta-term containing possibility, certainty, necessity",
+        "extent": [
+          "possibility",
+          "certainty",
+          "necessity"
+        ],
+        "intent": [
+          "Certainty"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:14",
+        "label": "Contingency",
+        "short": "M2:Contingency",
+        "name": "Contingency — M2 meta-term containing possibility, certainty, contingency",
+        "extent": [
+          "possibility",
+          "certainty",
+          "contingency"
+        ],
+        "intent": [
+          "Contingency"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:15",
+        "label": "top",
+        "short": "Top",
+        "name": "Top — all inner terms, no shared attribute",
+        "extent": [
+          "necessity",
+          "contingency",
+          "possibility",
+          "certainty"
+        ],
+        "intent": [],
+        "layer": 1,
+        "origin": "A",
+        "role": "architectonic_top"
+      },
+      {
+        "id": "S1:1",
+        "label": "Compulsion",
+        "short": "S1",
+        "name": "Compulsion — inner term S1",
+        "extent": [
+          "Compulsion"
+        ],
+        "intent": [
+          "Inevitable Necessity",
+          "Compelled Choice",
+          "Obligatory Freedom"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:2",
+        "label": "Essentiality",
+        "short": "S2",
+        "name": "Essentiality — inner term S2",
+        "extent": [
+          "Essentiality"
+        ],
+        "intent": [
+          "Inevitable Necessity",
+          "Compelled Choice",
+          "Essential Volition"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:3",
+        "label": "Volition",
+        "short": "~S1",
+        "name": "Volition — inner term ~S1",
+        "extent": [
+          "Volition"
+        ],
+        "intent": [
+          "Compelled Choice",
+          "Obligatory Freedom",
+          "Essential Volition"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:4",
+        "label": "Nonessentiality",
+        "short": "~S2",
+        "name": "Nonessentiality — inner term ~S2",
+        "extent": [
+          "Nonessentiality"
+        ],
+        "intent": [
+          "Inevitable Necessity",
+          "Obligatory Freedom",
+          "Essential Volition"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:5",
+        "label": "Imperative",
+        "short": "M1:Imperative",
+        "name": "Imperative — M1 meta-term of Compulsion, Essentiality",
+        "extent": [
+          "Compulsion",
+          "Essentiality"
+        ],
+        "intent": [
+          "Inevitable Necessity",
+          "Compelled Choice"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:6",
+        "label": "Autonomy",
+        "short": "M1:Autonomy",
+        "name": "Autonomy — M1 meta-term of Volition, Nonessentiality",
+        "extent": [
+          "Volition",
+          "Nonessentiality"
+        ],
+        "intent": [
+          "Obligatory Freedom",
+          "Essential Volition"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:7",
+        "label": "Coercion",
+        "short": "M1:Coercion",
+        "name": "Coercion — M1 meta-term of Compulsion, Nonessentiality",
+        "extent": [
+          "Compulsion",
+          "Nonessentiality"
+        ],
+        "intent": [
+          "Inevitable Necessity",
+          "Obligatory Freedom"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:8",
+        "label": "Freedom",
+        "short": "M1:Freedom",
+        "name": "Freedom — M1 meta-term of Essentiality, Volition",
+        "extent": [
+          "Essentiality",
+          "Volition"
+        ],
+        "intent": [
+          "Compelled Choice",
+          "Essential Volition"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:9",
+        "label": "Compulsivity",
+        "short": "Mix:Compulsivity",
+        "name": "Compulsivity — mixed meta-term of Compulsion, Volition",
+        "extent": [
+          "Compulsion",
+          "Volition"
+        ],
+        "intent": [
+          "Compelled Choice",
+          "Obligatory Freedom"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:10",
+        "label": "EssentialityDivergence",
+        "short": "Mix:EssentialityDivergence",
+        "name": "EssentialityDivergence — mixed meta-term of Essentiality, Nonessentiality",
+        "extent": [
+          "Essentiality",
+          "Nonessentiality"
+        ],
+        "intent": [
+          "Inevitable Necessity",
+          "Essential Volition"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:11",
+        "label": "Inevitable Necessity",
+        "short": "M2:Inevitable Necessity",
+        "name": "Inevitable Necessity — M2 meta-term containing Compulsion, Essentiality, Nonessentiality",
+        "extent": [
+          "Compulsion",
+          "Essentiality",
+          "Nonessentiality"
+        ],
+        "intent": [
+          "Inevitable Necessity"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:12",
+        "label": "Compelled Choice",
+        "short": "M2:Compelled Choice",
+        "name": "Compelled Choice — M2 meta-term containing Compulsion, Essentiality, Volition",
+        "extent": [
+          "Compulsion",
+          "Essentiality",
+          "Volition"
+        ],
+        "intent": [
+          "Compelled Choice"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:13",
+        "label": "Obligatory Freedom",
+        "short": "M2:Obligatory Freedom",
+        "name": "Obligatory Freedom — M2 meta-term containing Volition, Nonessentiality, Compulsion",
+        "extent": [
+          "Volition",
+          "Nonessentiality",
+          "Compulsion"
+        ],
+        "intent": [
+          "Obligatory Freedom"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:14",
+        "label": "Essential Volition",
+        "short": "M2:Essential Volition",
+        "name": "Essential Volition — M2 meta-term containing Volition, Nonessentiality, Essentiality",
+        "extent": [
+          "Volition",
+          "Nonessentiality",
+          "Essentiality"
+        ],
+        "intent": [
+          "Essential Volition"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:15",
+        "label": "necessity*",
+        "short": "necessity",
+        "name": "Fully-articulated necessity",
+        "extent": [
+          "Compulsion",
+          "Essentiality",
+          "Volition",
+          "Nonessentiality"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "S1",
+        "role": "interface"
+      },
+      {
+        "id": "S2:1",
+        "label": "Unpredictability",
+        "short": "S1",
+        "name": "Unpredictability — inner term S1",
+        "extent": [
+          "Unpredictability"
+        ],
+        "intent": [
+          "Adaptive Reliance",
+          "Dynamic Interdependence",
+          "Calculated Adaptability"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:2",
+        "label": "Dependence",
+        "short": "S2",
+        "name": "Dependence — inner term S2",
+        "extent": [
+          "Dependence"
+        ],
+        "intent": [
+          "Adaptive Reliance",
+          "Dynamic Interdependence",
+          "Strategic Autonomy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:3",
+        "label": "Predictability",
+        "short": "~S1",
+        "name": "Predictability — inner term ~S1",
+        "extent": [
+          "Predictability"
+        ],
+        "intent": [
+          "Dynamic Interdependence",
+          "Calculated Adaptability",
+          "Strategic Autonomy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:4",
+        "label": "Independence",
+        "short": "~S2",
+        "name": "Independence — inner term ~S2",
+        "extent": [
+          "Independence"
+        ],
+        "intent": [
+          "Adaptive Reliance",
+          "Calculated Adaptability",
+          "Strategic Autonomy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:5",
+        "label": "Chaos",
+        "short": "M1:Chaos",
+        "name": "Chaos — M1 meta-term of Unpredictability, Dependence",
+        "extent": [
+          "Unpredictability",
+          "Dependence"
+        ],
+        "intent": [
+          "Adaptive Reliance",
+          "Dynamic Interdependence"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:6",
+        "label": "Certitude",
+        "short": "M1:Certitude",
+        "name": "Certitude — M1 meta-term of Predictability, Independence",
+        "extent": [
+          "Predictability",
+          "Independence"
+        ],
+        "intent": [
+          "Calculated Adaptability",
+          "Strategic Autonomy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:7",
+        "label": "Spontaneity",
+        "short": "M1:Spontaneity",
+        "name": "Spontaneity — M1 meta-term of Unpredictability, Independence",
+        "extent": [
+          "Unpredictability",
+          "Independence"
+        ],
+        "intent": [
+          "Adaptive Reliance",
+          "Calculated Adaptability"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:8",
+        "label": "Orderliness",
+        "short": "M1:Orderliness",
+        "name": "Orderliness — M1 meta-term of Dependence, Predictability",
+        "extent": [
+          "Dependence",
+          "Predictability"
+        ],
+        "intent": [
+          "Dynamic Interdependence",
+          "Strategic Autonomy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:9",
+        "label": "Ambiguity",
+        "short": "Mix:Ambiguity",
+        "name": "Ambiguity — mixed meta-term of Unpredictability, Predictability",
+        "extent": [
+          "Unpredictability",
+          "Predictability"
+        ],
+        "intent": [
+          "Dynamic Interdependence",
+          "Calculated Adaptability"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:10",
+        "label": "Interdependence",
+        "short": "Mix:Interdependence",
+        "name": "Interdependence — mixed meta-term of Dependence, Independence",
+        "extent": [
+          "Dependence",
+          "Independence"
+        ],
+        "intent": [
+          "Adaptive Reliance",
+          "Strategic Autonomy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:11",
+        "label": "Adaptive Reliance",
+        "short": "M2:Adaptive Reliance",
+        "name": "Adaptive Reliance — M2 meta-term containing Unpredictability, Dependence, Independence",
+        "extent": [
+          "Unpredictability",
+          "Dependence",
+          "Independence"
+        ],
+        "intent": [
+          "Adaptive Reliance"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:12",
+        "label": "Dynamic Interdependence",
+        "short": "M2:Dynamic Interdependence",
+        "name": "Dynamic Interdependence — M2 meta-term containing Unpredictability, Dependence, Predictability",
+        "extent": [
+          "Unpredictability",
+          "Dependence",
+          "Predictability"
+        ],
+        "intent": [
+          "Dynamic Interdependence"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:13",
+        "label": "Calculated Adaptability",
+        "short": "M2:Calculated Adaptability",
+        "name": "Calculated Adaptability — M2 meta-term containing Predictability, Independence, Unpredictability",
+        "extent": [
+          "Predictability",
+          "Independence",
+          "Unpredictability"
+        ],
+        "intent": [
+          "Calculated Adaptability"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:14",
+        "label": "Strategic Autonomy",
+        "short": "M2:Strategic Autonomy",
+        "name": "Strategic Autonomy — M2 meta-term containing Predictability, Independence, Dependence",
+        "extent": [
+          "Predictability",
+          "Independence",
+          "Dependence"
+        ],
+        "intent": [
+          "Strategic Autonomy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:15",
+        "label": "contingency*",
+        "short": "contingency",
+        "name": "Fully-articulated contingency",
+        "extent": [
+          "Unpredictability",
+          "Dependence",
+          "Predictability",
+          "Independence"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "S2",
+        "role": "interface"
+      },
+      {
+        "id": "~S1:1",
+        "label": "Potentiality",
+        "short": "S1",
+        "name": "Potentiality — inner term S1",
+        "extent": [
+          "Potentiality"
+        ],
+        "intent": [
+          "Adaptive Potential",
+          "Feasible Potential",
+          "Infeasible Potential"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:2",
+        "label": "Viability",
+        "short": "S2",
+        "name": "Viability — inner term S2",
+        "extent": [
+          "Viability"
+        ],
+        "intent": [
+          "Adaptive Potential",
+          "Feasible Potential",
+          "Viable Impracticability"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:3",
+        "label": "Infeasibility",
+        "short": "~S1",
+        "name": "Infeasibility — inner term ~S1",
+        "extent": [
+          "Infeasibility"
+        ],
+        "intent": [
+          "Feasible Potential",
+          "Infeasible Potential",
+          "Viable Impracticability"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:4",
+        "label": "Impracticability",
+        "short": "~S2",
+        "name": "Impracticability — inner term ~S2",
+        "extent": [
+          "Impracticability"
+        ],
+        "intent": [
+          "Adaptive Potential",
+          "Infeasible Potential",
+          "Viable Impracticability"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:5",
+        "label": "Feasibility",
+        "short": "M1:Feasibility",
+        "name": "Feasibility — M1 meta-term of Potentiality, Viability",
+        "extent": [
+          "Potentiality",
+          "Viability"
+        ],
+        "intent": [
+          "Adaptive Potential",
+          "Feasible Potential"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:6",
+        "label": "Inviability",
+        "short": "M1:Inviability",
+        "name": "Inviability — M1 meta-term of Infeasibility, Impracticability",
+        "extent": [
+          "Infeasibility",
+          "Impracticability"
+        ],
+        "intent": [
+          "Infeasible Potential",
+          "Viable Impracticability"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:7",
+        "label": "Speculative",
+        "short": "M1:Speculative",
+        "name": "Speculative — M1 meta-term of Potentiality, Impracticability",
+        "extent": [
+          "Potentiality",
+          "Impracticability"
+        ],
+        "intent": [
+          "Adaptive Potential",
+          "Infeasible Potential"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:8",
+        "label": "Unrealizable",
+        "short": "M1:Unrealizable",
+        "name": "Unrealizable — M1 meta-term of Viability, Infeasibility",
+        "extent": [
+          "Viability",
+          "Infeasibility"
+        ],
+        "intent": [
+          "Feasible Potential",
+          "Viable Impracticability"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:9",
+        "label": "Potential Infeasibility",
+        "short": "Mix:Potential Infeasibility",
+        "name": "Potential Infeasibility — mixed meta-term of Potentiality, Infeasibility",
+        "extent": [
+          "Potentiality",
+          "Infeasibility"
+        ],
+        "intent": [
+          "Feasible Potential",
+          "Infeasible Potential"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:10",
+        "label": "Viability Impracticability",
+        "short": "Mix:Viability Impracticability",
+        "name": "Viability Impracticability — mixed meta-term of Viability, Impracticability",
+        "extent": [
+          "Viability",
+          "Impracticability"
+        ],
+        "intent": [
+          "Adaptive Potential",
+          "Viable Impracticability"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:11",
+        "label": "Adaptive Potential",
+        "short": "M2:Adaptive Potential",
+        "name": "Adaptive Potential — M2 meta-term containing Potentiality, Viability, Impracticability",
+        "extent": [
+          "Potentiality",
+          "Viability",
+          "Impracticability"
+        ],
+        "intent": [
+          "Adaptive Potential"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:12",
+        "label": "Feasible Potential",
+        "short": "M2:Feasible Potential",
+        "name": "Feasible Potential — M2 meta-term containing Potentiality, Viability, Infeasibility",
+        "extent": [
+          "Potentiality",
+          "Viability",
+          "Infeasibility"
+        ],
+        "intent": [
+          "Feasible Potential"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:13",
+        "label": "Infeasible Potential",
+        "short": "M2:Infeasible Potential",
+        "name": "Infeasible Potential — M2 meta-term containing Infeasibility, Impracticability, Potentiality",
+        "extent": [
+          "Infeasibility",
+          "Impracticability",
+          "Potentiality"
+        ],
+        "intent": [
+          "Infeasible Potential"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:14",
+        "label": "Viable Impracticability",
+        "short": "M2:Viable Impracticability",
+        "name": "Viable Impracticability — M2 meta-term containing Infeasibility, Impracticability, Viability",
+        "extent": [
+          "Infeasibility",
+          "Impracticability",
+          "Viability"
+        ],
+        "intent": [
+          "Viable Impracticability"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:15",
+        "label": "possibility*",
+        "short": "possibility",
+        "name": "Fully-articulated possibility",
+        "extent": [
+          "Potentiality",
+          "Viability",
+          "Infeasibility",
+          "Impracticability"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "interface"
+      },
+      {
+        "id": "~S2:1",
+        "label": "Empirical Assurance",
+        "short": "S1",
+        "name": "Empirical Assurance — inner term S1",
+        "extent": [
+          "Empirical Assurance"
+        ],
+        "intent": [
+          "Empirical Ambiguity",
+          "Assured Inquiry",
+          "Uncertain Certainty"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:2",
+        "label": "Conceptual Assurance",
+        "short": "S2",
+        "name": "Conceptual Assurance — inner term S2",
+        "extent": [
+          "Conceptual Assurance"
+        ],
+        "intent": [
+          "Empirical Ambiguity",
+          "Assured Inquiry",
+          "Doubtful Assurance"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:3",
+        "label": "Empirical Uncertainty",
+        "short": "~S1",
+        "name": "Empirical Uncertainty — inner term ~S1",
+        "extent": [
+          "Empirical Uncertainty"
+        ],
+        "intent": [
+          "Assured Inquiry",
+          "Uncertain Certainty",
+          "Doubtful Assurance"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:4",
+        "label": "Conceptual Doubt",
+        "short": "~S2",
+        "name": "Conceptual Doubt — inner term ~S2",
+        "extent": [
+          "Conceptual Doubt"
+        ],
+        "intent": [
+          "Empirical Ambiguity",
+          "Uncertain Certainty",
+          "Doubtful Assurance"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:5",
+        "label": "Empirical Clarity",
+        "short": "M1:Empirical Clarity",
+        "name": "Empirical Clarity — M1 meta-term of Empirical Assurance, Conceptual Assurance",
+        "extent": [
+          "Empirical Assurance",
+          "Conceptual Assurance"
+        ],
+        "intent": [
+          "Empirical Ambiguity",
+          "Assured Inquiry"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:6",
+        "label": "Epistemic Ambivalence",
+        "short": "M1:Epistemic Ambivalence",
+        "name": "Epistemic Ambivalence — M1 meta-term of Empirical Uncertainty, Conceptual Doubt",
+        "extent": [
+          "Empirical Uncertainty",
+          "Conceptual Doubt"
+        ],
+        "intent": [
+          "Uncertain Certainty",
+          "Doubtful Assurance"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:7",
+        "label": "Empirical Skepticism",
+        "short": "M1:Empirical Skepticism",
+        "name": "Empirical Skepticism — M1 meta-term of Empirical Assurance, Conceptual Doubt",
+        "extent": [
+          "Empirical Assurance",
+          "Conceptual Doubt"
+        ],
+        "intent": [
+          "Empirical Ambiguity",
+          "Uncertain Certainty"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:8",
+        "label": "Conceptual Ambiguity",
+        "short": "M1:Conceptual Ambiguity",
+        "name": "Conceptual Ambiguity — M1 meta-term of Conceptual Assurance, Empirical Uncertainty",
+        "extent": [
+          "Conceptual Assurance",
+          "Empirical Uncertainty"
+        ],
+        "intent": [
+          "Assured Inquiry",
+          "Doubtful Assurance"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:9",
+        "label": "Empirical Ambivalence",
+        "short": "Mix:Empirical Ambivalence",
+        "name": "Empirical Ambivalence — mixed meta-term of Empirical Assurance, Empirical Uncertainty",
+        "extent": [
+          "Empirical Assurance",
+          "Empirical Uncertainty"
+        ],
+        "intent": [
+          "Assured Inquiry",
+          "Uncertain Certainty"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:10",
+        "label": "Conceptual Paradox",
+        "short": "Mix:Conceptual Paradox",
+        "name": "Conceptual Paradox — mixed meta-term of Conceptual Assurance, Conceptual Doubt",
+        "extent": [
+          "Conceptual Assurance",
+          "Conceptual Doubt"
+        ],
+        "intent": [
+          "Empirical Ambiguity",
+          "Doubtful Assurance"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:11",
+        "label": "Empirical Ambiguity",
+        "short": "M2:Empirical Ambiguity",
+        "name": "Empirical Ambiguity — M2 meta-term containing Empirical Assurance, Conceptual Assurance, Conceptual Doubt",
+        "extent": [
+          "Empirical Assurance",
+          "Conceptual Assurance",
+          "Conceptual Doubt"
+        ],
+        "intent": [
+          "Empirical Ambiguity"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:12",
+        "label": "Assured Inquiry",
+        "short": "M2:Assured Inquiry",
+        "name": "Assured Inquiry — M2 meta-term containing Empirical Assurance, Conceptual Assurance, Empirical Uncertainty",
+        "extent": [
+          "Empirical Assurance",
+          "Conceptual Assurance",
+          "Empirical Uncertainty"
+        ],
+        "intent": [
+          "Assured Inquiry"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:13",
+        "label": "Uncertain Certainty",
+        "short": "M2:Uncertain Certainty",
+        "name": "Uncertain Certainty — M2 meta-term containing Empirical Uncertainty, Conceptual Doubt, Empirical Assurance",
+        "extent": [
+          "Empirical Uncertainty",
+          "Conceptual Doubt",
+          "Empirical Assurance"
+        ],
+        "intent": [
+          "Uncertain Certainty"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:14",
+        "label": "Doubtful Assurance",
+        "short": "M2:Doubtful Assurance",
+        "name": "Doubtful Assurance — M2 meta-term containing Empirical Uncertainty, Conceptual Doubt, Conceptual Assurance",
+        "extent": [
+          "Empirical Uncertainty",
+          "Conceptual Doubt",
+          "Conceptual Assurance"
+        ],
+        "intent": [
+          "Doubtful Assurance"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:15",
+        "label": "certainty*",
+        "short": "certainty",
+        "name": "Fully-articulated certainty",
+        "extent": [
+          "Empirical Assurance",
+          "Conceptual Assurance",
+          "Empirical Uncertainty",
+          "Conceptual Doubt"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "interface"
+      }
+    ],
+    "edges": [
+      [
+        "A:15",
+        "A:11"
+      ],
+      [
+        "A:15",
+        "A:12"
+      ],
+      [
+        "A:15",
+        "A:13"
+      ],
+      [
+        "A:15",
+        "A:14"
+      ],
+      [
+        "A:11",
+        "A:5"
+      ],
+      [
+        "A:11",
+        "A:7"
+      ],
+      [
+        "A:11",
+        "A:10"
+      ],
+      [
+        "A:12",
+        "A:5"
+      ],
+      [
+        "A:12",
+        "A:8"
+      ],
+      [
+        "A:12",
+        "A:9"
+      ],
+      [
+        "A:13",
+        "A:6"
+      ],
+      [
+        "A:13",
+        "A:7"
+      ],
+      [
+        "A:13",
+        "A:9"
+      ],
+      [
+        "A:14",
+        "A:6"
+      ],
+      [
+        "A:14",
+        "A:8"
+      ],
+      [
+        "A:14",
+        "A:10"
+      ],
+      [
+        "A:5",
+        "S1:15"
+      ],
+      [
+        "A:5",
+        "S2:15"
+      ],
+      [
+        "A:6",
+        "~S1:15"
+      ],
+      [
+        "A:6",
+        "~S2:15"
+      ],
+      [
+        "A:7",
+        "S1:15"
+      ],
+      [
+        "A:7",
+        "~S2:15"
+      ],
+      [
+        "A:8",
+        "S2:15"
+      ],
+      [
+        "A:8",
+        "~S1:15"
+      ],
+      [
+        "A:9",
+        "S1:15"
+      ],
+      [
+        "A:9",
+        "~S1:15"
+      ],
+      [
+        "A:10",
+        "S2:15"
+      ],
+      [
+        "A:10",
+        "~S2:15"
+      ],
+      [
+        "S1:15",
+        "S1:11"
+      ],
+      [
+        "S1:15",
+        "S1:12"
+      ],
+      [
+        "S1:15",
+        "S1:13"
+      ],
+      [
+        "S1:15",
+        "S1:14"
+      ],
+      [
+        "S1:11",
+        "S1:5"
+      ],
+      [
+        "S1:11",
+        "S1:7"
+      ],
+      [
+        "S1:11",
+        "S1:10"
+      ],
+      [
+        "S1:12",
+        "S1:5"
+      ],
+      [
+        "S1:12",
+        "S1:8"
+      ],
+      [
+        "S1:12",
+        "S1:9"
+      ],
+      [
+        "S1:13",
+        "S1:6"
+      ],
+      [
+        "S1:13",
+        "S1:7"
+      ],
+      [
+        "S1:13",
+        "S1:9"
+      ],
+      [
+        "S1:14",
+        "S1:6"
+      ],
+      [
+        "S1:14",
+        "S1:8"
+      ],
+      [
+        "S1:14",
+        "S1:10"
+      ],
+      [
+        "S1:5",
+        "S1:1"
+      ],
+      [
+        "S1:5",
+        "S1:2"
+      ],
+      [
+        "S1:6",
+        "S1:3"
+      ],
+      [
+        "S1:6",
+        "S1:4"
+      ],
+      [
+        "S1:7",
+        "S1:1"
+      ],
+      [
+        "S1:7",
+        "S1:4"
+      ],
+      [
+        "S1:8",
+        "S1:2"
+      ],
+      [
+        "S1:8",
+        "S1:3"
+      ],
+      [
+        "S1:9",
+        "S1:1"
+      ],
+      [
+        "S1:9",
+        "S1:3"
+      ],
+      [
+        "S1:10",
+        "S1:2"
+      ],
+      [
+        "S1:10",
+        "S1:4"
+      ],
+      [
+        "S1:1",
+        "A:0"
+      ],
+      [
+        "S1:2",
+        "A:0"
+      ],
+      [
+        "S1:3",
+        "A:0"
+      ],
+      [
+        "S1:4",
+        "A:0"
+      ],
+      [
+        "S2:15",
+        "S2:11"
+      ],
+      [
+        "S2:15",
+        "S2:12"
+      ],
+      [
+        "S2:15",
+        "S2:13"
+      ],
+      [
+        "S2:15",
+        "S2:14"
+      ],
+      [
+        "S2:11",
+        "S2:5"
+      ],
+      [
+        "S2:11",
+        "S2:7"
+      ],
+      [
+        "S2:11",
+        "S2:10"
+      ],
+      [
+        "S2:12",
+        "S2:5"
+      ],
+      [
+        "S2:12",
+        "S2:8"
+      ],
+      [
+        "S2:12",
+        "S2:9"
+      ],
+      [
+        "S2:13",
+        "S2:6"
+      ],
+      [
+        "S2:13",
+        "S2:7"
+      ],
+      [
+        "S2:13",
+        "S2:9"
+      ],
+      [
+        "S2:14",
+        "S2:6"
+      ],
+      [
+        "S2:14",
+        "S2:8"
+      ],
+      [
+        "S2:14",
+        "S2:10"
+      ],
+      [
+        "S2:5",
+        "S2:1"
+      ],
+      [
+        "S2:5",
+        "S2:2"
+      ],
+      [
+        "S2:6",
+        "S2:3"
+      ],
+      [
+        "S2:6",
+        "S2:4"
+      ],
+      [
+        "S2:7",
+        "S2:1"
+      ],
+      [
+        "S2:7",
+        "S2:4"
+      ],
+      [
+        "S2:8",
+        "S2:2"
+      ],
+      [
+        "S2:8",
+        "S2:3"
+      ],
+      [
+        "S2:9",
+        "S2:1"
+      ],
+      [
+        "S2:9",
+        "S2:3"
+      ],
+      [
+        "S2:10",
+        "S2:2"
+      ],
+      [
+        "S2:10",
+        "S2:4"
+      ],
+      [
+        "S2:1",
+        "A:0"
+      ],
+      [
+        "S2:2",
+        "A:0"
+      ],
+      [
+        "S2:3",
+        "A:0"
+      ],
+      [
+        "S2:4",
+        "A:0"
+      ],
+      [
+        "~S1:15",
+        "~S1:11"
+      ],
+      [
+        "~S1:15",
+        "~S1:12"
+      ],
+      [
+        "~S1:15",
+        "~S1:13"
+      ],
+      [
+        "~S1:15",
+        "~S1:14"
+      ],
+      [
+        "~S1:11",
+        "~S1:5"
+      ],
+      [
+        "~S1:11",
+        "~S1:7"
+      ],
+      [
+        "~S1:11",
+        "~S1:10"
+      ],
+      [
+        "~S1:12",
+        "~S1:5"
+      ],
+      [
+        "~S1:12",
+        "~S1:8"
+      ],
+      [
+        "~S1:12",
+        "~S1:9"
+      ],
+      [
+        "~S1:13",
+        "~S1:6"
+      ],
+      [
+        "~S1:13",
+        "~S1:7"
+      ],
+      [
+        "~S1:13",
+        "~S1:9"
+      ],
+      [
+        "~S1:14",
+        "~S1:6"
+      ],
+      [
+        "~S1:14",
+        "~S1:8"
+      ],
+      [
+        "~S1:14",
+        "~S1:10"
+      ],
+      [
+        "~S1:5",
+        "~S1:1"
+      ],
+      [
+        "~S1:5",
+        "~S1:2"
+      ],
+      [
+        "~S1:6",
+        "~S1:3"
+      ],
+      [
+        "~S1:6",
+        "~S1:4"
+      ],
+      [
+        "~S1:7",
+        "~S1:1"
+      ],
+      [
+        "~S1:7",
+        "~S1:4"
+      ],
+      [
+        "~S1:8",
+        "~S1:2"
+      ],
+      [
+        "~S1:8",
+        "~S1:3"
+      ],
+      [
+        "~S1:9",
+        "~S1:1"
+      ],
+      [
+        "~S1:9",
+        "~S1:3"
+      ],
+      [
+        "~S1:10",
+        "~S1:2"
+      ],
+      [
+        "~S1:10",
+        "~S1:4"
+      ],
+      [
+        "~S1:1",
+        "A:0"
+      ],
+      [
+        "~S1:2",
+        "A:0"
+      ],
+      [
+        "~S1:3",
+        "A:0"
+      ],
+      [
+        "~S1:4",
+        "A:0"
+      ],
+      [
+        "~S2:15",
+        "~S2:11"
+      ],
+      [
+        "~S2:15",
+        "~S2:12"
+      ],
+      [
+        "~S2:15",
+        "~S2:13"
+      ],
+      [
+        "~S2:15",
+        "~S2:14"
+      ],
+      [
+        "~S2:11",
+        "~S2:5"
+      ],
+      [
+        "~S2:11",
+        "~S2:7"
+      ],
+      [
+        "~S2:11",
+        "~S2:10"
+      ],
+      [
+        "~S2:12",
+        "~S2:5"
+      ],
+      [
+        "~S2:12",
+        "~S2:8"
+      ],
+      [
+        "~S2:12",
+        "~S2:9"
+      ],
+      [
+        "~S2:13",
+        "~S2:6"
+      ],
+      [
+        "~S2:13",
+        "~S2:7"
+      ],
+      [
+        "~S2:13",
+        "~S2:9"
+      ],
+      [
+        "~S2:14",
+        "~S2:6"
+      ],
+      [
+        "~S2:14",
+        "~S2:8"
+      ],
+      [
+        "~S2:14",
+        "~S2:10"
+      ],
+      [
+        "~S2:5",
+        "~S2:1"
+      ],
+      [
+        "~S2:5",
+        "~S2:2"
+      ],
+      [
+        "~S2:6",
+        "~S2:3"
+      ],
+      [
+        "~S2:6",
+        "~S2:4"
+      ],
+      [
+        "~S2:7",
+        "~S2:1"
+      ],
+      [
+        "~S2:7",
+        "~S2:4"
+      ],
+      [
+        "~S2:8",
+        "~S2:2"
+      ],
+      [
+        "~S2:8",
+        "~S2:3"
+      ],
+      [
+        "~S2:9",
+        "~S2:1"
+      ],
+      [
+        "~S2:9",
+        "~S2:3"
+      ],
+      [
+        "~S2:10",
+        "~S2:2"
+      ],
+      [
+        "~S2:10",
+        "~S2:4"
+      ],
+      [
+        "~S2:1",
+        "A:0"
+      ],
+      [
+        "~S2:2",
+        "A:0"
+      ],
+      [
+        "~S2:3",
+        "A:0"
+      ],
+      [
+        "~S2:4",
+        "A:0"
+      ]
+    ]
+  }
+}

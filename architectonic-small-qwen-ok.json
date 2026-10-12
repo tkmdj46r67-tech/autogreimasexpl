@@ -1,0 +1,3992 @@
+{
+  "metadata": {
+    "seed": "A1",
+    "seed_s1": "being",
+    "seed_s2": "seeming",
+    "model": "qwen2.5:7b",
+    "generated_at": "2026-10-11T17:19:30",
+    "collisions": [
+      {
+        "label": "L1:M2",
+        "key": "M23",
+        "term": "illusion"
+      },
+      {
+        "label": "L2[S2]:M2",
+        "key": "M24_prime",
+        "term": "Falsity Inauthenticity"
+      },
+      {
+        "label": "L2[~S1]:~S2",
+        "key": "~S2_prime",
+        "term": "Essential presence"
+      },
+      {
+        "label": "L2[~S2]:~S2",
+        "key": "~S2_prime",
+        "term": "Apposite"
+      },
+      {
+        "label": "L2[~S2]:~S1",
+        "key": "~S1_prime",
+        "term": "Seeming"
+      }
+    ]
+  },
+  "layer_1": {
+    "square": {
+      "S1": "being",
+      "S2": "seeming",
+      "~S2": "unseeming",
+      "~S1": "beingness",
+      "M11": "presence",
+      "M12": "absence",
+      "M13": "reality",
+      "M14": "illusion",
+      "M21": "manifestation",
+      "M22": "authenticity",
+      "M23": "illusion",
+      "M24": "disguise",
+      "Mixed1": "Mixed beingness",
+      "Mixed2": "Mixed seemingness"
+    },
+    "lattice": {
+      "concepts": [
+        {
+          "id": 0,
+          "label": "bottom",
+          "short": "Bottom",
+          "name": "Bottom — empty extent, all four M2 attributes",
+          "extent": [],
+          "intent": [
+            "manifestation",
+            "authenticity",
+            "illusion",
+            "disguise"
+          ]
+        },
+        {
+          "id": 1,
+          "label": "being",
+          "short": "S1",
+          "name": "being — inner term S1",
+          "extent": [
+            "being"
+          ],
+          "intent": [
+            "manifestation",
+            "authenticity",
+            "illusion"
+          ]
+        },
+        {
+          "id": 2,
+          "label": "seeming",
+          "short": "S2",
+          "name": "seeming — inner term S2",
+          "extent": [
+            "seeming"
+          ],
+          "intent": [
+            "manifestation",
+            "authenticity",
+            "disguise"
+          ]
+        },
+        {
+          "id": 3,
+          "label": "beingness",
+          "short": "~S1",
+          "name": "beingness — inner term ~S1",
+          "extent": [
+            "beingness"
+          ],
+          "intent": [
+            "authenticity",
+            "illusion",
+            "disguise"
+          ]
+        },
+        {
+          "id": 4,
+          "label": "unseeming",
+          "short": "~S2",
+          "name": "unseeming — inner term ~S2",
+          "extent": [
+            "unseeming"
+          ],
+          "intent": [
+            "manifestation",
+            "illusion",
+            "disguise"
+          ]
+        },
+        {
+          "id": 5,
+          "label": "presence",
+          "short": "M1:presence",
+          "name": "presence — M1 meta-term of being, seeming",
+          "extent": [
+            "being",
+            "seeming"
+          ],
+          "intent": [
+            "manifestation",
+            "authenticity"
+          ]
+        },
+        {
+          "id": 6,
+          "label": "absence",
+          "short": "M1:absence",
+          "name": "absence — M1 meta-term of beingness, unseeming",
+          "extent": [
+            "beingness",
+            "unseeming"
+          ],
+          "intent": [
+            "illusion",
+            "disguise"
+          ]
+        },
+        {
+          "id": 7,
+          "label": "reality",
+          "short": "M1:reality",
+          "name": "reality — M1 meta-term of being, unseeming",
+          "extent": [
+            "being",
+            "unseeming"
+          ],
+          "intent": [
+            "manifestation",
+            "illusion"
+          ]
+        },
+        {
+          "id": 8,
+          "label": "illusion",
+          "short": "M1:illusion",
+          "name": "illusion — M1 meta-term of seeming, beingness",
+          "extent": [
+            "seeming",
+            "beingness"
+          ],
+          "intent": [
+            "authenticity",
+            "disguise"
+          ]
+        },
+        {
+          "id": 9,
+          "label": "Mixed beingness",
+          "short": "Mix:Mixed beingness",
+          "name": "Mixed beingness — mixed meta-term of being, beingness",
+          "extent": [
+            "being",
+            "beingness"
+          ],
+          "intent": [
+            "authenticity",
+            "illusion"
+          ]
+        },
+        {
+          "id": 10,
+          "label": "Mixed seemingness",
+          "short": "Mix:Mixed seemingness",
+          "name": "Mixed seemingness — mixed meta-term of seeming, unseeming",
+          "extent": [
+            "seeming",
+            "unseeming"
+          ],
+          "intent": [
+            "manifestation",
+            "disguise"
+          ]
+        },
+        {
+          "id": 11,
+          "label": "manifestation",
+          "short": "M2:manifestation",
+          "name": "manifestation — M2 meta-term containing being, seeming, unseeming",
+          "extent": [
+            "being",
+            "seeming",
+            "unseeming"
+          ],
+          "intent": [
+            "manifestation"
+          ]
+        },
+        {
+          "id": 12,
+          "label": "authenticity",
+          "short": "M2:authenticity",
+          "name": "authenticity — M2 meta-term containing being, seeming, beingness",
+          "extent": [
+            "being",
+            "seeming",
+            "beingness"
+          ],
+          "intent": [
+            "authenticity"
+          ]
+        },
+        {
+          "id": 13,
+          "label": "illusion",
+          "short": "M2:illusion",
+          "name": "illusion — M2 meta-term containing beingness, unseeming, being",
+          "extent": [
+            "beingness",
+            "unseeming",
+            "being"
+          ],
+          "intent": [
+            "illusion"
+          ]
+        },
+        {
+          "id": 14,
+          "label": "disguise",
+          "short": "M2:disguise",
+          "name": "disguise — M2 meta-term containing beingness, unseeming, seeming",
+          "extent": [
+            "beingness",
+            "unseeming",
+            "seeming"
+          ],
+          "intent": [
+            "disguise"
+          ]
+        },
+        {
+          "id": 15,
+          "label": "top",
+          "short": "Top",
+          "name": "Top — all inner terms, no shared attribute",
+          "extent": [
+            "being",
+            "seeming",
+            "beingness",
+            "unseeming"
+          ],
+          "intent": []
+        }
+      ],
+      "edges": [
+        [
+          15,
+          11
+        ],
+        [
+          15,
+          12
+        ],
+        [
+          15,
+          13
+        ],
+        [
+          15,
+          14
+        ],
+        [
+          11,
+          5
+        ],
+        [
+          11,
+          7
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          12,
+          8
+        ],
+        [
+          12,
+          9
+        ],
+        [
+          13,
+          6
+        ],
+        [
+          13,
+          7
+        ],
+        [
+          13,
+          9
+        ],
+        [
+          14,
+          6
+        ],
+        [
+          14,
+          8
+        ],
+        [
+          14,
+          10
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          10,
+          2
+        ],
+        [
+          10,
+          4
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ]
+    }
+  },
+  "layer_2": {
+    "S1": {
+      "parent_seme": "S1",
+      "parent_term": "being",
+      "square": {
+        "S1": "Essential being",
+        "S2": "Accidental being",
+        "~S2": "Necessary being",
+        "~S1": "Non-essential being",
+        "M11": "Intrinsic",
+        "M12": "Inevitable",
+        "M13": "Fundamental",
+        "M14": "Conditional",
+        "M21": "Essential presence",
+        "M22": "Essential authenticity",
+        "M23": "Non-essential absence",
+        "M24": "Accidental absence",
+        "Mixed1": "Mixed essentiality",
+        "Mixed2": "Mixed necessity"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Essential presence",
+              "Essential authenticity",
+              "Non-essential absence",
+              "Accidental absence"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Essential being",
+            "short": "S1",
+            "name": "Essential being — inner term S1",
+            "extent": [
+              "Essential being"
+            ],
+            "intent": [
+              "Essential presence",
+              "Essential authenticity",
+              "Non-essential absence"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Accidental being",
+            "short": "S2",
+            "name": "Accidental being — inner term S2",
+            "extent": [
+              "Accidental being"
+            ],
+            "intent": [
+              "Essential presence",
+              "Essential authenticity",
+              "Accidental absence"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Non-essential being",
+            "short": "~S1",
+            "name": "Non-essential being — inner term ~S1",
+            "extent": [
+              "Non-essential being"
+            ],
+            "intent": [
+              "Essential authenticity",
+              "Non-essential absence",
+              "Accidental absence"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Necessary being",
+            "short": "~S2",
+            "name": "Necessary being — inner term ~S2",
+            "extent": [
+              "Necessary being"
+            ],
+            "intent": [
+              "Essential presence",
+              "Non-essential absence",
+              "Accidental absence"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Intrinsic",
+            "short": "M1:Intrinsic",
+            "name": "Intrinsic — M1 meta-term of Essential being, Accidental being",
+            "extent": [
+              "Essential being",
+              "Accidental being"
+            ],
+            "intent": [
+              "Essential presence",
+              "Essential authenticity"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Inevitable",
+            "short": "M1:Inevitable",
+            "name": "Inevitable — M1 meta-term of Non-essential being, Necessary being",
+            "extent": [
+              "Non-essential being",
+              "Necessary being"
+            ],
+            "intent": [
+              "Non-essential absence",
+              "Accidental absence"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Fundamental",
+            "short": "M1:Fundamental",
+            "name": "Fundamental — M1 meta-term of Essential being, Necessary being",
+            "extent": [
+              "Essential being",
+              "Necessary being"
+            ],
+            "intent": [
+              "Essential presence",
+              "Non-essential absence"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Conditional",
+            "short": "M1:Conditional",
+            "name": "Conditional — M1 meta-term of Accidental being, Non-essential being",
+            "extent": [
+              "Accidental being",
+              "Non-essential being"
+            ],
+            "intent": [
+              "Essential authenticity",
+              "Accidental absence"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Mixed essentiality",
+            "short": "Mix:Mixed essentiality",
+            "name": "Mixed essentiality — mixed meta-term of Essential being, Non-essential being",
+            "extent": [
+              "Essential being",
+              "Non-essential being"
+            ],
+            "intent": [
+              "Essential authenticity",
+              "Non-essential absence"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Mixed necessity",
+            "short": "Mix:Mixed necessity",
+            "name": "Mixed necessity — mixed meta-term of Accidental being, Necessary being",
+            "extent": [
+              "Accidental being",
+              "Necessary being"
+            ],
+            "intent": [
+              "Essential presence",
+              "Accidental absence"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Essential presence",
+            "short": "M2:Essential presence",
+            "name": "Essential presence — M2 meta-term containing Essential being, Accidental being, Necessary being",
+            "extent": [
+              "Essential being",
+              "Accidental being",
+              "Necessary being"
+            ],
+            "intent": [
+              "Essential presence"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Essential authenticity",
+            "short": "M2:Essential authenticity",
+            "name": "Essential authenticity — M2 meta-term containing Essential being, Accidental being, Non-essential being",
+            "extent": [
+              "Essential being",
+              "Accidental being",
+              "Non-essential being"
+            ],
+            "intent": [
+              "Essential authenticity"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Non-essential absence",
+            "short": "M2:Non-essential absence",
+            "name": "Non-essential absence — M2 meta-term containing Non-essential being, Necessary being, Essential being",
+            "extent": [
+              "Non-essential being",
+              "Necessary being",
+              "Essential being"
+            ],
+            "intent": [
+              "Non-essential absence"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Accidental absence",
+            "short": "M2:Accidental absence",
+            "name": "Accidental absence — M2 meta-term containing Non-essential being, Necessary being, Accidental being",
+            "extent": [
+              "Non-essential being",
+              "Necessary being",
+              "Accidental being"
+            ],
+            "intent": [
+              "Accidental absence"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Essential being",
+              "Accidental being",
+              "Non-essential being",
+              "Necessary being"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "S2": {
+      "parent_seme": "S2",
+      "parent_term": "seeming",
+      "square": {
+        "S1": "Verisimilitude",
+        "S2": "Falsity",
+        "~S2": "Truth",
+        "~S1": "Inauthenticity",
+        "M11": "VeracityFalsity",
+        "M12": "TruthInauthenticity",
+        "M13": "VeracityTruth",
+        "M14": "FalsityInauthenticity",
+        "M21": "Verisimilitude Truth",
+        "M22": "Verisimilitude Inauthenticity",
+        "M23": "Inauthenticity Truth",
+        "M24": "Falsity Inauthenticity",
+        "Mixed1": "Mixed verisimilitude",
+        "Mixed2": "Mixed falsity"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Verisimilitude Truth",
+              "Verisimilitude Inauthenticity",
+              "Inauthenticity Truth",
+              "Falsity Inauthenticity"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Verisimilitude",
+            "short": "S1",
+            "name": "Verisimilitude — inner term S1",
+            "extent": [
+              "Verisimilitude"
+            ],
+            "intent": [
+              "Verisimilitude Truth",
+              "Verisimilitude Inauthenticity",
+              "Inauthenticity Truth"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Falsity",
+            "short": "S2",
+            "name": "Falsity — inner term S2",
+            "extent": [
+              "Falsity"
+            ],
+            "intent": [
+              "Verisimilitude Truth",
+              "Verisimilitude Inauthenticity",
+              "Falsity Inauthenticity"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Inauthenticity",
+            "short": "~S1",
+            "name": "Inauthenticity — inner term ~S1",
+            "extent": [
+              "Inauthenticity"
+            ],
+            "intent": [
+              "Verisimilitude Inauthenticity",
+              "Inauthenticity Truth",
+              "Falsity Inauthenticity"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Truth",
+            "short": "~S2",
+            "name": "Truth — inner term ~S2",
+            "extent": [
+              "Truth"
+            ],
+            "intent": [
+              "Verisimilitude Truth",
+              "Inauthenticity Truth",
+              "Falsity Inauthenticity"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "VeracityFalsity",
+            "short": "M1:VeracityFalsity",
+            "name": "VeracityFalsity — M1 meta-term of Verisimilitude, Falsity",
+            "extent": [
+              "Verisimilitude",
+              "Falsity"
+            ],
+            "intent": [
+              "Verisimilitude Truth",
+              "Verisimilitude Inauthenticity"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "TruthInauthenticity",
+            "short": "M1:TruthInauthenticity",
+            "name": "TruthInauthenticity — M1 meta-term of Inauthenticity, Truth",
+            "extent": [
+              "Inauthenticity",
+              "Truth"
+            ],
+            "intent": [
+              "Inauthenticity Truth",
+              "Falsity Inauthenticity"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "VeracityTruth",
+            "short": "M1:VeracityTruth",
+            "name": "VeracityTruth — M1 meta-term of Verisimilitude, Truth",
+            "extent": [
+              "Verisimilitude",
+              "Truth"
+            ],
+            "intent": [
+              "Verisimilitude Truth",
+              "Inauthenticity Truth"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "FalsityInauthenticity",
+            "short": "M1:FalsityInauthenticity",
+            "name": "FalsityInauthenticity — M1 meta-term of Falsity, Inauthenticity",
+            "extent": [
+              "Falsity",
+              "Inauthenticity"
+            ],
+            "intent": [
+              "Verisimilitude Inauthenticity",
+              "Falsity Inauthenticity"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Mixed verisimilitude",
+            "short": "Mix:Mixed verisimilitude",
+            "name": "Mixed verisimilitude — mixed meta-term of Verisimilitude, Inauthenticity",
+            "extent": [
+              "Verisimilitude",
+              "Inauthenticity"
+            ],
+            "intent": [
+              "Verisimilitude Inauthenticity",
+              "Inauthenticity Truth"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Mixed falsity",
+            "short": "Mix:Mixed falsity",
+            "name": "Mixed falsity — mixed meta-term of Falsity, Truth",
+            "extent": [
+              "Falsity",
+              "Truth"
+            ],
+            "intent": [
+              "Verisimilitude Truth",
+              "Falsity Inauthenticity"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Verisimilitude Truth",
+            "short": "M2:Verisimilitude Truth",
+            "name": "Verisimilitude Truth — M2 meta-term containing Verisimilitude, Falsity, Truth",
+            "extent": [
+              "Verisimilitude",
+              "Falsity",
+              "Truth"
+            ],
+            "intent": [
+              "Verisimilitude Truth"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Verisimilitude Inauthenticity",
+            "short": "M2:Verisimilitude Inauthenticity",
+            "name": "Verisimilitude Inauthenticity — M2 meta-term containing Verisimilitude, Falsity, Inauthenticity",
+            "extent": [
+              "Verisimilitude",
+              "Falsity",
+              "Inauthenticity"
+            ],
+            "intent": [
+              "Verisimilitude Inauthenticity"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Inauthenticity Truth",
+            "short": "M2:Inauthenticity Truth",
+            "name": "Inauthenticity Truth — M2 meta-term containing Inauthenticity, Truth, Verisimilitude",
+            "extent": [
+              "Inauthenticity",
+              "Truth",
+              "Verisimilitude"
+            ],
+            "intent": [
+              "Inauthenticity Truth"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Falsity Inauthenticity",
+            "short": "M2:Falsity Inauthenticity",
+            "name": "Falsity Inauthenticity — M2 meta-term containing Inauthenticity, Truth, Falsity",
+            "extent": [
+              "Inauthenticity",
+              "Truth",
+              "Falsity"
+            ],
+            "intent": [
+              "Falsity Inauthenticity"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Verisimilitude",
+              "Falsity",
+              "Inauthenticity",
+              "Truth"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "~S1": {
+      "parent_seme": "~S1",
+      "parent_term": "beingness",
+      "square": {
+        "S1": "Essential beingness",
+        "S2": "Accidental beingness",
+        "~S2": "Essential presence",
+        "~S1": "Inessential absence",
+        "M11": "CoreExistence",
+        "M12": "VoidPresence",
+        "M13": "TrueEssence",
+        "M14": "FluctuatingAbsence",
+        "M21": "Core Presence",
+        "M22": "Being Core",
+        "M23": "Being Absence",
+        "M24": "Core Absence",
+        "Mixed1": "Mixed essential presence",
+        "Mixed2": "Mixed accidental absence"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Core Presence",
+              "Being Core",
+              "Being Absence",
+              "Core Absence"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Essential beingness",
+            "short": "S1",
+            "name": "Essential beingness — inner term S1",
+            "extent": [
+              "Essential beingness"
+            ],
+            "intent": [
+              "Core Presence",
+              "Being Core",
+              "Being Absence"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Accidental beingness",
+            "short": "S2",
+            "name": "Accidental beingness — inner term S2",
+            "extent": [
+              "Accidental beingness"
+            ],
+            "intent": [
+              "Core Presence",
+              "Being Core",
+              "Core Absence"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Inessential absence",
+            "short": "~S1",
+            "name": "Inessential absence — inner term ~S1",
+            "extent": [
+              "Inessential absence"
+            ],
+            "intent": [
+              "Being Core",
+              "Being Absence",
+              "Core Absence"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Essential presence",
+            "short": "~S2",
+            "name": "Essential presence — inner term ~S2",
+            "extent": [
+              "Essential presence"
+            ],
+            "intent": [
+              "Core Presence",
+              "Being Absence",
+              "Core Absence"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "CoreExistence",
+            "short": "M1:CoreExistence",
+            "name": "CoreExistence — M1 meta-term of Essential beingness, Accidental beingness",
+            "extent": [
+              "Essential beingness",
+              "Accidental beingness"
+            ],
+            "intent": [
+              "Core Presence",
+              "Being Core"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "VoidPresence",
+            "short": "M1:VoidPresence",
+            "name": "VoidPresence — M1 meta-term of Inessential absence, Essential presence",
+            "extent": [
+              "Inessential absence",
+              "Essential presence"
+            ],
+            "intent": [
+              "Being Absence",
+              "Core Absence"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "TrueEssence",
+            "short": "M1:TrueEssence",
+            "name": "TrueEssence — M1 meta-term of Essential beingness, Essential presence",
+            "extent": [
+              "Essential beingness",
+              "Essential presence"
+            ],
+            "intent": [
+              "Core Presence",
+              "Being Absence"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "FluctuatingAbsence",
+            "short": "M1:FluctuatingAbsence",
+            "name": "FluctuatingAbsence — M1 meta-term of Accidental beingness, Inessential absence",
+            "extent": [
+              "Accidental beingness",
+              "Inessential absence"
+            ],
+            "intent": [
+              "Being Core",
+              "Core Absence"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Mixed essential presence",
+            "short": "Mix:Mixed essential presence",
+            "name": "Mixed essential presence — mixed meta-term of Essential beingness, Inessential absence",
+            "extent": [
+              "Essential beingness",
+              "Inessential absence"
+            ],
+            "intent": [
+              "Being Core",
+              "Being Absence"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Mixed accidental absence",
+            "short": "Mix:Mixed accidental absence",
+            "name": "Mixed accidental absence — mixed meta-term of Accidental beingness, Essential presence",
+            "extent": [
+              "Accidental beingness",
+              "Essential presence"
+            ],
+            "intent": [
+              "Core Presence",
+              "Core Absence"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Core Presence",
+            "short": "M2:Core Presence",
+            "name": "Core Presence — M2 meta-term containing Essential beingness, Accidental beingness, Essential presence",
+            "extent": [
+              "Essential beingness",
+              "Accidental beingness",
+              "Essential presence"
+            ],
+            "intent": [
+              "Core Presence"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Being Core",
+            "short": "M2:Being Core",
+            "name": "Being Core — M2 meta-term containing Essential beingness, Accidental beingness, Inessential absence",
+            "extent": [
+              "Essential beingness",
+              "Accidental beingness",
+              "Inessential absence"
+            ],
+            "intent": [
+              "Being Core"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Being Absence",
+            "short": "M2:Being Absence",
+            "name": "Being Absence — M2 meta-term containing Inessential absence, Essential presence, Essential beingness",
+            "extent": [
+              "Inessential absence",
+              "Essential presence",
+              "Essential beingness"
+            ],
+            "intent": [
+              "Being Absence"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Core Absence",
+            "short": "M2:Core Absence",
+            "name": "Core Absence — M2 meta-term containing Inessential absence, Essential presence, Accidental beingness",
+            "extent": [
+              "Inessential absence",
+              "Essential presence",
+              "Accidental beingness"
+            ],
+            "intent": [
+              "Core Absence"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Essential beingness",
+              "Accidental beingness",
+              "Inessential absence",
+              "Essential presence"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "~S2": {
+      "parent_seme": "~S2",
+      "parent_term": "unseeming",
+      "square": {
+        "S1": "Inappropriate",
+        "S2": "Apposite",
+        "~S2": "Apposite",
+        "~S1": "Seeming",
+        "M11": "Impropriety",
+        "M12": "Seemingness",
+        "M13": "Inappropriateness",
+        "M14": "Appositeness",
+        "M21": "Inappropriate Apposite",
+        "M22": "Inappropriate Seeming",
+        "M23": "Seeming Apposite",
+        "M24": "Apposite Seeming",
+        "Mixed1": "MixedInappropriateness",
+        "Mixed2": "MixedAppositeness"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "Inappropriate Apposite",
+              "Inappropriate Seeming",
+              "Seeming Apposite",
+              "Apposite Seeming"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "Inappropriate",
+            "short": "S1",
+            "name": "Inappropriate — inner term S1",
+            "extent": [
+              "Inappropriate"
+            ],
+            "intent": [
+              "Inappropriate Apposite",
+              "Inappropriate Seeming",
+              "Seeming Apposite"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "Apposite",
+            "short": "S2",
+            "name": "Apposite — inner term S2",
+            "extent": [
+              "Apposite"
+            ],
+            "intent": [
+              "Inappropriate Apposite",
+              "Inappropriate Seeming",
+              "Seeming Apposite",
+              "Apposite Seeming"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "Seeming",
+            "short": "~S1",
+            "name": "Seeming — inner term ~S1",
+            "extent": [
+              "Seeming"
+            ],
+            "intent": [
+              "Inappropriate Seeming",
+              "Seeming Apposite",
+              "Apposite Seeming"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "Apposite",
+            "short": "~S2",
+            "name": "Apposite — inner term ~S2",
+            "extent": [
+              "Apposite"
+            ],
+            "intent": [
+              "Inappropriate Apposite",
+              "Inappropriate Seeming",
+              "Seeming Apposite",
+              "Apposite Seeming"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "Impropriety",
+            "short": "M1:Impropriety",
+            "name": "Impropriety — M1 meta-term of Inappropriate, Apposite",
+            "extent": [
+              "Inappropriate",
+              "Apposite"
+            ],
+            "intent": [
+              "Inappropriate Apposite",
+              "Inappropriate Seeming",
+              "Seeming Apposite"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "Seemingness",
+            "short": "M1:Seemingness",
+            "name": "Seemingness — M1 meta-term of Seeming, Apposite",
+            "extent": [
+              "Seeming",
+              "Apposite"
+            ],
+            "intent": [
+              "Inappropriate Seeming",
+              "Seeming Apposite",
+              "Apposite Seeming"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "Inappropriateness",
+            "short": "M1:Inappropriateness",
+            "name": "Inappropriateness — M1 meta-term of Inappropriate, Apposite",
+            "extent": [
+              "Inappropriate",
+              "Apposite"
+            ],
+            "intent": [
+              "Inappropriate Apposite",
+              "Inappropriate Seeming",
+              "Seeming Apposite"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "Appositeness",
+            "short": "M1:Appositeness",
+            "name": "Appositeness — M1 meta-term of Apposite, Seeming",
+            "extent": [
+              "Apposite",
+              "Seeming"
+            ],
+            "intent": [
+              "Inappropriate Seeming",
+              "Seeming Apposite",
+              "Apposite Seeming"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "MixedInappropriateness",
+            "short": "Mix:MixedInappropriateness",
+            "name": "MixedInappropriateness — mixed meta-term of Inappropriate, Seeming",
+            "extent": [
+              "Inappropriate",
+              "Seeming"
+            ],
+            "intent": [
+              "Inappropriate Seeming",
+              "Seeming Apposite"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "MixedAppositeness",
+            "short": "Mix:MixedAppositeness",
+            "name": "MixedAppositeness — mixed meta-term of Apposite, Apposite",
+            "extent": [
+              "Apposite",
+              "Apposite"
+            ],
+            "intent": [
+              "Inappropriate Apposite",
+              "Inappropriate Seeming",
+              "Seeming Apposite",
+              "Apposite Seeming"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "Inappropriate Apposite",
+            "short": "M2:Inappropriate Apposite",
+            "name": "Inappropriate Apposite — M2 meta-term containing Inappropriate, Apposite, Apposite",
+            "extent": [
+              "Inappropriate",
+              "Apposite",
+              "Apposite"
+            ],
+            "intent": [
+              "Inappropriate Apposite"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "Inappropriate Seeming",
+            "short": "M2:Inappropriate Seeming",
+            "name": "Inappropriate Seeming — M2 meta-term containing Inappropriate, Apposite, Seeming",
+            "extent": [
+              "Inappropriate",
+              "Apposite",
+              "Seeming"
+            ],
+            "intent": [
+              "Inappropriate Seeming"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "Seeming Apposite",
+            "short": "M2:Seeming Apposite",
+            "name": "Seeming Apposite — M2 meta-term containing Seeming, Apposite, Inappropriate",
+            "extent": [
+              "Seeming",
+              "Apposite",
+              "Inappropriate"
+            ],
+            "intent": [
+              "Seeming Apposite"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "Apposite Seeming",
+            "short": "M2:Apposite Seeming",
+            "name": "Apposite Seeming — M2 meta-term containing Seeming, Apposite, Apposite",
+            "extent": [
+              "Seeming",
+              "Apposite",
+              "Apposite"
+            ],
+            "intent": [
+              "Apposite Seeming"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "Inappropriate",
+              "Apposite",
+              "Seeming",
+              "Apposite"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            6
+          ],
+          [
+            12,
+            7
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            12,
+            10
+          ],
+          [
+            13,
+            5
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            8
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            13,
+            10
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            6,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            2
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "validation": {
+    "layer_1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 = 'being' and S2 = 'seeming' are contraries because they can hold together (one can be a being and seem something) and one can hold alone ('being' can exist without seeming anything, and 'seeming' can exist without being anything). They are not antonyms or synonyms."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 = 'being' and ~S1 = 'beingness' are contradictories because 'being' and 'beingness' cannot both be true at the same time. 'Being' refers to existence, while 'beingness' refers to the quality of being."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 = 'seeming' and ~S2 = 'unseeming' are contradictories because 'seeming' and 'unseeming' cannot both be true at the same time. 'Seeming' refers to appearance or appearance of being, while 'unseeming' refers to the opposite of seeming."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "~S2 = 'unseeming' implies S1 = 'being' because if something is not seeming, it must be a being. If something does not appear to be something, it must exist as a being."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "~S1 = 'beingness' implies S2 = 'seeming' because if something is not a being (i.e., it lacks the quality of being), it must seem something. If something does not exist, it must appear to be something."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 = 'beingness' and ~S2 = 'unseeming' are contraries because they cannot both be true at the same time. 'Beingness' refers to the quality of being, and 'unseeming' refers to the opposite of seeming. If something is not a being, it must seem something, and if something is not seeming, it must be a being."
+      }
+    },
+    "layer_2_S1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 and S2 are 'Essential being' and 'Accidental being', respectively. These terms can hold together (an entity can be both essential and accidental in different contexts) and can fail together (an entity cannot be both essential and accidental simultaneously in the same context). Therefore, they are contraries."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 and ~S1 are 'Essential being' and 'Non-essential being'. These terms are mutually exclusive and exhaustive, meaning that an entity must be either essential or non-essential. Thus, they are contradictories."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 and ~S2 are 'Accidental being' and 'Necessary being'. These terms are mutually exclusive and exhaustive, meaning that an entity must be either accidental or necessary. Thus, they are contradictories."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "The negation of S2 ('Necessary being') implies S1 ('Essential being'). A necessary being, by definition, must exist in all possible worlds, which implies that it is essential in the context of the Greimas square."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "The negation of S1 ('Non-essential being') implies S2 ('Accidental being'). A non-essential being is not necessary to exist, which implies that it is accidental in the context of the Greimas square."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "S1 and ~S2 are 'Essential being' and 'Necessary being', respectively. These terms are mutually exclusive and cannot hold together. Therefore, they are contraries."
+      }
+    },
+    "layer_2_S2": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 ('Verisimilitude') and S2 ('Falsity') are contraries. They can hold together (both can be false), both can fail together (if one is true, the other must be false), and one can hold alone (either can be true independently). They are not antonyms, contradictories, or synonyms."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 ('Verisimilitude') and ~S1 ('Inauthenticity') are contradictories. If one is true, the other must be false, and vice versa."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 ('Falsity') and ~S2 ('Truth') are contradictories. If one is true, the other must be false, and vice versa."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "~S2 ('Truth') does not imply S1 ('Verisimilitude'). Truth and Verisimilitude are not necessarily related in this context. Verisimilitude refers to the appearance of truth, while Truth is the actual state of being true. Therefore, Truth does not imply Verisimilitude."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "~S1 ('Inauthenticity') does not imply S2 ('Falsity'). Inauthenticity refers to something that is not genuine or real, but it does not necessarily mean it is false. Falsehood is a specific kind of inauthenticity, but not all inauthenticity is false."
+      },
+      "rule6": {
+        "pass": false,
+        "explanation": "~S1 ('Inauthenticity') and ~S2 ('Truth') are not contraries. Inauthenticity can coexist with Truth. Something can be authentic and true at the same time, so they are not in a contrary relationship."
+      }
+    },
+    "layer_2_~S1": {
+      "rule1": {
+        "pass": false,
+        "explanation": "S1 and S2 are not contraries. S1, 'Essential beingness', and S2, 'Accidental beingness', do not both hold together or fail together. They are not mutually exclusive in the sense that an entity can have both essential and accidental beingness. Therefore, they do not meet the criteria for being contraries."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 and ~S1 are contradictories. 'Essential beingness' and 'Inessential absence' are mutually exclusive and cannot both be true of the same entity at the same time. This satisfies the criteria for contradictories."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 and ~S2 are contradictories. 'Accidental beingness' and 'Essential presence' are mutually exclusive and cannot both be true of the same entity at the same time. This satisfies the criteria for contradictories."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "The implication ~S2 implies S1 does not hold. 'Essential presence' does not imply 'Essential beingness'. An entity can be in essential presence without necessarily being an essential being. Therefore, this rule does not pass."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "The implication ~S1 implies S2 does not hold. 'Inessential absence' does not imply 'Accidental beingness'. An entity can be in inessential absence without necessarily being an accidental being. Therefore, this rule does not pass."
+      },
+      "rule6": {
+        "pass": false,
+        "explanation": "S1 and S2 are not contraries, as explained in rule1. Therefore, ~S1 and ~S2 are not contraries either. An entity can be in inessential absence and essential presence simultaneously, which means they are not mutually exclusive. Thus, this rule does not pass."
+      }
+    },
+    "layer_2_~S2": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 = 'Inappropriate' and S2 = 'Apposite' are indeed contraries. They can hold together in different contexts (e.g., one might be inappropriate while the other is appropriate), and one can hold alone (e.g., something can be inappropriate but not necessarily apposite, and vice versa). They are not antonyms or synonyms."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 = 'Inappropriate' and ~S1 = 'Seeming' are contradictories. If something is inappropriate, it cannot be 'seeming' in the context of appropriateness. They cannot both be true at the same time."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 = 'Apposite' and ~S2 = 'Inappropriate' are contradictories. If something is apposite, it cannot be inappropriate. They cannot both be true at the same time."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "The implication ~S2 implies S1 does not hold. If something is not apposite (inappropriate), it does not necessarily mean it is inappropriate. Inappropriateness and inappropriateness are the same concept, so this implication is not valid."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "The implication ~S1 implies S2 does not hold. If something is not inappropriate (apposite), it does not necessarily mean it is apposite. Inappropriateness and appositeness are opposite concepts, so this implication is not valid."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 and ~S2 are contraries. If something is not inappropriate (apposite) and not apposite (inappropriate), it means the situation is neither inappropriate nor apposite. They cannot both be true at the same time, which is consistent with the definition of contraries."
+      }
+    }
+  },
+  "architectonic": {
+    "concepts": [
+      {
+        "id": "A:0",
+        "label": "bottom",
+        "short": "Bottom",
+        "name": "Bottom — empty extent, all four M2 attributes",
+        "extent": [],
+        "intent": [
+          "manifestation",
+          "authenticity",
+          "illusion",
+          "disguise"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "shared_bottom"
+      },
+      {
+        "id": "A:5",
+        "label": "presence",
+        "short": "M1:presence",
+        "name": "presence — M1 meta-term of being, seeming",
+        "extent": [
+          "being",
+          "seeming"
+        ],
+        "intent": [
+          "manifestation",
+          "authenticity"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:6",
+        "label": "absence",
+        "short": "M1:absence",
+        "name": "absence — M1 meta-term of beingness, unseeming",
+        "extent": [
+          "beingness",
+          "unseeming"
+        ],
+        "intent": [
+          "illusion",
+          "disguise"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:7",
+        "label": "reality",
+        "short": "M1:reality",
+        "name": "reality — M1 meta-term of being, unseeming",
+        "extent": [
+          "being",
+          "unseeming"
+        ],
+        "intent": [
+          "manifestation",
+          "illusion"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:8",
+        "label": "illusion",
+        "short": "M1:illusion",
+        "name": "illusion — M1 meta-term of seeming, beingness",
+        "extent": [
+          "seeming",
+          "beingness"
+        ],
+        "intent": [
+          "authenticity",
+          "disguise"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:9",
+        "label": "Mixed beingness",
+        "short": "Mix:Mixed beingness",
+        "name": "Mixed beingness — mixed meta-term of being, beingness",
+        "extent": [
+          "being",
+          "beingness"
+        ],
+        "intent": [
+          "authenticity",
+          "illusion"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:10",
+        "label": "Mixed seemingness",
+        "short": "Mix:Mixed seemingness",
+        "name": "Mixed seemingness — mixed meta-term of seeming, unseeming",
+        "extent": [
+          "seeming",
+          "unseeming"
+        ],
+        "intent": [
+          "manifestation",
+          "disguise"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:11",
+        "label": "manifestation",
+        "short": "M2:manifestation",
+        "name": "manifestation — M2 meta-term containing being, seeming, unseeming",
+        "extent": [
+          "being",
+          "seeming",
+          "unseeming"
+        ],
+        "intent": [
+          "manifestation"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:12",
+        "label": "authenticity",
+        "short": "M2:authenticity",
+        "name": "authenticity — M2 meta-term containing being, seeming, beingness",
+        "extent": [
+          "being",
+          "seeming",
+          "beingness"
+        ],
+        "intent": [
+          "authenticity"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:13",
+        "label": "illusion",
+        "short": "M2:illusion",
+        "name": "illusion — M2 meta-term containing beingness, unseeming, being",
+        "extent": [
+          "beingness",
+          "unseeming",
+          "being"
+        ],
+        "intent": [
+          "illusion"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:14",
+        "label": "disguise",
+        "short": "M2:disguise",
+        "name": "disguise — M2 meta-term containing beingness, unseeming, seeming",
+        "extent": [
+          "beingness",
+          "unseeming",
+          "seeming"
+        ],
+        "intent": [
+          "disguise"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:15",
+        "label": "top",
+        "short": "Top",
+        "name": "Top — all inner terms, no shared attribute",
+        "extent": [
+          "being",
+          "seeming",
+          "beingness",
+          "unseeming"
+        ],
+        "intent": [],
+        "layer": 1,
+        "origin": "A",
+        "role": "architectonic_top"
+      },
+      {
+        "id": "S1:1",
+        "label": "Essential being",
+        "short": "S1",
+        "name": "Essential being — inner term S1",
+        "extent": [
+          "Essential being"
+        ],
+        "intent": [
+          "Essential presence",
+          "Essential authenticity",
+          "Non-essential absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:2",
+        "label": "Accidental being",
+        "short": "S2",
+        "name": "Accidental being — inner term S2",
+        "extent": [
+          "Accidental being"
+        ],
+        "intent": [
+          "Essential presence",
+          "Essential authenticity",
+          "Accidental absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:3",
+        "label": "Non-essential being",
+        "short": "~S1",
+        "name": "Non-essential being — inner term ~S1",
+        "extent": [
+          "Non-essential being"
+        ],
+        "intent": [
+          "Essential authenticity",
+          "Non-essential absence",
+          "Accidental absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:4",
+        "label": "Necessary being",
+        "short": "~S2",
+        "name": "Necessary being — inner term ~S2",
+        "extent": [
+          "Necessary being"
+        ],
+        "intent": [
+          "Essential presence",
+          "Non-essential absence",
+          "Accidental absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:5",
+        "label": "Intrinsic",
+        "short": "M1:Intrinsic",
+        "name": "Intrinsic — M1 meta-term of Essential being, Accidental being",
+        "extent": [
+          "Essential being",
+          "Accidental being"
+        ],
+        "intent": [
+          "Essential presence",
+          "Essential authenticity"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:6",
+        "label": "Inevitable",
+        "short": "M1:Inevitable",
+        "name": "Inevitable — M1 meta-term of Non-essential being, Necessary being",
+        "extent": [
+          "Non-essential being",
+          "Necessary being"
+        ],
+        "intent": [
+          "Non-essential absence",
+          "Accidental absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:7",
+        "label": "Fundamental",
+        "short": "M1:Fundamental",
+        "name": "Fundamental — M1 meta-term of Essential being, Necessary being",
+        "extent": [
+          "Essential being",
+          "Necessary being"
+        ],
+        "intent": [
+          "Essential presence",
+          "Non-essential absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:8",
+        "label": "Conditional",
+        "short": "M1:Conditional",
+        "name": "Conditional — M1 meta-term of Accidental being, Non-essential being",
+        "extent": [
+          "Accidental being",
+          "Non-essential being"
+        ],
+        "intent": [
+          "Essential authenticity",
+          "Accidental absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:9",
+        "label": "Mixed essentiality",
+        "short": "Mix:Mixed essentiality",
+        "name": "Mixed essentiality — mixed meta-term of Essential being, Non-essential being",
+        "extent": [
+          "Essential being",
+          "Non-essential being"
+        ],
+        "intent": [
+          "Essential authenticity",
+          "Non-essential absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:10",
+        "label": "Mixed necessity",
+        "short": "Mix:Mixed necessity",
+        "name": "Mixed necessity — mixed meta-term of Accidental being, Necessary being",
+        "extent": [
+          "Accidental being",
+          "Necessary being"
+        ],
+        "intent": [
+          "Essential presence",
+          "Accidental absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:11",
+        "label": "Essential presence",
+        "short": "M2:Essential presence",
+        "name": "Essential presence — M2 meta-term containing Essential being, Accidental being, Necessary being",
+        "extent": [
+          "Essential being",
+          "Accidental being",
+          "Necessary being"
+        ],
+        "intent": [
+          "Essential presence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:12",
+        "label": "Essential authenticity",
+        "short": "M2:Essential authenticity",
+        "name": "Essential authenticity — M2 meta-term containing Essential being, Accidental being, Non-essential being",
+        "extent": [
+          "Essential being",
+          "Accidental being",
+          "Non-essential being"
+        ],
+        "intent": [
+          "Essential authenticity"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:13",
+        "label": "Non-essential absence",
+        "short": "M2:Non-essential absence",
+        "name": "Non-essential absence — M2 meta-term containing Non-essential being, Necessary being, Essential being",
+        "extent": [
+          "Non-essential being",
+          "Necessary being",
+          "Essential being"
+        ],
+        "intent": [
+          "Non-essential absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:14",
+        "label": "Accidental absence",
+        "short": "M2:Accidental absence",
+        "name": "Accidental absence — M2 meta-term containing Non-essential being, Necessary being, Accidental being",
+        "extent": [
+          "Non-essential being",
+          "Necessary being",
+          "Accidental being"
+        ],
+        "intent": [
+          "Accidental absence"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:15",
+        "label": "being*",
+        "short": "being",
+        "name": "Fully-articulated being",
+        "extent": [
+          "Essential being",
+          "Accidental being",
+          "Non-essential being",
+          "Necessary being"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "S1",
+        "role": "interface"
+      },
+      {
+        "id": "S2:1",
+        "label": "Verisimilitude",
+        "short": "S1",
+        "name": "Verisimilitude — inner term S1",
+        "extent": [
+          "Verisimilitude"
+        ],
+        "intent": [
+          "Verisimilitude Truth",
+          "Verisimilitude Inauthenticity",
+          "Inauthenticity Truth"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:2",
+        "label": "Falsity",
+        "short": "S2",
+        "name": "Falsity — inner term S2",
+        "extent": [
+          "Falsity"
+        ],
+        "intent": [
+          "Verisimilitude Truth",
+          "Verisimilitude Inauthenticity",
+          "Falsity Inauthenticity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:3",
+        "label": "Inauthenticity",
+        "short": "~S1",
+        "name": "Inauthenticity — inner term ~S1",
+        "extent": [
+          "Inauthenticity"
+        ],
+        "intent": [
+          "Verisimilitude Inauthenticity",
+          "Inauthenticity Truth",
+          "Falsity Inauthenticity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:4",
+        "label": "Truth",
+        "short": "~S2",
+        "name": "Truth — inner term ~S2",
+        "extent": [
+          "Truth"
+        ],
+        "intent": [
+          "Verisimilitude Truth",
+          "Inauthenticity Truth",
+          "Falsity Inauthenticity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:5",
+        "label": "VeracityFalsity",
+        "short": "M1:VeracityFalsity",
+        "name": "VeracityFalsity — M1 meta-term of Verisimilitude, Falsity",
+        "extent": [
+          "Verisimilitude",
+          "Falsity"
+        ],
+        "intent": [
+          "Verisimilitude Truth",
+          "Verisimilitude Inauthenticity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:6",
+        "label": "TruthInauthenticity",
+        "short": "M1:TruthInauthenticity",
+        "name": "TruthInauthenticity — M1 meta-term of Inauthenticity, Truth",
+        "extent": [
+          "Inauthenticity",
+          "Truth"
+        ],
+        "intent": [
+          "Inauthenticity Truth",
+          "Falsity Inauthenticity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:7",
+        "label": "VeracityTruth",
+        "short": "M1:VeracityTruth",
+        "name": "VeracityTruth — M1 meta-term of Verisimilitude, Truth",
+        "extent": [
+          "Verisimilitude",
+          "Truth"
+        ],
+        "intent": [
+          "Verisimilitude Truth",
+          "Inauthenticity Truth"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:8",
+        "label": "FalsityInauthenticity",
+        "short": "M1:FalsityInauthenticity",
+        "name": "FalsityInauthenticity — M1 meta-term of Falsity, Inauthenticity",
+        "extent": [
+          "Falsity",
+          "Inauthenticity"
+        ],
+        "intent": [
+          "Verisimilitude Inauthenticity",
+          "Falsity Inauthenticity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:9",
+        "label": "Mixed verisimilitude",
+        "short": "Mix:Mixed verisimilitude",
+        "name": "Mixed verisimilitude — mixed meta-term of Verisimilitude, Inauthenticity",
+        "extent": [
+          "Verisimilitude",
+          "Inauthenticity"
+        ],
+        "intent": [
+          "Verisimilitude Inauthenticity",
+          "Inauthenticity Truth"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:10",
+        "label": "Mixed falsity",
+        "short": "Mix:Mixed falsity",
+        "name": "Mixed falsity — mixed meta-term of Falsity, Truth",
+        "extent": [
+          "Falsity",
+          "Truth"
+        ],
+        "intent": [
+          "Verisimilitude Truth",
+          "Falsity Inauthenticity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:11",
+        "label": "Verisimilitude Truth",
+        "short": "M2:Verisimilitude Truth",
+        "name": "Verisimilitude Truth — M2 meta-term containing Verisimilitude, Falsity, Truth",
+        "extent": [
+          "Verisimilitude",
+          "Falsity",
+          "Truth"
+        ],
+        "intent": [
+          "Verisimilitude Truth"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:12",
+        "label": "Verisimilitude Inauthenticity",
+        "short": "M2:Verisimilitude Inauthenticity",
+        "name": "Verisimilitude Inauthenticity — M2 meta-term containing Verisimilitude, Falsity, Inauthenticity",
+        "extent": [
+          "Verisimilitude",
+          "Falsity",
+          "Inauthenticity"
+        ],
+        "intent": [
+          "Verisimilitude Inauthenticity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:13",
+        "label": "Inauthenticity Truth",
+        "short": "M2:Inauthenticity Truth",
+        "name": "Inauthenticity Truth — M2 meta-term containing Inauthenticity, Truth, Verisimilitude",
+        "extent": [
+          "Inauthenticity",
+          "Truth",
+          "Verisimilitude"
+        ],
+        "intent": [
+          "Inauthenticity Truth"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:14",
+        "label": "Falsity Inauthenticity",
+        "short": "M2:Falsity Inauthenticity",
+        "name": "Falsity Inauthenticity — M2 meta-term containing Inauthenticity, Truth, Falsity",
+        "extent": [
+          "Inauthenticity",
+          "Truth",
+          "Falsity"
+        ],
+        "intent": [
+          "Falsity Inauthenticity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:15",
+        "label": "seeming*",
+        "short": "seeming",
+        "name": "Fully-articulated seeming",
+        "extent": [
+          "Verisimilitude",
+          "Falsity",
+          "Inauthenticity",
+          "Truth"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "S2",
+        "role": "interface"
+      },
+      {
+        "id": "~S1:1",
+        "label": "Essential beingness",
+        "short": "S1",
+        "name": "Essential beingness — inner term S1",
+        "extent": [
+          "Essential beingness"
+        ],
+        "intent": [
+          "Core Presence",
+          "Being Core",
+          "Being Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:2",
+        "label": "Accidental beingness",
+        "short": "S2",
+        "name": "Accidental beingness — inner term S2",
+        "extent": [
+          "Accidental beingness"
+        ],
+        "intent": [
+          "Core Presence",
+          "Being Core",
+          "Core Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:3",
+        "label": "Inessential absence",
+        "short": "~S1",
+        "name": "Inessential absence — inner term ~S1",
+        "extent": [
+          "Inessential absence"
+        ],
+        "intent": [
+          "Being Core",
+          "Being Absence",
+          "Core Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:4",
+        "label": "Essential presence",
+        "short": "~S2",
+        "name": "Essential presence — inner term ~S2",
+        "extent": [
+          "Essential presence"
+        ],
+        "intent": [
+          "Core Presence",
+          "Being Absence",
+          "Core Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:5",
+        "label": "CoreExistence",
+        "short": "M1:CoreExistence",
+        "name": "CoreExistence — M1 meta-term of Essential beingness, Accidental beingness",
+        "extent": [
+          "Essential beingness",
+          "Accidental beingness"
+        ],
+        "intent": [
+          "Core Presence",
+          "Being Core"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:6",
+        "label": "VoidPresence",
+        "short": "M1:VoidPresence",
+        "name": "VoidPresence — M1 meta-term of Inessential absence, Essential presence",
+        "extent": [
+          "Inessential absence",
+          "Essential presence"
+        ],
+        "intent": [
+          "Being Absence",
+          "Core Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:7",
+        "label": "TrueEssence",
+        "short": "M1:TrueEssence",
+        "name": "TrueEssence — M1 meta-term of Essential beingness, Essential presence",
+        "extent": [
+          "Essential beingness",
+          "Essential presence"
+        ],
+        "intent": [
+          "Core Presence",
+          "Being Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:8",
+        "label": "FluctuatingAbsence",
+        "short": "M1:FluctuatingAbsence",
+        "name": "FluctuatingAbsence — M1 meta-term of Accidental beingness, Inessential absence",
+        "extent": [
+          "Accidental beingness",
+          "Inessential absence"
+        ],
+        "intent": [
+          "Being Core",
+          "Core Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:9",
+        "label": "Mixed essential presence",
+        "short": "Mix:Mixed essential presence",
+        "name": "Mixed essential presence — mixed meta-term of Essential beingness, Inessential absence",
+        "extent": [
+          "Essential beingness",
+          "Inessential absence"
+        ],
+        "intent": [
+          "Being Core",
+          "Being Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:10",
+        "label": "Mixed accidental absence",
+        "short": "Mix:Mixed accidental absence",
+        "name": "Mixed accidental absence — mixed meta-term of Accidental beingness, Essential presence",
+        "extent": [
+          "Accidental beingness",
+          "Essential presence"
+        ],
+        "intent": [
+          "Core Presence",
+          "Core Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:11",
+        "label": "Core Presence",
+        "short": "M2:Core Presence",
+        "name": "Core Presence — M2 meta-term containing Essential beingness, Accidental beingness, Essential presence",
+        "extent": [
+          "Essential beingness",
+          "Accidental beingness",
+          "Essential presence"
+        ],
+        "intent": [
+          "Core Presence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:12",
+        "label": "Being Core",
+        "short": "M2:Being Core",
+        "name": "Being Core — M2 meta-term containing Essential beingness, Accidental beingness, Inessential absence",
+        "extent": [
+          "Essential beingness",
+          "Accidental beingness",
+          "Inessential absence"
+        ],
+        "intent": [
+          "Being Core"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:13",
+        "label": "Being Absence",
+        "short": "M2:Being Absence",
+        "name": "Being Absence — M2 meta-term containing Inessential absence, Essential presence, Essential beingness",
+        "extent": [
+          "Inessential absence",
+          "Essential presence",
+          "Essential beingness"
+        ],
+        "intent": [
+          "Being Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:14",
+        "label": "Core Absence",
+        "short": "M2:Core Absence",
+        "name": "Core Absence — M2 meta-term containing Inessential absence, Essential presence, Accidental beingness",
+        "extent": [
+          "Inessential absence",
+          "Essential presence",
+          "Accidental beingness"
+        ],
+        "intent": [
+          "Core Absence"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:15",
+        "label": "beingness*",
+        "short": "beingness",
+        "name": "Fully-articulated beingness",
+        "extent": [
+          "Essential beingness",
+          "Accidental beingness",
+          "Inessential absence",
+          "Essential presence"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "interface"
+      },
+      {
+        "id": "~S2:1",
+        "label": "Inappropriate",
+        "short": "S1",
+        "name": "Inappropriate — inner term S1",
+        "extent": [
+          "Inappropriate"
+        ],
+        "intent": [
+          "Inappropriate Apposite",
+          "Inappropriate Seeming",
+          "Seeming Apposite"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:2",
+        "label": "Apposite",
+        "short": "S2",
+        "name": "Apposite — inner term S2",
+        "extent": [
+          "Apposite"
+        ],
+        "intent": [
+          "Inappropriate Apposite",
+          "Inappropriate Seeming",
+          "Seeming Apposite",
+          "Apposite Seeming"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:3",
+        "label": "Seeming",
+        "short": "~S1",
+        "name": "Seeming — inner term ~S1",
+        "extent": [
+          "Seeming"
+        ],
+        "intent": [
+          "Inappropriate Seeming",
+          "Seeming Apposite",
+          "Apposite Seeming"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:4",
+        "label": "Apposite",
+        "short": "~S2",
+        "name": "Apposite — inner term ~S2",
+        "extent": [
+          "Apposite"
+        ],
+        "intent": [
+          "Inappropriate Apposite",
+          "Inappropriate Seeming",
+          "Seeming Apposite",
+          "Apposite Seeming"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:5",
+        "label": "Impropriety",
+        "short": "M1:Impropriety",
+        "name": "Impropriety — M1 meta-term of Inappropriate, Apposite",
+        "extent": [
+          "Inappropriate",
+          "Apposite"
+        ],
+        "intent": [
+          "Inappropriate Apposite",
+          "Inappropriate Seeming",
+          "Seeming Apposite"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:6",
+        "label": "Seemingness",
+        "short": "M1:Seemingness",
+        "name": "Seemingness — M1 meta-term of Seeming, Apposite",
+        "extent": [
+          "Seeming",
+          "Apposite"
+        ],
+        "intent": [
+          "Inappropriate Seeming",
+          "Seeming Apposite",
+          "Apposite Seeming"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:7",
+        "label": "Inappropriateness",
+        "short": "M1:Inappropriateness",
+        "name": "Inappropriateness — M1 meta-term of Inappropriate, Apposite",
+        "extent": [
+          "Inappropriate",
+          "Apposite"
+        ],
+        "intent": [
+          "Inappropriate Apposite",
+          "Inappropriate Seeming",
+          "Seeming Apposite"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:8",
+        "label": "Appositeness",
+        "short": "M1:Appositeness",
+        "name": "Appositeness — M1 meta-term of Apposite, Seeming",
+        "extent": [
+          "Apposite",
+          "Seeming"
+        ],
+        "intent": [
+          "Inappropriate Seeming",
+          "Seeming Apposite",
+          "Apposite Seeming"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:9",
+        "label": "MixedInappropriateness",
+        "short": "Mix:MixedInappropriateness",
+        "name": "MixedInappropriateness — mixed meta-term of Inappropriate, Seeming",
+        "extent": [
+          "Inappropriate",
+          "Seeming"
+        ],
+        "intent": [
+          "Inappropriate Seeming",
+          "Seeming Apposite"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:10",
+        "label": "MixedAppositeness",
+        "short": "Mix:MixedAppositeness",
+        "name": "MixedAppositeness — mixed meta-term of Apposite, Apposite",
+        "extent": [
+          "Apposite",
+          "Apposite"
+        ],
+        "intent": [
+          "Inappropriate Apposite",
+          "Inappropriate Seeming",
+          "Seeming Apposite",
+          "Apposite Seeming"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:11",
+        "label": "Inappropriate Apposite",
+        "short": "M2:Inappropriate Apposite",
+        "name": "Inappropriate Apposite — M2 meta-term containing Inappropriate, Apposite, Apposite",
+        "extent": [
+          "Inappropriate",
+          "Apposite",
+          "Apposite"
+        ],
+        "intent": [
+          "Inappropriate Apposite"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:12",
+        "label": "Inappropriate Seeming",
+        "short": "M2:Inappropriate Seeming",
+        "name": "Inappropriate Seeming — M2 meta-term containing Inappropriate, Apposite, Seeming",
+        "extent": [
+          "Inappropriate",
+          "Apposite",
+          "Seeming"
+        ],
+        "intent": [
+          "Inappropriate Seeming"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:13",
+        "label": "Seeming Apposite",
+        "short": "M2:Seeming Apposite",
+        "name": "Seeming Apposite — M2 meta-term containing Seeming, Apposite, Inappropriate",
+        "extent": [
+          "Seeming",
+          "Apposite",
+          "Inappropriate"
+        ],
+        "intent": [
+          "Seeming Apposite"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:14",
+        "label": "Apposite Seeming",
+        "short": "M2:Apposite Seeming",
+        "name": "Apposite Seeming — M2 meta-term containing Seeming, Apposite, Apposite",
+        "extent": [
+          "Seeming",
+          "Apposite",
+          "Apposite"
+        ],
+        "intent": [
+          "Apposite Seeming"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:15",
+        "label": "unseeming*",
+        "short": "unseeming",
+        "name": "Fully-articulated unseeming",
+        "extent": [
+          "Inappropriate",
+          "Apposite",
+          "Seeming",
+          "Apposite"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "interface"
+      }
+    ],
+    "edges": [
+      [
+        "A:15",
+        "A:11"
+      ],
+      [
+        "A:15",
+        "A:12"
+      ],
+      [
+        "A:15",
+        "A:13"
+      ],
+      [
+        "A:15",
+        "A:14"
+      ],
+      [
+        "A:11",
+        "A:5"
+      ],
+      [
+        "A:11",
+        "A:7"
+      ],
+      [
+        "A:11",
+        "A:10"
+      ],
+      [
+        "A:12",
+        "A:5"
+      ],
+      [
+        "A:12",
+        "A:8"
+      ],
+      [
+        "A:12",
+        "A:9"
+      ],
+      [
+        "A:13",
+        "A:6"
+      ],
+      [
+        "A:13",
+        "A:7"
+      ],
+      [
+        "A:13",
+        "A:9"
+      ],
+      [
+        "A:14",
+        "A:6"
+      ],
+      [
+        "A:14",
+        "A:8"
+      ],
+      [
+        "A:14",
+        "A:10"
+      ],
+      [
+        "A:5",
+        "S1:15"
+      ],
+      [
+        "A:5",
+        "S2:15"
+      ],
+      [
+        "A:6",
+        "~S1:15"
+      ],
+      [
+        "A:6",
+        "~S2:15"
+      ],
+      [
+        "A:7",
+        "S1:15"
+      ],
+      [
+        "A:7",
+        "~S2:15"
+      ],
+      [
+        "A:8",
+        "S2:15"
+      ],
+      [
+        "A:8",
+        "~S1:15"
+      ],
+      [
+        "A:9",
+        "S1:15"
+      ],
+      [
+        "A:9",
+        "~S1:15"
+      ],
+      [
+        "A:10",
+        "S2:15"
+      ],
+      [
+        "A:10",
+        "~S2:15"
+      ],
+      [
+        "S1:15",
+        "S1:11"
+      ],
+      [
+        "S1:15",
+        "S1:12"
+      ],
+      [
+        "S1:15",
+        "S1:13"
+      ],
+      [
+        "S1:15",
+        "S1:14"
+      ],
+      [
+        "S1:11",
+        "S1:5"
+      ],
+      [
+        "S1:11",
+        "S1:7"
+      ],
+      [
+        "S1:11",
+        "S1:10"
+      ],
+      [
+        "S1:12",
+        "S1:5"
+      ],
+      [
+        "S1:12",
+        "S1:8"
+      ],
+      [
+        "S1:12",
+        "S1:9"
+      ],
+      [
+        "S1:13",
+        "S1:6"
+      ],
+      [
+        "S1:13",
+        "S1:7"
+      ],
+      [
+        "S1:13",
+        "S1:9"
+      ],
+      [
+        "S1:14",
+        "S1:6"
+      ],
+      [
+        "S1:14",
+        "S1:8"
+      ],
+      [
+        "S1:14",
+        "S1:10"
+      ],
+      [
+        "S1:5",
+        "S1:1"
+      ],
+      [
+        "S1:5",
+        "S1:2"
+      ],
+      [
+        "S1:6",
+        "S1:3"
+      ],
+      [
+        "S1:6",
+        "S1:4"
+      ],
+      [
+        "S1:7",
+        "S1:1"
+      ],
+      [
+        "S1:7",
+        "S1:4"
+      ],
+      [
+        "S1:8",
+        "S1:2"
+      ],
+      [
+        "S1:8",
+        "S1:3"
+      ],
+      [
+        "S1:9",
+        "S1:1"
+      ],
+      [
+        "S1:9",
+        "S1:3"
+      ],
+      [
+        "S1:10",
+        "S1:2"
+      ],
+      [
+        "S1:10",
+        "S1:4"
+      ],
+      [
+        "S1:1",
+        "A:0"
+      ],
+      [
+        "S1:2",
+        "A:0"
+      ],
+      [
+        "S1:3",
+        "A:0"
+      ],
+      [
+        "S1:4",
+        "A:0"
+      ],
+      [
+        "S2:15",
+        "S2:11"
+      ],
+      [
+        "S2:15",
+        "S2:12"
+      ],
+      [
+        "S2:15",
+        "S2:13"
+      ],
+      [
+        "S2:15",
+        "S2:14"
+      ],
+      [
+        "S2:11",
+        "S2:5"
+      ],
+      [
+        "S2:11",
+        "S2:7"
+      ],
+      [
+        "S2:11",
+        "S2:10"
+      ],
+      [
+        "S2:12",
+        "S2:5"
+      ],
+      [
+        "S2:12",
+        "S2:8"
+      ],
+      [
+        "S2:12",
+        "S2:9"
+      ],
+      [
+        "S2:13",
+        "S2:6"
+      ],
+      [
+        "S2:13",
+        "S2:7"
+      ],
+      [
+        "S2:13",
+        "S2:9"
+      ],
+      [
+        "S2:14",
+        "S2:6"
+      ],
+      [
+        "S2:14",
+        "S2:8"
+      ],
+      [
+        "S2:14",
+        "S2:10"
+      ],
+      [
+        "S2:5",
+        "S2:1"
+      ],
+      [
+        "S2:5",
+        "S2:2"
+      ],
+      [
+        "S2:6",
+        "S2:3"
+      ],
+      [
+        "S2:6",
+        "S2:4"
+      ],
+      [
+        "S2:7",
+        "S2:1"
+      ],
+      [
+        "S2:7",
+        "S2:4"
+      ],
+      [
+        "S2:8",
+        "S2:2"
+      ],
+      [
+        "S2:8",
+        "S2:3"
+      ],
+      [
+        "S2:9",
+        "S2:1"
+      ],
+      [
+        "S2:9",
+        "S2:3"
+      ],
+      [
+        "S2:10",
+        "S2:2"
+      ],
+      [
+        "S2:10",
+        "S2:4"
+      ],
+      [
+        "S2:1",
+        "A:0"
+      ],
+      [
+        "S2:2",
+        "A:0"
+      ],
+      [
+        "S2:3",
+        "A:0"
+      ],
+      [
+        "S2:4",
+        "A:0"
+      ],
+      [
+        "~S1:15",
+        "~S1:11"
+      ],
+      [
+        "~S1:15",
+        "~S1:12"
+      ],
+      [
+        "~S1:15",
+        "~S1:13"
+      ],
+      [
+        "~S1:15",
+        "~S1:14"
+      ],
+      [
+        "~S1:11",
+        "~S1:5"
+      ],
+      [
+        "~S1:11",
+        "~S1:7"
+      ],
+      [
+        "~S1:11",
+        "~S1:10"
+      ],
+      [
+        "~S1:12",
+        "~S1:5"
+      ],
+      [
+        "~S1:12",
+        "~S1:8"
+      ],
+      [
+        "~S1:12",
+        "~S1:9"
+      ],
+      [
+        "~S1:13",
+        "~S1:6"
+      ],
+      [
+        "~S1:13",
+        "~S1:7"
+      ],
+      [
+        "~S1:13",
+        "~S1:9"
+      ],
+      [
+        "~S1:14",
+        "~S1:6"
+      ],
+      [
+        "~S1:14",
+        "~S1:8"
+      ],
+      [
+        "~S1:14",
+        "~S1:10"
+      ],
+      [
+        "~S1:5",
+        "~S1:1"
+      ],
+      [
+        "~S1:5",
+        "~S1:2"
+      ],
+      [
+        "~S1:6",
+        "~S1:3"
+      ],
+      [
+        "~S1:6",
+        "~S1:4"
+      ],
+      [
+        "~S1:7",
+        "~S1:1"
+      ],
+      [
+        "~S1:7",
+        "~S1:4"
+      ],
+      [
+        "~S1:8",
+        "~S1:2"
+      ],
+      [
+        "~S1:8",
+        "~S1:3"
+      ],
+      [
+        "~S1:9",
+        "~S1:1"
+      ],
+      [
+        "~S1:9",
+        "~S1:3"
+      ],
+      [
+        "~S1:10",
+        "~S1:2"
+      ],
+      [
+        "~S1:10",
+        "~S1:4"
+      ],
+      [
+        "~S1:1",
+        "A:0"
+      ],
+      [
+        "~S1:2",
+        "A:0"
+      ],
+      [
+        "~S1:3",
+        "A:0"
+      ],
+      [
+        "~S1:4",
+        "A:0"
+      ],
+      [
+        "~S2:15",
+        "~S2:11"
+      ],
+      [
+        "~S2:15",
+        "~S2:12"
+      ],
+      [
+        "~S2:15",
+        "~S2:13"
+      ],
+      [
+        "~S2:15",
+        "~S2:14"
+      ],
+      [
+        "~S2:11",
+        "~S2:5"
+      ],
+      [
+        "~S2:11",
+        "~S2:7"
+      ],
+      [
+        "~S2:11",
+        "~S2:10"
+      ],
+      [
+        "~S2:12",
+        "~S2:5"
+      ],
+      [
+        "~S2:12",
+        "~S2:6"
+      ],
+      [
+        "~S2:12",
+        "~S2:7"
+      ],
+      [
+        "~S2:12",
+        "~S2:8"
+      ],
+      [
+        "~S2:12",
+        "~S2:9"
+      ],
+      [
+        "~S2:12",
+        "~S2:10"
+      ],
+      [
+        "~S2:13",
+        "~S2:5"
+      ],
+      [
+        "~S2:13",
+        "~S2:6"
+      ],
+      [
+        "~S2:13",
+        "~S2:7"
+      ],
+      [
+        "~S2:13",
+        "~S2:8"
+      ],
+      [
+        "~S2:13",
+        "~S2:9"
+      ],
+      [
+        "~S2:13",
+        "~S2:10"
+      ],
+      [
+        "~S2:14",
+        "~S2:6"
+      ],
+      [
+        "~S2:14",
+        "~S2:8"
+      ],
+      [
+        "~S2:14",
+        "~S2:10"
+      ],
+      [
+        "~S2:5",
+        "~S2:1"
+      ],
+      [
+        "~S2:5",
+        "~S2:2"
+      ],
+      [
+        "~S2:5",
+        "~S2:4"
+      ],
+      [
+        "~S2:6",
+        "~S2:2"
+      ],
+      [
+        "~S2:6",
+        "~S2:3"
+      ],
+      [
+        "~S2:6",
+        "~S2:4"
+      ],
+      [
+        "~S2:7",
+        "~S2:1"
+      ],
+      [
+        "~S2:7",
+        "~S2:2"
+      ],
+      [
+        "~S2:7",
+        "~S2:4"
+      ],
+      [
+        "~S2:8",
+        "~S2:2"
+      ],
+      [
+        "~S2:8",
+        "~S2:3"
+      ],
+      [
+        "~S2:8",
+        "~S2:4"
+      ],
+      [
+        "~S2:9",
+        "~S2:1"
+      ],
+      [
+        "~S2:9",
+        "~S2:3"
+      ],
+      [
+        "~S2:10",
+        "~S2:2"
+      ],
+      [
+        "~S2:10",
+        "~S2:4"
+      ],
+      [
+        "~S2:1",
+        "A:0"
+      ],
+      [
+        "~S2:2",
+        "A:0"
+      ],
+      [
+        "~S2:3",
+        "A:0"
+      ],
+      [
+        "~S2:4",
+        "A:0"
+      ]
+    ]
+  }
+}
