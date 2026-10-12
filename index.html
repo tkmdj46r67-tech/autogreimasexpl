@@ -135,8 +135,8 @@
     color: var(--text-dim); font-weight: 500; font-style: italic;
     text-transform: none; letter-spacing: 0; font-size: 11.5px;
   }
-  .label.highlighted { color: #F2E8F5; text-shadow: 0 0 12px rgba(236,224,238,0.9), 0 0 3px rgba(0,0,0,1); }
-  .label.dimmed { color: #3B2746; }
+  .label.highlighted { color: #F2E8F5 !important; text-shadow: 0 0 12px rgba(236,224,238,0.9), 0 0 3px rgba(0,0,0,1); }
+  .label.dimmed { color: #3B2746 !important; }
 
   .loading {
     position: fixed; inset: 0; display: flex;
@@ -179,12 +179,8 @@
   <div class="sec open" data-sec>
     <div class="sec-title"><span>Legend</span><span class="chev">▾</span></div>
     <div class="sec-body"><div class="sec-content">
-      <div class="legend">
-        <span style="color:#ECE0EE"><span class="dot" style="background:#ECE0EE"></span>Inner semes</span>
-        <span style="color:#C0A4DA"><span class="dot" style="background:#C0A4DA"></span>M1 meta-terms</span>
-        <span style="color:#9676C8"><span class="dot" style="background:#9676C8"></span>M2 meta-terms</span>
-        <span style="color:#6E5294"><span class="dot" style="background:#6E5294"></span>Mixed</span>
-        <span style="color:#4B3560"><span class="dot" style="background:#4B3560"></span>Top / Bottom</span>
+      <div class="legend" id="legend">
+        <!-- Filled in by JS based on loaded squares -->
       </div>
     </div></div>
   </div>
@@ -207,27 +203,37 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 // =========================================================
-// MAKO PALETTE
+// MAKO PALETTE — ONE COLOR PER SQUARE
 // =========================================================
+// Five distinct tones from the Mako range, light to dark.
+// A (front) is the lightest, the four B's get progressively
+// deeper tones. All five are distinct from each other.
 
 const MAKO = {
-  // Fills (light-to-dark from most to least foreground)
-  inner:  0xECE0EE,
-  m1:     0xC0A4DA,
-  m2:     0x9676C8,
-  mixed:  0x6E5294,
-  topbot: 0x4B3560,
-
-  // Edges (mid-to-dark, subdued)
-  edgeInner:   0xB2ACD9,
-  edgeM1:      0x8163AE,
-  edgeM2:      0x6E5294,
-  edgeMixed:   0x5B437A,
-  edgePlain:   0x3B2746,
-
-  // Special states
-  highlight:   0xF2E8F5,
+  'A':   0xF2E8F5,   // very light lavender — Layer 1 base
+  'S1':  0xD8B4E2,   // light orchid
+  'S2':  0xB088D4,   // medium orchid
+  '~S1': 0x8C68B8,   // medium purple
+  '~S2': 0x6E5294,   // deep purple
 };
+
+const MAKO_HEX = {
+  'A':   '#F2E8F5',
+  'S1':  '#D8B4E2',
+  'S2':  '#B088D4',
+  '~S1': '#8C68B8',
+  '~S2': '#6E5294',
+};
+
+function colorForSquare(squareKey) {
+  return MAKO[squareKey] ?? 0xC0A4DA;
+}
+function hexForSquare(squareKey) {
+  return MAKO_HEX[squareKey] ?? '#C0A4DA';
+}
+
+// Slightly brighter version for highlights
+const HIGHLIGHT_COLOR = 0xF2E8F5;
 
 // =========================================================
 // GREIMAS SQUARE GEOMETRY
@@ -270,22 +276,10 @@ const SQ_EDGES = [
   ['S1','~S1'], ['S2','~S2'],
 ];
 
-function colorForPosition(pos) {
-  if (['S1','S2','~S1','~S2'].includes(pos)) return MAKO.inner;
-  if (pos.startsWith('M1')) return MAKO.m1;
-  if (pos.startsWith('M2')) return MAKO.m2;
-  if (pos.startsWith('Mixed')) return MAKO.mixed;
-  if (pos === 'top' || pos === 'bottom') return MAKO.topbot;
-  return MAKO.m1;
-}
-
-function styleForEdge(a, b) {
-  const innerSq = new Set(['S1','S2','~S2','~S1']);
-  if (innerSq.has(a) && innerSq.has(b)) return { color: MAKO.edgeInner, dashed: true, opacity: 0.9 };
-  if (a.startsWith('M1') || b.startsWith('M1')) return { color: MAKO.edgeM1, dashed: false, opacity: 0.75 };
-  if (a.startsWith('M2') || b.startsWith('M2')) return { color: MAKO.edgeM2, dashed: false, opacity: 0.65 };
-  if (a.startsWith('Mixed') || b.startsWith('Mixed')) return { color: MAKO.edgeMixed, dashed: false, opacity: 0.6 };
-  return { color: MAKO.edgePlain, dashed: false, opacity: 0.5 };
+// Whether an edge is part of the "inner square" (dashed)
+function isInnerSquareEdge(a, b) {
+  const inner = new Set(['S1','S2','~S2','~S1']);
+  return inner.has(a) && inner.has(b);
 }
 
 // =========================================================
@@ -321,8 +315,6 @@ controls.minDistance = 4;
 controls.maxDistance = 100;
 controls.target.set(0, 0, 2);
 
-// The scene is lit implicitly by flat wireframe materials; add ambient
-// only for the mild fog interaction.
 scene.add(new THREE.AmbientLight(0xffffff, 1));
 
 // =========================================================
@@ -340,23 +332,25 @@ const state = {
 };
 
 // =========================================================
-// LAYOUT — A in front, four B's in a square behind
+// LAYOUT — A in front, four B's in a tighter square behind
 // =========================================================
 
 const LAYOUT = {
-  A:     { position: { x:  0,  y:  0,  z:  10 }, scale: 1.15 },
-  S1:    { position: { x: -8,  y: -8,  z: -6  }, scale: 0.95 },
-  S2:    { position: { x:  8,  y: -8,  z: -6  }, scale: 0.95 },
-  '~S1': { position: { x: -8,  y:  8,  z: -6  }, scale: 0.95 },
-  '~S2': { position: { x:  8,  y:  8,  z: -6  }, scale: 0.95 },
+  A:     { position: { x:  0,   y:  0,   z:  10 }, scale: 1.15 },
+  S1:    { position: { x: -5.5, y: -6.5, z: -6  }, scale: 0.95 },
+  S2:    { position: { x:  5.5, y: -6.5, z: -6  }, scale: 0.95 },
+  '~S1': { position: { x: -5.5, y:  6.5, z: -6  }, scale: 0.95 },
+  '~S2': { position: { x:  5.5, y:  6.5, z: -6  }, scale: 0.95 },
 };
 
 // =========================================================
 // SQUARE CONSTRUCTION
 // =========================================================
 
-const NODE_RADIUS = 0.20;
-const WIREFRAME_DETAIL = 0; // icosahedron subdivision level (0 = 20 faces)
+const NODE_RADIUS = 0.13;      // smaller wireframe spheres
+const NODE_OPACITY = 0.88;     // nodes slightly more opaque
+const EDGE_OPACITY = 0.55;     // edges slightly more transparent
+const EDGE_OPACITY_INNER = 0.72; // dashed inner-square edges a bit brighter
 
 function buildSquare(squareData, squareKey, title, parentTerm, position, scale) {
   const group = new THREE.Group();
@@ -367,25 +361,30 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
   const nodeLabels = {};
   const nodePositions3D = {};
 
+  const squareColor = colorForSquare(squareKey);
+  const labelColor = hexForSquare(squareKey);
+
   // Edges first (behind nodes)
   SQ_EDGES.forEach(([a, b]) => {
     if (!SQ_POS[a] || !SQ_POS[b]) return;
     const [x1, y1] = SQ_POS[a];
     const [x2, y2] = SQ_POS[b];
-    const style = styleForEdge(a, b);
+
+    const dashed = isInnerSquareEdge(a, b);
+    const opacity = dashed ? EDGE_OPACITY_INNER : EDGE_OPACITY;
 
     const geom = new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(x1, y1, 0),
       new THREE.Vector3(x2, y2, 0),
     ]);
 
-    if (style.dashed) {
+    if (dashed) {
       const mat = new THREE.LineDashedMaterial({
-        color: style.color,
+        color: squareColor,
         dashSize: 0.18,
         gapSize: 0.10,
         transparent: true,
-        opacity: style.opacity,
+        opacity,
         depthWrite: false,
       });
       const line = new THREE.Line(geom, mat);
@@ -393,25 +392,23 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
       group.add(line);
     } else {
       const mat = new THREE.LineBasicMaterial({
-        color: style.color,
+        color: squareColor,
         transparent: true,
-        opacity: style.opacity,
+        opacity,
         depthWrite: false,
       });
       group.add(new THREE.Line(geom, mat));
     }
   });
 
-  // Nodes as wireframe geodesic spheres
+  // Nodes: small wireframe icosahedra, all in the square's color
   Object.entries(SQ_POS).forEach(([pos, [x, y]]) => {
-    const color = colorForPosition(pos);
-
-    const geom = new THREE.IcosahedronGeometry(NODE_RADIUS, WIREFRAME_DETAIL);
+    const geom = new THREE.IcosahedronGeometry(NODE_RADIUS, 0);
     const mat = new THREE.MeshBasicMaterial({
-      color,
+      color: squareColor,
       wireframe: true,
       transparent: true,
-      opacity: 0.85,
+      opacity: NODE_OPACITY,
       depthWrite: false,
     });
     const mesh = new THREE.Mesh(geom, mat);
@@ -420,27 +417,30 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
       squareKey,
       position: pos,
       term: squareData[pos] || '',
-      baseColor: color,
+      baseColor: squareColor,
+      baseOpacity: NODE_OPACITY,
     };
     group.add(mesh);
 
     // Term label below node
     const labelEl = document.createElement('div');
     labelEl.className = 'label';
+    labelEl.style.color = labelColor;
     const termText = squareData[pos] || '';
     labelEl.textContent = termText.length > 18 ? termText.slice(0, 17) + '…' : termText;
     const label = new CSS2DObject(labelEl);
-    label.position.set(x, y - NODE_RADIUS - 0.28, 0);
+    label.position.set(x, y - NODE_RADIUS - 0.22, 0);
     group.add(label);
 
     // Position marker above node
     const posEl = document.createElement('div');
     posEl.className = 'label';
     posEl.style.fontSize = '9px';
-    posEl.style.color = '#6E5294';
+    posEl.style.color = labelColor;
+    posEl.style.opacity = '0.75';
     posEl.textContent = pos;
     const posLabel = new CSS2DObject(posEl);
-    posLabel.position.set(x, y + NODE_RADIUS + 0.18, 0);
+    posLabel.position.set(x, y + NODE_RADIUS + 0.14, 0);
     group.add(posLabel);
 
     nodeMeshes[pos] = mesh;
@@ -453,6 +453,7 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
   // Square header
   const headerEl = document.createElement('div');
   headerEl.className = 'label square-header';
+  headerEl.style.color = labelColor;
   const keySpan = document.createElement('span');
   keySpan.textContent = squareKey;
   headerEl.appendChild(keySpan);
@@ -523,26 +524,51 @@ function buildArchitectonic(parsed) {
 
   state.data = parsed;
   updateNodeInfo(null);
+  renderLegend();
 }
 
 // =========================================================
-// HIGHLIGHTING (wireframe-aware)
+// LEGEND — generated from loaded squares
+// =========================================================
+
+function renderLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = '';
+  state.squares.forEach(sq => {
+    const span = document.createElement('span');
+    span.style.color = hexForSquare(sq.key);
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = hexForSquare(sq.key);
+    dot.style.color = hexForSquare(sq.key);
+    span.appendChild(dot);
+    const label = sq.key === 'A'
+      ? 'A — Layer 1'
+      : `B[${sq.key}]${sq.parentTerm ? ' — ' + sq.parentTerm : ''}`;
+    span.appendChild(document.createTextNode(label));
+    el.appendChild(span);
+  });
+}
+
+// =========================================================
+// HIGHLIGHTING
 // =========================================================
 
 function setNodeState(mesh, mode) {
   const mat = mesh.material;
   const baseColor = mesh.userData.baseColor;
+  const baseOpacity = mesh.userData.baseOpacity;
   if (mode === 'highlight') {
-    mat.color.setHex(MAKO.highlight);
+    mat.color.setHex(HIGHLIGHT_COLOR);
     mat.opacity = 1.0;
-    mesh.scale.setScalar(1.5);
+    mesh.scale.setScalar(1.6);
   } else if (mode === 'dim') {
     mat.color.setHex(baseColor);
-    mat.opacity = 0.18;
-    mesh.scale.setScalar(0.7);
+    mat.opacity = 0.14;
+    mesh.scale.setScalar(0.72);
   } else {
     mat.color.setHex(baseColor);
-    mat.opacity = 0.85;
+    mat.opacity = baseOpacity;
     mesh.scale.setScalar(1);
   }
 }
@@ -552,7 +578,12 @@ function applyHighlight(target) {
     Object.entries(sq.nodeMeshes).forEach(([pos, mesh]) => {
       setNodeState(mesh, 'normal');
       const lbl = sq.nodeLabels[pos];
-      if (lbl) lbl.termEl.classList.remove('highlighted', 'dimmed');
+      if (lbl) {
+        lbl.termEl.classList.remove('highlighted', 'dimmed');
+        if (!lbl.termEl.style.color || lbl.termEl.dataset.baseColor === undefined) {
+          // no-op; we rely on the CSS variable set at build time
+        }
+      }
     });
   });
 
@@ -614,7 +645,7 @@ function updateNodeInfo(target) {
   const pos = target.position;
   const term = sq.squareData[pos] || '';
 
-  let html = `<h4>${sq.key} · ${pos}</h4>`;
+  let html = `<h4 style="color:${hexForSquare(sq.key)}">${sq.key} · ${pos}</h4>`;
   html += `<div class="kv"><span class="k">Term:</span> ${term || '—'}</div>`;
   if (sq.parentTerm) {
     html += `<div class="kv"><span class="k">Decomposes:</span> ${sq.parentTerm}</div>`;
@@ -657,7 +688,6 @@ function pickNode() {
   state.squares.forEach(sq => {
     Object.values(sq.nodeMeshes).forEach(m => meshes.push(m));
   });
-  // Raycaster needs mesh with raycast support; wireframe mesh works fine.
   const hits = state.raycaster.intersectObjects(meshes, false);
   if (hits.length === 0) return null;
   const mesh = hits[0].object;
@@ -736,19 +766,16 @@ renderer.domElement.addEventListener('click', (ev) => {
 function setView(name) {
   switch (name) {
     case 'front':
-      // Look at the stack head-on: A in front, B's behind
       camera.position.set(0, 0, 30);
       controls.target.set(0, 0, 2);
       break;
     case 'top':
-      // Look down from above
       camera.position.set(0, 30, 0.01);
       controls.target.set(0, 0, 0);
       break;
     case 'reset':
     default:
-      // Three-quarter view showing A in front and the four B's arrayed behind
-      camera.position.set(16, 12, 24);
+      camera.position.set(14, 10, 24);
       controls.target.set(0, 0, 2);
       break;
   }
