@@ -26,7 +26,7 @@
 
   #top-bar {
     position: fixed; top: 14px; left: 14px; z-index: 20;
-    display: flex; gap: 8px; flex-wrap: wrap; max-width: 60vw;
+    display: flex; gap: 8px; flex-wrap: wrap; max-width: 62vw;
   }
   .btn {
     padding: 10px 14px; min-height: 40px;
@@ -48,6 +48,9 @@
   .btn.lattice-btn { border-color: rgba(62,74,137,0.55); color: #7A9AD6; }
   .btn.lattice-btn:hover:not(.disabled) { background: rgba(62,74,137,0.28); border-color: rgba(122,154,214,0.85); color: #fff; }
   .btn.lattice-btn.active { background: rgba(62,74,137,0.45); border-color: rgba(180,222,44,0.85); color: #FDE725; }
+  .btn.focus-btn { border-color: rgba(201,162,39,0.55); color: #D4AF37; }
+  .btn.focus-btn:hover:not(.disabled) { background: rgba(201,162,39,0.18); border-color: rgba(212,175,55,0.85); color: #FFF; }
+  .btn.focus-btn.active { background: rgba(201,162,39,0.35); border-color: rgba(253,231,37,0.9); color: #FDE725; }
 
   #ui {
     position: fixed; top: 14px; right: 14px; z-index: 10;
@@ -200,6 +203,7 @@
   <button class="btn lattice-btn" id="lattice-btn">⊞ Lattice View</button>
   <button class="btn level-btn" id="level-btn">→ B Level</button>
   <button class="btn disabled" id="cycle-btn">▸ Next B</button>
+  <button class="btn focus-btn disabled" id="node-focus-btn">⊙ Focus Node</button>
   <button class="btn" id="view-reset">⌖ Reset View</button>
   <button class="btn" id="view-top">▣ Top</button>
   <button class="btn" id="view-front">▤ Front</button>
@@ -253,13 +257,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 // =========================================================
-// VIRIDIS PALETTE
+// PALETTE
 // =========================================================
 
 const VIRIDIS = { 'A': 0xFDE725, 'S1': 0xB4DE2C, 'S2': 0x35B779, '~S1': 0x1F9E89, '~S2': 0x3E4A89 };
 const VIRIDIS_HEX = { 'A': '#FDE725', 'S1': '#B4DE2C', 'S2': '#35B779', '~S1': '#1F9E89', '~S2': '#3E4A89' };
 const NEUTRAL_COLOR = 0x888888;
 const NEUTRAL_HEX = '#888888';
+const CONNECTOR_COLOR = 0xC9A227;   // dark yellow
 
 function colorForSquare(k) { return VIRIDIS[k] ?? 0xB4DE2C; }
 function hexForSquare(k)   { return VIRIDIS_HEX[k] ?? '#B4DE2C'; }
@@ -267,11 +272,10 @@ function hexForSquare(k)   { return VIRIDIS_HEX[k] ?? '#B4DE2C'; }
 const HIGHLIGHT_HOVER = 0xFDE725;
 const HIGHLIGHT_ABOVE = 0xF08C42;
 const HIGHLIGHT_BELOW = 0xE0555A;
-const HIGHLIGHT_OTHER = 0x707070;
 const HIGHLIGHT_DIMMED = 0x2a2e3d;
 
 // =========================================================
-// GREIMAS SQUARE GEOMETRY
+// SQUARE GEOMETRY
 // =========================================================
 
 const SQ_POS = {
@@ -303,18 +307,23 @@ function isInnerSquareEdge(a, b) {
 }
 
 // =========================================================
-// LAYOUT
+// LAYOUT — B1..B4 in a 2x2 grid, viewed from front:
+//   S1 top-left, S2 top-right, ~S2 bottom-left, ~S1 bottom-right.
 // =========================================================
 
 const LAYOUT = {
   A:     { position: { x: 0,    y: 0,    z: 10 }, scale: 1.15 },
-  S1:    { position: { x: -5.5, y: -6.5, z: -6 }, scale: 0.95 },
-  S2:    { position: { x: 5.5,  y: -6.5, z: -6 }, scale: 0.95 },
-  '~S1': { position: { x: -5.5, y: 6.5,  z: -6 }, scale: 0.95 },
-  '~S2': { position: { x: 5.5,  y: 6.5,  z: -6 }, scale: 0.95 },
+  S1:    { position: { x: -5.5, y:  6.5, z: -6 }, scale: 0.95 },  // top-left
+  S2:    { position: { x:  5.5, y:  6.5, z: -6 }, scale: 0.95 },  // top-right
+  '~S2': { position: { x: -5.5, y: -6.5, z: -6 }, scale: 0.95 },  // bottom-left
+  '~S1': { position: { x:  5.5, y: -6.5, z: -6 }, scale: 0.95 },  // bottom-right
 };
 
-const B_CYCLE_ORDER = ['S1','S2','~S2','~S1'];
+// Display label for each B-diagram, matching user's B1..B4 numbering.
+const B_LABELS = { 'S1': 'B1', 'S2': 'B2', '~S2': 'B3', '~S1': 'B4' };
+
+// Cycle order: clockwise from top-left.
+const B_CYCLE_ORDER = ['S1', 'S2', '~S1', '~S2'];
 
 const VIEW_OFFSETS = {
   default: new THREE.Vector3(5, 3, 14),
@@ -322,6 +331,9 @@ const VIEW_OFFSETS = {
   front:   new THREE.Vector3(0, 0, 15),
   lattice: new THREE.Vector3(0, 2, 32),
 };
+
+// Offset used when orbiting a pinned node in Viewpoint 2
+const VP2_OFFSET = new THREE.Vector3(1.6, 1.1, 2.2);
 
 // =========================================================
 // SCENE SETUP
@@ -334,6 +346,7 @@ scene.background = new THREE.Color(0x05070d);
 scene.fog = new THREE.FogExp2(0x05070d, 0.007);
 
 const camera = new THREE.PerspectiveCamera(48, window.innerWidth/window.innerHeight, 0.1, 500);
+camera.position.set(14, 12, 26);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -352,7 +365,7 @@ container.appendChild(labelRenderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
-controls.minDistance = 4;
+controls.minDistance = 3;
 controls.maxDistance = 120;
 
 scene.add(new THREE.AmbientLight(0xffffff, 1));
@@ -392,10 +405,31 @@ const overviewProxies = {};
 let overviewFocusRing = null;
 let overviewLatticeProxy = null;
 
+// Helper: fully dispose a group, including CSS2D elements.
+function disposeGroup(group) {
+  if (!group) return;
+  group.traverse(obj => {
+    if (obj.element && obj.element.parentNode) {
+      obj.element.parentNode.removeChild(obj.element);
+    }
+    if (obj.geometry) obj.geometry.dispose();
+    if (obj.material) {
+      if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+      else obj.material.dispose();
+    }
+  });
+}
+
 function buildOverviewProxies() {
+  // Remove old proxies (with CSS2D cleanup)
   Object.values(overviewProxies).forEach(p => {
-    overviewScene.remove(p.dot); overviewScene.remove(p.label);
-    p.dot.geometry.dispose(); p.dot.material.dispose();
+    overviewScene.remove(p.dot);
+    overviewScene.remove(p.label);
+    p.dot.geometry.dispose();
+    p.dot.material.dispose();
+    if (p.label.element && p.label.element.parentNode) {
+      p.label.element.parentNode.removeChild(p.label.element);
+    }
   });
   for (const k in overviewProxies) delete overviewProxies[k];
 
@@ -419,7 +453,7 @@ function buildOverviewProxies() {
     const labelEl = document.createElement('div');
     labelEl.className = 'overview-label';
     labelEl.style.color = hexForSquare(sq.key);
-    labelEl.textContent = sq.key === 'A' ? 'A' : `B[${sq.key}]`;
+    labelEl.textContent = sq.key === 'A' ? 'A1' : (B_LABELS[sq.key] || sq.key);
     const label = new CSS2DObject(labelEl);
     label.position.set(layout.position.x, layout.position.y, layout.position.z + 2.2);
     overviewScene.add(label);
@@ -471,7 +505,8 @@ const state = {
   level: 'A',
   lastDiagramKey: 'A',
 
-  viewMode: 'diagram',
+  viewMode: 'diagram',      // 'diagram' | 'lattice'
+  viewpointLevel: 1,        // 1 = diagram centroid, 2 = pinned node
 
   diagramGroup: new THREE.Group(),
   latticeGroup: null,
@@ -482,7 +517,7 @@ const state = {
   diagramOpacity: 1.0,
   latticeOpacity: 0.0,
 
-  anim: { active: false, t: 0, duration: 0.5,
+  anim: { active: false, t: 0, duration: 0.6,
     fromCam: new THREE.Vector3(), toCam: new THREE.Vector3(),
     fromLook: new THREE.Vector3(), toLook: new THREE.Vector3(),
     lastTime: 0 },
@@ -501,7 +536,7 @@ const NODE_OPACITY = 0.88;
 const EDGE_OPACITY = 0.55;
 const EDGE_OPACITY_INNER = 0.72;
 
-function buildSquare(squareData, squareKey, title, parentTerm, position, scale) {
+function buildSquare(squareData, squareKey, title, parentTerm, position, scale, displayKey) {
   const group = new THREE.Group();
   group.position.set(position.x, position.y, position.z);
   group.scale.setScalar(scale);
@@ -581,7 +616,7 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
   headerEl.className = 'label square-header';
   headerEl.style.color = labelColor;
   const keySpan = document.createElement('span');
-  keySpan.textContent = squareKey;
+  keySpan.textContent = displayKey || squareKey;
   headerEl.appendChild(keySpan);
   if (parentTerm) {
     const parentSpan = document.createElement('span');
@@ -598,29 +633,79 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale) 
   return { key: squareKey, title, parentTerm, squareData, group, nodeMeshes, nodeLabels, nodePositions3D };
 }
 
+// ---- Connecting lines from A's semes to B tops ----
+
+function buildConnectingLines() {
+  // Remove any existing connectors (identified by userData.isConnector)
+  const toRemove = [];
+  state.diagramGroup.traverse(obj => {
+    if (obj.userData && obj.userData.isConnector) toRemove.push(obj);
+  });
+  toRemove.forEach(obj => {
+    if (obj.parent) obj.parent.remove(obj);
+    obj.geometry.dispose();
+    obj.material.dispose();
+  });
+
+  const A_group = state.squares.find(s => s.key === 'A');
+  if (!A_group) return;
+
+  const pairs = [
+    { semePos: 'S1',  bKey: 'S1' },
+    { semePos: 'S2',  bKey: 'S2' },
+    { semePos: '~S2', bKey: '~S2' },
+    { semePos: '~S1', bKey: '~S1' },
+  ];
+
+  const aLayout = LAYOUT['A'];
+
+  pairs.forEach(({ semePos, bKey }) => {
+    const aLocal = A_group.nodePositions3D[semePos];
+    if (!aLocal) return;
+    const aWorld = new THREE.Vector3(
+      aLayout.position.x + aLocal.x * aLayout.scale,
+      aLayout.position.y + aLocal.y * aLayout.scale,
+      aLayout.position.z + aLocal.z * aLayout.scale
+    );
+
+    const bGroup = state.squares.find(s => s.key === bKey);
+    if (!bGroup) return;
+    const bLocal = bGroup.nodePositions3D['top'];
+    if (!bLocal) return;
+    const bLayout = LAYOUT[bKey];
+    const bWorld = new THREE.Vector3(
+      bLayout.position.x + bLocal.x * bLayout.scale,
+      bLayout.position.y + bLocal.y * bLayout.scale,
+      bLayout.position.z + bLocal.z * bLayout.scale
+    );
+
+    const geom = new THREE.BufferGeometry().setFromPoints([aWorld, bWorld]);
+    const mat = new THREE.LineBasicMaterial({
+      color: CONNECTOR_COLOR,
+      transparent: true,
+      opacity: 0.32,
+      depthWrite: false,
+    });
+    const line = new THREE.Line(geom, mat);
+    line.userData.isConnector = true;
+    line.userData.baseOpacity = 0.32;
+    state.diagramGroup.add(line);
+  });
+}
+
 function clearScene() {
+  // Dispose all children of the diagram group (with CSS2D cleanup)
   while (state.diagramGroup.children.length > 0) {
     const c = state.diagramGroup.children[0];
     state.diagramGroup.remove(c);
-    c.traverse(obj => {
-      if (obj.geometry) obj.geometry.dispose();
-      if (obj.material) {
-        if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
-        else obj.material.dispose();
-      }
-    });
+    disposeGroup(c);
   }
-    if (state.latticeGroup) {
-    const latticeSceneNode = state.latticeGroup.group;
-    if (latticeSceneNode) {
-      scene.remove(latticeSceneNode);
-      latticeSceneNode.traverse(obj => {
-        if (obj.geometry) obj.geometry.dispose();
-        if (obj.material) {
-          if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
-          else obj.material.dispose();
-        }
-      });
+  // Dispose the lattice group
+  if (state.latticeGroup) {
+    const latticeNode = state.latticeGroup.group;
+    if (latticeNode) {
+      scene.remove(latticeNode);
+      disposeGroup(latticeNode);
     }
     state.latticeGroup = null;
   }
@@ -634,10 +719,11 @@ function clearScene() {
   state.diagramOpacity = 1.0;
   state.latticeOpacity = 0.0;
   state.viewMode = 'diagram';
+  state.viewpointLevel = 1;
 }
 
 // =========================================================
-// ARCHITECTONIC LATTICE CONSTRUCTION
+// ARCHITECTONIC LATTICE
 // =========================================================
 
 function computeLatticeLayout(concepts, edges) {
@@ -653,11 +739,9 @@ function computeLatticeLayout(concepts, edges) {
     children[ai].push(bi);
   });
 
-  // Rank from bottom: a node's rank is 1 + max rank of its children.
-  // Propagate upward by raising parents' ranks until stable.
+  // Bottom-up rank: parent rank = 1 + max(children rank)
   const rank = Array(concepts.length).fill(0);
-  let changed = true;
-  let guard = 0;
+  let changed = true, guard = 0;
   while (changed && guard++ < 200) {
     changed = false;
     for (let i = 0; i < concepts.length; i++) {
@@ -668,11 +752,7 @@ function computeLatticeLayout(concepts, edges) {
   }
 
   const byRank = {};
-  concepts.forEach((c, i) => {
-    const r = rank[i];
-    (byRank[r] ||= []).push(i);
-  });
-
+  concepts.forEach((c, i) => { (byRank[rank[i]] ||= []).push(i); });
   for (const r in byRank) {
     byRank[r].sort((a, b) => {
       const oa = concepts[a].origin || 'A';
@@ -682,11 +762,9 @@ function computeLatticeLayout(concepts, edges) {
     });
   }
 
-  const ySpacing = 1.85;
-  const xSpacing = 1.15;
+  const ySpacing = 1.85, xSpacing = 1.15;
   const maxRank = Math.max(...rank, 0);
   const positions = {};
-
   for (const r in byRank) {
     const list = byRank[r];
     const n = list.length;
@@ -697,7 +775,6 @@ function computeLatticeLayout(concepts, edges) {
       positions[concepts[idx].id] = { x, y, z: 2 };
     });
   }
-
   return { positions, rank, parents, children, idToIdx };
 }
 
@@ -713,29 +790,14 @@ function buildLatticeScene(parsed) {
 
   const meshes = {};
   const labels = {};
-  const labelObjs = {};
 
-  const ancestors = [];
-  const descendants = [];
+  const ancestors = [], descendants = [];
   for (let i = 0; i < arch.concepts.length; i++) {
-    const anc = new Set();
-    const stack = [...layout.parents[i]];
-    while (stack.length) {
-      const j = stack.pop();
-      if (anc.has(j)) continue;
-      anc.add(j);
-      stack.push(...layout.parents[j]);
-    }
+    const anc = new Set(); const stack = [...layout.parents[i]];
+    while (stack.length) { const j = stack.pop(); if (anc.has(j)) continue; anc.add(j); stack.push(...layout.parents[j]); }
     ancestors.push(anc);
-
-    const desc = new Set();
-    const s2 = [...layout.children[i]];
-    while (s2.length) {
-      const j = s2.pop();
-      if (desc.has(j)) continue;
-      desc.add(j);
-      s2.push(...layout.children[j]);
-    }
+    const desc = new Set(); const s2 = [...layout.children[i]];
+    while (s2.length) { const j = s2.pop(); if (desc.has(j)) continue; desc.add(j); s2.push(...layout.children[j]); }
     descendants.push(desc);
   }
 
@@ -744,26 +806,19 @@ function buildLatticeScene(parsed) {
   arch.concepts.forEach(c => {
     const p = layout.positions[c.id];
     if (!p) return;
-
-    let colorKey = c.origin || 'A';
     let baseColor, hex;
     if (c.role === 'shared_bottom' || c.role === 'architectonic_top') {
       baseColor = NEUTRAL_COLOR; hex = NEUTRAL_HEX;
     } else {
-      baseColor = colorForSquare(colorKey);
-      hex = hexForSquare(colorKey);
+      baseColor = colorForSquare(c.origin || 'A');
+      hex = hexForSquare(c.origin || 'A');
     }
 
     const geom = new THREE.BoxGeometry(LATTICE_CUBE, LATTICE_CUBE, LATTICE_CUBE);
-    const mat = new THREE.MeshBasicMaterial({
-      color: baseColor, transparent: true, opacity: 0, depthWrite: false,
-    });
+    const mat = new THREE.MeshBasicMaterial({ color: baseColor, transparent: true, opacity: 0, depthWrite: false });
     const mesh = new THREE.Mesh(geom, mat);
     mesh.position.set(p.x, p.y, p.z);
-    mesh.userData = {
-      conceptId: c.id, term: c.label, baseColor, baseOpacity: 0.95,
-      role: c.role, origin: c.origin,
-    };
+    mesh.userData = { conceptId: c.id, baseColor, baseOpacity: 0.95, role: c.role, origin: c.origin };
     group.add(mesh);
     meshes[c.id] = mesh;
 
@@ -777,7 +832,6 @@ function buildLatticeScene(parsed) {
     label.position.set(p.x, p.y + LATTICE_CUBE + 0.22, p.z);
     group.add(label);
     labels[c.id] = labelEl;
-    labelObjs[c.id] = label;
   });
 
   const edgeLines = [];
@@ -785,12 +839,9 @@ function buildLatticeScene(parsed) {
     const pa = layout.positions[a], pb = layout.positions[b];
     if (!pa || !pb) return;
     const geom = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(pa.x, pa.y, pa.z),
-      new THREE.Vector3(pb.x, pb.y, pb.z),
+      new THREE.Vector3(pa.x, pa.y, pa.z), new THREE.Vector3(pb.x, pb.y, pb.z),
     ]);
-    const mat = new THREE.LineBasicMaterial({
-      color: 0x556070, transparent: true, opacity: 0, depthWrite: false,
-    });
+    const mat = new THREE.LineBasicMaterial({ color: 0x556070, transparent: true, opacity: 0, depthWrite: false });
     const line = new THREE.Line(geom, mat);
     line.userData.baseOpacity = 0.55;
     group.add(line);
@@ -798,14 +849,10 @@ function buildLatticeScene(parsed) {
   });
 
   scene.add(group);
-
-  return {
-    group, meshes, labels, labelObjs, positions: layout.positions,
-    concepts: arch.concepts, edges: arch.edges,
-    idToIdx: layout.idToIdx,
+  return { group, meshes, labels, positions: layout.positions,
+    concepts: arch.concepts, edges: arch.edges, idToIdx: layout.idToIdx,
     parents: layout.parents, children: layout.children,
-    ancestors, descendants, edgeLines,
-  };
+    ancestors, descendants, edgeLines };
 }
 
 // =========================================================
@@ -822,17 +869,25 @@ function buildArchitectonic(parsed) {
 
   state.data = parsed;
 
-  const A = buildSquare(layer_1.square, 'A', 'Layer 1', null, LAYOUT.A.position, LAYOUT.A.scale);
+  // A
+  const A = buildSquare(layer_1.square, 'A', 'Layer 1', null,
+    LAYOUT.A.position, LAYOUT.A.scale, 'A1');
   state.squares.push(A);
 
+  // Four B decompositions, created in seme-key order for internal stability.
+  // Their positions are set by LAYOUT per the requested 2x2 arrangement.
   ['S1','S2','~S1','~S2'].forEach(semeKey => {
     const b = layer_2[semeKey];
     if (!b || !b.square) return;
     const sq = buildSquare(b.square, semeKey, 'Decomposition', b.parent_term || '',
-      LAYOUT[semeKey].position, LAYOUT[semeKey].scale);
+      LAYOUT[semeKey].position, LAYOUT[semeKey].scale, B_LABELS[semeKey]);
     state.squares.push(sq);
   });
 
+  // Connecting lines: A's seme -> B's top (matching by seme key)
+  buildConnectingLines();
+
+  // Lattice
   state.latticeGroup = buildLatticeScene(parsed);
   state.latticeData = state.latticeGroup;
 
@@ -851,17 +906,13 @@ function buildArchitectonic(parsed) {
 }
 
 // =========================================================
-// OPACITY HELPERS
+// OPACITY
 // =========================================================
 
 function applyGroupOpacity(groupOrWrapper, opacity) {
   if (!groupOrWrapper) return;
-  // Accept either a THREE.Group directly, or a wrapper object with a .group field.
-  const group = (groupOrWrapper.isObject3D === true)
-    ? groupOrWrapper
-    : groupOrWrapper.group;
+  const group = (groupOrWrapper.isObject3D === true) ? groupOrWrapper : groupOrWrapper.group;
   if (!group || typeof group.traverse !== 'function') return;
-
   const rootOpacity = opacity;
   group.visible = rootOpacity > 0.01;
   group.traverse(obj => {
@@ -873,14 +924,12 @@ function applyGroupOpacity(groupOrWrapper, opacity) {
         obj.material.opacity = base * rootOpacity;
       }
     }
-    if (obj.element) {
-      obj.element.style.opacity = rootOpacity;
-    }
+    if (obj.element) obj.element.style.opacity = rootOpacity;
   });
 }
 
 // =========================================================
-// HIGHLIGHT (DIAGRAM MODE)
+// HIGHLIGHT — diagram mode
 // =========================================================
 
 function setNodeState(mesh, mode) {
@@ -937,13 +986,12 @@ function applyHighlight(target) {
 }
 
 // =========================================================
-// HIGHLIGHT (LATTICE MODE)
+// HIGHLIGHT — lattice mode
 // =========================================================
 
 function applyLatticeHighlight(conceptId) {
   const L = state.latticeData;
   if (!L) return;
-
   Object.values(L.meshes).forEach(m => {
     m.material.color.setHex(m.userData.baseColor);
     m.userData.overrideOpacity = 1.0;
@@ -956,7 +1004,6 @@ function applyLatticeHighlight(conceptId) {
     applyGroupOpacity(state.latticeGroup, state.latticeOpacity);
     return;
   }
-
   const idx = L.idToIdx[conceptId];
   if (idx === undefined) return;
   const ancSet = L.ancestors[idx];
@@ -1049,6 +1096,7 @@ function updateNodeInfo(target) {
 
   if (target.mode === 'lattice') {
     const L = state.latticeData;
+    if (!L) { el.innerHTML = ''; return; }
     const concept = L.concepts.find(c => c.id === target.conceptId);
     if (!concept) return;
     let html = `<h4>${concept.label}</h4>`;
@@ -1067,19 +1115,19 @@ function updateNodeInfo(target) {
     }
     const idx = L.idToIdx[concept.id];
     if (idx !== undefined) {
-      html += `<div class="kv"><span class="k">ancestors (joins above):</span> ${L.ancestors[idx].size}</div>`;
-      html += `<div class="kv"><span class="k">descendants (meets below):</span> ${L.descendants[idx].size}</div>`;
+      html += `<div class="kv"><span class="k">ancestors:</span> ${L.ancestors[idx].size}</div>`;
+      html += `<div class="kv"><span class="k">descendants:</span> ${L.descendants[idx].size}</div>`;
     }
     el.innerHTML = html;
     return;
   }
 
   const sq = state.squares.find(s => s.key === target.squareKey);
-  if (!sq) return;
+  if (!sq) { el.innerHTML = ''; return; }
   const pos = target.position;
   const term = sq.squareData[pos] || '';
 
-  let html = `<h4 style="color:${hexForSquare(sq.key)}">${sq.key} · ${pos}</h4>`;
+  let html = `<h4 style="color:${hexForSquare(sq.key)}">${sq.key === 'A' ? 'A1' : (B_LABELS[sq.key] || sq.key)} · ${pos}</h4>`;
   html += `<div class="kv"><span class="k">Term:</span> ${term || '—'}</div>`;
   if (sq.parentTerm) html += `<div class="kv"><span class="k">Decomposes:</span> ${sq.parentTerm}</div>`;
   if (COMPOSITIONS[pos]) html += `<div class="kv"><span class="k">Structure:</span> ${COMPOSITIONS[pos]}</div>`;
@@ -1089,7 +1137,7 @@ function updateNodeInfo(target) {
     state.squares.forEach(other => {
       if (other.key === target.squareKey) return;
       Object.entries(other.squareData).forEach(([p, t]) => {
-        if (t === term) appearances.push(`${other.key}·${p}`);
+        if (t === term) appearances.push(`${other.key === 'A' ? 'A1' : (B_LABELS[other.key] || other.key)}·${p}`);
       });
     });
     if (appearances.length) {
@@ -1098,7 +1146,6 @@ function updateNodeInfo(target) {
       html += `</div>`;
     }
   }
-
   el.innerHTML = html;
 }
 
@@ -1119,8 +1166,7 @@ function pickNode() {
     const meshes = Object.values(state.latticeData.meshes);
     const hits = state.raycaster.intersectObjects(meshes, false);
     if (hits.length === 0) return null;
-    const mesh = hits[0].object;
-    return { mode: 'lattice', conceptId: mesh.userData.conceptId };
+    return { mode: 'lattice', conceptId: hits[0].object.userData.conceptId };
   }
 
   const meshes = [];
@@ -1214,8 +1260,12 @@ renderer.domElement.addEventListener('click', (ev) => {
     return;
   }
 
+  // Diagram mode
   if (!hit) {
-    if (state.pinnedTarget) {
+    // Click empty space
+    if (state.viewpointLevel === 2) {
+      exitViewpoint2();
+    } else if (state.pinnedTarget) {
       state.pinnedTarget = null;
       if (state.hoverTarget) {
         applyHighlight(state.hoverTarget);
@@ -1224,23 +1274,88 @@ renderer.domElement.addEventListener('click', (ev) => {
         applyHighlight(null);
         updateNodeInfo(null);
       }
+      updateNavButtons();
     }
     return;
   }
-  const same = state.pinnedTarget && state.pinnedTarget.squareKey === hit.squareKey && state.pinnedTarget.position === hit.position;
+
+  const same = state.pinnedTarget
+    && state.pinnedTarget.squareKey === hit.squareKey
+    && state.pinnedTarget.position === hit.position;
+
   if (same) {
-    state.pinnedTarget = null;
-    if (state.hoverTarget) { applyHighlight(state.hoverTarget); updateNodeInfo(state.hoverTarget); }
-    else { applyHighlight(null); updateNodeInfo(null); }
+    // Clicked the already-pinned node → toggle Viewpoint 2
+    if (state.viewpointLevel === 1) {
+      enterViewpoint2(state.pinnedTarget);
+    } else {
+      exitViewpoint2();
+    }
   } else {
+    // Clicked a different node → pin it
     state.pinnedTarget = hit;
     applyHighlight(hit);
     updateNodeInfo(hit);
+    if (state.viewpointLevel === 2) {
+      // Re-focus on the new node
+      enterViewpoint2(hit);
+    } else {
+      updateNavButtons();
+    }
   }
 });
 
 // =========================================================
-// FOCUS / CAMERA ANIMATION
+// VIEWPOINT 2
+// =========================================================
+
+function getNodeWorldPosition(squareKey, position) {
+  const sq = state.squares.find(s => s.key === squareKey);
+  if (!sq) return null;
+  const local = sq.nodePositions3D[position];
+  if (!local) return null;
+  const layout = LAYOUT[squareKey];
+  if (!layout) return null;
+  return new THREE.Vector3(
+    layout.position.x + local.x * layout.scale,
+    layout.position.y + local.y * layout.scale,
+    layout.position.z + local.z * layout.scale
+  );
+}
+
+function animateCameraTo(camPos, target) {
+  state.anim.active = true;
+  state.anim.t = 0;
+  state.anim.lastTime = performance.now();
+  state.anim.fromCam.copy(camera.position);
+  state.anim.toCam.copy(camPos);
+  state.anim.fromLook.copy(controls.target);
+  state.anim.toLook.copy(target);
+}
+
+function enterViewpoint2(pin) {
+  if (!pin) return;
+  const nodePos = getNodeWorldPosition(pin.squareKey, pin.position);
+  if (!nodePos) return;
+
+  state.viewpointLevel = 2;
+  const camPos = nodePos.clone().add(VP2_OFFSET);
+  animateCameraTo(camPos, nodePos.clone());
+  controls.minDistance = 0.8;
+  controls.maxDistance = 20;
+  updateNavButtons();
+}
+
+function exitViewpoint2() {
+  state.viewpointLevel = 1;
+  controls.minDistance = 3;
+  controls.maxDistance = 120;
+  // Return to the diagram-level view of the currently focused diagram
+  setFocus(state.focusedKey, true, 'default');
+  updateNavButtons();
+}
+
+// =========================================================
+// FOCUS / CAMERA
 // =========================================================
 
 function computeFocusCamera(key, mode) {
@@ -1263,6 +1378,13 @@ function setFocus(key, animate=true, mode='default') {
   state.level = (key === 'A') ? 'A' : 'B';
   state.lastDiagramKey = key;
 
+  // Any focus change exits Viewpoint 2
+  if (state.viewpointLevel === 2) {
+    state.viewpointLevel = 1;
+    controls.minDistance = 3;
+    controls.maxDistance = 120;
+  }
+
   const target = computeFocusCamera(key, mode);
   if (!target) return;
 
@@ -1271,13 +1393,7 @@ function setFocus(key, animate=true, mode='default') {
     controls.target.copy(target.focusPos);
     controls.update();
   } else {
-    state.anim.active = true;
-    state.anim.t = 0;
-    state.anim.lastTime = performance.now();
-    state.anim.fromCam.copy(camera.position);
-    state.anim.toCam.copy(target.camPos);
-    state.anim.fromLook.copy(controls.target);
-    state.anim.toLook.copy(target.focusPos);
+    animateCameraTo(target.camPos, target.focusPos);
   }
 
   updateOverviewFocus();
@@ -1287,14 +1403,14 @@ function setFocus(key, animate=true, mode='default') {
 function setViewMode(mode) {
   if (state.viewMode === 'lattice') {
     const target = computeLatticeCamera(mode);
-    state.anim.active = true;
-    state.anim.t = 0;
-    state.anim.lastTime = performance.now();
-    state.anim.fromCam.copy(camera.position);
-    state.anim.toCam.copy(target.camPos);
-    state.anim.fromLook.copy(controls.target);
-    state.anim.toLook.copy(target.focusPos);
+    animateCameraTo(target.camPos, target.focusPos);
   } else {
+    if (state.viewpointLevel === 2) {
+      // Leaving VP2 first, then applying the preset
+      state.viewpointLevel = 1;
+      controls.minDistance = 3;
+      controls.maxDistance = 120;
+    }
     setFocus(state.focusedKey, true, mode);
   }
 }
@@ -1303,30 +1419,44 @@ function updateNavButtons() {
   const levelBtn = document.getElementById('level-btn');
   const cycleBtn = document.getElementById('cycle-btn');
   const latticeBtn = document.getElementById('lattice-btn');
+  const focusBtn = document.getElementById('node-focus-btn');
 
   if (state.viewMode === 'lattice') {
-    levelBtn.classList.add('disabled');
-    levelBtn.disabled = true;
-    cycleBtn.classList.add('disabled');
-    cycleBtn.disabled = true;
+    levelBtn.classList.add('disabled'); levelBtn.disabled = true;
+    cycleBtn.classList.add('disabled'); cycleBtn.disabled = true;
     latticeBtn.classList.add('active');
     latticeBtn.textContent = '⊟ Diagram View';
+    focusBtn.classList.add('disabled'); focusBtn.disabled = true;
+    focusBtn.classList.remove('active');
+    focusBtn.textContent = '⊙ Focus Node';
     return;
   }
 
   latticeBtn.classList.remove('active');
   latticeBtn.textContent = '⊞ Lattice View';
-  levelBtn.classList.remove('disabled');
-  levelBtn.disabled = false;
+  levelBtn.classList.remove('disabled'); levelBtn.disabled = false;
 
   if (state.level === 'A') {
     levelBtn.textContent = '→ B Level';
-    cycleBtn.classList.add('disabled');
-    cycleBtn.disabled = true;
+    cycleBtn.classList.add('disabled'); cycleBtn.disabled = true;
   } else {
     levelBtn.textContent = '→ A Level';
-    cycleBtn.classList.remove('disabled');
-    cycleBtn.disabled = false;
+    cycleBtn.classList.remove('disabled'); cycleBtn.disabled = false;
+  }
+
+  // Focus node button
+  if (!state.pinnedTarget) {
+    focusBtn.classList.add('disabled'); focusBtn.disabled = true;
+    focusBtn.classList.remove('active');
+    focusBtn.textContent = '⊙ Focus Node';
+  } else if (state.viewpointLevel === 1) {
+    focusBtn.classList.remove('disabled'); focusBtn.disabled = false;
+    focusBtn.classList.remove('active');
+    focusBtn.textContent = '⊙ Focus Node';
+  } else {
+    focusBtn.classList.remove('disabled'); focusBtn.disabled = false;
+    focusBtn.classList.add('active');
+    focusBtn.textContent = '⊙ Exit Focus';
   }
 }
 
@@ -1350,9 +1480,15 @@ function cycleB(direction = 1) {
 
 function toggleLatticeView() {
   if (!state.latticeData) return;
-
   const entering = state.viewMode === 'diagram';
   if (entering) state.lastDiagramKey = state.focusedKey;
+
+  // Exiting VP2 if we were in it
+  if (entering && state.viewpointLevel === 2) {
+    state.viewpointLevel = 1;
+    controls.minDistance = 3;
+    controls.maxDistance = 120;
+  }
 
   state.viewMode = entering ? 'lattice' : 'diagram';
 
@@ -1361,16 +1497,10 @@ function toggleLatticeView() {
   state.fade.lastTime = performance.now();
   state.fade.to = entering ? 'lattice' : 'diagram';
 
-  const target = entering ? computeLatticeCamera('lattice') : computeFocusCamera(state.lastDiagramKey, 'default');
-  if (target) {
-    state.anim.active = true;
-    state.anim.t = 0;
-    state.anim.lastTime = performance.now();
-    state.anim.fromCam.copy(camera.position);
-    state.anim.toCam.copy(target.camPos);
-    state.anim.fromLook.copy(controls.target);
-    state.anim.toLook.copy(target.focusPos);
-  }
+  const target = entering
+    ? computeLatticeCamera('lattice')
+    : computeFocusCamera(state.lastDiagramKey, 'default');
+  if (target) animateCameraTo(target.camPos, target.focusPos);
 
   document.getElementById('lattice-mode-badge').classList.toggle('visible', entering);
 
@@ -1401,8 +1531,8 @@ function renderLegend() {
     dot.style.background = hexForSquare(sq.key);
     span.appendChild(dot);
     const label = sq.key === 'A'
-      ? 'A — Layer 1'
-      : `B[${sq.key}]${sq.parentTerm ? ' — ' + sq.parentTerm : ''}`;
+      ? 'A1 — Layer 1'
+      : `${B_LABELS[sq.key] || sq.key}${sq.parentTerm ? ' — ' + sq.parentTerm : ''}`;
     span.appendChild(document.createTextNode(label));
     el.appendChild(span);
   });
@@ -1426,6 +1556,14 @@ document.getElementById('cycle-btn').addEventListener('click', (ev) => {
   ev.stopPropagation();
   if (state.viewMode !== 'lattice' && state.level === 'B') cycleB(1);
 });
+
+document.getElementById('node-focus-btn').addEventListener('click', () => {
+  if (state.viewMode === 'lattice') return;
+  if (!state.pinnedTarget) return;
+  if (state.viewpointLevel === 1) enterViewpoint2(state.pinnedTarget);
+  else exitViewpoint2();
+});
+
 document.getElementById('view-reset').addEventListener('click', () => setViewMode('default'));
 document.getElementById('view-front').addEventListener('click', () => setViewMode('front'));
 document.getElementById('view-top').addEventListener('click', () => setViewMode('top'));
@@ -1498,17 +1636,13 @@ function animate(now) {
       state.diagramOpacity = e;
       state.latticeOpacity = 1 - e;
     }
-
     applyGroupOpacity(state.diagramGroup, state.diagramOpacity);
     if (state.latticeGroup) applyGroupOpacity(state.latticeGroup, state.latticeOpacity);
 
     if (t >= 1) {
       state.fade.active = false;
-      if (state.fade.to === 'lattice') {
-        state.diagramGroup.visible = false;
-      } else if (state.latticeGroup) {
-        state.latticeGroup.visible = false;
-      }
+      if (state.fade.to === 'lattice') state.diagramGroup.visible = false;
+      else if (state.latticeGroup) state.latticeGroup.visible = false;
     }
   }
 
@@ -1561,35 +1695,21 @@ const DEMO = {
     }},
   },
   architectonic: (() => {
-    const concepts = [];
-    const edges = [];
-
+    const concepts = [], edges = [];
     const add = (id, label, short, role, origin, layer, extent) => {
       concepts.push({ id, label, short, name: label, role, origin, layer, extent, intent: [] });
       return id;
     };
-
     add('A:0', 'bottom', 'Bottom', 'shared_bottom', 'A', 1, []);
-    const A_semes = [['A:1','being','S1'],['A:2','seeming','S2'],['A:3','not seeming','~S2'],['A:4','nonbeing','~S1']];
-    A_semes.forEach(([id, l, s]) => add(id, l, s, 'layer_1_internal', 'A', 1, [l]));
-    const A_m1 = [['A:5','beingness','M1:beingness'],['A:6','nonexistence','M1:nonexistence'],['A:7','beinglessness','M1:beinglessness'],['A:8','seemingness','M1:seemingness'],['A:9','Mixed beingness','Mix:beingness'],['A:10','Mixed seemingness','Mix:seemingness']];
-    A_m1.forEach(([id, l, s]) => add(id, l, s, 'layer_1_internal', 'A', 1, []));
-    const A_m2 = [['A:11','Revelation','M2:Revelation'],['A:12','Paradox','M2:Paradox'],['A:13','Subterfuge','M2:Subterfuge'],['A:14','Deception','M2:Deception']];
-    A_m2.forEach(([id, l, s]) => add(id, l, s, 'layer_1_internal', 'A', 1, []));
-    add('A:15', 'top', 'Top', 'architectonic_top', 'A', 1, []);
-
+    [['A:1','being','S1'],['A:2','seeming','S2'],['A:3','not seeming','~S2'],['A:4','nonbeing','~S1']].forEach(([id,l,s]) => add(id,l,s,'layer_1_internal','A',1,[l]));
+    [['A:5','beingness','M1:beingness'],['A:6','nonexistence','M1:nonexistence'],['A:7','beinglessness','M1:beinglessness'],['A:8','seemingness','M1:seemingness'],['A:9','Mixed beingness','Mix:beingness'],['A:10','Mixed seemingness','Mix:seemingness']].forEach(([id,l,s]) => add(id,l,s,'layer_1_internal','A',1,[]));
+    [['A:11','Revelation','M2:Revelation'],['A:12','Paradox','M2:Paradox'],['A:13','Subterfuge','M2:Subterfuge'],['A:14','Deception','M2:Deception']].forEach(([id,l,s]) => add(id,l,s,'layer_1_internal','A',1,[]));
+    add('A:15','top','Top','architectonic_top','A',1,[]);
+    ['S1','S2','~S1','~S2'].forEach(k => add(`${k}:15`, `${k}*`, k, 'interface', k, 2, []));
     ['S1','S2','~S1','~S2'].forEach(k => {
-      add(`${k}:15`, `${k}*`, k, 'interface', k, 2, []);
+      for (let i = 1; i <= 14; i++) { if (i === 15) continue; add(`${k}:${i}`, `${k} ${i}`, `${k}:${i}`, 'layer_2_internal', k, 2, []); }
     });
-
-    ['S1','S2','~S1','~S2'].forEach(k => {
-      for (let i = 1; i <= 14; i++) {
-        if (i === 15) continue;
-        add(`${k}:${i}`, `${k} ${i}`, `${k}:${i}`, 'layer_2_internal', k, 2, []);
-      }
-    });
-
-    A_m2.forEach(([id]) => edges.push(['A:15', id]));
+    [['A:11'],['A:12'],['A:13'],['A:14']].forEach(([id]) => edges.push(['A:15', id]));
     edges.push(['A:11','A:9'],['A:11','A:7'],['A:11','A:10']);
     edges.push(['A:12','A:9'],['A:12','A:10']);
     edges.push(['A:13','A:6'],['A:13','A:7'],['A:13','A:9']);
@@ -1612,23 +1732,20 @@ const DEMO = {
       edges.push([`${k}:10`,`${k}:2`],[`${k}:10`,`${k}:3`]);
       edges.push([`${k}:1`,'A:0'],[`${k}:2`,'A:0'],[`${k}:3`,'A:0'],[`${k}:4`,'A:0']);
     });
-
     return { concepts, edges };
   })(),
 };
 
 // =========================================================
-// INIT (wrapped in try/catch so failures are visible)
+// INIT
 // =========================================================
 
 (function init() {
   try {
     const ta = document.getElementById('json-input');
     ta.value = JSON.stringify(DEMO, null, 2);
-
     updateOverviewSize();
     buildArchitectonic(DEMO);
-
     setFocus('A', false, 'default');
     updateNavButtons();
   } catch (err) {
@@ -1639,19 +1756,16 @@ const DEMO = {
         + '<div style="color:#ff6b6b;font-size:14px;margin-bottom:10px;">Init error</div>'
         + '<div style="font-family:ui-monospace,monospace;font-size:11px;color:#8a93ab;'
         + 'white-space:pre-wrap;text-align:left;">'
-        + (err.message || String(err))
-        + '\n\n' + (err.stack || '')
+        + (err.message || String(err)) + '\n\n' + (err.stack || '')
         + '</div></div>';
       return;
     }
   }
-
   setTimeout(() => {
     const el = document.getElementById('loading');
     if (el) el.classList.add('hidden');
   }, 300);
 })();
-
 </script>
 </body>
 </html>
