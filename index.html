@@ -1,3 +1,8 @@
+Architectonic Greimas Viewer — v5
+
+Two small changes: internal diagram edges drop to 50% opacity, and edges adjacent to a pinned node glow white at 75% opacity.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -275,6 +280,10 @@ const HIGHLIGHT_ABOVE = 0xF08C42;
 const HIGHLIGHT_BELOW = 0xE0555A;
 const HIGHLIGHT_DIMMED = 0x2a2e3d;
 
+// NEW: white + 75% opacity for edges adjacent to a pinned node.
+const EDGE_HIGHLIGHT_COLOR = 0xFFFFFF;
+const EDGE_HIGHLIGHT_OPACITY = 0.75;
+
 const MM_COLOR_DEFAULT = '#3a4060';
 const MM_COLOR_YELLOW = '#D4AF37';
 const MM_COLOR_RED = '#E0555A';
@@ -351,7 +360,6 @@ scene.fog = new THREE.FogExp2(0x05070d, 0.007);
 const camera = new THREE.PerspectiveCamera(48, window.innerWidth/window.innerHeight, 0.1, 500);
 camera.position.set(14, 12, 26);
 
-// Performance: cap pixel ratio at 1.5 (down from 2), request high-performance GPU.
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
   alpha: false,
@@ -419,8 +427,6 @@ const state = {
 
 scene.add(state.diagramGroup);
 
-// Performance: track render demand. When nothing is moving and nothing is
-// scheduled, we skip both WebGL and CSS2D renders entirely.
 let lastCamHash = 0;
 let renderPending = true;
 
@@ -461,8 +467,9 @@ function disposeGroup(group) {
 
 const CUBE_SIZE = 0.09;
 const NODE_OPACITY = 0.88;
-const EDGE_OPACITY = 0.55;
-const EDGE_OPACITY_INNER = 0.72;
+// NEW: edges are 50% opaque by default (was 0.55 / 0.72).
+const EDGE_OPACITY = 0.50;
+const EDGE_OPACITY_INNER = 0.50;
 
 function buildSquare(squareData, squareKey, title, parentTerm, position, scale, displayKey) {
   const group = new THREE.Group();
@@ -472,6 +479,7 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale, 
   const nodeMeshes = {};
   const nodeLabels = {};
   const nodePositions3D = {};
+  const edgeObjects = [];
   const squareColor = colorForSquare(squareKey);
   const labelColor = hexForSquare(squareKey);
 
@@ -500,6 +508,8 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale, 
     obj.userData.baseOpacity = opacity;
     obj.userData.isSquareEdge = true;
     group.add(obj);
+
+    edgeObjects.push({ line: obj, a, b, baseOpacity: opacity, baseColor: squareColor });
   });
 
   Object.entries(SQ_POS).forEach(([pos, [x, y]]) => {
@@ -559,7 +569,8 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale, 
 
   state.diagramGroup.add(group);
 
-  return { key: squareKey, title, parentTerm, squareData, group, nodeMeshes, nodeLabels, nodePositions3D };
+  return { key: squareKey, title, parentTerm, squareData, group,
+           nodeMeshes, nodeLabels, nodePositions3D, edgeObjects };
 }
 
 // ---- Connectors ----
@@ -781,13 +792,9 @@ function buildLatticeScene(parsed) {
 
 // =========================================================
 // LABEL VISIBILITY CACHE
-//
-// We cache the last-applied dimmed-status per square so that label
-// visibility toggling only happens when focus actually changes,
-// not on every frame during a fade.
 // =========================================================
 
-const labelVisibilityCache = new Map();   // squareKey -> boolean (dimmed)
+const labelVisibilityCache = new Map();
 
 function refreshLabelVisibility(focusKey) {
   state.squares.forEach(sq => {
@@ -800,7 +807,6 @@ function refreshLabelVisibility(focusKey) {
       if (obj.isCSS2DObject) {
         const el = obj.element;
         if (!el) return;
-        // Keep the square header visible so the diagram remains identifiable.
         const isHeader = el.classList && el.classList.contains('square-header');
         if (isHeader) return;
         obj.visible = !dimmed;
@@ -827,7 +833,6 @@ function refreshDiagramOpacities() {
     }
   }
 
-  // Toggle label visibility only when focus changes.
   refreshLabelVisibility(focusKey);
 
   state.squares.forEach(sq => {
@@ -884,7 +889,17 @@ function setNodeState(mesh, mode) {
   }
 }
 
+function resetAllEdges() {
+  state.squares.forEach(sq => {
+    (sq.edgeObjects || []).forEach(e => {
+      e.line.material.color.setHex(e.baseColor);
+      delete e.line.userData.overrideOpacity;
+    });
+  });
+}
+
 function applyHighlight(target) {
+  // Nodes: reset then apply
   state.squares.forEach(sq => {
     Object.entries(sq.nodeMeshes).forEach(([pos, mesh]) => {
       setNodeState(mesh, 'normal');
@@ -893,11 +908,24 @@ function applyHighlight(target) {
     });
   });
 
+  // Edges: reset all first
+  resetAllEdges();
+
   if (!target) { refreshDiagramOpacities(); markDirty(); return; }
 
   const targetSq = state.squares.find(s => s.key === target.squareKey);
   if (!targetSq) return;
   const targetTerm = targetSq.squareData[target.position] || '';
+  const targetPos = target.position;
+
+  // NEW: highlight only edges directly adjacent to the pinned node,
+  // and only on its own square.
+  (targetSq.edgeObjects || []).forEach(e => {
+    if (e.a === targetPos || e.b === targetPos) {
+      e.line.material.color.setHex(EDGE_HIGHLIGHT_COLOR);
+      e.line.userData.overrideOpacity = EDGE_HIGHLIGHT_OPACITY;
+    }
+  });
 
   state.squares.forEach(sq => {
     Object.entries(sq.nodeMeshes).forEach(([pos, mesh]) => {
@@ -1355,7 +1383,6 @@ function pickNode() {
   return data ? { mode: 'diagram', squareKey: data.squareKey, position: data.position } : null;
 }
 
-// Raycast throttling: cap to ~30 Hz for hover picking.
 let lastRaycastTime = 0;
 const RAYCAST_INTERVAL_MS = 33;
 let rafPending = false;
@@ -1967,3 +1994,29 @@ const DEMO = {
 </script>
 </body>
 </html>
+```
+
+What Changed
+
+1) Internal edges at 50% opacity. EDGE_OPACITY and EDGE_OPACITY_INNER are both 0.50 (down from 0.55 and 0.72). Every edge within a diagram — solid or dashed — now renders at the same semi-transparent level.
+
+2) Adjacent edges highlight white at 75% opacity. Each square now stores an edgeObjects array alongside its node meshes. Each entry is {line, a, b, baseOpacity, baseColor} — enough metadata to know which two vertex positions the edge connects, and what its default state is.
+
+applyHighlight now does three passes:
+
+· Reset all nodes and all edges to their default colors and opacities (this handles the "return to default" case automatically).
+· If a target is pinned, walk the target square's edgeObjects and, for every edge whose a or b matches the pinned position, set material.color to white (0xFFFFFF) and userData.overrideOpacity to 0.75.
+· Apply the usual node dimming.
+
+Because refreshDiagramOpacities respects userData.overrideOpacity, the pinned edges stay at 0.75 through any subsequent dimming, and the target diagram's DIM_MULTIPLIER doesn't reduce them further (the pinned diagram is never dimmed).
+
+Lifecycle of the white edges:
+
+· Pin a node → its four adjacent edges turn white.
+· Enter Viewpoint 2 (click again or use the Focus Node button) → the edges stay white (applyHighlight isn't re-run on focus entry, so the state persists).
+· Exit Viewpoint 2 → edges stay white (pin is still active).
+· Unpin (click empty space or click a different node) → edges return to their default color and opacity via the reset pass.
+· Switch diagrams via Cycle/Level buttons → pin persists, edges on the old diagram stay white but the diagram is dimmed and labels are hidden, so the effect isn't distracting.
+· Toggle Lattice View → applyHighlight(null) is called, which resets everything cleanly.
+
+Also worth noting: the highlight applies only to edges within the pinned node's own diagram. The dark-yellow connectors between A and B are a different object class (isConnector), and they aren't affected. This matches the request: "local to the connectors of the currently highlighted node, not something that applies to all other lines and connectors."
