@@ -124,7 +124,6 @@
     width: 220px; height: 220px; border-radius: 12px; overflow: hidden;
     border: 1px solid rgba(31,158,137,0.30); background: #05070d;
     box-shadow: 0 12px 32px rgba(0,0,0,0.6); z-index: 8;
-    transition: opacity .3s;
   }
   #minimap-svg { display: block; width: 100%; height: 100%; }
   #overview-title {
@@ -276,7 +275,6 @@ const HIGHLIGHT_ABOVE = 0xF08C42;
 const HIGHLIGHT_BELOW = 0xE0555A;
 const HIGHLIGHT_DIMMED = 0x2a2e3d;
 
-// Minimap colors
 const MM_COLOR_DEFAULT = '#3a4060';
 const MM_COLOR_YELLOW = '#D4AF37';
 const MM_COLOR_RED = '#E0555A';
@@ -315,18 +313,17 @@ function isInnerSquareEdge(a, b) {
 }
 
 // =========================================================
-// LAYOUT — 2x2 grid of B diagrams behind A
+// LAYOUT
 // =========================================================
 
 const LAYOUT = {
   A:     { position: { x: 0,    y: 0,    z: 10 }, scale: 1.15 },
-  S1:    { position: { x: -5.5, y:  6.5, z: -6 }, scale: 0.95 },   // top-left
-  S2:    { position: { x:  5.5, y:  6.5, z: -6 }, scale: 0.95 },   // top-right
-  '~S2': { position: { x: -5.5, y: -6.5, z: -6 }, scale: 0.95 },   // bottom-left
-  '~S1': { position: { x:  5.5, y: -6.5, z: -6 }, scale: 0.95 },   // bottom-right
+  S1:    { position: { x: -5.5, y:  6.5, z: -6 }, scale: 0.95 },
+  S2:    { position: { x:  5.5, y:  6.5, z: -6 }, scale: 0.95 },
+  '~S2': { position: { x: -5.5, y: -6.5, z: -6 }, scale: 0.95 },
+  '~S1': { position: { x:  5.5, y: -6.5, z: -6 }, scale: 0.95 },
 };
 
-// Display tokens
 const B_INDEX = { 'S1': 'B1', 'S2': 'B2', '~S2': 'B3', '~S1': 'B4' };
 const B_DISPLAY = { 'S1': 'S1-B1', 'S2': 'S2-B2', '~S2': '~S2-B3', '~S1': '~S1-B4' };
 
@@ -354,8 +351,13 @@ scene.fog = new THREE.FogExp2(0x05070d, 0.007);
 const camera = new THREE.PerspectiveCamera(48, window.innerWidth/window.innerHeight, 0.1, 500);
 camera.position.set(14, 12, 26);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// Performance: cap pixel ratio at 1.5 (down from 2), request high-performance GPU.
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: false,
+  powerPreference: 'high-performance',
+});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight);
 container.appendChild(renderer.domElement);
 
@@ -417,8 +419,26 @@ const state = {
 
 scene.add(state.diagramGroup);
 
+// Performance: track render demand. When nothing is moving and nothing is
+// scheduled, we skip both WebGL and CSS2D renders entirely.
+let lastCamHash = 0;
+let renderPending = true;
+
+function hashCamera() {
+  const p = camera.position;
+  const t = controls.target;
+  return (Math.round(p.x * 100) * 73856093)
+       ^ (Math.round(p.y * 100) * 19349663)
+       ^ (Math.round(p.z * 100) * 83492791)
+       ^ (Math.round(t.x * 100) * 51773313)
+       ^ (Math.round(t.y * 100) * 27309839)
+       ^ (Math.round(t.z * 100) * 12653951);
+}
+
+function markDirty() { renderPending = true; }
+
 // =========================================================
-// DISPOSAL HELPER
+// DISPOSAL
 // =========================================================
 
 function disposeGroup(group) {
@@ -542,7 +562,7 @@ function buildSquare(squareData, squareKey, title, parentTerm, position, scale, 
   return { key: squareKey, title, parentTerm, squareData, group, nodeMeshes, nodeLabels, nodePositions3D };
 }
 
-// ---- Connector lines from A's semes to B tops ----
+// ---- Connectors ----
 
 function buildConnectingLines() {
   const toRemove = [];
@@ -589,10 +609,7 @@ function buildConnectingLines() {
 
     const geom = new THREE.BufferGeometry().setFromPoints([aWorld, bWorld]);
     const mat = new THREE.LineBasicMaterial({
-      color: CONNECTOR_COLOR,
-      transparent: true,
-      opacity: 0.32,
-      depthWrite: false,
+      color: CONNECTOR_COLOR, transparent: true, opacity: 0.32, depthWrite: false,
     });
     const line = new THREE.Line(geom, mat);
     line.userData.isConnector = true;
@@ -627,6 +644,7 @@ function clearScene() {
   state.viewMode = 'diagram';
   state.viewpointLevel = 1;
   state.minimap = null;
+  labelVisibilityCache.clear();
 }
 
 // =========================================================
@@ -762,7 +780,37 @@ function buildLatticeScene(parsed) {
 }
 
 // =========================================================
-// PER-SQUARE OPACITY (dim non-focused diagrams)
+// LABEL VISIBILITY CACHE
+//
+// We cache the last-applied dimmed-status per square so that label
+// visibility toggling only happens when focus actually changes,
+// not on every frame during a fade.
+// =========================================================
+
+const labelVisibilityCache = new Map();   // squareKey -> boolean (dimmed)
+
+function refreshLabelVisibility(focusKey) {
+  state.squares.forEach(sq => {
+    const dimmed = !!(focusKey && sq.key !== focusKey);
+    const prev = labelVisibilityCache.get(sq.key);
+    if (prev === dimmed) return;
+    labelVisibilityCache.set(sq.key, dimmed);
+
+    sq.group.traverse(obj => {
+      if (obj.isCSS2DObject) {
+        const el = obj.element;
+        if (!el) return;
+        // Keep the square header visible so the diagram remains identifiable.
+        const isHeader = el.classList && el.classList.contains('square-header');
+        if (isHeader) return;
+        obj.visible = !dimmed;
+      }
+    });
+  });
+}
+
+// =========================================================
+// PER-SQUARE OPACITY
 // =========================================================
 
 const DIM_MULTIPLIER = 0.30;
@@ -779,9 +827,13 @@ function refreshDiagramOpacities() {
     }
   }
 
+  // Toggle label visibility only when focus changes.
+  refreshLabelVisibility(focusKey);
+
   state.squares.forEach(sq => {
     const dimmed = focusKey && sq.key !== focusKey;
     const multiplier = dimmed ? DIM_MULTIPLIER : 1.0;
+    const squareOpacity = state.diagramOpacity * multiplier;
 
     sq.group.traverse(obj => {
       if (obj.material) {
@@ -789,17 +841,16 @@ function refreshDiagramOpacities() {
         const top = obj.userData.overrideOpacity !== undefined
           ? obj.userData.overrideOpacity
           : base;
-        obj.material.opacity = top * state.diagramOpacity * multiplier;
+        obj.material.opacity = top * squareOpacity;
       }
       if (obj.element) {
-        obj.element.style.opacity = String(multiplier * state.diagramOpacity);
+        obj.element.style.opacity = String(squareOpacity);
       }
     });
 
-    sq.group.visible = (state.diagramOpacity * multiplier) > 0.01;
+    sq.group.visible = squareOpacity > 0.01;
   });
 
-  // Connectors follow the diagram opacity only
   state.diagramGroup.children.forEach(child => {
     if (child.userData && child.userData.isConnector) {
       const base = child.userData.baseOpacity ?? 1.0;
@@ -842,7 +893,7 @@ function applyHighlight(target) {
     });
   });
 
-  if (!target) { refreshDiagramOpacities(); return; }
+  if (!target) { refreshDiagramOpacities(); markDirty(); return; }
 
   const targetSq = state.squares.find(s => s.key === target.squareKey);
   if (!targetSq) return;
@@ -866,6 +917,7 @@ function applyHighlight(target) {
   });
 
   refreshDiagramOpacities();
+  markDirty();
 }
 
 // =========================================================
@@ -885,6 +937,7 @@ function applyLatticeHighlight(conceptId) {
 
   if (conceptId === null || conceptId === undefined) {
     applyGroupOpacity(state.latticeGroup, state.latticeOpacity);
+    markDirty();
     return;
   }
   const idx = L.idToIdx[conceptId];
@@ -945,10 +998,11 @@ function applyLatticeHighlight(conceptId) {
   });
 
   applyGroupOpacity(state.latticeGroup, state.latticeOpacity);
+  markDirty();
 }
 
 // =========================================================
-// GROUP OPACITY (for lattice only now)
+// GROUP OPACITY (lattice only)
 // =========================================================
 
 function applyGroupOpacity(groupOrWrapper, opacity) {
@@ -985,7 +1039,6 @@ const POS_TO_LOCAL_ID = {
 function positionToLatticeId(squareKey, position) {
   const localId = POS_TO_LOCAL_ID[position];
   if (localId === undefined) return null;
-
   if (squareKey === 'A') {
     if (position === 'S1') return 'S1:15';
     if (position === 'S2') return 'S2:15';
@@ -1028,13 +1081,9 @@ function buildMinimap() {
   const bbCx = (minX + maxX) / 2, bbCy = (minY + maxY) / 2;
 
   function toScreen(p) {
-    return {
-      x: cx + (p.x - bbCx) * scale,
-      y: cy - (p.y - bbCy) * scale,
-    };
+    return { x: cx + (p.x - bbCx) * scale, y: cy - (p.y - bbCy) * scale };
   }
 
-  // Edges
   const edgeEls = [];
   edges.forEach((e) => {
     const pa = positions[e[0]], pb = positions[e[1]];
@@ -1052,7 +1101,6 @@ function buildMinimap() {
     edgeEls.push({ line, a: e[0], b: e[1] });
   });
 
-  // Nodes
   const nodeEls = {};
   concepts.forEach(c => {
     const p = positions[c.id];
@@ -1069,8 +1117,7 @@ function buildMinimap() {
   });
 
   state.minimap = {
-    svg, nodeEls, edgeEls,
-    positions, concepts,
+    svg, nodeEls, edgeEls, positions, concepts,
     conceptById: Object.fromEntries(concepts.map(c => [c.id, c])),
   };
 
@@ -1085,13 +1132,11 @@ function updateMinimap() {
   const focusOrigin = state.focusedKey;
   const showDiagramYellow = !inLattice && state.viewpointLevel === 1;
 
-  // Pinned concept id
   let pinnedLatticeId = null;
   if (state.pinnedTarget) {
     pinnedLatticeId = positionToLatticeId(state.pinnedTarget.squareKey, state.pinnedTarget.position);
   }
 
-  // Nodes
   Object.entries(mm.nodeEls).forEach(([id, rect]) => {
     const concept = mm.conceptById[id];
     if (!concept) return;
@@ -1108,34 +1153,27 @@ function updateMinimap() {
     rect.setAttribute('fill', fill);
   });
 
-  // Edges
   mm.edgeEls.forEach(({ line, a, b }) => {
     const ca = mm.conceptById[a];
     const cb = mm.conceptById[b];
     if (!ca || !cb) return;
     let stroke, width;
     if (inLattice) {
-      stroke = MM_COLOR_DIM;
-      width = '0.6';
+      stroke = MM_COLOR_DIM; width = '0.6';
     } else if (showDiagramYellow && (ca.origin === focusOrigin || cb.origin === focusOrigin)) {
-      stroke = MM_COLOR_YELLOW;
-      width = '1.0';
+      stroke = MM_COLOR_YELLOW; width = '1.0';
     } else {
-      stroke = MM_COLOR_DEFAULT;
-      width = '0.6';
+      stroke = MM_COLOR_DEFAULT; width = '0.6';
     }
     line.setAttribute('stroke', stroke);
     line.setAttribute('stroke-width', width);
   });
 
-  // Status
   const parts = [];
   if (inLattice) {
     parts.push('Lattice View');
   } else {
-    const label = state.focusedKey === 'A'
-      ? 'A1'
-      : (B_INDEX[state.focusedKey] || state.focusedKey);
+    const label = state.focusedKey === 'A' ? 'A1' : (B_INDEX[state.focusedKey] || state.focusedKey);
     parts.push(`Viewing ${label}`);
   }
   if (state.pinnedTarget) {
@@ -1163,12 +1201,10 @@ function buildArchitectonic(parsed) {
 
   state.data = parsed;
 
-  // A
   const A = buildSquare(layer_1.square, 'A', 'Layer 1', null,
     LAYOUT.A.position, LAYOUT.A.scale, 'A1');
   state.squares.push(A);
 
-  // Four B decompositions
   ['S1','S2','~S1','~S2'].forEach(semeKey => {
     const b = layer_2[semeKey];
     if (!b || !b.square) return;
@@ -1194,6 +1230,7 @@ function buildArchitectonic(parsed) {
   state.lastDiagramKey = 'A';
   setFocus('A', false, 'default');
   updateNavButtons();
+  markDirty();
 }
 
 // =========================================================
@@ -1318,13 +1355,21 @@ function pickNode() {
   return data ? { mode: 'diagram', squareKey: data.squareKey, position: data.position } : null;
 }
 
+// Raycast throttling: cap to ~30 Hz for hover picking.
+let lastRaycastTime = 0;
+const RAYCAST_INTERVAL_MS = 33;
 let rafPending = false;
+
 renderer.domElement.addEventListener('pointermove', (ev) => {
   updateMouseFromEvent(ev);
   if (rafPending) return;
   rafPending = true;
   requestAnimationFrame(() => {
     rafPending = false;
+
+    const now = performance.now();
+    if (now - lastRaycastTime < RAYCAST_INTERVAL_MS) return;
+    lastRaycastTime = now;
 
     if (state.viewMode === 'lattice') {
       if (state.latticePinnedTarget !== null && state.latticePinnedTarget !== undefined) return;
@@ -1398,7 +1443,6 @@ renderer.domElement.addEventListener('click', (ev) => {
     return;
   }
 
-  // Diagram mode
   if (!hit) {
     if (state.viewpointLevel === 2) {
       exitViewpoint2();
@@ -1468,6 +1512,7 @@ function animateCameraTo(camPos, target) {
   state.anim.toCam.copy(camPos);
   state.anim.fromLook.copy(controls.target);
   state.anim.toLook.copy(target);
+  markDirty();
 }
 
 function enterViewpoint2(pin) {
@@ -1538,6 +1583,7 @@ function setFocus(key, animate=true, mode='default') {
   updateNavButtons();
   updateMinimap();
   refreshDiagramOpacities();
+  markDirty();
 }
 
 function setViewMode(mode) {
@@ -1652,6 +1698,7 @@ function toggleLatticeView() {
   updateNavButtons();
   updateMinimap();
   refreshDiagramOpacities();
+  markDirty();
 }
 
 // =========================================================
@@ -1736,6 +1783,7 @@ function handleResize() {
   camera.updateProjectionMatrix();
   renderer.setSize(w, h);
   labelRenderer.setSize(w, h);
+  markDirty();
 }
 window.addEventListener('resize', handleResize);
 
@@ -1748,6 +1796,8 @@ function smoothstep(t) { return t * t * (3 - 2 * t); }
 function animate(now) {
   requestAnimationFrame(animate);
 
+  let needsFrame = renderPending;
+
   if (state.anim.active) {
     const dt = (now - state.anim.lastTime) / 1000;
     state.anim.lastTime = now;
@@ -1757,6 +1807,7 @@ function animate(now) {
     camera.position.lerpVectors(state.anim.fromCam, state.anim.toCam, e);
     controls.target.lerpVectors(state.anim.fromLook, state.anim.toLook, e);
     if (t >= 1) state.anim.active = false;
+    needsFrame = true;
   }
 
   if (state.fade.active) {
@@ -1781,11 +1832,22 @@ function animate(now) {
       if (state.fade.to === 'lattice') state.diagramGroup.visible = false;
       else if (state.latticeGroup) state.latticeGroup.visible = false;
     }
+    needsFrame = true;
   }
 
   controls.update();
-  renderer.render(scene, camera);
-  labelRenderer.render(scene, camera);
+
+  const camHash = hashCamera();
+  if (camHash !== lastCamHash) {
+    lastCamHash = camHash;
+    needsFrame = true;
+  }
+
+  if (needsFrame) {
+    renderPending = false;
+    renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
+  }
 }
 requestAnimationFrame(animate);
 
@@ -1883,6 +1945,7 @@ const DEMO = {
     setFocus('A', false, 'default');
     updateNavButtons();
     updateMinimap();
+    markDirty();
   } catch (err) {
     console.error('Init error:', err);
     const el = document.getElementById('loading');
