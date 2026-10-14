@@ -1,8 +1,3 @@
-Architectonic Greimas Viewer — v5
-
-Two small changes: internal diagram edges drop to 50% opacity, and edges adjacent to a pinned node glow white at 75% opacity.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1994,29 +1989,3 @@ const DEMO = {
 </script>
 </body>
 </html>
-```
-
-What Changed
-
-1) Internal edges at 50% opacity. EDGE_OPACITY and EDGE_OPACITY_INNER are both 0.50 (down from 0.55 and 0.72). Every edge within a diagram — solid or dashed — now renders at the same semi-transparent level.
-
-2) Adjacent edges highlight white at 75% opacity. Each square now stores an edgeObjects array alongside its node meshes. Each entry is {line, a, b, baseOpacity, baseColor} — enough metadata to know which two vertex positions the edge connects, and what its default state is.
-
-applyHighlight now does three passes:
-
-· Reset all nodes and all edges to their default colors and opacities (this handles the "return to default" case automatically).
-· If a target is pinned, walk the target square's edgeObjects and, for every edge whose a or b matches the pinned position, set material.color to white (0xFFFFFF) and userData.overrideOpacity to 0.75.
-· Apply the usual node dimming.
-
-Because refreshDiagramOpacities respects userData.overrideOpacity, the pinned edges stay at 0.75 through any subsequent dimming, and the target diagram's DIM_MULTIPLIER doesn't reduce them further (the pinned diagram is never dimmed).
-
-Lifecycle of the white edges:
-
-· Pin a node → its four adjacent edges turn white.
-· Enter Viewpoint 2 (click again or use the Focus Node button) → the edges stay white (applyHighlight isn't re-run on focus entry, so the state persists).
-· Exit Viewpoint 2 → edges stay white (pin is still active).
-· Unpin (click empty space or click a different node) → edges return to their default color and opacity via the reset pass.
-· Switch diagrams via Cycle/Level buttons → pin persists, edges on the old diagram stay white but the diagram is dimmed and labels are hidden, so the effect isn't distracting.
-· Toggle Lattice View → applyHighlight(null) is called, which resets everything cleanly.
-
-Also worth noting: the highlight applies only to edges within the pinned node's own diagram. The dark-yellow connectors between A and B are a different object class (isConnector), and they aren't affected. This matches the request: "local to the connectors of the currently highlighted node, not something that applies to all other lines and connectors."
