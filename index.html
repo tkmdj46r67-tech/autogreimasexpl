@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architectonic Greimas Viewer — 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #05070d; --panel: rgba(9,13,22,0.92); --text: #e9edf7;
+    --text-dim: #8a93ab; --accent: #1F9E89;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: var(--bg); color: var(--text);
+    font-family: 'Archivo', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+  input, textarea, button { font-family: inherit; }
+  #canvas-container { position: fixed; inset: 0; z-index: 1; }
+  #top-bar {
+    position: fixed; top: 14px; left: 14px; z-index: 20;
+    display: flex; gap: 8px; flex-wrap: wrap; max-width: 62vw;
+  }
+  .btn {
+    padding: 10px 14px; min-height: 40px; border-radius: 9px; cursor: pointer;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #c8d0e6; background: var(--panel);
+    border: 1px solid rgba(31,158,137,0.20); backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    transition: background .15s, border-color .15s, color .15s, opacity .15s;
+    user-select: none;
+  }
+  .btn:hover:not(.disabled) { background: rgba(31,158,137,.20); border-color: rgba(31,158,137,.55); color: #fff; }
+  .btn:active:not(.disabled) { transform: translateY(1px); }
+  .btn.disabled { opacity: 0.35; cursor: not-allowed; border-color: rgba(31,158,137,0.08); }
+  .btn.level-btn { border-color: rgba(253,231,37,0.35); color: #FDE725; }
+  .btn.level-btn:hover:not(.disabled) { background: rgba(253,231,37,0.15); border-color: rgba(253,231,37,0.7); color: #fff; }
+  .btn.lattice-btn { border-color: rgba(62,74,137,0.55); color: #7A9AD6; }
+  .btn.lattice-btn:hover:not(.disabled) { background: rgba(62,74,137,0.28); border-color: rgba(122,154,214,0.85); color: #fff; }
+  .btn.lattice-btn.active { background: rgba(62,74,137,0.45); border-color: rgba(180,222,44,0.85); color: #FDE725; }
+  .btn.focus-btn { border-color: rgba(201,162,39,0.55); color: #D4AF37; }
+  .btn.focus-btn:hover:not(.disabled) { background: rgba(201,162,39,0.18); border-color: rgba(212,175,55,0.85); color: #FFF; }
+  .btn.focus-btn.active { background: rgba(201,162,39,0.35); border-color: rgba(253,231,37,0.9); color: #FDE725; }
+  #ui {
+    position: fixed; top: 14px; right: 14px; z-index: 10;
+    width: 380px; max-height: calc(100vh - 28px); overflow-y: auto;
+    padding: 14px 16px; border-radius: 12px;
+    background: var(--panel); border: 1px solid rgba(31,158,137,0.16);
+    backdrop-filter: blur(14px); box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    transition: transform .3s, opacity .3s;
+  }
+  body.panels-hidden #ui { transform: translateX(calc(100% + 30px)); opacity: 0; pointer-events: none; }
+  .sec { border-bottom: 1px solid rgba(255,255,255,0.06); padding: 10px 0; }
+  .sec:last-child { border-bottom: none; }
+  .sec-title {
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim);
+    user-select: none;
+  }
+  .sec-title:hover { color: #c8d0e6; }
+  .sec-body { max-height: 0; overflow: hidden; transition: max-height .3s; }
+  .sec.open .sec-body { max-height: 2000px; }
+  .sec-content { padding: 10px 0 4px; }
+  .chev { font-size: 10px; transition: transform .25s; }
+  .sec.open .chev { transform: rotate(180deg); }
+  #json-input {
+    width: 100%; min-height: 100px; resize: vertical;
+    background: #0a0d1a; color: var(--text);
+    border: 1px solid rgba(31,158,137,0.18); border-radius: 8px;
+    padding: 10px 12px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11px; line-height: 1.5;
+  }
+  #json-status { font-size: 11px; margin-top: 6px; }
+  #json-status.ok { color: #35B779; }
+  #json-status.err { color: #ff6b6b; }
+  #node-info {
+    padding: 10px 12px;
+    background: rgba(15,20,32,0.8); border-radius: 8px;
+    border: 1px solid rgba(31,158,137,0.12);
+    font-size: 11.5px; line-height: 1.55;
+    max-height: 260px; overflow-y: auto; min-height: 80px;
+  }
+  #node-info h4 { margin: 0 0 6px; font-size: 12.5px; color: #FDE725; }
+  #node-info .kv { margin-bottom: 5px; }
+  #node-info .k { color: var(--text-dim); }
+  #node-info .chip {
+    display: inline-block; padding: 1px 7px; border-radius: 8px;
+    background: rgba(31,158,137,0.18); color: #35B779; font-size: 10.5px;
+    margin: 2px 3px 2px 0;
+  }
+  .legend { display: flex; flex-direction: column; gap: 6px;
+    font-size: 11px; color: var(--text-dim); padding: 8px 0; }
+  .legend span { display: flex; align-items: center; }
+  .legend .dot { display: inline-block; width: 10px; height: 10px;
+    margin-right: 8px; border: 1px solid rgba(255,255,255,0.15); }
+  #overview-container {
+    position: fixed; left: 14px; bottom: 14px;
+    width: 220px; height: 220px; border-radius: 12px; overflow: hidden;
+    border: 1px solid rgba(31,158,137,0.30); background: #05070d;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.6); z-index: 8;
+  }
+  #minimap-svg { display: block; width: 100%; height: 100%; }
+  #overview-title {
+    position: absolute; top: 6px; left: 10px;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(200,208,230,0.6); pointer-events: none; z-index: 2;
+  }
+  #minimap-status {
+    position: absolute; bottom: 6px; left: 8px; right: 8px;
+    font-size: 9px; font-weight: 600; color: #c8d0e6;
+    text-shadow: 0 0 6px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,1);
+    pointer-events: none; text-align: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    z-index: 2;
+  }
+  @media (max-width: 720px) {
+    #overview-container { width: 140px; height: 140px; }
+    #overview-title { font-size: 8px; }
+    #minimap-status { font-size: 7.5px; }
+  }
+  .label {
+    color: #B4DE2C; font-size: 11px; font-weight: 600;
+    text-shadow: 0 0 8px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,1);
+    pointer-events: none; user-select: none; white-space: nowrap;
+    transform: translate(-50%, -50%); padding: 1px 4px; border-radius: 4px;
+    transition: color .15s, opacity .15s;
+  }
+  .label.square-header {
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .label.square-header .parent {
+    color: var(--text-dim); font-weight: 500; font-style: italic;
+    text-transform: none; letter-spacing: 0; font-size: 11.5px;
+  }
+  .label.highlighted { color: #FDE725 !important; text-shadow: 0 0 12px rgba(253,231,37,0.9), 0 0 3px rgba(0,0,0,1); }
+  .label.dimmed { color: #1c3a48 !important; }
+  .label.lattice-label { font-size: 8.5px; opacity: 0.85; }
+  .loading {
+    position: fixed; inset: 0; display: flex;
+    align-items: center; justify-content: center;
+    background: var(--bg); color: var(--text-dim);
+    font-size: 13px; z-index: 100; transition: opacity .5s;
+  }
+  .loading.hidden { opacity: 0; pointer-events: none; }
+  #lattice-mode-badge {
+    position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+    padding: 8px 16px; border-radius: 8px;
+    background: rgba(62,74,137,0.6); color: #FDE725;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    border: 1px solid rgba(180,222,44,0.5);
+    backdrop-filter: blur(10px);
+    z-index: 15; opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+  }
+  #lattice-mode-badge.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+<div id="lattice-mode-badge">Architectonic Lattice — Level 3</div>
+
+<div id="top-bar">
+  <button class="btn" id="panel-toggle">◱ Hide Panels</button>
+  <button class="btn lattice-btn" id="lattice-btn">⊞ Lattice View</button>
+  <button class="btn level-btn" id="level-btn">→ B Level</button>
+  <button class="btn disabled" id="cycle-btn">▸ Next B</button>
+  <button class="btn focus-btn disabled" id="node-focus-btn">⊙ Focus Node</button>
+  <button class="btn" id="view-reset">⌖ Reset View</button>
+  <button class="btn" id="view-top">▣ Top</button>
+  <button class="btn" id="view-front">▤ Front</button>
+</div>
+
+<div id="ui">
+  <div class="sec open" data-sec>
+    <div class="sec-title"><span>Load JSON</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-content">
+      <textarea id="json-input" spellcheck="false" placeholder="Paste the architectonic JSON."></textarea>
+      <div id="json-status"></div>
+      <button class="btn" id="json-apply" style="margin-top:8px; width:100%;">Update</button>
+    </div></div>
+  </div>
+  <div class="sec open" data-sec>
+    <div class="sec-title"><span>Node Info</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-content">
+      <div id="node-info"><em style="color:var(--text-dim);">Hover or click a node.</em></div>
+    </div></div>
+  </div>
+  <div class="sec open" data-sec>
+    <div class="sec-title"><span>Legend</span><span class="chev">▾</span></div>
+    <div class="sec-body"><div class="sec-content">
+      <div class="legend" id="legend"></div>
+    </div></div>
+  </div>
+</div>
+
+<div id="overview-container">
+  <svg id="minimap-svg" viewBox="0 0 220 220" preserveAspectRatio="xMidYMid meet"></svg>
+  <div id="overview-title">Minimap</div>
+  <div id="minimap-status"></div>
+</div>
+
+<div class="loading" id="loading">Building architectonic...</div>
+
+<script type="importmap">
+{ "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+// =========================================================
+// PALETTE
+// =========================================================
+
+const VIRIDIS = { 'A': 0xFDE725, 'S1': 0xB4DE2C, 'S2': 0x35B779, '~S1': 0x1F9E89, '~S2': 0x3E4A89 };
+const VIRIDIS_HEX = { 'A': '#FDE725', 'S1': '#B4DE2C', 'S2': '#35B779', '~S1': '#1F9E89', '~S2': '#3E4A89' };
+const CONNECTOR_COLOR = 0xC9A227;
+
+function colorForSquare(k) { return VIRIDIS[k] ?? 0xB4DE2C; }
+function hexForSquare(k) { return VIRIDIS_HEX[k] ?? '#B4DE2C'; }
+
+const HIGHLIGHT_HOVER = 0xFDE725;
+const HIGHLIGHT_ABOVE = 0xF08C42;
+const HIGHLIGHT_BELOW = 0xE0555A;
+const HIGHLIGHT_DIM = 0x2a2e3d;
+const EDGE_HIGHLIGHT_COLOR = 0xFFFFFF;
+const EDGE_HIGHLIGHT_OPACITY = 0.95;
+
+const MM_COLOR_DEFAULT = '#3a4060';
+const MM_COLOR_YELLOW = '#D4AF37';
+const MM_COLOR_RED = '#E0555A';
+const MM_COLOR_DIM = '#151a28';
+
+// =========================================================
+// GEOMETRY & LAYOUT
+// =========================================================
+
+const SQ_POS = {
+  top: [0.0, 3.20],
+  M21: [-2.20, 2.20], M22: [-0.75, 2.20], M23: [0.75, 2.20], M24: [2.20, 2.20],
+  M11: [0.0, 1.40],
+  S1: [-1.10, 0.70], S2: [1.10, 0.70],
+  M13: [-2.20, 0.00], Mixed1: [-0.75, 0.00], Mixed2: [0.75, 0.00], M14: [2.20, 0.00],
+  '~S2': [-1.10, -0.70], '~S1': [1.10, -0.70],
+  M12: [0.0, -1.40],
+  bottom: [0.0, -3.20],
+};
+
+const SQ_EDGES = [
+  ['top','M21'],['top','M22'],['top','M23'],['top','M24'],
+  ['M21','M11'],['M21','M13'],['M22','M11'],['M22','M14'],
+  ['M23','M12'],['M23','M13'],['M24','M12'],['M24','M14'],
+  ['M11','S1'],['M11','S2'],['M12','~S2'],['M12','~S1'],
+  ['M13','S1'],['M13','~S2'],['M14','S2'],['M14','~S1'],
+  ['Mixed1','S1'],['Mixed1','~S1'],['Mixed2','S2'],['Mixed2','~S2'],
+  ['S1','bottom'],['S2','bottom'],['~S2','bottom'],['~S1','bottom'],
+  ['S1','S2'],['~S2','~S1'],['S1','~S2'],['S2','~S1'],
+  ['S1','~S1'],['S2','~S2'],
+];
+
+function isInnerSquareEdge(a, b) {
+  const inner = new Set(['S1','S2','~S2','~S1']);
+  return inner.has(a) && inner.has(b);
+}
+
+const LAYOUT = {
+  A:     { position: { x: 0,    y: 0,    z: 10 }, scale: 1.15 },
+  S1:    { position: { x: -5.5, y:  6.5, z: -6 }, scale: 0.95 },
+  S2:    { position: { x:  5.5, y:  6.5, z: -6 }, scale: 0.95 },
+  '~S2': { position: { x: -5.5, y: -6.5, z: -6 }, scale: 0.95 },
+  '~S1': { position: { x:  5.5, y: -6.5, z: -6 }, scale: 0.95 },
+};
+
+const B_INDEX = { 'S1': 'B1', 'S2': 'B2', '~S2': 'B3', '~S1': 'B4' };
+const B_DISPLAY = { 'S1': 'S1-B1', 'S2': 'S2-B2', '~S2': '~S2-B3', '~S1': '~S1-B4' };
+const B_CYCLE_ORDER = ['S1', 'S2', '~S1', '~S2'];
+
+const VIEW_OFFSETS = {
+  default: new THREE.Vector3(5, 3, 14),
+  top:     new THREE.Vector3(4, 14, 4),
+  front:   new THREE.Vector3(0, 0, 15),
+  lattice: new THREE.Vector3(0, 2, 32),
+};
+const VP2_OFFSET = new THREE.Vector3(1.6, 1.1, 2.2);
+
+const POS_TO_LOCAL_ID = {
+  'bottom': 0,
+  'S1': 1, 'S2': 2, '~S1': 3, '~S2': 4,
+  'M11': 5, 'M12': 6, 'M13': 7, 'M14': 8, 'Mixed1': 9, 'Mixed2': 10,
+  'M21': 11, 'M22': 12, 'M23': 13, 'M24': 14,
+  'top': 15,
+};
+
+function positionToLatticeId(squareKey, position) {
+  const localId = POS_TO_LOCAL_ID[position];
+  if (localId === undefined) return null;
+  if (squareKey === 'A') {
+    if (position === 'S1') return 'S1:15';
+    if (position === 'S2') return 'S2:15';
+    if (position === '~S1') return '~S1:15';
+    if (position === '~S2') return '~S2:15';
+    if (position === 'bottom') return 'A:0';
+    if (position === 'top') return 'A:15';
+    return `A:${localId}`;
+  }
+  if (position === 'bottom') return 'A:0';
+  return `${squareKey}:${localId}`;
+}
+
+// =========================================================
+// SCENE
+// =========================================================
+
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x05070d);
+scene.fog = new THREE.FogExp2(0x05070d, 0.007);
+
+const camera = new THREE.PerspectiveCamera(48, window.innerWidth/window.innerHeight, 0.1, 500);
+camera.position.set(14, 12, 26);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+renderer.setSize(window.innerWidth, window.innerHeight);
+container.appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0';
+labelRenderer.domElement.style.left = '0';
+labelRenderer.domElement.style.pointerEvents = 'none';
+labelRenderer.domElement.style.zIndex = '2';
+container.appendChild(labelRenderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 3;
+controls.maxDistance = 120;
+
+scene.add(new THREE.AmbientLight(0xffffff, 1));
+
+// =========================================================
+// CONSTANTS
+// =========================================================
+
+const CUBE_SIZE = 0.09;
+const LATTICE_SCALE = 2.0;
+const NODE_OPACITY = 0.88;
+const EDGE_OPACITY = 0.50;
+const DIM_MULTIPLIER = 0.30;
+
+// =========================================================
+// STATE
+// =========================================================
+
+const state = {
+  data: null,
+  squares: [],            // metadata only: {key, title, parentTerm, squareData}
+  nodePool: new Map(),    // "squareKey:position" -> node data
+  squareHeaders: new Map(), // squareKey -> {obj, element, squareKey}
+  diagramEdges: [],       // {mesh, squareKey, a, b, baseColor, baseOpacity}
+  connectorEdges: [],     // {mesh, baseOpacity}
+  latticeEdges: [],       // {mesh, a, b, baseColor, baseOpacity}
+  latticeInfo: null,      // {positions, concepts, idToIdx, parents, children, ancestors, descendants, edges}
+  latticeBaseCubeSize: 0, // unused
+
+  nodeGroup: new THREE.Group(),
+  diagramEdgesGroup: new THREE.Group(),
+  connectorEdgesGroup: new THREE.Group(),
+  latticeEdgesGroup: new THREE.Group(),
+  diagramLabelsGroup: new THREE.Group(),
+  latticeLabelsGroup: new THREE.Group(),
+  headersGroup: new THREE.Group(),
+
+  focusedKey: 'A',
+  level: 'A',
+  lastDiagramKey: 'A',
+  viewMode: 'diagram',         // 'diagram' | 'lattice' (steady state)
+  viewpointLevel: 1,
+  hoverTarget: null,
+  pinnedTarget: null,
+  latticeHoverTarget: null,
+  latticePinnedTarget: null,
+
+  transition: {
+    active: false,
+    from: 'diagram',
+    to: 'lattice',
+    t: 0,
+    duration: 1.4,
+    lastTime: 0,
+  },
+
+  anim: { active: false, t: 0, duration: 0.6,
+    fromCam: new THREE.Vector3(), toCam: new THREE.Vector3(),
+    fromLook: new THREE.Vector3(), toLook: new THREE.Vector3(),
+    lastTime: 0 },
+
+  minimap: null,
+
+  raycaster: new THREE.Raycaster(),
+  mouse: new THREE.Vector2(-10, -10),
+};
+
+scene.add(state.nodeGroup);
+scene.add(state.diagramEdgesGroup);
+scene.add(state.connectorEdgesGroup);
+scene.add(state.latticeEdgesGroup);
+scene.add(state.diagramLabelsGroup);
+scene.add(state.latticeLabelsGroup);
+scene.add(state.headersGroup);
+
+// =========================================================
+// PERF
+// =========================================================
+
+let lastCamHash = 0;
+let renderPending = true;
+function hashCamera() {
+  const p = camera.position, t = controls.target;
+  return (Math.round(p.x*100)*73856093) ^ (Math.round(p.y*100)*19349663)
+       ^ (Math.round(p.z*100)*83492791) ^ (Math.round(t.x*100)*51773313)
+       ^ (Math.round(t.y*100)*27309839) ^ (Math.round(t.z*100)*12653951);
+}
+function markDirty() { renderPending = true; }
+
+function clamp01(x) { return Math.max(0, Math.min(1, x)); }
+function smoothstep(t) { return t * t * (3 - 2 * t); }
+
+// =========================================================
+// DISPOSAL
+// =========================================================
+
+function disposeTree(obj) {
+  if (!obj) return;
+  obj.traverse(o => {
+    if (o.element && o.element.parentNode) o.element.parentNode.removeChild(o.element);
+    if (o.geometry) o.geometry.dispose();
+    if (o.material) {
+      if (Array.isArray(o.material)) o.material.forEach(m => m.dispose());
+      else o.material.dispose();
+    }
+  });
+}
+
+function clearGroup(g) {
+  while (g.children.length > 0) {
+    const c = g.children[0];
+    g.remove(c);
+    disposeTree(c);
+  }
+}
+
+// =========================================================
+// NODE POOL BUILDER
+// =========================================================
+
+function createNode(squareKey, position, term) {
+  const layout = LAYOUT[squareKey];
+  const local = SQ_POS[position];
+  if (!layout || !local) return null;
+
+  const baseColor = colorForSquare(squareKey);
+
+  // Outer group: positioned in world space, scaled to diagram scale.
+  const group = new THREE.Group();
+  const diagramWorldPos = new THREE.Vector3(
+    layout.position.x + local[0] * layout.scale,
+    layout.position.y + local[1] * layout.scale,
+    layout.position.z
+  );
+  group.position.copy(diagramWorldPos);
+  group.scale.setScalar(layout.scale);
+  state.nodeGroup.add(group);
+
+  // Cube mesh (geometry is CUBE_SIZE cube).
+  const geom = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
+  const mat = new THREE.MeshBasicMaterial({
+    color: baseColor, transparent: true, opacity: NODE_OPACITY, depthWrite: false,
+  });
+  const mesh = new THREE.Mesh(geom, mat);
+  mesh.userData = { squareKey, position, term, baseColor, baseOpacity: NODE_OPACITY };
+  group.add(mesh);
+
+  // Diagram label (below cube): "position · term"
+  const diagramEl = document.createElement('div');
+  diagramEl.className = 'label';
+  diagramEl.style.color = hexForSquare(squareKey);
+  const termText = term || '';
+  diagramEl.textContent = `${position} · ${termText.length > 16 ? termText.slice(0, 15) + '…' : termText}`;
+  const diagramLabel = new CSS2DObject(diagramEl);
+  diagramLabel.position.set(
+    diagramWorldPos.x,
+    diagramWorldPos.y - 0.5 * CUBE_SIZE * layout.scale - 0.15,
+    diagramWorldPos.z
+  );
+  state.diagramLabelsGroup.add(diagramLabel);
+
+  // Lattice label (above cube): short-name — set later after lattice is known
+  const latticeEl = document.createElement('div');
+  latticeEl.className = 'label lattice-label';
+  latticeEl.style.color = hexForSquare(squareKey);
+  latticeEl.textContent = '';
+  const latticeLabel = new CSS2DObject(latticeEl);
+  latticeLabel.visible = false;
+  state.latticeLabelsGroup.add(latticeLabel);
+
+  const node = {
+    key: `${squareKey}:${position}`,
+    squareKey, position, term,
+    group, mesh,
+    diagramLabel, latticeLabel,
+    baseColor, baseOpacity: NODE_OPACITY,
+    diagramWorldPos,
+    diagramScale: layout.scale,
+    latticeConceptId: positionToLatticeId(squareKey, position),
+    latticeWorldPos: null,   // set after lattice computed
+  };
+  state.nodePool.set(node.key, node);
+  return node;
+}
+
+// =========================================================
+// DIAGRAM EDGES
+// =========================================================
+
+function createDiagramEdges() {
+  // All edges within each square, positioned in world coordinates.
+  state.squares.forEach(sq => {
+    const layout = LAYOUT[sq.key];
+    const squareColor = colorForSquare(sq.key);
+
+    SQ_EDGES.forEach(([a, b]) => {
+      const la = SQ_POS[a], lb = SQ_POS[b];
+      if (!la || !lb) return;
+      const ax = layout.position.x + la[0] * layout.scale;
+      const ay = layout.position.y + la[1] * layout.scale;
+      const az = layout.position.z;
+      const bx = layout.position.x + lb[0] * layout.scale;
+      const by = layout.position.y + lb[1] * layout.scale;
+      const bz = layout.position.z;
+
+      const geom = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(ax, ay, az),
+        new THREE.Vector3(bx, by, bz),
+      ]);
+      const dashed = isInnerSquareEdge(a, b);
+      let mat, obj;
+      if (dashed) {
+        mat = new THREE.LineDashedMaterial({ color: squareColor, dashSize: 0.18, gapSize: 0.10,
+          transparent: true, opacity: EDGE_OPACITY, depthWrite: false });
+        obj = new THREE.Line(geom, mat);
+        obj.computeLineDistances();
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: squareColor, transparent: true,
+          opacity: EDGE_OPACITY, depthWrite: false });
+        obj = new THREE.Line(geom, mat);
+      }
+      state.diagramEdgesGroup.add(obj);
+      state.diagramEdges.push({
+        mesh: obj, squareKey: sq.key, a, b,
+        baseColor: squareColor, baseOpacity: EDGE_OPACITY,
+      });
+    });
+  });
+}
+
+function createConnectorEdges() {
+  const aLayout = LAYOUT['A'];
+  const pairs = [
+    { semePos: 'S1',  bKey: 'S1' },
+    { semePos: 'S2',  bKey: 'S2' },
+    { semePos: '~S2', bKey: '~S2' },
+    { semePos: '~S1', bKey: '~S1' },
+  ];
+
+  pairs.forEach(({ semePos, bKey }) => {
+    const aLocal = SQ_POS[semePos];
+    const bLocal = SQ_POS['top'];
+    const bLayout = LAYOUT[bKey];
+
+    const aWorld = new THREE.Vector3(
+      aLayout.position.x + aLocal[0] * aLayout.scale,
+      aLayout.position.y + aLocal[1] * aLayout.scale,
+      aLayout.position.z
+    );
+    const bWorld = new THREE.Vector3(
+      bLayout.position.x + bLocal[0] * bLayout.scale,
+      bLayout.position.y + bLocal[1] * bLayout.scale,
+      bLayout.position.z
+    );
+
+    const geom = new THREE.BufferGeometry().setFromPoints([aWorld, bWorld]);
+    const mat = new THREE.LineBasicMaterial({
+      color: CONNECTOR_COLOR, transparent: true, opacity: 0.32, depthWrite: false,
+    });
+    const line = new THREE.Line(geom, mat);
+    state.connectorEdgesGroup.add(line);
+    state.connectorEdges.push({ mesh: line, baseOpacity: 0.32 });
+  });
+}
+
+// =========================================================
+// HEADERS
+// =========================================================
+
+function createHeaders() {
+  state.squares.forEach(sq => {
+    const layout = LAYOUT[sq.key];
+    const labelColor = hexForSquare(sq.key);
+
+    const el = document.createElement('div');
+    el.className = 'label square-header';
+    el.style.color = labelColor;
+    const keySpan = document.createElement('span');
+    keySpan.textContent = sq.key === 'A' ? 'A1' : B_DISPLAY[sq.key];
+    el.appendChild(keySpan);
+    if (sq.parentTerm) {
+      const p = document.createElement('span');
+      p.className = 'parent';
+      p.textContent = ` of ${sq.parentTerm}`;
+      el.appendChild(p);
+    }
+    const obj = new CSS2DObject(el);
+    obj.position.set(
+      layout.position.x,
+      layout.position.y + 3.85 * layout.scale,
+      layout.position.z
+    );
+    state.headersGroup.add(obj);
+    state.squareHeaders.set(sq.key, { obj, element: el, squareKey: sq.key });
+  });
+}
+
+// =========================================================
+// LATTICE
+// =========================================================
+
+function computeLatticeLayout(concepts, edges) {
+  const idToIdx = {};
+  concepts.forEach((c, i) => idToIdx[c.id] = i);
+  const parents = Array.from({length: concepts.length}, () => []);
+  const children = Array.from({length: concepts.length}, () => []);
+  edges.forEach(([a, b]) => {
+    const ai = idToIdx[a], bi = idToIdx[b];
+    if (ai === undefined || bi === undefined) return;
+    parents[bi].push(ai); children[ai].push(bi);
+  });
+
+  const rank = Array(concepts.length).fill(0);
+  let changed = true, guard = 0;
+  while (changed && guard++ < 200) {
+    changed = false;
+    for (let i = 0; i < concepts.length; i++) {
+      for (const p of parents[i]) {
+        if (rank[p] < rank[i] + 1) { rank[p] = rank[i] + 1; changed = true; }
+      }
+    }
+  }
+
+  const byRank = {};
+  concepts.forEach((c, i) => { (byRank[rank[i]] ||= []).push(i); });
+  for (const r in byRank) {
+    byRank[r].sort((a, b) => {
+      const oa = concepts[a].origin || 'A';
+      const ob = concepts[b].origin || 'A';
+      if (oa !== ob) return oa.localeCompare(ob);
+      return String(concepts[a].id).localeCompare(String(concepts[b].id));
+    });
+  }
+
+  const ySpacing = 1.85, xSpacing = 1.15;
+  const maxRank = Math.max(...rank, 0);
+  const positions = {};
+  for (const r in byRank) {
+    const list = byRank[r];
+    const n = list.length;
+    const totalWidth = (n - 1) * xSpacing;
+    list.forEach((idx, k) => {
+      const x = -totalWidth / 2 + k * xSpacing;
+      const y = (Number(r) - maxRank / 2) * ySpacing;
+      positions[concepts[idx].id] = { x, y, z: 2 };
+    });
+  }
+  return { positions, rank, parents, children, idToIdx };
+}
+
+function computeLattice(parsed) {
+  const arch = parsed.architectonic;
+  if (!arch || !Array.isArray(arch.concepts) || !Array.isArray(arch.edges)) return null;
+  if (arch.concepts.length === 0) return null;
+
+  const layout = computeLatticeLayout(arch.concepts, arch.edges);
+
+  const ancestors = [], descendants = [];
+  for (let i = 0; i < arch.concepts.length; i++) {
+    const anc = new Set(); const stack = [...layout.parents[i]];
+    while (stack.length) { const j = stack.pop(); if (anc.has(j)) continue; anc.add(j); stack.push(...layout.parents[j]); }
+    ancestors.push(anc);
+    const desc = new Set(); const s2 = [...layout.children[i]];
+    while (s2.length) { const j = s2.pop(); if (desc.has(j)) continue; desc.add(j); s2.push(...layout.children[j]); }
+    descendants.push(desc);
+  }
+
+  // Lattice edges
+  arch.edges.forEach(([a, b]) => {
+    const pa = layout.positions[a], pb = layout.positions[b];
+    if (!pa || !pb) return;
+    const geom = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(pa.x, pa.y, pa.z),
+      new THREE.Vector3(pb.x, pb.y, pb.z),
+    ]);
+    const mat = new THREE.LineBasicMaterial({
+      color: 0x556070, transparent: true, opacity: 0, depthWrite: false,
+    });
+    const line = new THREE.Line(geom, mat);
+    state.latticeEdgesGroup.add(line);
+    state.latticeEdges.push({
+      mesh: line, a, b, baseColor: 0x556070, baseOpacity: 0.55,
+    });
+  });
+
+  return {
+    positions: layout.positions,
+    concepts: arch.concepts,
+    edges: arch.edges,
+    idToIdx: layout.idToIdx,
+    parents: layout.parents,
+    children: layout.children,
+    ancestors, descendants,
+  };
+}
+
+// =========================================================
+// BUILD ARCHITECTONIC
+// =========================================================
+
+function buildArchitectonic(parsed) {
+  clearScene();
+
+  const layer_1 = parsed.layer_1;
+  const layer_2 = parsed.layer_2;
+  if (!layer_1 || !layer_1.square) throw new Error('Missing layer_1.square');
+  if (!layer_2 || typeof layer_2 !== 'object') throw new Error('Missing layer_2');
+
+  state.data = parsed;
+
+  // 1. Register squares (metadata)
+  state.squares.push({
+    key: 'A', title: 'Layer 1', parentTerm: null, squareData: layer_1.square,
+  });
+  ['S1','S2','~S1','~S2'].forEach(semeKey => {
+    const b = layer_2[semeKey];
+    if (!b || !b.square) return;
+    state.squares.push({
+      key: semeKey, title: 'Decomposition', parentTerm: b.parent_term || '',
+      squareData: b.square,
+    });
+  });
+
+  // 2. Create nodes
+  state.squares.forEach(sq => {
+    Object.entries(SQ_POS).forEach(([pos]) => {
+      createNode(sq.key, pos, sq.squareData[pos] || '');
+    });
+  });
+
+  // 3. Diagram edges + connectors
+  createDiagramEdges();
+  createConnectorEdges();
+
+  // 4. Headers
+  createHeaders();
+
+  // 5. Compute lattice graph
+  state.latticeInfo = computeLattice(parsed);
+
+  // 6. Assign lattice positions + labels to nodes
+  if (state.latticeInfo) {
+    const li = state.latticeInfo;
+    state.nodePool.forEach(node => {
+      if (!node.latticeConceptId) return;
+      const pos = li.positions[node.latticeConceptId];
+      if (!pos) return;
+      node.latticeWorldPos = new THREE.Vector3(pos.x, pos.y, pos.z);
+      // Lattice label
+      const concept = li.concepts.find(c => c.id === node.latticeConceptId);
+      if (concept) {
+        let txt = concept.short || concept.label || '';
+        if (txt.length > 18) txt = txt.slice(0, 17) + '…';
+        node.latticeLabel.element.textContent = txt;
+      }
+    });
+  }
+
+  // 7. Initial steady state (diagram view, no transition)
+  state.viewMode = 'diagram';
+  state.transition.active = false;
+  state.transition.t = 0;
+  state.focusedKey = 'A';
+  state.level = 'A';
+  state.lastDiagramKey = 'A';
+  state.hoverTarget = null;
+  state.pinnedTarget = null;
+
+  // 8. Apply initial state
+  applySteadyDiagramState();
+
+  updateNodeInfo(null);
+  renderLegend();
+  buildMinimap();
+  setFocus('A', false, 'default');
+  updateNavButtons();
+  markDirty();
+}
+
+function clearScene() {
+  clearGroup(state.nodeGroup);
+  clearGroup(state.diagramEdgesGroup);
+  clearGroup(state.connectorEdgesGroup);
+  clearGroup(state.latticeEdgesGroup);
+  clearGroup(state.diagramLabelsGroup);
+  clearGroup(state.latticeLabelsGroup);
+  clearGroup(state.headersGroup);
+
+  state.squares = [];
+  state.nodePool.clear();
+  state.squareHeaders.clear();
+  state.diagramEdges = [];
+  state.connectorEdges = [];
+  state.latticeEdges = [];
+  state.latticeInfo = null;
+  state.hoverTarget = null;
+  state.pinnedTarget = null;
+  state.latticeHoverTarget = null;
+  state.latticePinnedTarget = null;
+  state.viewpointLevel = 1;
+  state.viewMode = 'diagram';
+  state.transition.active = false;
+  state.transition.t = 0;
+  state.minimap = null;
+}
+
+// =========================================================
+// STATE APPLY — STEADY DIAGRAM
+// =========================================================
+
+function getDiagramFocusKey() {
+  if (state.viewMode !== 'diagram') return null;
+  if (state.viewpointLevel === 2 && state.pinnedTarget) return state.pinnedTarget.squareKey;
+  return state.focusedKey;
+}
+
+function applySteadyDiagramState() {
+  const focusKey = getDiagramFocusKey();
+
+  state.nodePool.forEach(node => {
+    const dimmed = focusKey && node.squareKey !== focusKey;
+    const dim = dimmed ? DIM_MULTIPLIER : 1.0;
+
+    // Position: diagram
+    node.group.position.copy(node.diagramWorldPos);
+    node.group.scale.setScalar(node.diagramScale);
+    node.group.visible = true;
+
+    // Opacity: base (or override from highlight) * dim
+    const override = node.mesh.userData.overrideOpacity;
+    const op = (override !== undefined ? override : node.baseOpacity) * dim;
+    node.mesh.material.color.setHex(node.mesh.userData.overrideColor ?? node.baseColor);
+    node.mesh.material.opacity = op;
+
+    // Diagram label
+    const cubeHalf = 0.5 * CUBE_SIZE * node.diagramScale;
+    node.diagramLabel.position.set(
+      node.diagramWorldPos.x,
+      node.diagramWorldPos.y - cubeHalf - 0.15,
+      node.diagramWorldPos.z
+    );
+    const dLblOpacity = dim;
+    node.diagramLabel.element.style.opacity = String(dLblOpacity);
+    node.diagramLabel.visible = dLblOpacity > 0.01;
+
+    // Lattice label hidden
+    node.latticeLabel.visible = false;
+  });
+
+  // Headers
+  state.squareHeaders.forEach(h => {
+    const dimmed = focusKey && h.squareKey !== focusKey;
+    const dim = dimmed ? DIM_MULTIPLIER : 1.0;
+    h.element.style.opacity = String(dim);
+    h.obj.visible = dim > 0.01;
+  });
+
+  // Diagram edges
+  state.diagramEdges.forEach(e => {
+    const dimmed = focusKey && e.squareKey !== focusKey;
+    const dim = dimmed ? DIM_MULTIPLIER : 1.0;
+    const override = e.mesh.userData.overrideOpacity;
+    const overrideColor = e.mesh.userData.overrideColor;
+    e.mesh.material.color.setHex(overrideColor !== undefined ? overrideColor : e.baseColor);
+    const op = (override !== undefined ? override : e.baseOpacity) * dim;
+    e.mesh.material.opacity = op;
+    e.mesh.visible = op > 0.01;
+  });
+
+  // Connectors
+  state.connectorEdges.forEach(e => {
+    e.mesh.material.opacity = e.baseOpacity;
+    e.mesh.visible = true;
+  });
+
+  // Lattice edges hidden
+  state.latticeEdges.forEach(e => {
+    e.mesh.material.opacity = 0;
+    e.mesh.visible = false;
+  });
+
+  markDirty();
+}
+
+// =========================================================
+// STATE APPLY — STEADY LATTICE
+// =========================================================
+
+function applySteadyLatticeState() {
+  const hi = state.latticeInfo;
+  if (!hi) return;
+
+  // Apply highlight based on pinned/hovered concept
+  const pinned = state.latticePinnedTarget;
+  const hover = state.latticeHoverTarget;
+  const activeConceptId = pinned !== null && pinned !== undefined ? pinned : hover;
+
+  // Reset node visuals
+  state.nodePool.forEach(node => {
+    node.group.position.copy(node.latticeWorldPos || node.diagramWorldPos);
+    node.group.scale.setScalar(LATTICE_SCALE);
+    node.group.visible = node.latticeWorldPos !== null;
+
+    node.mesh.material.color.setHex(node.baseColor);
+    node.mesh.material.opacity = node.baseOpacity;
+    node.mesh.scale.setScalar(1);
+
+    // Lattice label
+    if (node.latticeWorldPos) {
+      const cubeHalf = 0.5 * CUBE_SIZE * LATTICE_SCALE;
+      node.latticeLabel.position.set(
+        node.latticeWorldPos.x,
+        node.latticeWorldPos.y + cubeHalf + 0.12,
+        node.latticeWorldPos.z
+      );
+    }
+    node.latticeLabel.visible = !!node.latticeWorldPos;
+    node.latticeLabel.element.style.opacity = '0.85';
+    node.latticeLabel.element.classList.remove('highlighted', 'dimmed');
+
+    node.diagramLabel.visible = false;
+  });
+
+  state.squareHeaders.forEach(h => { h.obj.visible = false; });
+
+  // Diagram edges hidden, connectors hidden
+  state.diagramEdges.forEach(e => { e.mesh.material.opacity = 0; e.mesh.visible = false; });
+  state.connectorEdges.forEach(e => { e.mesh.material.opacity = 0; e.mesh.visible = false; });
+
+  // Lattice edges reset
+  state.latticeEdges.forEach(e => {
+    e.mesh.material.color.setHex(e.baseColor);
+    e.mesh.material.opacity = e.baseOpacity;
+    e.mesh.visible = true;
+  });
+
+  // Apply highlight if any
+  if (activeConceptId !== null && activeConceptId !== undefined) {
+    const idx = hi.idToIdx[activeConceptId];
+    if (idx !== undefined) {
+      const ancSet = hi.ancestors[idx];
+      const descSet = hi.descendants[idx];
+
+      state.nodePool.forEach(node => {
+        if (!node.latticeConceptId) return;
+        const ni = hi.idToIdx[node.latticeConceptId];
+        if (ni === undefined) return;
+
+        if (node.latticeConceptId === activeConceptId) {
+          node.mesh.material.color.setHex(HIGHLIGHT_HOVER);
+          node.mesh.scale.setScalar(1.7);
+          node.latticeLabel.element.classList.add('highlighted');
+        } else if (ancSet.has(ni)) {
+          node.mesh.material.color.setHex(HIGHLIGHT_ABOVE);
+          node.mesh.scale.setScalar(1.15);
+          node.latticeLabel.element.classList.add('highlighted');
+        } else if (descSet.has(ni)) {
+          node.mesh.material.color.setHex(HIGHLIGHT_BELOW);
+          node.mesh.scale.setScalar(1.15);
+          node.latticeLabel.element.classList.add('highlighted');
+        } else {
+          node.mesh.material.color.setHex(HIGHLIGHT_DIM);
+          node.mesh.material.opacity = 0.35;
+          node.mesh.scale.setScalar(0.85);
+          node.latticeLabel.element.classList.add('dimmed');
+        }
+      });
+
+      state.latticeEdges.forEach(edge => {
+        const ai = hi.idToIdx[edge.a], bi = hi.idToIdx[edge.b];
+        if (ai === undefined || bi === undefined) return;
+        if (edge.a === activeConceptId || edge.b === activeConceptId) {
+          edge.mesh.material.color.setHex(HIGHLIGHT_HOVER);
+          edge.mesh.material.opacity = 0.9;
+        } else if (ancSet.has(ai) && ancSet.has(bi)) {
+          edge.mesh.material.color.setHex(HIGHLIGHT_ABOVE);
+          edge.mesh.material.opacity = 0.75;
+        } else if (descSet.has(ai) && descSet.has(bi)) {
+          edge.mesh.material.color.setHex(HIGHLIGHT_BELOW);
+          edge.mesh.material.opacity = 0.75;
+        } else {
+          edge.mesh.material.color.setHex(0x2a2e3d);
+          edge.mesh.material.opacity = 0.2;
+        }
+      });
+    }
+  }
+
+  markDirty();
+}
+
+// =========================================================
+// STATE APPLY — TRANSITION
+// =========================================================
+
+function applyTransitionState(t) {
+  const hi = state.latticeInfo;
+  const toLattice = state.transition.to === 'lattice';
+
+  // Phase timings (t is 0..1)
+  const srcFade = clamp01(1 - t / 0.25);          // source edges fade out
+  const dstFade = clamp01((t - 0.85) / 0.15);     // dest edges fade in
+  const nodeProgress = smoothstep(clamp01((t - 0.15) / 0.75));  // 0.15→0.90
+
+  const focusKey = getDiagramFocusKey();
+  const dimBlend = clamp01(t / 0.25);
+
+  state.nodePool.forEach(node => {
+    // Position & scale: from diagram to lattice (or reverse)
+    const fromPos = toLattice ? node.diagramWorldPos : (node.latticeWorldPos || node.diagramWorldPos);
+    const toPos   = toLattice ? (node.latticeWorldPos || node.diagramWorldPos) : node.diagramWorldPos;
+    node.group.position.lerpVectors(fromPos, toPos, nodeProgress);
+
+    const fromScale = toLattice ? node.diagramScale : LATTICE_SCALE;
+    const toScale   = toLattice ? LATTICE_SCALE : node.diagramScale;
+    const s = fromScale + (toScale - fromScale) * nodeProgress;
+    node.group.scale.setScalar(s);
+    node.group.visible = true;
+
+    // Dimming (only applies during first 25% of transition, and only for diagram-side content)
+    let dim = 1;
+    if (focusKey && node.squareKey !== focusKey) {
+      dim = DIM_MULTIPLIER + (1 - DIM_MULTIPLIER) * dimBlend;
+    }
+
+    node.mesh.material.color.setHex(node.baseColor);
+    node.mesh.material.opacity = node.baseOpacity * dim;
+    node.mesh.scale.setScalar(1);
+
+    // Diagram label
+    const cubeHalf = 0.5 * CUBE_SIZE * s;
+    node.diagramLabel.position.set(
+      node.group.position.x,
+      node.group.position.y - cubeHalf - 0.15,
+      node.group.position.z
+    );
+    const dOp = srcFade * dim;
+    node.diagramLabel.element.style.opacity = String(dOp);
+    node.diagramLabel.visible = dOp > 0.01;
+
+    // Lattice label
+    node.latticeLabel.position.set(
+      node.group.position.x,
+      node.group.position.y + cubeHalf + 0.12,
+      node.group.position.z
+    );
+    const lOp = dstFade;
+    node.latticeLabel.element.style.opacity = String(lOp);
+    node.latticeLabel.visible = lOp > 0.01 && !!node.latticeWorldPos;
+    node.latticeLabel.element.classList.remove('highlighted', 'dimmed');
+  });
+
+  state.squareHeaders.forEach(h => {
+    let dim = 1;
+    if (focusKey && h.squareKey !== focusKey) {
+      dim = DIM_MULTIPLIER + (1 - DIM_MULTIPLIER) * dimBlend;
+    }
+    const op = srcFade * dim;
+    h.element.style.opacity = String(op);
+    h.obj.visible = op > 0.01;
+  });
+
+  state.diagramEdges.forEach(e => {
+    let dim = 1;
+    if (focusKey && e.squareKey !== focusKey) {
+      dim = DIM_MULTIPLIER + (1 - DIM_MULTIPLIER) * dimBlend;
+    }
+    e.mesh.material.color.setHex(e.baseColor);
+    const op = e.baseOpacity * srcFade * dim;
+    e.mesh.material.opacity = op;
+    e.mesh.visible = op > 0.01;
+  });
+
+  state.connectorEdges.forEach(e => {
+    const op = e.baseOpacity * srcFade;
+    e.mesh.material.opacity = op;
+    e.mesh.visible = op > 0.01;
+  });
+
+  state.latticeEdges.forEach(e => {
+    e.mesh.material.color.setHex(e.baseColor);
+    const op = e.baseOpacity * dstFade;
+    e.mesh.material.opacity = op;
+    e.mesh.visible = op > 0.01;
+  });
+
+  markDirty();
+}
+
+// =========================================================
+// TRANSITION CONTROL
+// =========================================================
+
+function startTransition(to) {
+  if (state.transition.active) return;
+  if (to === state.viewMode) return;
+
+  // Clear all highlight/pin state
+  state.hoverTarget = null;
+  state.pinnedTarget = null;
+  state.latticeHoverTarget = null;
+  state.latticePinnedTarget = null;
+  state.viewpointLevel = 1;
+
+  state.transition.active = true;
+  state.transition.from = state.viewMode;
+  state.transition.to = to;
+  state.transition.t = 0;
+  state.transition.lastTime = performance.now();
+
+  // Camera target
+  const camTarget = (to === 'lattice')
+    ? computeLatticeCamera('lattice')
+    : computeFocusCamera(state.focusedKey, 'default');
+  if (camTarget) {
+    state.anim.active = true;
+    state.anim.t = 0;
+    state.anim.duration = state.transition.duration;
+    state.anim.lastTime = performance.now();
+    state.anim.fromCam.copy(camera.position);
+    state.anim.toCam.copy(camTarget.camPos);
+    state.anim.fromLook.copy(controls.target);
+    state.anim.toLook.copy(camTarget.focusPos);
+  }
+
+  document.getElementById('lattice-mode-badge').classList.toggle('visible', to === 'lattice');
+  updateNodeInfo(null);
+  updateNavButtons();
+  updateMinimap();
+  markDirty();
+}
+
+function updateTransition(now) {
+  if (!state.transition.active) return;
+
+  const dt = (now - state.transition.lastTime) / 1000;
+  state.transition.lastTime = now;
+  state.transition.t += dt / state.transition.duration;
+
+  const t = Math.min(state.transition.t, 1);
+  applyTransitionState(t);
+
+  if (t >= 1) {
+    state.transition.active = false;
+    state.viewMode = state.transition.to;
+    state.transition.t = (state.viewMode === 'lattice') ? 1 : 0;
+
+    // Snap to final steady state
+    if (state.viewMode === 'lattice') {
+      applySteadyLatticeState();
+    } else {
+      applySteadyDiagramState();
+    }
+
+    updateNavButtons();
+    updateMinimap();
+    markDirty();
+  }
+}
+
+// =========================================================
+// MINIMAP
+// =========================================================
+
+function buildMinimap() {
+  const svg = document.getElementById('minimap-svg');
+  svg.innerHTML = '';
+  state.minimap = null;
+
+  const hi = state.latticeInfo;
+  if (!hi) return;
+
+  const positions = hi.positions;
+  const concepts = hi.concepts;
+  const edges = hi.edges;
+
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  Object.values(positions).forEach(p => {
+    if (p.x < minX) minX = p.x;
+    if (p.x > maxX) maxX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
+  });
+  const bbW = Math.max(maxX - minX, 0.001);
+  const bbH = Math.max(maxY - minY, 0.001);
+  const VW = 220, VH = 220, pad = 20;
+  const scale = Math.min((VW - 2*pad) / bbW, (VH - 2*pad) / bbH);
+  const cx = VW / 2, cy = VH / 2;
+  const bbCx = (minX + maxX) / 2, bbCy = (minY + maxY) / 2;
+  const toScreen = p => ({ x: cx + (p.x - bbCx) * scale, y: cy - (p.y - bbCy) * scale });
+
+  const edgeEls = [];
+  edges.forEach((e) => {
+    const pa = positions[e[0]], pb = positions[e[1]];
+    if (!pa || !pb) return;
+    const sa = toScreen(pa), sb = toScreen(pb);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', sa.x.toFixed(2));
+    line.setAttribute('y1', sa.y.toFixed(2));
+    line.setAttribute('x2', sb.x.toFixed(2));
+    line.setAttribute('y2', sb.y.toFixed(2));
+    line.setAttribute('stroke', MM_COLOR_DEFAULT);
+    line.setAttribute('stroke-width', '0.6');
+    line.setAttribute('stroke-opacity', '0.85');
+    svg.appendChild(line);
+    edgeEls.push({ line, a: e[0], b: e[1] });
+  });
+
+  const nodeEls = {};
+  concepts.forEach(c => {
+    const p = positions[c.id];
+    if (!p) return;
+    const s = toScreen(p);
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', (s.x - 1.9).toFixed(2));
+    rect.setAttribute('y', (s.y - 1.9).toFixed(2));
+    rect.setAttribute('width', '3.8');
+    rect.setAttribute('height', '3.8');
+    rect.setAttribute('fill', MM_COLOR_DEFAULT);
+    svg.appendChild(rect);
+    nodeEls[c.id] = rect;
+  });
+
+  state.minimap = {
+    svg, nodeEls, edgeEls, positions, concepts,
+    conceptById: Object.fromEntries(concepts.map(c => [c.id, c])),
+  };
+
+  updateMinimap();
+}
+
+function updateMinimap() {
+  const mm = state.minimap;
+  if (!mm) return;
+  const inLattice = state.viewMode === 'lattice' && !state.transition.active;
+  const inTransition = state.transition.active;
+  const focusOrigin = state.focusedKey;
+  const showDiagramYellow = !inLattice && !inTransition && state.viewpointLevel === 1;
+
+  let pinnedLatticeId = null;
+  if (state.pinnedTarget) {
+    pinnedLatticeId = positionToLatticeId(state.pinnedTarget.squareKey, state.pinnedTarget.position);
+  }
+  if (state.latticePinnedTarget) pinnedLatticeId = state.latticePinnedTarget;
+
+  Object.entries(mm.nodeEls).forEach(([id, rect]) => {
+    const concept = mm.conceptById[id];
+    if (!concept) return;
+    let fill;
+    if (inTransition) {
+      fill = MM_COLOR_DIM;
+    } else if (inLattice) {
+      fill = MM_COLOR_DIM;
+    } else if (id === pinnedLatticeId) {
+      fill = MM_COLOR_RED;
+    } else if (showDiagramYellow && concept.origin === focusOrigin) {
+      fill = MM_COLOR_YELLOW;
+    } else {
+      fill = MM_COLOR_DEFAULT;
+    }
+    rect.setAttribute('fill', fill);
+  });
+
+  mm.edgeEls.forEach(({ line, a, b }) => {
+    const ca = mm.conceptById[a];
+    const cb = mm.conceptById[b];
+    if (!ca || !cb) return;
+    let stroke = MM_COLOR_DEFAULT, width = '0.6';
+    if (inLattice || inTransition) {
+      stroke = MM_COLOR_DIM;
+    } else if (showDiagramYellow && (ca.origin === focusOrigin || cb.origin === focusOrigin)) {
+      stroke = MM_COLOR_YELLOW; width = '1.0';
+    }
+    line.setAttribute('stroke', stroke);
+    line.setAttribute('stroke-width', width);
+  });
+
+  const parts = [];
+  if (inTransition) {
+    parts.push(state.transition.to === 'lattice' ? '→ Lattice…' : '→ Diagram…');
+  } else if (inLattice) {
+    parts.push('Lattice View');
+  } else {
+    const label = state.focusedKey === 'A' ? 'A1' : (B_INDEX[state.focusedKey] || state.focusedKey);
+    parts.push(`Viewing ${label}`);
+  }
+  if (state.pinnedTarget) {
+    const sq = state.squares.find(s => s.key === state.pinnedTarget.squareKey);
+    if (sq) {
+      const t = sq.squareData[state.pinnedTarget.position] || '';
+      if (t) parts.push(`📌 ${t}`);
+    }
+  }
+  document.getElementById('minimap-status').textContent = parts.join(' · ');
+}
+
+// =========================================================
+// NODE INFO
+// =========================================================
+
+const COMPOSITIONS = {
+  'S1': 'S1 + S2 → M11 · S1 + ~S2 → M13 · S1 + ~S1 → Mixed1',
+  'S2': 'S1 + S2 → M11 · S2 + ~S1 → M14 · S2 + ~S2 → Mixed2',
+  '~S2': '~S1 + ~S2 → M12 · S1 + ~S2 → M13 · S2 + ~S2 → Mixed2',
+  '~S1': '~S1 + ~S2 → M12 · S2 + ~S1 → M14 · S1 + ~S1 → Mixed1',
+  'M11': 'complex axis: S1 + S2', 'M12': 'neutral axis: ~S1 + ~S2',
+  'M13': 'positive deixis: S1 + ~S2', 'M14': 'negative deixis: S2 + ~S1',
+  'M21': 'contains S1, S2, ~S2 (omits ~S1)', 'M22': 'contains S1, S2, ~S1 (omits ~S2)',
+  'M23': 'contains S1, ~S1, ~S2 (omits S2)', 'M24': 'contains S2, ~S1, ~S2 (omits S1)',
+  'Mixed1': 'undifferentiated axis: S1 + ~S1', 'Mixed2': 'undifferentiated axis: S2 + ~S2',
+  'top': 'all four inner semes', 'bottom': 'empty extent, all M2 attributes',
+};
+
+function displayLabelFor(sq) {
+  if (!sq) return '';
+  if (sq.key === 'A') return 'A1';
+  return B_DISPLAY[sq.key] || sq.key;
+}
+
+function updateNodeInfo(target) {
+  const el = document.getElementById('node-info');
+  if (!target) {
+    el.innerHTML = '<em style="color:var(--text-dim);">Hover or click a node.</em>';
+    return;
+  }
+
+  if (target.mode === 'lattice') {
+    const hi = state.latticeInfo;
+    if (!hi) { el.innerHTML = ''; return; }
+    const concept = hi.concepts.find(c => c.id === target.conceptId);
+    if (!concept) return;
+    let html = `<h4>${concept.label}</h4>`;
+    html += `<div class="kv"><span class="k">id:</span> <code>${concept.id}</code></div>`;
+    if (concept.role) html += `<div class="kv"><span class="k">role:</span> ${concept.role.replace(/_/g, ' ')}</div>`;
+    if (concept.origin) html += `<div class="kv"><span class="k">origin:</span> ${concept.origin}</div>`;
+    if (concept.extent && concept.extent.length) {
+      html += `<div class="kv"><span class="k">extent:</span> `;
+      html += concept.extent.map(e => `<span class="chip">${e}</span>`).join(' ');
+      html += `</div>`;
+    }
+    if (concept.intent && concept.intent.length) {
+      html += `<div class="kv"><span class="k">intent:</span> `;
+      html += concept.intent.map(e => `<span class="chip">${e}</span>`).join(' ');
+      html += `</div>`;
+    }
+    const idx = hi.idToIdx[concept.id];
+    if (idx !== undefined) {
+      html += `<div class="kv"><span class="k">ancestors:</span> ${hi.ancestors[idx].size}</div>`;
+      html += `<div class="kv"><span class="k">descendants:</span> ${hi.descendants[idx].size}</div>`;
+    }
+    el.innerHTML = html;
+    return;
+  }
+
+  const sq = state.squares.find(s => s.key === target.squareKey);
+  if (!sq) { el.innerHTML = ''; return; }
+  const pos = target.position;
+  const term = sq.squareData[pos] || '';
+
+  let html = `<h4 style="color:${hexForSquare(sq.key)}">${displayLabelFor(sq)} · ${pos}</h4>`;
+  html += `<div class="kv"><span class="k">Term:</span> ${term || '—'}</div>`;
+  if (sq.parentTerm) html += `<div class="kv"><span class="k">Decomposes:</span> ${sq.parentTerm}</div>`;
+  if (COMPOSITIONS[pos]) html += `<div class="kv"><span class="k">Structure:</span> ${COMPOSITIONS[pos]}</div>`;
+
+  if (term) {
+    const appearances = [];
+    state.squares.forEach(other => {
+      if (other.key === target.squareKey) return;
+      Object.entries(other.squareData).forEach(([p, t]) => {
+        if (t === term) appearances.push(`${displayLabelFor(other)}·${p}`);
+      });
+    });
+    if (appearances.length) {
+      html += `<div class="kv"><span class="k">Also appears on:</span><br>`;
+      appearances.forEach(a => { html += `<span class="chip">${a}</span>`; });
+      html += `</div>`;
+    }
+  }
+  el.innerHTML = html;
+}
+
+// =========================================================
+// RAYCASTING
+// =========================================================
+
+function updateMouseFromEvent(ev) {
+  const rect = renderer.domElement.getBoundingClientRect();
+  state.mouse.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+  state.mouse.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+}
+
+function pickNode() {
+  if (state.transition.active) return null;
+  state.raycaster.setFromCamera(state.mouse, camera);
+  const meshes = [];
+  state.nodePool.forEach(node => {
+    if (node.group.visible) meshes.push(node.mesh);
+  });
+  const hits = state.raycaster.intersectObjects(meshes, false);
+  if (hits.length === 0) return null;
+  const mesh = hits[0].object;
+  const ud = mesh.userData;
+
+  if (state.viewMode === 'lattice') {
+    const conceptId = positionToLatticeId(ud.squareKey, ud.position);
+    if (!conceptId) return null;
+    return { mode: 'lattice', conceptId };
+  }
+  return { mode: 'diagram', squareKey: ud.squareKey, position: ud.position };
+}
+
+// =========================================================
+// HOVER & PIN (DIAGRAM)
+// =========================================================
+
+function resetDiagramHighlights() {
+  state.nodePool.forEach(node => {
+    delete node.mesh.userData.overrideOpacity;
+    delete node.mesh.userData.overrideColor;
+    node.mesh.scale.setScalar(1);
+    node.latticeLabel.element.classList.remove('highlighted', 'dimmed');
+    node.diagramLabel.element.classList.remove('highlighted', 'dimmed');
+  });
+  state.diagramEdges.forEach(e => {
+    delete e.mesh.userData.overrideOpacity;
+    delete e.mesh.userData.overrideColor;
+  });
+}
+
+function applyDiagramHighlight(target) {
+  resetDiagramHighlights();
+  if (!target) {
+    applySteadyDiagramState();
+    return;
+  }
+
+  const targetSq = state.squares.find(s => s.key === target.squareKey);
+  if (!targetSq) return;
+  const targetTerm = targetSq.squareData[target.position] || '';
+  const targetPos = target.position;
+
+  // Edges adjacent to pinned node: white, high opacity
+  state.diagramEdges.forEach(e => {
+    if (e.squareKey === target.squareKey && (e.a === targetPos || e.b === targetPos)) {
+      e.mesh.userData.overrideColor = EDGE_HIGHLIGHT_COLOR;
+      e.mesh.userData.overrideOpacity = EDGE_HIGHLIGHT_OPACITY;
+    }
+  });
+
+  // Nodes
+  state.nodePool.forEach(node => {
+    const term = (state.squares.find(s => s.key === node.squareKey)?.squareData[node.position]) || '';
+    const matchByPos = (node.squareKey === target.squareKey && node.position === target.position);
+    const matchByTerm = term && term === targetTerm;
+    if (matchByPos || matchByTerm) {
+      node.mesh.userData.overrideColor = HIGHLIGHT_HOVER;
+      node.mesh.userData.overrideOpacity = 1.0;
+      node.mesh.scale.setScalar(1.6);
+      node.diagramLabel.element.classList.add('highlighted');
+    } else {
+      node.mesh.userData.overrideOpacity = 0.14;
+      node.mesh.scale.setScalar(0.72);
+      node.diagramLabel.element.classList.add('dimmed');
+    }
+  });
+
+  applySteadyDiagramState();
+}
+
+// =========================================================
+// HOVER & PIN (LATTICE)
+// =========================================================
+
+let lastRaycastTime = 0;
+const RAYCAST_INTERVAL_MS = 33;
+let rafPending = false;
+
+renderer.domElement.addEventListener('pointermove', (ev) => {
+  updateMouseFromEvent(ev);
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(() => {
+    rafPending = false;
+    if (state.transition.active) return;
+
+    const now = performance.now();
+    if (now - lastRaycastTime < RAYCAST_INTERVAL_MS) return;
+    lastRaycastTime = now;
+
+    if (state.viewMode === 'lattice') {
+      if (state.latticePinnedTarget !== null && state.latticePinnedTarget !== undefined) return;
+      const hit = pickNode();
+      const newId = hit ? hit.conceptId : null;
+      if (state.latticeHoverTarget !== newId) {
+        state.latticeHoverTarget = newId;
+        applySteadyLatticeState();
+        if (newId !== null) {
+          updateNodeInfo({ mode: 'lattice', conceptId: newId });
+          document.body.style.cursor = 'pointer';
+        } else {
+          if (state.latticePinnedTarget === null) updateNodeInfo(null);
+          document.body.style.cursor = 'default';
+        }
+      }
+      return;
+    }
+
+    // Diagram view
+    if (state.pinnedTarget) return;
+    const hit = pickNode();
+    if (hit) {
+      const prev = state.hoverTarget;
+      if (!prev || hit.squareKey !== prev.squareKey || hit.position !== prev.position) {
+        state.hoverTarget = hit;
+        applyDiagramHighlight(hit);
+        updateNodeInfo(hit);
+        document.body.style.cursor = 'pointer';
+      }
+    } else {
+      if (state.hoverTarget) {
+        state.hoverTarget = null;
+        if (state.pinnedTarget) {
+          applyDiagramHighlight(state.pinnedTarget);
+          updateNodeInfo(state.pinnedTarget);
+        } else {
+          applyDiagramHighlight(null);
+          updateNodeInfo(null);
+        }
+        document.body.style.cursor = 'default';
+      }
+    }
+  });
+});
+
+renderer.domElement.addEventListener('click', (ev) => {
+  updateMouseFromEvent(ev);
+  if (state.transition.active) return;
+  const hit = pickNode();
+
+  if (state.viewMode === 'lattice') {
+    if (!hit) {
+      if (state.latticePinnedTarget !== null) {
+        state.latticePinnedTarget = null;
+        const hoverId = state.latticeHoverTarget;
+        applySteadyLatticeState();
+        updateNodeInfo(hoverId !== null ? { mode: 'lattice', conceptId: hoverId } : null);
+      }
+      return;
+    }
+    const id = hit.conceptId;
+    if (state.latticePinnedTarget === id) {
+      state.latticePinnedTarget = null;
+      applySteadyLatticeState();
+      const hoverId = state.latticeHoverTarget;
+      updateNodeInfo(hoverId !== null ? { mode: 'lattice', conceptId: hoverId } : null);
+    } else {
+      state.latticePinnedTarget = id;
+      applySteadyLatticeState();
+      updateNodeInfo({ mode: 'lattice', conceptId: id });
+    }
+    return;
+  }
+
+  if (!hit) {
+    if (state.viewpointLevel === 2) {
+      exitViewpoint2();
+    } else if (state.pinnedTarget) {
+      state.pinnedTarget = null;
+      if (state.hoverTarget) {
+        applyDiagramHighlight(state.hoverTarget);
+        updateNodeInfo(state.hoverTarget);
+      } else {
+        applyDiagramHighlight(null);
+        updateNodeInfo(null);
+      }
+      updateNavButtons();
+      updateMinimap();
+    }
+    return;
+  }
+
+  const same = state.pinnedTarget
+    && state.pinnedTarget.squareKey === hit.squareKey
+    && state.pinnedTarget.position === hit.position;
+
+  if (same) {
+    if (state.viewpointLevel === 1) enterViewpoint2(state.pinnedTarget);
+    else exitViewpoint2();
+  } else {
+    state.pinnedTarget = hit;
+    applyDiagramHighlight(hit);
+    updateNodeInfo(hit);
+    if (state.viewpointLevel === 2) enterViewpoint2(hit);
+    else updateNavButtons();
+    updateMinimap();
+  }
+});
+
+// =========================================================
+// VIEWPOINT 2
+// =========================================================
+
+function getNodeWorldPosition(squareKey, position) {
+  const node = state.nodePool.get(`${squareKey}:${position}`);
+  if (!node) return null;
+  return node.diagramWorldPos.clone();
+}
+
+function animateCameraTo(camPos, target) {
+  state.anim.active = true;
+  state.anim.t = 0;
+  state.anim.lastTime = performance.now();
+  if (state.anim.duration < 0.5) state.anim.duration = 0.6;
+  state.anim.fromCam.copy(camera.position);
+  state.anim.toCam.copy(camPos);
+  state.anim.fromLook.copy(controls.target);
+  state.anim.toLook.copy(target);
+  markDirty();
+}
+
+function enterViewpoint2(pin) {
+  if (!pin) return;
+  const nodePos = getNodeWorldPosition(pin.squareKey, pin.position);
+  if (!nodePos) return;
+  state.viewpointLevel = 2;
+  const camPos = nodePos.clone().add(VP2_OFFSET);
+  state.anim.duration = 0.6;
+  animateCameraTo(camPos, nodePos.clone());
+  controls.minDistance = 0.8;
+  controls.maxDistance = 20;
+  updateNavButtons();
+  updateMinimap();
+  applySteadyDiagramState();
+}
+
+function exitViewpoint2() {
+  state.viewpointLevel = 1;
+  controls.minDistance = 3;
+  controls.maxDistance = 120;
+  state.anim.duration = 0.6;
+  setFocus(state.focusedKey, true, 'default');
+  updateNavButtons();
+  updateMinimap();
+}
+
+// =========================================================
+// FOCUS / CAMERA
+// =========================================================
+
+function computeFocusCamera(key, mode) {
+  const layout = LAYOUT[key];
+  if (!layout) return null;
+  const focusPos = new THREE.Vector3(layout.position.x, layout.position.y, layout.position.z);
+  const offset = (VIEW_OFFSETS[mode] || VIEW_OFFSETS.default).clone();
+  return { camPos: focusPos.clone().add(offset), focusPos };
+}
+function computeLatticeCamera(mode) {
+  const focusPos = new THREE.Vector3(0, 0, 2);
+  const offset = (VIEW_OFFSETS[mode] || VIEW_OFFSETS.lattice).clone();
+  return { camPos: focusPos.clone().add(offset), focusPos };
+}
+
+function setFocus(key, animate=true, mode='default') {
+  if (!LAYOUT[key]) return;
+  state.focusedKey = key;
+  state.level = (key === 'A') ? 'A' : 'B';
+  state.lastDiagramKey = key;
+
+  if (state.viewpointLevel === 2) {
+    state.viewpointLevel = 1;
+    controls.minDistance = 3;
+    controls.maxDistance = 120;
+  }
+
+  const target = computeFocusCamera(key, mode);
+  if (!target) return;
+  state.anim.duration = 0.6;
+
+  if (!animate) {
+    camera.position.copy(target.camPos);
+    controls.target.copy(target.focusPos);
+    controls.update();
+  } else {
+    animateCameraTo(target.camPos, target.focusPos);
+  }
+
+  updateNavButtons();
+  updateMinimap();
+  if (!state.transition.active) applySteadyDiagramState();
+  markDirty();
+}
+
+function setViewMode(mode) {
+  if (state.viewMode === 'lattice' || state.transition.active) {
+    const target = computeLatticeCamera(mode);
+    state.anim.duration = 0.6;
+    animateCameraTo(target.camPos, target.focusPos);
+  } else {
+    if (state.viewpointLevel === 2) {
+      state.viewpointLevel = 1;
+      controls.minDistance = 3;
+      controls.maxDistance = 120;
+    }
+    setFocus(state.focusedKey, true, mode);
+  }
+}
+
+function updateNavButtons() {
+  const levelBtn = document.getElementById('level-btn');
+  const cycleBtn = document.getElementById('cycle-btn');
+  const latticeBtn = document.getElementById('lattice-btn');
+  const focusBtn = document.getElementById('node-focus-btn');
+
+  if (state.transition.active) {
+    levelBtn.classList.add('disabled'); levelBtn.disabled = true;
+    cycleBtn.classList.add('disabled'); cycleBtn.disabled = true;
+    latticeBtn.classList.add('disabled'); latticeBtn.disabled = true;
+    focusBtn.classList.add('disabled'); focusBtn.disabled = true;
+    return;
+  }
+
+  latticeBtn.classList.remove('disabled'); latticeBtn.disabled = false;
+
+  if (state.viewMode === 'lattice') {
+    levelBtn.classList.add('disabled'); levelBtn.disabled = true;
+    cycleBtn.classList.add('disabled'); cycleBtn.disabled = true;
+    latticeBtn.classList.add('active');
+    latticeBtn.textContent = '⊟ Diagram View';
+    focusBtn.classList.add('disabled'); focusBtn.disabled = true;
+    focusBtn.classList.remove('active');
+    focusBtn.textContent = '⊙ Focus Node';
+    return;
+  }
+
+  latticeBtn.classList.remove('active');
+  latticeBtn.textContent = '⊞ Lattice View';
+  levelBtn.classList.remove('disabled'); levelBtn.disabled = false;
+
+  if (state.level === 'A') {
+    levelBtn.textContent = '→ B Level';
+    cycleBtn.classList.add('disabled'); cycleBtn.disabled = true;
+  } else {
+    levelBtn.textContent = '→ A Level';
+    cycleBtn.classList.remove('disabled'); cycleBtn.disabled = false;
+  }
+
+  if (!state.pinnedTarget) {
+    focusBtn.classList.add('disabled'); focusBtn.disabled = true;
+    focusBtn.classList.remove('active');
+    focusBtn.textContent = '⊙ Focus Node';
+  } else if (state.viewpointLevel === 1) {
+    focusBtn.classList.remove('disabled'); focusBtn.disabled = false;
+    focusBtn.classList.remove('active');
+    focusBtn.textContent = '⊙ Focus Node';
+  } else {
+    focusBtn.classList.remove('disabled'); focusBtn.disabled = false;
+    focusBtn.classList.add('active');
+    focusBtn.textContent = '⊙ Exit Focus';
+  }
+}
+
+function toggleLevel() {
+  if (state.transition.active) return;
+  if (state.viewMode === 'lattice') return;
+  if (state.level === 'A') setFocus(B_CYCLE_ORDER[0], true, 'default');
+  else setFocus('A', true, 'default');
+}
+
+function cycleB(direction = 1) {
+  if (state.transition.active) return;
+  if (state.viewMode === 'lattice') return;
+  if (state.level !== 'B') return;
+  const idx = B_CYCLE_ORDER.indexOf(state.focusedKey);
+  const next = ((idx === -1 ? 0 : idx) + direction + B_CYCLE_ORDER.length) % B_CYCLE_ORDER.length;
+  setFocus(B_CYCLE_ORDER[next], true, 'default');
+}
+
+// =========================================================
+// LATTICE TOGGLE (via transition)
+// =========================================================
+
+function toggleLatticeView() {
+  if (state.transition.active) return;
+  if (!state.latticeInfo) return;
+  if (state.viewMode === 'diagram') {
+    startTransition('lattice');
+  } else {
+    startTransition('diagram');
+  }
+}
+
+// =========================================================
+// LEGEND
+// =========================================================
+
+function renderLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = '';
+  state.squares.forEach(sq => {
+    const span = document.createElement('span');
+    span.style.color = hexForSquare(sq.key);
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = hexForSquare(sq.key);
+    span.appendChild(dot);
+    const label = sq.key === 'A'
+      ? 'A1 — Layer 1'
+      : `${B_DISPLAY[sq.key] || sq.key}${sq.parentTerm ? ' of ' + sq.parentTerm : ''}`;
+    span.appendChild(document.createTextNode(label));
+    el.appendChild(span);
+  });
+}
+
+// =========================================================
+// UI
+// =========================================================
+
+document.getElementById('panel-toggle').addEventListener('click', () => {
+  document.body.classList.toggle('panels-hidden');
+});
+document.querySelectorAll('.sec-title').forEach(t => {
+  t.addEventListener('click', () => t.closest('.sec').classList.toggle('open'));
+});
+document.getElementById('lattice-btn').addEventListener('click', toggleLatticeView);
+document.getElementById('level-btn').addEventListener('click', toggleLevel);
+document.getElementById('cycle-btn').addEventListener('click', (ev) => {
+  ev.stopPropagation();
+  if (!state.transition.active && state.viewMode !== 'lattice' && state.level === 'B') cycleB(1);
+});
+document.getElementById('node-focus-btn').addEventListener('click', () => {
+  if (state.transition.active) return;
+  if (state.viewMode === 'lattice') return;
+  if (!state.pinnedTarget) return;
+  if (state.viewpointLevel === 1) enterViewpoint2(state.pinnedTarget);
+  else exitViewpoint2();
+});
+document.getElementById('view-reset').addEventListener('click', () => setViewMode('default'));
+document.getElementById('view-front').addEventListener('click', () => setViewMode('front'));
+document.getElementById('view-top').addEventListener('click', () => setViewMode('top'));
+
+function handleJsonApply() {
+  const ta = document.getElementById('json-input');
+  const status = document.getElementById('json-status');
+  const raw = ta.value.trim();
+  if (!raw) { status.className = 'err'; status.textContent = 'Paste JSON first.'; return; }
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch (e) { status.className = 'err'; status.textContent = `JSON parse error: ${e.message}`; return; }
+  try {
+    buildArchitectonic(parsed);
+    status.className = 'ok';
+    status.textContent = `Loaded ${state.squares.length} squares.`;
+  } catch (e) {
+    console.error(e);
+    status.className = 'err';
+    status.textContent = `Structure error: ${e.message}`;
+  }
+}
+document.getElementById('json-apply').addEventListener('click', handleJsonApply);
+
+function handleResize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+  labelRenderer.setSize(w, h);
+  markDirty();
+}
+window.addEventListener('resize', handleResize);
+
+// =========================================================
+// ANIMATE
+// =========================================================
+
+function animate(now) {
+  requestAnimationFrame(animate);
+  let needsFrame = renderPending;
+
+  if (state.anim.active) {
+    const dt = (now - state.anim.lastTime) / 1000;
+    state.anim.lastTime = now;
+    state.anim.t += dt / state.anim.duration;
+    const t = Math.min(state.anim.t, 1);
+    const e = smoothstep(t);
+    camera.position.lerpVectors(state.anim.fromCam, state.anim.toCam, e);
+    controls.target.lerpVectors(state.anim.fromLook, state.anim.toLook, e);
+    if (t >= 1) state.anim.active = false;
+    needsFrame = true;
+  }
+
+  if (state.transition.active) {
+    updateTransition(now);
+    needsFrame = true;
+  }
+
+  controls.update();
+
+  const camHash = hashCamera();
+  if (camHash !== lastCamHash) { lastCamHash = camHash; needsFrame = true; }
+
+  if (needsFrame) {
+    renderPending = false;
+    renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
+  }
+}
+requestAnimationFrame(animate);
+
+// =========================================================
+// DEMO DATA
+// =========================================================
+
+const DEMO = {
+  metadata: { seed: 'A1', seed_s1: 'being', seed_s2: 'seeming' },
+  layer_1: { square: {
+    S1: 'being', S2: 'seeming', '~S2': 'not seeming', '~S1': 'nonbeing',
+    M11: 'beingness', M12: 'nonexistence', M13: 'beinglessness', M14: 'seemingness',
+    M21: 'Revelation', M22: 'Paradox', M23: 'Subterfuge', M24: 'Deception',
+    Mixed1: 'Mixed beingness', Mixed2: 'Mixed seemingness',
+  }},
+  layer_2: {
+    S1: { parent_seme: 'S1', parent_term: 'being', square: {
+      S1: 'presence', S2: 'absence', '~S2': 'nullity', '~S1': 'existence',
+      M11: 'presencelessness', M12: 'existentiality', M13: 'presencefulness', M14: 'absencefulness',
+      M21: 'presence-nullity', M22: 'existence-absence', M23: 'existence-presence', M24: 'absence-nullity',
+      Mixed1: 'Mixed presence', Mixed2: 'Mixed absence',
+    }},
+    S2: { parent_seme: 'S2', parent_term: 'seeming', square: {
+      S1: 'appearance', S2: 'authenticity', '~S2': 'falsehood', '~S1': 'presencefulness',
+      M11: 'transparency', M12: 'opacity', M13: 'display', M14: 'imposture',
+      M21: 'authentic display', M22: 'presenceful seeming', M23: 'falsehood presence', M24: 'seeming nullity',
+      Mixed1: 'Mixed appearance', Mixed2: 'Mixed authenticity',
+    }},
+    '~S1': { parent_seme: '~S1', parent_term: 'nonbeing', square: {
+      S1: 'voidness', S2: 'emptiness', '~S2': 'fullness', '~S1': 'existence',
+      M11: 'vacuity', M12: 'plenitude', M13: 'vacantness', M14: 'emptinessness',
+      M21: 'voidfulness', M22: 'existence', M23: 'emptiness', M24: 'nullitylessness',
+      Mixed1: 'Mixed voidness', Mixed2: 'Mixed emptiness',
+    }},
+    '~S2': { parent_seme: '~S2', parent_term: 'not seeming', square: {
+      S1: 'obscuration', S2: 'inconspicuousness', '~S2': 'visibility', '~S1': 'transparency',
+      M11: 'obscurity', M12: 'clarity', M13: 'manifestation', M14: 'hiding',
+      M21: 'illumination', M22: 'clarity-latent', M23: 'hollowness', M24: 'suffusion',
+      Mixed1: 'Mixed obscuration', Mixed2: 'Mixed visibility',
+    }},
+  },
+  architectonic: (() => {
+    const concepts = [], edges = [];
+    const add = (id, label, short, role, origin, layer, extent) => {
+      concepts.push({ id, label, short, name: label, role, origin, layer, extent, intent: [] });
+      return id;
+    };
+    add('A:0', 'bottom', 'Bottom', 'shared_bottom', 'A', 1, []);
+    [['A:5','beingness','M1:beingness'],['A:6','nonexistence','M1:nonexistence'],['A:7','beinglessness','M1:beinglessness'],['A:8','seemingness','M1:seemingness'],['A:9','Mixed beingness','Mix:beingness'],['A:10','Mixed seemingness','Mix:seemingness']].forEach(([id,l,s]) => add(id,l,s,'layer_1_internal','A',1,[]));
+    [['A:11','Revelation','M2:Revelation'],['A:12','Paradox','M2:Paradox'],['A:13','Subterfuge','M2:Subterfuge'],['A:14','Deception','M2:Deception']].forEach(([id,l,s]) => add(id,l,s,'layer_1_internal','A',1,[]));
+    add('A:15','top','Top','architectonic_top','A',1,[]);
+    ['S1','S2','~S1','~S2'].forEach(k => add(`${k}:15`, `${k}*`, k, 'interface', k, 2, []));
+    ['S1','S2','~S1','~S2'].forEach(k => {
+      for (let i = 1; i <= 14; i++) add(`${k}:${i}`, `${k} ${i}`, `${k}:${i}`, 'layer_2_internal', k, 2, []);
+    });
+    [['A:11'],['A:12'],['A:13'],['A:14']].forEach(([id]) => edges.push(['A:15', id]));
+    edges.push(['A:11','A:9'],['A:11','A:7'],['A:11','A:10']);
+    edges.push(['A:12','A:9'],['A:12','A:10']);
+    edges.push(['A:13','A:6'],['A:13','A:7'],['A:13','A:9']);
+    edges.push(['A:14','A:6'],['A:14','A:10']);
+    edges.push(['A:9','S1:15'],['A:9','S2:15'],['A:9','~S1:15'],['A:9','~S2:15']);
+    edges.push(['A:6','~S1:15'],['A:6','~S2:15']);
+    edges.push(['A:7','S1:15'],['A:7','~S2:15']);
+    edges.push(['A:10','S2:15'],['A:10','~S1:15']);
+    ['S1','S2','~S1','~S2'].forEach(k => {
+      for (let i = 11; i <= 14; i++) edges.push([`${k}:15`, `${k}:${i}`]);
+      edges.push([`${k}:11`,`${k}:5`],[`${k}:11`,`${k}:7`],[`${k}:11`,`${k}:10`]);
+      edges.push([`${k}:12`,`${k}:5`],[`${k}:12`,`${k}:8`],[`${k}:12`,`${k}:9`]);
+      edges.push([`${k}:13`,`${k}:6`],[`${k}:13`,`${k}:7`],[`${k}:13`,`${k}:9`]);
+      edges.push([`${k}:14`,`${k}:6`],[`${k}:14`,`${k}:8`],[`${k}:14`,`${k}:10`]);
+      edges.push([`${k}:5`,`${k}:1`],[`${k}:5`,`${k}:2`]);
+      edges.push([`${k}:6`,`${k}:4`],[`${k}:6`,`${k}:3`]);
+      edges.push([`${k}:7`,`${k}:1`],[`${k}:7`,`${k}:3`]);
+      edges.push([`${k}:8`,`${k}:2`],[`${k}:8`,`${k}:4`]);
+      edges.push([`${k}:9`,`${k}:1`],[`${k}:9`,`${k}:4`]);
+      edges.push([`${k}:10`,`${k}:2`],[`${k}:10`,`${k}:3`]);
+      edges.push([`${k}:1`,'A:0'],[`${k}:2`,'A:0'],[`${k}:3`,'A:0'],[`${k}:4`,'A:0']);
+    });
+    return { concepts, edges };
+  })(),
+};
+
+// =========================================================
+// INIT
+// =========================================================
+
+(function init() {
+  try {
+    const ta = document.getElementById('json-input');
+    ta.value = JSON.stringify(DEMO, null, 2);
+    buildArchitectonic(DEMO);
+    updateNavButtons();
+    updateMinimap();
+    markDirty();
+  } catch (err) {
+    console.error('Init error:', err);
+    const el = document.getElementById('loading');
+    if (el) {
+      el.innerHTML = '<div style="text-align:center; max-width:640px; padding:20px;">'
+        + '<div style="color:#ff6b6b;font-size:14px;margin-bottom:10px;">Init error</div>'
+        + '<div style="font-family:ui-monospace,monospace;font-size:11px;color:#8a93ab;'
+        + 'white-space:pre-wrap;text-align:left;">'
+        + (err.message || String(err)) + '\n\n' + (err.stack || '')
+        + '</div></div>';
+      return;
+    }
+  }
+  setTimeout(() => {
+    const el = document.getElementById('loading');
+    if (el) el.classList.add('hidden');
+  }, 300);
+})();
+</script>
+</body>
+</html>
