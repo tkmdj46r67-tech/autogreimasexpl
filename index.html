@@ -43,6 +43,7 @@
   .btn.focus-btn { border-color: rgba(201,162,39,0.55); color: #D4AF37; }
   .btn.focus-btn:hover:not(.disabled) { background: rgba(201,162,39,0.18); border-color: rgba(212,175,55,0.85); color: #FFF; }
   .btn.focus-btn.active { background: rgba(201,162,39,0.35); border-color: rgba(253,231,37,0.9); color: #FDE725; }
+  
   #ui {
     position: fixed; top: 14px; right: 14px; z-index: 10;
     width: 380px; max-height: calc(100vh - 28px); overflow-y: auto;
@@ -52,6 +53,7 @@
     transition: transform .3s, opacity .3s;
   }
   body.panels-hidden #ui { transform: translateX(calc(100% + 30px)); opacity: 0; pointer-events: none; }
+  
   .sec { border-bottom: 1px solid rgba(255,255,255,0.06); padding: 10px 0; }
   .sec:last-child { border-bottom: none; }
   .sec-title {
@@ -66,6 +68,7 @@
   .sec-content { padding: 10px 0 4px; }
   .chev { font-size: 10px; transition: transform .25s; }
   .sec.open .chev { transform: rotate(180deg); }
+  
   #json-input {
     width: 100%; min-height: 100px; resize: vertical;
     background: #0a0d1a; color: var(--text);
@@ -77,6 +80,7 @@
   #json-status { font-size: 11px; margin-top: 6px; }
   #json-status.ok { color: #35B779; }
   #json-status.err { color: #ff6b6b; }
+  
   #node-info {
     padding: 10px 12px;
     background: rgba(15,20,32,0.8); border-radius: 8px;
@@ -92,11 +96,13 @@
     background: rgba(31,158,137,0.18); color: #35B779; font-size: 10.5px;
     margin: 2px 3px 2px 0;
   }
+  
   .legend { display: flex; flex-direction: column; gap: 6px;
     font-size: 11px; color: var(--text-dim); padding: 8px 0; }
   .legend span { display: flex; align-items: center; }
   .legend .dot { display: inline-block; width: 10px; height: 10px;
     margin-right: 8px; border: 1px solid rgba(255,255,255,0.15); }
+  
   #overview-container {
     position: fixed; left: 14px; bottom: 14px;
     width: 220px; height: 220px; border-radius: 12px; overflow: hidden;
@@ -123,6 +129,7 @@
     #overview-title { font-size: 8px; }
     #minimap-status { font-size: 7.5px; }
   }
+  
   .label {
     color: #B4DE2C; font-size: 11px; font-weight: 600;
     text-shadow: 0 0 8px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,1);
@@ -141,6 +148,7 @@
   .label.highlighted { color: #FDE725 !important; text-shadow: 0 0 12px rgba(253,231,37,0.9), 0 0 3px rgba(0,0,0,1); }
   .label.dimmed { color: #1c3a48 !important; }
   .label.lattice-label { font-size: 8.5px; opacity: 0.85; }
+  
   .loading {
     position: fixed; inset: 0; display: flex;
     align-items: center; justify-content: center;
@@ -148,6 +156,7 @@
     font-size: 13px; z-index: 100; transition: opacity .5s;
   }
   .loading.hidden { opacity: 0; pointer-events: none; }
+  
   #lattice-mode-badge {
     position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
     padding: 8px 16px; border-radius: 8px;
@@ -370,14 +379,13 @@ const DIM_MULTIPLIER = 0.30;
 
 const state = {
   data: null,
-  squares: [],            // metadata only: {key, title, parentTerm, squareData}
-  nodePool: new Map(),    // "squareKey:position" -> node data
-  squareHeaders: new Map(), // squareKey -> {obj, element, squareKey}
-  diagramEdges: [],       // {mesh, squareKey, a, b, baseColor, baseOpacity}
-  connectorEdges: [],     // {mesh, baseOpacity}
-  latticeEdges: [],       // {mesh, a, b, baseColor, baseOpacity}
-  latticeInfo: null,      // {positions, concepts, idToIdx, parents, children, ancestors, descendants, edges}
-  latticeBaseCubeSize: 0, // unused
+  squares: [],            
+  nodePool: new Map(),    
+  squareHeaders: new Map(), 
+  diagramEdges: [],       
+  connectorEdges: [],     
+  latticeEdges: [],       
+  latticeInfo: null,      
 
   nodeGroup: new THREE.Group(),
   diagramEdgesGroup: new THREE.Group(),
@@ -390,7 +398,7 @@ const state = {
   focusedKey: 'A',
   level: 'A',
   lastDiagramKey: 'A',
-  viewMode: 'diagram',         // 'diagram' | 'lattice' (steady state)
+  viewMode: 'diagram',         
   viewpointLevel: 1,
   hoverTarget: null,
   pinnedTarget: null,
@@ -477,7 +485,6 @@ function createNode(squareKey, position, term) {
 
   const baseColor = colorForSquare(squareKey);
 
-  // Outer group: positioned in world space, scaled to diagram scale.
   const group = new THREE.Group();
   const diagramWorldPos = new THREE.Vector3(
     layout.position.x + local[0] * layout.scale,
@@ -488,7 +495,6 @@ function createNode(squareKey, position, term) {
   group.scale.setScalar(layout.scale);
   state.nodeGroup.add(group);
 
-  // Cube mesh (geometry is CUBE_SIZE cube).
   const geom = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
   const mat = new THREE.MeshBasicMaterial({
     color: baseColor, transparent: true, opacity: NODE_OPACITY, depthWrite: false,
@@ -497,7 +503,6 @@ function createNode(squareKey, position, term) {
   mesh.userData = { squareKey, position, term, baseColor, baseOpacity: NODE_OPACITY };
   group.add(mesh);
 
-  // Diagram label (below cube): "position · term"
   const diagramEl = document.createElement('div');
   diagramEl.className = 'label';
   diagramEl.style.color = hexForSquare(squareKey);
@@ -511,7 +516,6 @@ function createNode(squareKey, position, term) {
   );
   state.diagramLabelsGroup.add(diagramLabel);
 
-  // Lattice label (above cube): short-name — set later after lattice is known
   const latticeEl = document.createElement('div');
   latticeEl.className = 'label lattice-label';
   latticeEl.style.color = hexForSquare(squareKey);
@@ -529,7 +533,7 @@ function createNode(squareKey, position, term) {
     diagramWorldPos,
     diagramScale: layout.scale,
     latticeConceptId: positionToLatticeId(squareKey, position),
-    latticeWorldPos: null,   // set after lattice computed
+    latticeWorldPos: null,   
   };
   state.nodePool.set(node.key, node);
   return node;
@@ -540,7 +544,6 @@ function createNode(squareKey, position, term) {
 // =========================================================
 
 function createDiagramEdges() {
-  // All edges within each square, positioned in world coordinates.
   state.squares.forEach(sq => {
     const layout = LAYOUT[sq.key];
     const squareColor = colorForSquare(sq.key);
@@ -717,7 +720,6 @@ function computeLattice(parsed) {
     descendants.push(desc);
   }
 
-  // Lattice edges
   arch.edges.forEach(([a, b]) => {
     const pa = layout.positions[a], pb = layout.positions[b];
     if (!pa || !pb) return;
@@ -760,37 +762,25 @@ function buildArchitectonic(parsed) {
 
   state.data = parsed;
 
-  // 1. Register squares (metadata)
-  state.squares.push({
-    key: 'A', title: 'Layer 1', parentTerm: null, squareData: layer_1.square,
-  });
+  state.squares.push({ key: 'A', title: 'Layer 1', parentTerm: null, squareData: layer_1.square });
   ['S1','S2','~S1','~S2'].forEach(semeKey => {
     const b = layer_2[semeKey];
     if (!b || !b.square) return;
-    state.squares.push({
-      key: semeKey, title: 'Decomposition', parentTerm: b.parent_term || '',
-      squareData: b.square,
-    });
+    state.squares.push({ key: semeKey, title: 'Decomposition', parentTerm: b.parent_term || '', squareData: b.square });
   });
 
-  // 2. Create nodes
   state.squares.forEach(sq => {
     Object.entries(SQ_POS).forEach(([pos]) => {
       createNode(sq.key, pos, sq.squareData[pos] || '');
     });
   });
 
-  // 3. Diagram edges + connectors
   createDiagramEdges();
   createConnectorEdges();
-
-  // 4. Headers
   createHeaders();
 
-  // 5. Compute lattice graph
   state.latticeInfo = computeLattice(parsed);
 
-  // 6. Assign lattice positions + labels to nodes
   if (state.latticeInfo) {
     const li = state.latticeInfo;
     state.nodePool.forEach(node => {
@@ -798,7 +788,6 @@ function buildArchitectonic(parsed) {
       const pos = li.positions[node.latticeConceptId];
       if (!pos) return;
       node.latticeWorldPos = new THREE.Vector3(pos.x, pos.y, pos.z);
-      // Lattice label
       const concept = li.concepts.find(c => c.id === node.latticeConceptId);
       if (concept) {
         let txt = concept.short || concept.label || '';
@@ -808,7 +797,6 @@ function buildArchitectonic(parsed) {
     });
   }
 
-  // 7. Initial steady state (diagram view, no transition)
   state.viewMode = 'diagram';
   state.transition.active = false;
   state.transition.t = 0;
@@ -818,7 +806,6 @@ function buildArchitectonic(parsed) {
   state.hoverTarget = null;
   state.pinnedTarget = null;
 
-  // 8. Apply initial state
   applySteadyDiagramState();
 
   updateNodeInfo(null);
@@ -873,33 +860,28 @@ function applySteadyDiagramState() {
     const dimmed = focusKey && node.squareKey !== focusKey;
     const dim = dimmed ? DIM_MULTIPLIER : 1.0;
 
-    // Position: diagram
     node.group.position.copy(node.diagramWorldPos);
     node.group.scale.setScalar(node.diagramScale);
     node.group.visible = true;
 
-    // Opacity: base (or override from highlight) * dim
     const override = node.mesh.userData.overrideOpacity;
+    const overrideColor = node.mesh.userData.overrideColor;
     const op = (override !== undefined ? override : node.baseOpacity) * dim;
-    node.mesh.material.color.setHex(node.mesh.userData.overrideColor ?? node.baseColor);
+    node.mesh.material.color.setHex(overrideColor !== undefined ? overrideColor : node.baseColor);
     node.mesh.material.opacity = op;
 
-    // Diagram label
     const cubeHalf = 0.5 * CUBE_SIZE * node.diagramScale;
     node.diagramLabel.position.set(
       node.diagramWorldPos.x,
       node.diagramWorldPos.y - cubeHalf - 0.15,
       node.diagramWorldPos.z
     );
-    const dLblOpacity = dim;
-    node.diagramLabel.element.style.opacity = String(dLblOpacity);
-    node.diagramLabel.visible = dLblOpacity > 0.01;
+    node.diagramLabel.element.style.opacity = dimmed ? '0' : String(dim);
+    node.diagramLabel.visible = !dimmed;
 
-    // Lattice label hidden
     node.latticeLabel.visible = false;
   });
 
-  // Headers
   state.squareHeaders.forEach(h => {
     const dimmed = focusKey && h.squareKey !== focusKey;
     const dim = dimmed ? DIM_MULTIPLIER : 1.0;
@@ -907,7 +889,6 @@ function applySteadyDiagramState() {
     h.obj.visible = dim > 0.01;
   });
 
-  // Diagram edges
   state.diagramEdges.forEach(e => {
     const dimmed = focusKey && e.squareKey !== focusKey;
     const dim = dimmed ? DIM_MULTIPLIER : 1.0;
@@ -919,13 +900,12 @@ function applySteadyDiagramState() {
     e.mesh.visible = op > 0.01;
   });
 
-  // Connectors
   state.connectorEdges.forEach(e => {
-    e.mesh.material.opacity = e.baseOpacity;
+    const dim = (!focusKey || focusKey === 'A') ? 1 : DIM_MULTIPLIER;
+    e.mesh.material.opacity = e.baseOpacity * dim;
     e.mesh.visible = true;
   });
 
-  // Lattice edges hidden
   state.latticeEdges.forEach(e => {
     e.mesh.material.opacity = 0;
     e.mesh.visible = false;
@@ -942,12 +922,10 @@ function applySteadyLatticeState() {
   const hi = state.latticeInfo;
   if (!hi) return;
 
-  // Apply highlight based on pinned/hovered concept
   const pinned = state.latticePinnedTarget;
   const hover = state.latticeHoverTarget;
   const activeConceptId = pinned !== null && pinned !== undefined ? pinned : hover;
 
-  // Reset node visuals
   state.nodePool.forEach(node => {
     node.group.position.copy(node.latticeWorldPos || node.diagramWorldPos);
     node.group.scale.setScalar(LATTICE_SCALE);
@@ -957,7 +935,6 @@ function applySteadyLatticeState() {
     node.mesh.material.opacity = node.baseOpacity;
     node.mesh.scale.setScalar(1);
 
-    // Lattice label
     if (node.latticeWorldPos) {
       const cubeHalf = 0.5 * CUBE_SIZE * LATTICE_SCALE;
       node.latticeLabel.position.set(
@@ -975,18 +952,15 @@ function applySteadyLatticeState() {
 
   state.squareHeaders.forEach(h => { h.obj.visible = false; });
 
-  // Diagram edges hidden, connectors hidden
   state.diagramEdges.forEach(e => { e.mesh.material.opacity = 0; e.mesh.visible = false; });
   state.connectorEdges.forEach(e => { e.mesh.material.opacity = 0; e.mesh.visible = false; });
 
-  // Lattice edges reset
   state.latticeEdges.forEach(e => {
     e.mesh.material.color.setHex(e.baseColor);
     e.mesh.material.opacity = e.baseOpacity;
     e.mesh.visible = true;
   });
 
-  // Apply highlight if any
   if (activeConceptId !== null && activeConceptId !== undefined) {
     const idx = hi.idToIdx[activeConceptId];
     if (idx !== undefined) {
@@ -1046,92 +1020,89 @@ function applySteadyLatticeState() {
 // =========================================================
 
 function applyTransitionState(t) {
-  const hi = state.latticeInfo;
-  const toLattice = state.transition.to === 'lattice';
+  const goingToLattice = state.transition.to === 'lattice';
 
-  // Phase timings (t is 0..1)
-  const srcFade = clamp01(1 - t / 0.25);          // source edges fade out
-  const dstFade = clamp01((t - 0.85) / 0.15);     // dest edges fade in
-  const nodeProgress = smoothstep(clamp01((t - 0.15) / 0.75));  // 0.15→0.90
+  const fadeOut = clamp01(1 - t / 0.25);
+  const fadeIn  = clamp01((t - 0.85) / 0.15);
+  const diagramFade = goingToLattice ? fadeOut : fadeIn;
+  const latticeFade = goingToLattice ? fadeIn  : fadeOut;
+
+  const nodeProgress = smoothstep(clamp01((t - 0.15) / 0.75));
+  const dimBlend = goingToLattice ? nodeProgress : (1 - nodeProgress);
 
   const focusKey = getDiagramFocusKey();
-  const dimBlend = clamp01(t / 0.25);
 
   state.nodePool.forEach(node => {
-    // Position & scale: from diagram to lattice (or reverse)
-    const fromPos = toLattice ? node.diagramWorldPos : (node.latticeWorldPos || node.diagramWorldPos);
-    const toPos   = toLattice ? (node.latticeWorldPos || node.diagramWorldPos) : node.diagramWorldPos;
+    const isFocused = !focusKey || node.squareKey === focusKey;
+    const dimFactor = isFocused ? 1 : (DIM_MULTIPLIER + (1 - DIM_MULTIPLIER) * dimBlend);
+
+    const fromPos = goingToLattice ? node.diagramWorldPos : (node.latticeWorldPos || node.diagramWorldPos);
+    const toPos   = goingToLattice ? (node.latticeWorldPos || node.diagramWorldPos) : node.diagramWorldPos;
     node.group.position.lerpVectors(fromPos, toPos, nodeProgress);
 
-    const fromScale = toLattice ? node.diagramScale : LATTICE_SCALE;
-    const toScale   = toLattice ? LATTICE_SCALE : node.diagramScale;
+    const fromScale = goingToLattice ? node.diagramScale : LATTICE_SCALE;
+    const toScale   = goingToLattice ? LATTICE_SCALE : node.diagramScale;
     const s = fromScale + (toScale - fromScale) * nodeProgress;
     node.group.scale.setScalar(s);
     node.group.visible = true;
 
-    // Dimming (only applies during first 25% of transition, and only for diagram-side content)
-    let dim = 1;
-    if (focusKey && node.squareKey !== focusKey) {
-      dim = DIM_MULTIPLIER + (1 - DIM_MULTIPLIER) * dimBlend;
-    }
-
-    node.mesh.material.color.setHex(node.baseColor);
-    node.mesh.material.opacity = node.baseOpacity * dim;
+    const overrideColor = node.mesh.userData.overrideColor;
+    const overrideOp = node.mesh.userData.overrideOpacity;
+    node.mesh.material.color.setHex(overrideColor !== undefined ? overrideColor : node.baseColor);
+    node.mesh.material.opacity = (overrideOp !== undefined ? overrideOp : node.baseOpacity) * dimFactor;
     node.mesh.scale.setScalar(1);
 
-    // Diagram label
     const cubeHalf = 0.5 * CUBE_SIZE * s;
     node.diagramLabel.position.set(
       node.group.position.x,
       node.group.position.y - cubeHalf - 0.15,
       node.group.position.z
     );
-    const dOp = srcFade * dim;
+    const dOp = isFocused ? diagramFade : 0;
     node.diagramLabel.element.style.opacity = String(dOp);
     node.diagramLabel.visible = dOp > 0.01;
 
-    // Lattice label
     node.latticeLabel.position.set(
       node.group.position.x,
       node.group.position.y + cubeHalf + 0.12,
       node.group.position.z
     );
-    const lOp = dstFade;
+    const lOp = latticeFade * 0.85;
     node.latticeLabel.element.style.opacity = String(lOp);
     node.latticeLabel.visible = lOp > 0.01 && !!node.latticeWorldPos;
     node.latticeLabel.element.classList.remove('highlighted', 'dimmed');
   });
 
   state.squareHeaders.forEach(h => {
-    let dim = 1;
-    if (focusKey && h.squareKey !== focusKey) {
-      dim = DIM_MULTIPLIER + (1 - DIM_MULTIPLIER) * dimBlend;
-    }
-    const op = srcFade * dim;
+    const isFocused = !focusKey || h.squareKey === focusKey;
+    const dimFactor = isFocused ? 1 : (DIM_MULTIPLIER + (1 - DIM_MULTIPLIER) * dimBlend);
+    const op = diagramFade * dimFactor;
     h.element.style.opacity = String(op);
     h.obj.visible = op > 0.01;
   });
 
   state.diagramEdges.forEach(e => {
-    let dim = 1;
-    if (focusKey && e.squareKey !== focusKey) {
-      dim = DIM_MULTIPLIER + (1 - DIM_MULTIPLIER) * dimBlend;
-    }
-    e.mesh.material.color.setHex(e.baseColor);
-    const op = e.baseOpacity * srcFade * dim;
+    const isFocused = !focusKey || e.squareKey === focusKey;
+    const dimFactor = isFocused ? 1 : (DIM_MULTIPLIER + (1 - DIM_MULTIPLIER) * dimBlend);
+    const overrideColor = e.mesh.userData.overrideColor;
+    const overrideOp = e.mesh.userData.overrideOpacity;
+    e.mesh.material.color.setHex(overrideColor !== undefined ? overrideColor : e.baseColor);
+    const op = (overrideOp !== undefined ? overrideOp : e.baseOpacity) * diagramFade * dimFactor;
     e.mesh.material.opacity = op;
     e.mesh.visible = op > 0.01;
   });
 
   state.connectorEdges.forEach(e => {
-    const op = e.baseOpacity * srcFade;
+    const isFocusedConnector = (!focusKey || focusKey === 'A');
+    const dimFactor = isFocusedConnector ? 1 : (DIM_MULTIPLIER + (1 - DIM_MULTIPLIER) * dimBlend);
+    const op = e.baseOpacity * diagramFade * dimFactor;
     e.mesh.material.opacity = op;
     e.mesh.visible = op > 0.01;
   });
 
   state.latticeEdges.forEach(e => {
     e.mesh.material.color.setHex(e.baseColor);
-    const op = e.baseOpacity * dstFade;
+    const op = e.baseOpacity * latticeFade;
     e.mesh.material.opacity = op;
     e.mesh.visible = op > 0.01;
   });
@@ -1147,7 +1118,6 @@ function startTransition(to) {
   if (state.transition.active) return;
   if (to === state.viewMode) return;
 
-  // Clear all highlight/pin state
   state.hoverTarget = null;
   state.pinnedTarget = null;
   state.latticeHoverTarget = null;
@@ -1160,7 +1130,6 @@ function startTransition(to) {
   state.transition.t = 0;
   state.transition.lastTime = performance.now();
 
-  // Camera target
   const camTarget = (to === 'lattice')
     ? computeLatticeCamera('lattice')
     : computeFocusCamera(state.focusedKey, 'default');
@@ -1197,7 +1166,6 @@ function updateTransition(now) {
     state.viewMode = state.transition.to;
     state.transition.t = (state.viewMode === 'lattice') ? 1 : 0;
 
-    // Snap to final steady state
     if (state.viewMode === 'lattice') {
       applySteadyLatticeState();
     } else {
@@ -1491,7 +1459,6 @@ function applyDiagramHighlight(target) {
   const targetTerm = targetSq.squareData[target.position] || '';
   const targetPos = target.position;
 
-  // Edges adjacent to pinned node: white, high opacity
   state.diagramEdges.forEach(e => {
     if (e.squareKey === target.squareKey && (e.a === targetPos || e.b === targetPos)) {
       e.mesh.userData.overrideColor = EDGE_HIGHLIGHT_COLOR;
@@ -1499,7 +1466,6 @@ function applyDiagramHighlight(target) {
     }
   });
 
-  // Nodes
   state.nodePool.forEach(node => {
     const term = (state.squares.find(s => s.key === node.squareKey)?.squareData[node.position]) || '';
     const matchByPos = (node.squareKey === target.squareKey && node.position === target.position);
@@ -1557,7 +1523,6 @@ renderer.domElement.addEventListener('pointermove', (ev) => {
       return;
     }
 
-    // Diagram view
     if (state.pinnedTarget) return;
     const hit = pickNode();
     if (hit) {
@@ -1828,7 +1793,7 @@ function cycleB(direction = 1) {
 }
 
 // =========================================================
-// LATTICE TOGGLE (via transition)
+// LATTICE TOGGLE
 // =========================================================
 
 function toggleLatticeView() {
