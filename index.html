@@ -19,30 +19,124 @@
   }
   input, textarea, button { font-family: inherit; }
   #canvas-container { position: fixed; inset: 0; z-index: 1; }
+
+  /* Top bar: 2-column icon grid hugging the left edge */
   #top-bar {
-    position: fixed; top: 14px; left: 14px; z-index: 20;
-    display: flex; gap: 8px; flex-wrap: wrap; max-width: 62vw;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: repeat(2, 44px);
+    gap: 6px;
+    padding: 8px;
+    background: var(--panel);
+    border: 1px solid rgba(31,158,137,0.20);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   }
+
+  /* Icon buttons inside the top bar */
+  #top-bar .btn {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    cursor: pointer;
+    background: transparent;
+    color: #c8d0e6;
+    border: 1px solid rgba(31,158,137,0.20);
+    transition: background .15s, border-color .15s, color .15s, opacity .15s;
+    user-select: none;
+  }
+  #top-bar .btn svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  #top-bar .btn:hover:not(.disabled) {
+    background: rgba(31,158,137,.20);
+    border-color: rgba(31,158,137,.55);
+    color: #fff;
+  }
+  #top-bar .btn:active:not(.disabled) { transform: translateY(1px); }
+  #top-bar .btn.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    border-color: rgba(31,158,137,0.08);
+  }
+  #top-bar .btn.level-btn {
+    border-color: rgba(253,231,37,0.35);
+    color: #FDE725;
+  }
+  #top-bar .btn.level-btn:hover:not(.disabled) {
+    background: rgba(253,231,37,0.15);
+    border-color: rgba(253,231,37,0.7);
+    color: #fff;
+  }
+  #top-bar .btn.lattice-btn {
+    border-color: rgba(62,74,137,0.55);
+    color: #7A9AD6;
+  }
+  #top-bar .btn.lattice-btn:hover:not(.disabled) {
+    background: rgba(62,74,137,0.28);
+    border-color: rgba(122,154,214,0.85);
+    color: #fff;
+  }
+  #top-bar .btn.lattice-btn.active {
+    background: rgba(62,74,137,0.45);
+    border-color: rgba(180,222,44,0.85);
+    color: #FDE725;
+  }
+  #top-bar .btn.focus-btn {
+    border-color: rgba(201,162,39,0.55);
+    color: #D4AF37;
+  }
+  #top-bar .btn.focus-btn:hover:not(.disabled) {
+    background: rgba(201,162,39,0.18);
+    border-color: rgba(212,175,55,0.85);
+    color: #FFF;
+  }
+  #top-bar .btn.focus-btn.active {
+    background: rgba(201,162,39,0.35);
+    border-color: rgba(253,231,37,0.9);
+    color: #FDE725;
+  }
+
+  /* Base button style retained for in-panel buttons (e.g. JSON Update) */
   .btn {
-    padding: 10px 14px; min-height: 40px; border-radius: 9px; cursor: pointer;
-    font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em;
-    text-transform: uppercase; color: #c8d0e6; background: var(--panel);
-    border: 1px solid rgba(31,158,137,0.20); backdrop-filter: blur(10px);
+    padding: 10px 14px;
+    min-height: 40px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #c8d0e6;
+    background: var(--panel);
+    border: 1px solid rgba(31,158,137,0.20);
+    backdrop-filter: blur(10px);
     box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     transition: background .15s, border-color .15s, color .15s, opacity .15s;
     user-select: none;
   }
-  .btn:hover:not(.disabled) { background: rgba(31,158,137,.20); border-color: rgba(31,158,137,.55); color: #fff; }
-  .btn:active:not(.disabled) { transform: translateY(1px); }
-  .btn.disabled { opacity: 0.35; cursor: not-allowed; border-color: rgba(31,158,137,0.08); }
-  .btn.level-btn { border-color: rgba(253,231,37,0.35); color: #FDE725; }
-  .btn.level-btn:hover:not(.disabled) { background: rgba(253,231,37,0.15); border-color: rgba(253,231,37,0.7); color: #fff; }
-  .btn.lattice-btn { border-color: rgba(62,74,137,0.55); color: #7A9AD6; }
-  .btn.lattice-btn:hover:not(.disabled) { background: rgba(62,74,137,0.28); border-color: rgba(122,154,214,0.85); color: #fff; }
-  .btn.lattice-btn.active { background: rgba(62,74,137,0.45); border-color: rgba(180,222,44,0.85); color: #FDE725; }
-  .btn.focus-btn { border-color: rgba(201,162,39,0.55); color: #D4AF37; }
-  .btn.focus-btn:hover:not(.disabled) { background: rgba(201,162,39,0.18); border-color: rgba(212,175,55,0.85); color: #FFF; }
-  .btn.focus-btn.active { background: rgba(201,162,39,0.35); border-color: rgba(253,231,37,0.9); color: #FDE725; }
+  .btn:hover:not(.disabled) {
+    background: rgba(31,158,137,.20);
+    border-color: rgba(31,158,137,.55);
+    color: #fff;
+  }
+
   #ui {
     position: fixed; top: 14px; right: 14px; z-index: 10;
     width: 380px; max-height: calc(100vh - 28px); overflow-y: auto;
@@ -177,14 +271,59 @@
 <div id="lattice-mode-badge">Architectonic Lattice — Level 3</div>
 
 <div id="top-bar">
-  <button class="btn" id="panel-toggle">◱ Hide Panels</button>
-  <button class="btn lattice-btn" id="lattice-btn">⊞ Lattice View</button>
-  <button class="btn level-btn" id="level-btn">→ B Level</button>
-  <button class="btn disabled" id="cycle-btn">▸ Next B</button>
-  <button class="btn focus-btn disabled" id="node-focus-btn">⊙ Focus Node</button>
-  <button class="btn" id="view-reset">⌖ Reset View</button>
-  <button class="btn" id="view-top">▣ Top</button>
-  <button class="btn" id="view-front">▤ Front</button>
+  <button class="btn" id="panel-toggle" title="Hide / show side panels" aria-label="Hide or show side panels">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="2" y="3" width="12" height="10" rx="1.5"/>
+      <line x1="6" y1="3" x2="6" y2="13"/>
+    </svg>
+  </button>
+  <button class="btn lattice-btn" id="lattice-btn" title="Enter lattice view" aria-label="Enter lattice view">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1"/>
+      <rect x="9" y="2.5" width="4.5" height="4.5" rx="1"/>
+      <rect x="2.5" y="9" width="4.5" height="4.5" rx="1"/>
+      <rect x="9" y="9" width="4.5" height="4.5" rx="1"/>
+    </svg>
+  </button>
+  <button class="btn level-btn" id="level-btn" title="Switch to B diagrams" aria-label="Switch to B diagrams">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <line x1="8" y1="2.5" x2="8" y2="13.5"/>
+      <polyline points="4.5,5.5 8,2 11.5,5.5"/>
+      <polyline points="4.5,10.5 8,14 11.5,10.5"/>
+    </svg>
+  </button>
+  <button class="btn disabled" id="cycle-btn" title="Cycle B diagrams (switch to B level first)" aria-label="Cycle B diagrams">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M2.5 8a5.5 5.5 0 0 1 5.5-5.5c2.5 0 4.6 1.6 5.3 3.8"/>
+      <polyline points="11,4.5 13.5,6.5 13.5,2.5"/>
+    </svg>
+  </button>
+  <button class="btn focus-btn disabled" id="node-focus-btn" title="Focus on pinned node (pin a node first)" aria-label="Focus on pinned node">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <circle cx="8" cy="8" r="5.5"/>
+      <circle cx="8" cy="8" r="2"/>
+    </svg>
+  </button>
+  <button class="btn" id="view-reset" title="Reset camera view" aria-label="Reset camera view">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M2.5 8L8 2.5l5.5 5.5"/>
+      <path d="M4 7v5.5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V7"/>
+    </svg>
+  </button>
+  <button class="btn" id="view-top" title="Top view" aria-label="Top view">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <line x1="8" y1="2.5" x2="8" y2="11"/>
+      <polyline points="4.5,8 8,11.5 11.5,8"/>
+      <line x1="2.5" y1="13.5" x2="13.5" y2="13.5"/>
+    </svg>
+  </button>
+  <button class="btn" id="view-front" title="Front view" aria-label="Front view">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M8 2L13.5 5v6L8 14 2.5 11V5z"/>
+      <path d="M2.5 5L8 8l5.5-3"/>
+      <line x1="8" y1="8" x2="8" y2="14"/>
+    </svg>
+  </button>
 </div>
 
 <div id="ui">
@@ -406,12 +545,8 @@ const state = {
   latticePinnedTarget: null,
 
   transition: {
-    active: false,
-    from: 'diagram',
-    to: 'lattice',
-    t: 0,
-    duration: 1.4,
-    lastTime: 0,
+    active: false, from: 'diagram', to: 'lattice',
+    t: 0, duration: 1.4, lastTime: 0,
   },
 
   anim: { active: false, t: 0, duration: 0.6,
@@ -420,7 +555,6 @@ const state = {
     lastTime: 0 },
 
   minimap: null,
-
   raycaster: new THREE.Raycaster(),
   mouse: new THREE.Vector2(-10, -10),
 };
@@ -1166,11 +1300,8 @@ function updateTransition(now) {
     state.viewMode = state.transition.to;
     state.transition.t = (state.viewMode === 'lattice') ? 1 : 0;
 
-    if (state.viewMode === 'lattice') {
-      applySteadyLatticeState();
-    } else {
-      applySteadyDiagramState();
-    }
+    if (state.viewMode === 'lattice') applySteadyLatticeState();
+    else applySteadyDiagramState();
 
     updateNavButtons();
     updateMinimap();
@@ -1337,17 +1468,11 @@ function displayLabelFor(sq) {
   return B_DISPLAY[sq.key] || sq.key;
 }
 
-// NEW: Find all pool nodes that map to a lattice concept.
-// Each contains the original squareKey, position, and term.
 function describeLatticeConcept(conceptId) {
   const sources = [];
   state.nodePool.forEach(node => {
     if (node.latticeConceptId === conceptId) {
-      sources.push({
-        squareKey: node.squareKey,
-        position: node.position,
-        term: node.term,
-      });
+      sources.push({ squareKey: node.squareKey, position: node.position, term: node.term });
     }
   });
   return sources;
@@ -1380,13 +1505,11 @@ function updateNodeInfo(target) {
       html += `</div>`;
     }
 
-    // NEW: Original diagram provenance.
     const sources = describeLatticeConcept(concept.id);
     if (sources.length > 0) {
       html += `<div class="section-divider">`;
       html += `<div class="section-label">Original Diagram${sources.length > 1 ? 's' : ''}</div>`;
 
-      // Collapse shared concepts like A:0 (shared bottom across all squares)
       const allSamePos = new Set(sources.map(s => s.position)).size === 1;
       const allSameTerm = new Set(sources.map(s => s.term)).size === 1;
 
@@ -1394,11 +1517,8 @@ function updateNodeInfo(target) {
         const s = sources[0];
         html += `<div class="kv">`;
         html += `<span class="chip" style="border-color:rgba(255,255,255,0.2);">${s.position}</span>`;
-        if (s.term) {
-          html += ` <strong>"${s.term}"</strong>`;
-        } else {
-          html += ` <em style="color:var(--text-dim);">(no term)</em>`;
-        }
+        if (s.term) html += ` <strong>"${s.term}"</strong>`;
+        else html += ` <em style="color:var(--text-dim);">(no term)</em>`;
         html += ` <span style="color:var(--text-dim); font-size:10.5px;">× ${sources.length} diagrams</span>`;
         html += `</div>`;
       } else {
@@ -1407,11 +1527,8 @@ function updateNodeInfo(target) {
           html += `<div class="kv">`;
           html += `<span style="color:${hexForSquare(s.squareKey)}; font-weight:600; margin-right:4px;">${displayName}</span>`;
           html += `<span class="chip">${s.position}</span>`;
-          if (s.term) {
-            html += ` <strong style="color:${hexForSquare(s.squareKey)};">"${s.term}"</strong>`;
-          } else {
-            html += ` <em style="color:var(--text-dim);">(no term)</em>`;
-          }
+          if (s.term) html += ` <strong style="color:${hexForSquare(s.squareKey)};">"${s.term}"</strong>`;
+          else html += ` <em style="color:var(--text-dim);">(no term)</em>`;
           html += `</div>`;
         });
       }
@@ -1777,6 +1894,7 @@ function setViewMode(mode) {
   }
 }
 
+// Icon-button state manager. Titles double as hover tooltips.
 function updateNavButtons() {
   const levelBtn = document.getElementById('level-btn');
   const cycleBtn = document.getElementById('cycle-btn');
@@ -1784,50 +1902,58 @@ function updateNavButtons() {
   const focusBtn = document.getElementById('node-focus-btn');
 
   if (state.transition.active) {
-    levelBtn.classList.add('disabled'); levelBtn.disabled = true;
-    cycleBtn.classList.add('disabled'); cycleBtn.disabled = true;
-    latticeBtn.classList.add('disabled'); latticeBtn.disabled = true;
-    focusBtn.classList.add('disabled'); focusBtn.disabled = true;
+    levelBtn.classList.add('disabled');
+    cycleBtn.classList.add('disabled');
+    latticeBtn.classList.add('disabled');
+    focusBtn.classList.add('disabled');
+    levelBtn.title = 'Transitioning…';
+    cycleBtn.title = 'Transitioning…';
+    latticeBtn.title = 'Transitioning…';
+    focusBtn.title = 'Transitioning…';
     return;
   }
 
-  latticeBtn.classList.remove('disabled'); latticeBtn.disabled = false;
+  latticeBtn.classList.remove('disabled');
 
   if (state.viewMode === 'lattice') {
-    levelBtn.classList.add('disabled'); levelBtn.disabled = true;
-    cycleBtn.classList.add('disabled'); cycleBtn.disabled = true;
+    levelBtn.classList.add('disabled');
+    cycleBtn.classList.add('disabled');
     latticeBtn.classList.add('active');
-    latticeBtn.textContent = '⊟ Diagram View';
-    focusBtn.classList.add('disabled'); focusBtn.disabled = true;
+    latticeBtn.title = 'Return to diagram view';
+    focusBtn.classList.add('disabled');
     focusBtn.classList.remove('active');
-    focusBtn.textContent = '⊙ Focus Node';
+    levelBtn.title = 'Level switch (unavailable in lattice view)';
+    cycleBtn.title = 'Cycle B diagrams (return to diagram view first)';
+    focusBtn.title = 'Focus on node (return to diagram view first)';
     return;
   }
 
   latticeBtn.classList.remove('active');
-  latticeBtn.textContent = '⊞ Lattice View';
-  levelBtn.classList.remove('disabled'); levelBtn.disabled = false;
+  latticeBtn.title = 'Enter lattice view';
+  levelBtn.classList.remove('disabled');
 
   if (state.level === 'A') {
-    levelBtn.textContent = '→ B Level';
-    cycleBtn.classList.add('disabled'); cycleBtn.disabled = true;
+    levelBtn.title = 'Switch to B diagrams';
+    cycleBtn.classList.add('disabled');
+    cycleBtn.title = 'Cycle B diagrams (switch to B level first)';
   } else {
-    levelBtn.textContent = '→ A Level';
-    cycleBtn.classList.remove('disabled'); cycleBtn.disabled = false;
+    levelBtn.title = 'Switch to A diagram';
+    cycleBtn.classList.remove('disabled');
+    cycleBtn.title = 'Next B diagram';
   }
 
   if (!state.pinnedTarget) {
-    focusBtn.classList.add('disabled'); focusBtn.disabled = true;
+    focusBtn.classList.add('disabled');
     focusBtn.classList.remove('active');
-    focusBtn.textContent = '⊙ Focus Node';
+    focusBtn.title = 'Focus on node (pin a node first)';
   } else if (state.viewpointLevel === 1) {
-    focusBtn.classList.remove('disabled'); focusBtn.disabled = false;
+    focusBtn.classList.remove('disabled');
     focusBtn.classList.remove('active');
-    focusBtn.textContent = '⊙ Focus Node';
+    focusBtn.title = 'Focus on pinned node';
   } else {
-    focusBtn.classList.remove('disabled'); focusBtn.disabled = false;
+    focusBtn.classList.remove('disabled');
     focusBtn.classList.add('active');
-    focusBtn.textContent = '⊙ Exit Focus';
+    focusBtn.title = 'Exit node focus';
   }
 }
 
@@ -1854,11 +1980,8 @@ function cycleB(direction = 1) {
 function toggleLatticeView() {
   if (state.transition.active) return;
   if (!state.latticeInfo) return;
-  if (state.viewMode === 'diagram') {
-    startTransition('lattice');
-  } else {
-    startTransition('diagram');
-  }
+  if (state.viewMode === 'diagram') startTransition('lattice');
+  else startTransition('diagram');
 }
 
 // =========================================================
