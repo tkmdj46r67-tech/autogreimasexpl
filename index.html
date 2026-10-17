@@ -43,7 +43,6 @@
   .btn.focus-btn { border-color: rgba(201,162,39,0.55); color: #D4AF37; }
   .btn.focus-btn:hover:not(.disabled) { background: rgba(201,162,39,0.18); border-color: rgba(212,175,55,0.85); color: #FFF; }
   .btn.focus-btn.active { background: rgba(201,162,39,0.35); border-color: rgba(253,231,37,0.9); color: #FDE725; }
-  
   #ui {
     position: fixed; top: 14px; right: 14px; z-index: 10;
     width: 380px; max-height: calc(100vh - 28px); overflow-y: auto;
@@ -53,7 +52,6 @@
     transition: transform .3s, opacity .3s;
   }
   body.panels-hidden #ui { transform: translateX(calc(100% + 30px)); opacity: 0; pointer-events: none; }
-  
   .sec { border-bottom: 1px solid rgba(255,255,255,0.06); padding: 10px 0; }
   .sec:last-child { border-bottom: none; }
   .sec-title {
@@ -68,7 +66,6 @@
   .sec-content { padding: 10px 0 4px; }
   .chev { font-size: 10px; transition: transform .25s; }
   .sec.open .chev { transform: rotate(180deg); }
-  
   #json-input {
     width: 100%; min-height: 100px; resize: vertical;
     background: #0a0d1a; color: var(--text);
@@ -80,7 +77,6 @@
   #json-status { font-size: 11px; margin-top: 6px; }
   #json-status.ok { color: #35B779; }
   #json-status.err { color: #ff6b6b; }
-  
   #node-info {
     padding: 10px 12px;
     background: rgba(15,20,32,0.8); border-radius: 8px;
@@ -96,13 +92,20 @@
     background: rgba(31,158,137,0.18); color: #35B779; font-size: 10.5px;
     margin: 2px 3px 2px 0;
   }
-  
+  #node-info .section-divider {
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  #node-info .section-label {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-dim); margin-bottom: 6px;
+  }
   .legend { display: flex; flex-direction: column; gap: 6px;
     font-size: 11px; color: var(--text-dim); padding: 8px 0; }
   .legend span { display: flex; align-items: center; }
   .legend .dot { display: inline-block; width: 10px; height: 10px;
     margin-right: 8px; border: 1px solid rgba(255,255,255,0.15); }
-  
   #overview-container {
     position: fixed; left: 14px; bottom: 14px;
     width: 220px; height: 220px; border-radius: 12px; overflow: hidden;
@@ -129,7 +132,6 @@
     #overview-title { font-size: 8px; }
     #minimap-status { font-size: 7.5px; }
   }
-  
   .label {
     color: #B4DE2C; font-size: 11px; font-weight: 600;
     text-shadow: 0 0 8px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,1);
@@ -148,7 +150,6 @@
   .label.highlighted { color: #FDE725 !important; text-shadow: 0 0 12px rgba(253,231,37,0.9), 0 0 3px rgba(0,0,0,1); }
   .label.dimmed { color: #1c3a48 !important; }
   .label.lattice-label { font-size: 8.5px; opacity: 0.85; }
-  
   .loading {
     position: fixed; inset: 0; display: flex;
     align-items: center; justify-content: center;
@@ -156,7 +157,6 @@
     font-size: 13px; z-index: 100; transition: opacity .5s;
   }
   .loading.hidden { opacity: 0; pointer-events: none; }
-  
   #lattice-mode-badge {
     position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
     padding: 8px 16px; border-radius: 8px;
@@ -379,13 +379,13 @@ const DIM_MULTIPLIER = 0.30;
 
 const state = {
   data: null,
-  squares: [],            
-  nodePool: new Map(),    
-  squareHeaders: new Map(), 
-  diagramEdges: [],       
-  connectorEdges: [],     
-  latticeEdges: [],       
-  latticeInfo: null,      
+  squares: [],
+  nodePool: new Map(),
+  squareHeaders: new Map(),
+  diagramEdges: [],
+  connectorEdges: [],
+  latticeEdges: [],
+  latticeInfo: null,
 
   nodeGroup: new THREE.Group(),
   diagramEdgesGroup: new THREE.Group(),
@@ -398,7 +398,7 @@ const state = {
   focusedKey: 'A',
   level: 'A',
   lastDiagramKey: 'A',
-  viewMode: 'diagram',         
+  viewMode: 'diagram',
   viewpointLevel: 1,
   hoverTarget: null,
   pinnedTarget: null,
@@ -533,7 +533,7 @@ function createNode(squareKey, position, term) {
     diagramWorldPos,
     diagramScale: layout.scale,
     latticeConceptId: positionToLatticeId(squareKey, position),
-    latticeWorldPos: null,   
+    latticeWorldPos: null,
   };
   state.nodePool.set(node.key, node);
   return node;
@@ -1337,6 +1337,22 @@ function displayLabelFor(sq) {
   return B_DISPLAY[sq.key] || sq.key;
 }
 
+// NEW: Find all pool nodes that map to a lattice concept.
+// Each contains the original squareKey, position, and term.
+function describeLatticeConcept(conceptId) {
+  const sources = [];
+  state.nodePool.forEach(node => {
+    if (node.latticeConceptId === conceptId) {
+      sources.push({
+        squareKey: node.squareKey,
+        position: node.position,
+        term: node.term,
+      });
+    }
+  });
+  return sources;
+}
+
 function updateNodeInfo(target) {
   const el = document.getElementById('node-info');
   if (!target) {
@@ -1363,9 +1379,48 @@ function updateNodeInfo(target) {
       html += concept.intent.map(e => `<span class="chip">${e}</span>`).join(' ');
       html += `</div>`;
     }
+
+    // NEW: Original diagram provenance.
+    const sources = describeLatticeConcept(concept.id);
+    if (sources.length > 0) {
+      html += `<div class="section-divider">`;
+      html += `<div class="section-label">Original Diagram${sources.length > 1 ? 's' : ''}</div>`;
+
+      // Collapse shared concepts like A:0 (shared bottom across all squares)
+      const allSamePos = new Set(sources.map(s => s.position)).size === 1;
+      const allSameTerm = new Set(sources.map(s => s.term)).size === 1;
+
+      if (sources.length > 1 && allSamePos && allSameTerm) {
+        const s = sources[0];
+        html += `<div class="kv">`;
+        html += `<span class="chip" style="border-color:rgba(255,255,255,0.2);">${s.position}</span>`;
+        if (s.term) {
+          html += ` <strong>"${s.term}"</strong>`;
+        } else {
+          html += ` <em style="color:var(--text-dim);">(no term)</em>`;
+        }
+        html += ` <span style="color:var(--text-dim); font-size:10.5px;">× ${sources.length} diagrams</span>`;
+        html += `</div>`;
+      } else {
+        sources.forEach(s => {
+          const displayName = s.squareKey === 'A' ? 'A1' : (B_DISPLAY[s.squareKey] || s.squareKey);
+          html += `<div class="kv">`;
+          html += `<span style="color:${hexForSquare(s.squareKey)}; font-weight:600; margin-right:4px;">${displayName}</span>`;
+          html += `<span class="chip">${s.position}</span>`;
+          if (s.term) {
+            html += ` <strong style="color:${hexForSquare(s.squareKey)};">"${s.term}"</strong>`;
+          } else {
+            html += ` <em style="color:var(--text-dim);">(no term)</em>`;
+          }
+          html += `</div>`;
+        });
+      }
+      html += `</div>`;
+    }
+
     const idx = hi.idToIdx[concept.id];
     if (idx !== undefined) {
-      html += `<div class="kv"><span class="k">ancestors:</span> ${hi.ancestors[idx].size}</div>`;
+      html += `<div class="kv" style="margin-top:8px;"><span class="k">ancestors:</span> ${hi.ancestors[idx].size}</div>`;
       html += `<div class="kv"><span class="k">descendants:</span> ${hi.descendants[idx].size}</div>`;
     }
     el.innerHTML = html;
