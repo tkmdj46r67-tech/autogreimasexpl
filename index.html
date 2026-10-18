@@ -396,6 +396,7 @@ const MM_COLOR_DIM = '#151a28';
 // GEOMETRY & LAYOUT
 // =========================================================
 
+// Updated M22, M23, M24 to form a clean square with M21
 const SQ_POS = {
   top: [0.0, 3.20],
   M21: [-2.20, 2.20], M22: [2.20, 2.20], M23: [-2.20, -2.20], M24: [2.20, -2.20],
@@ -534,9 +535,9 @@ const state = {
   latticeLabelsGroup: new THREE.Group(),
   headersGroup: new THREE.Group(),
 
-  focusedKey: 'A',
-  level: 'A',
-  lastDiagramKey: 'A',
+  focusedKey: 'S1',
+  level: 'B',
+  lastDiagramKey: 'S1',
   viewMode: 'diagram',
   viewpointLevel: 1,
   hoverTarget: null,
@@ -934,9 +935,11 @@ function buildArchitectonic(parsed) {
   state.viewMode = 'diagram';
   state.transition.active = false;
   state.transition.t = 0;
-  state.focusedKey = 'A';
-  state.level = 'A';
-  state.lastDiagramKey = 'A';
+  
+  // DEFAULT START STATE: B1 (S1)
+  state.focusedKey = 'S1';
+  state.level = 'B';
+  state.lastDiagramKey = 'S1';
   state.hoverTarget = null;
   state.pinnedTarget = null;
 
@@ -945,7 +948,7 @@ function buildArchitectonic(parsed) {
   updateNodeInfo(null);
   renderLegend();
   buildMinimap();
-  setFocus('A', false, 'default');
+  setFocus('S1', false, 'default');
   updateNavButtons();
   markDirty();
 }
