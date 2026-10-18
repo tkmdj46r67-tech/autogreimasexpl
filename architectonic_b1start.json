@@ -1,0 +1,3893 @@
+{
+  "metadata": {
+    "seed": "B1",
+    "seed_s1": "life",
+    "seed_s2": "death",
+    "cycle1_model": "qwen2.5:7b",
+    "generator_model": "qwen2.5:14b",
+    "validator_model": "phi4-mini",
+    "generated_at": "2026-10-18T09:53:43",
+    "collisions": [
+      {
+        "label": "L2[S2]:Mixed",
+        "key": "Mixed1_prime",
+        "term": "disrupted_continuity"
+      },
+      {
+        "label": "L2[S2]:Mixed",
+        "key": "Mixed2_prime",
+        "term": "variable_constancy"
+      },
+      {
+        "label": "L2[~S1]:M2",
+        "key": "M21_prime",
+        "term": "steadfastness"
+      },
+      {
+        "label": "L2[~S1]:M2",
+        "key": "M24_prime",
+        "term": "temperance"
+      }
+    ]
+  },
+  "layer_1": {
+    "square": {
+      "S1": "transience",
+      "S2": "permanence",
+      "~S2": "ephemerality",
+      "~S1": "endurance",
+      "M11": "change",
+      "M12": "stability",
+      "M13": "fleeting",
+      "M14": "lasting",
+      "M21": "fleetingness",
+      "M22": "constancy",
+      "M23": "instability",
+      "M24": "obsolescence",
+      "Mixed1": "durability",
+      "Mixed2": "persistence"
+    },
+    "lattice": {
+      "concepts": [
+        {
+          "id": 0,
+          "label": "bottom",
+          "short": "Bottom",
+          "name": "Bottom — empty extent, all four M2 attributes",
+          "extent": [],
+          "intent": [
+            "fleetingness",
+            "constancy",
+            "instability",
+            "obsolescence"
+          ]
+        },
+        {
+          "id": 1,
+          "label": "transience",
+          "short": "S1",
+          "name": "transience — inner term S1",
+          "extent": [
+            "transience"
+          ],
+          "intent": [
+            "fleetingness",
+            "constancy",
+            "instability"
+          ]
+        },
+        {
+          "id": 2,
+          "label": "permanence",
+          "short": "S2",
+          "name": "permanence — inner term S2",
+          "extent": [
+            "permanence"
+          ],
+          "intent": [
+            "fleetingness",
+            "constancy",
+            "obsolescence"
+          ]
+        },
+        {
+          "id": 3,
+          "label": "endurance",
+          "short": "~S1",
+          "name": "endurance — inner term ~S1",
+          "extent": [
+            "endurance"
+          ],
+          "intent": [
+            "constancy",
+            "instability",
+            "obsolescence"
+          ]
+        },
+        {
+          "id": 4,
+          "label": "ephemerality",
+          "short": "~S2",
+          "name": "ephemerality — inner term ~S2",
+          "extent": [
+            "ephemerality"
+          ],
+          "intent": [
+            "fleetingness",
+            "instability",
+            "obsolescence"
+          ]
+        },
+        {
+          "id": 5,
+          "label": "change",
+          "short": "M1:change",
+          "name": "change — M1 meta-term of transience, permanence",
+          "extent": [
+            "transience",
+            "permanence"
+          ],
+          "intent": [
+            "fleetingness",
+            "constancy"
+          ]
+        },
+        {
+          "id": 6,
+          "label": "stability",
+          "short": "M1:stability",
+          "name": "stability — M1 meta-term of endurance, ephemerality",
+          "extent": [
+            "endurance",
+            "ephemerality"
+          ],
+          "intent": [
+            "instability",
+            "obsolescence"
+          ]
+        },
+        {
+          "id": 7,
+          "label": "fleeting",
+          "short": "M1:fleeting",
+          "name": "fleeting — M1 meta-term of transience, ephemerality",
+          "extent": [
+            "transience",
+            "ephemerality"
+          ],
+          "intent": [
+            "fleetingness",
+            "instability"
+          ]
+        },
+        {
+          "id": 8,
+          "label": "lasting",
+          "short": "M1:lasting",
+          "name": "lasting — M1 meta-term of permanence, endurance",
+          "extent": [
+            "permanence",
+            "endurance"
+          ],
+          "intent": [
+            "constancy",
+            "obsolescence"
+          ]
+        },
+        {
+          "id": 9,
+          "label": "durability",
+          "short": "Mix:durability",
+          "name": "durability — mixed meta-term of transience, endurance",
+          "extent": [
+            "transience",
+            "endurance"
+          ],
+          "intent": [
+            "constancy",
+            "instability"
+          ]
+        },
+        {
+          "id": 10,
+          "label": "persistence",
+          "short": "Mix:persistence",
+          "name": "persistence — mixed meta-term of permanence, ephemerality",
+          "extent": [
+            "permanence",
+            "ephemerality"
+          ],
+          "intent": [
+            "fleetingness",
+            "obsolescence"
+          ]
+        },
+        {
+          "id": 11,
+          "label": "fleetingness",
+          "short": "M2:fleetingness",
+          "name": "fleetingness — M2 meta-term containing transience, permanence, ephemerality",
+          "extent": [
+            "transience",
+            "permanence",
+            "ephemerality"
+          ],
+          "intent": [
+            "fleetingness"
+          ]
+        },
+        {
+          "id": 12,
+          "label": "constancy",
+          "short": "M2:constancy",
+          "name": "constancy — M2 meta-term containing transience, permanence, endurance",
+          "extent": [
+            "transience",
+            "permanence",
+            "endurance"
+          ],
+          "intent": [
+            "constancy"
+          ]
+        },
+        {
+          "id": 13,
+          "label": "instability",
+          "short": "M2:instability",
+          "name": "instability — M2 meta-term containing endurance, ephemerality, transience",
+          "extent": [
+            "endurance",
+            "ephemerality",
+            "transience"
+          ],
+          "intent": [
+            "instability"
+          ]
+        },
+        {
+          "id": 14,
+          "label": "obsolescence",
+          "short": "M2:obsolescence",
+          "name": "obsolescence — M2 meta-term containing endurance, ephemerality, permanence",
+          "extent": [
+            "endurance",
+            "ephemerality",
+            "permanence"
+          ],
+          "intent": [
+            "obsolescence"
+          ]
+        },
+        {
+          "id": 15,
+          "label": "top",
+          "short": "Top",
+          "name": "Top — all inner terms, no shared attribute",
+          "extent": [
+            "transience",
+            "permanence",
+            "endurance",
+            "ephemerality"
+          ],
+          "intent": []
+        }
+      ],
+      "edges": [
+        [
+          15,
+          11
+        ],
+        [
+          15,
+          12
+        ],
+        [
+          15,
+          13
+        ],
+        [
+          15,
+          14
+        ],
+        [
+          11,
+          5
+        ],
+        [
+          11,
+          7
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          12,
+          8
+        ],
+        [
+          12,
+          9
+        ],
+        [
+          13,
+          6
+        ],
+        [
+          13,
+          7
+        ],
+        [
+          13,
+          9
+        ],
+        [
+          14,
+          6
+        ],
+        [
+          14,
+          8
+        ],
+        [
+          14,
+          10
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          10,
+          2
+        ],
+        [
+          10,
+          4
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ]
+    }
+  },
+  "layer_2": {
+    "S1": {
+      "parent_seme": "S1",
+      "parent_term": "transience",
+      "square": {
+        "S1": "life",
+        "S2": "death",
+        "~S2": "survival",
+        "~S1": "endlessness",
+        "M11": "transmutation",
+        "M12": "infinity",
+        "M13": "renewal",
+        "M14": "termination",
+        "M21": "lifedeath",
+        "M22": "lifeshadow",
+        "M23": "lifecircle",
+        "M24": "deathend",
+        "Mixed1": "lifendlessness",
+        "Mixed2": "deathsurvival"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "lifedeath",
+              "lifeshadow",
+              "lifecircle",
+              "deathend"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "life",
+            "short": "S1",
+            "name": "life — inner term S1",
+            "extent": [
+              "life"
+            ],
+            "intent": [
+              "lifedeath",
+              "lifeshadow",
+              "lifecircle"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "death",
+            "short": "S2",
+            "name": "death — inner term S2",
+            "extent": [
+              "death"
+            ],
+            "intent": [
+              "lifedeath",
+              "lifeshadow",
+              "deathend"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "endlessness",
+            "short": "~S1",
+            "name": "endlessness — inner term ~S1",
+            "extent": [
+              "endlessness"
+            ],
+            "intent": [
+              "lifeshadow",
+              "lifecircle",
+              "deathend"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "survival",
+            "short": "~S2",
+            "name": "survival — inner term ~S2",
+            "extent": [
+              "survival"
+            ],
+            "intent": [
+              "lifedeath",
+              "lifecircle",
+              "deathend"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "transmutation",
+            "short": "M1:transmutation",
+            "name": "transmutation — M1 meta-term of life, death",
+            "extent": [
+              "life",
+              "death"
+            ],
+            "intent": [
+              "lifedeath",
+              "lifeshadow"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "infinity",
+            "short": "M1:infinity",
+            "name": "infinity — M1 meta-term of endlessness, survival",
+            "extent": [
+              "endlessness",
+              "survival"
+            ],
+            "intent": [
+              "lifecircle",
+              "deathend"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "renewal",
+            "short": "M1:renewal",
+            "name": "renewal — M1 meta-term of life, survival",
+            "extent": [
+              "life",
+              "survival"
+            ],
+            "intent": [
+              "lifedeath",
+              "lifecircle"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "termination",
+            "short": "M1:termination",
+            "name": "termination — M1 meta-term of death, endlessness",
+            "extent": [
+              "death",
+              "endlessness"
+            ],
+            "intent": [
+              "lifeshadow",
+              "deathend"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "lifendlessness",
+            "short": "Mix:lifendlessness",
+            "name": "lifendlessness — mixed meta-term of life, endlessness",
+            "extent": [
+              "life",
+              "endlessness"
+            ],
+            "intent": [
+              "lifeshadow",
+              "lifecircle"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "deathsurvival",
+            "short": "Mix:deathsurvival",
+            "name": "deathsurvival — mixed meta-term of death, survival",
+            "extent": [
+              "death",
+              "survival"
+            ],
+            "intent": [
+              "lifedeath",
+              "deathend"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "lifedeath",
+            "short": "M2:lifedeath",
+            "name": "lifedeath — M2 meta-term containing life, death, survival",
+            "extent": [
+              "life",
+              "death",
+              "survival"
+            ],
+            "intent": [
+              "lifedeath"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "lifeshadow",
+            "short": "M2:lifeshadow",
+            "name": "lifeshadow — M2 meta-term containing life, death, endlessness",
+            "extent": [
+              "life",
+              "death",
+              "endlessness"
+            ],
+            "intent": [
+              "lifeshadow"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "lifecircle",
+            "short": "M2:lifecircle",
+            "name": "lifecircle — M2 meta-term containing endlessness, survival, life",
+            "extent": [
+              "endlessness",
+              "survival",
+              "life"
+            ],
+            "intent": [
+              "lifecircle"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "deathend",
+            "short": "M2:deathend",
+            "name": "deathend — M2 meta-term containing endlessness, survival, death",
+            "extent": [
+              "endlessness",
+              "survival",
+              "death"
+            ],
+            "intent": [
+              "deathend"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "life",
+              "death",
+              "endlessness",
+              "survival"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "S2": {
+      "parent_seme": "S2",
+      "parent_term": "permanence",
+      "square": {
+        "S1": "uninterrupted continuity",
+        "S2": "consistent constancy",
+        "~S2": "variability",
+        "~S1": "disruption",
+        "M11": "endurence",
+        "M12": "fluxion",
+        "M13": "steadflow",
+        "M14": "constvar",
+        "M21": "endless_variation",
+        "M22": "uninterrupted_fluidity",
+        "M23": "disrupted_continuity",
+        "M24": "variable_constancy",
+        "Mixed1": "disrupted_continuity",
+        "Mixed2": "variable_constancy"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "endless_variation",
+              "uninterrupted_fluidity",
+              "disrupted_continuity",
+              "variable_constancy"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "uninterrupted continuity",
+            "short": "S1",
+            "name": "uninterrupted continuity — inner term S1",
+            "extent": [
+              "uninterrupted continuity"
+            ],
+            "intent": [
+              "endless_variation",
+              "uninterrupted_fluidity",
+              "disrupted_continuity"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "consistent constancy",
+            "short": "S2",
+            "name": "consistent constancy — inner term S2",
+            "extent": [
+              "consistent constancy"
+            ],
+            "intent": [
+              "endless_variation",
+              "uninterrupted_fluidity",
+              "variable_constancy"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "disruption",
+            "short": "~S1",
+            "name": "disruption — inner term ~S1",
+            "extent": [
+              "disruption"
+            ],
+            "intent": [
+              "uninterrupted_fluidity",
+              "disrupted_continuity",
+              "variable_constancy"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "variability",
+            "short": "~S2",
+            "name": "variability — inner term ~S2",
+            "extent": [
+              "variability"
+            ],
+            "intent": [
+              "endless_variation",
+              "disrupted_continuity",
+              "variable_constancy"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "endurence",
+            "short": "M1:endurence",
+            "name": "endurence — M1 meta-term of uninterrupted continuity, consistent constancy",
+            "extent": [
+              "uninterrupted continuity",
+              "consistent constancy"
+            ],
+            "intent": [
+              "endless_variation",
+              "uninterrupted_fluidity"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "fluxion",
+            "short": "M1:fluxion",
+            "name": "fluxion — M1 meta-term of disruption, variability",
+            "extent": [
+              "disruption",
+              "variability"
+            ],
+            "intent": [
+              "disrupted_continuity",
+              "variable_constancy"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "steadflow",
+            "short": "M1:steadflow",
+            "name": "steadflow — M1 meta-term of uninterrupted continuity, variability",
+            "extent": [
+              "uninterrupted continuity",
+              "variability"
+            ],
+            "intent": [
+              "endless_variation",
+              "disrupted_continuity"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "constvar",
+            "short": "M1:constvar",
+            "name": "constvar — M1 meta-term of consistent constancy, disruption",
+            "extent": [
+              "consistent constancy",
+              "disruption"
+            ],
+            "intent": [
+              "uninterrupted_fluidity",
+              "variable_constancy"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "disrupted_continuity",
+            "short": "Mix:disrupted_continuity",
+            "name": "disrupted_continuity — mixed meta-term of uninterrupted continuity, disruption",
+            "extent": [
+              "uninterrupted continuity",
+              "disruption"
+            ],
+            "intent": [
+              "uninterrupted_fluidity",
+              "disrupted_continuity"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "variable_constancy",
+            "short": "Mix:variable_constancy",
+            "name": "variable_constancy — mixed meta-term of consistent constancy, variability",
+            "extent": [
+              "consistent constancy",
+              "variability"
+            ],
+            "intent": [
+              "endless_variation",
+              "variable_constancy"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "endless_variation",
+            "short": "M2:endless_variation",
+            "name": "endless_variation — M2 meta-term containing uninterrupted continuity, consistent constancy, variability",
+            "extent": [
+              "uninterrupted continuity",
+              "consistent constancy",
+              "variability"
+            ],
+            "intent": [
+              "endless_variation"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "uninterrupted_fluidity",
+            "short": "M2:uninterrupted_fluidity",
+            "name": "uninterrupted_fluidity — M2 meta-term containing uninterrupted continuity, consistent constancy, disruption",
+            "extent": [
+              "uninterrupted continuity",
+              "consistent constancy",
+              "disruption"
+            ],
+            "intent": [
+              "uninterrupted_fluidity"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "disrupted_continuity",
+            "short": "M2:disrupted_continuity",
+            "name": "disrupted_continuity — M2 meta-term containing disruption, variability, uninterrupted continuity",
+            "extent": [
+              "disruption",
+              "variability",
+              "uninterrupted continuity"
+            ],
+            "intent": [
+              "disrupted_continuity"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "variable_constancy",
+            "short": "M2:variable_constancy",
+            "name": "variable_constancy — M2 meta-term containing disruption, variability, consistent constancy",
+            "extent": [
+              "disruption",
+              "variability",
+              "consistent constancy"
+            ],
+            "intent": [
+              "variable_constancy"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "uninterrupted continuity",
+              "consistent constancy",
+              "disruption",
+              "variability"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "~S1": {
+      "parent_seme": "~S1",
+      "parent_term": "endurance",
+      "square": {
+        "S1": "resilient_stamina",
+        "S2": "patient_endurance",
+        "~S2": "impatient_fleetingness",
+        "~S1": "volatile_instability",
+        "M11": "steadfastness",
+        "M12": "chaos",
+        "M13": "fortitude",
+        "M14": "temperance",
+        "M21": "steadfastness",
+        "M22": "flexibility",
+        "M23": "wavering",
+        "M24": "temperance",
+        "Mixed1": "Mixed_resilient_instability",
+        "Mixed2": "Mixed_patient_fleetingness"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "steadfastness",
+              "flexibility",
+              "wavering",
+              "temperance"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "resilient_stamina",
+            "short": "S1",
+            "name": "resilient_stamina — inner term S1",
+            "extent": [
+              "resilient_stamina"
+            ],
+            "intent": [
+              "steadfastness",
+              "flexibility",
+              "wavering"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "patient_endurance",
+            "short": "S2",
+            "name": "patient_endurance — inner term S2",
+            "extent": [
+              "patient_endurance"
+            ],
+            "intent": [
+              "steadfastness",
+              "flexibility",
+              "temperance"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "volatile_instability",
+            "short": "~S1",
+            "name": "volatile_instability — inner term ~S1",
+            "extent": [
+              "volatile_instability"
+            ],
+            "intent": [
+              "flexibility",
+              "wavering",
+              "temperance"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "impatient_fleetingness",
+            "short": "~S2",
+            "name": "impatient_fleetingness — inner term ~S2",
+            "extent": [
+              "impatient_fleetingness"
+            ],
+            "intent": [
+              "steadfastness",
+              "wavering",
+              "temperance"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "steadfastness",
+            "short": "M1:steadfastness",
+            "name": "steadfastness — M1 meta-term of resilient_stamina, patient_endurance",
+            "extent": [
+              "resilient_stamina",
+              "patient_endurance"
+            ],
+            "intent": [
+              "steadfastness",
+              "flexibility"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "chaos",
+            "short": "M1:chaos",
+            "name": "chaos — M1 meta-term of volatile_instability, impatient_fleetingness",
+            "extent": [
+              "volatile_instability",
+              "impatient_fleetingness"
+            ],
+            "intent": [
+              "wavering",
+              "temperance"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "fortitude",
+            "short": "M1:fortitude",
+            "name": "fortitude — M1 meta-term of resilient_stamina, impatient_fleetingness",
+            "extent": [
+              "resilient_stamina",
+              "impatient_fleetingness"
+            ],
+            "intent": [
+              "steadfastness",
+              "wavering"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "temperance",
+            "short": "M1:temperance",
+            "name": "temperance — M1 meta-term of patient_endurance, volatile_instability",
+            "extent": [
+              "patient_endurance",
+              "volatile_instability"
+            ],
+            "intent": [
+              "flexibility",
+              "temperance"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Mixed_resilient_instability",
+            "short": "Mix:Mixed_resilient_instability",
+            "name": "Mixed_resilient_instability — mixed meta-term of resilient_stamina, volatile_instability",
+            "extent": [
+              "resilient_stamina",
+              "volatile_instability"
+            ],
+            "intent": [
+              "flexibility",
+              "wavering"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Mixed_patient_fleetingness",
+            "short": "Mix:Mixed_patient_fleetingness",
+            "name": "Mixed_patient_fleetingness — mixed meta-term of patient_endurance, impatient_fleetingness",
+            "extent": [
+              "patient_endurance",
+              "impatient_fleetingness"
+            ],
+            "intent": [
+              "steadfastness",
+              "temperance"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "steadfastness",
+            "short": "M2:steadfastness",
+            "name": "steadfastness — M2 meta-term containing resilient_stamina, patient_endurance, impatient_fleetingness",
+            "extent": [
+              "resilient_stamina",
+              "patient_endurance",
+              "impatient_fleetingness"
+            ],
+            "intent": [
+              "steadfastness"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "flexibility",
+            "short": "M2:flexibility",
+            "name": "flexibility — M2 meta-term containing resilient_stamina, patient_endurance, volatile_instability",
+            "extent": [
+              "resilient_stamina",
+              "patient_endurance",
+              "volatile_instability"
+            ],
+            "intent": [
+              "flexibility"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "wavering",
+            "short": "M2:wavering",
+            "name": "wavering — M2 meta-term containing volatile_instability, impatient_fleetingness, resilient_stamina",
+            "extent": [
+              "volatile_instability",
+              "impatient_fleetingness",
+              "resilient_stamina"
+            ],
+            "intent": [
+              "wavering"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "temperance",
+            "short": "M2:temperance",
+            "name": "temperance — M2 meta-term containing volatile_instability, impatient_fleetingness, patient_endurance",
+            "extent": [
+              "volatile_instability",
+              "impatient_fleetingness",
+              "patient_endurance"
+            ],
+            "intent": [
+              "temperance"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "resilient_stamina",
+              "patient_endurance",
+              "volatile_instability",
+              "impatient_fleetingness"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "~S2": {
+      "parent_seme": "~S2",
+      "parent_term": "ephemerality",
+      "square": {
+        "S1": "momentary_existence",
+        "S2": "pending_vanishment",
+        "~S2": "enduring_presence",
+        "~S1": "permanent_existence",
+        "M11": "evanescent",
+        "M12": "eternal",
+        "M13": "transient",
+        "M14": "phantom",
+        "M21": "evanescent_presence",
+        "M22": "transient_eternity",
+        "M23": "nullifying_continuum",
+        "M24": "vanishing_eternality",
+        "Mixed1": "Mixed_momentary_permanence",
+        "Mixed2": "Mixed_pending_enduring"
+      },
+      "lattice": {
+        "concepts": [
+          {
+            "id": 0,
+            "label": "bottom",
+            "short": "Bottom",
+            "name": "Bottom — empty extent, all four M2 attributes",
+            "extent": [],
+            "intent": [
+              "evanescent_presence",
+              "transient_eternity",
+              "nullifying_continuum",
+              "vanishing_eternality"
+            ]
+          },
+          {
+            "id": 1,
+            "label": "momentary_existence",
+            "short": "S1",
+            "name": "momentary_existence — inner term S1",
+            "extent": [
+              "momentary_existence"
+            ],
+            "intent": [
+              "evanescent_presence",
+              "transient_eternity",
+              "nullifying_continuum"
+            ]
+          },
+          {
+            "id": 2,
+            "label": "pending_vanishment",
+            "short": "S2",
+            "name": "pending_vanishment — inner term S2",
+            "extent": [
+              "pending_vanishment"
+            ],
+            "intent": [
+              "evanescent_presence",
+              "transient_eternity",
+              "vanishing_eternality"
+            ]
+          },
+          {
+            "id": 3,
+            "label": "permanent_existence",
+            "short": "~S1",
+            "name": "permanent_existence — inner term ~S1",
+            "extent": [
+              "permanent_existence"
+            ],
+            "intent": [
+              "transient_eternity",
+              "nullifying_continuum",
+              "vanishing_eternality"
+            ]
+          },
+          {
+            "id": 4,
+            "label": "enduring_presence",
+            "short": "~S2",
+            "name": "enduring_presence — inner term ~S2",
+            "extent": [
+              "enduring_presence"
+            ],
+            "intent": [
+              "evanescent_presence",
+              "nullifying_continuum",
+              "vanishing_eternality"
+            ]
+          },
+          {
+            "id": 5,
+            "label": "evanescent",
+            "short": "M1:evanescent",
+            "name": "evanescent — M1 meta-term of momentary_existence, pending_vanishment",
+            "extent": [
+              "momentary_existence",
+              "pending_vanishment"
+            ],
+            "intent": [
+              "evanescent_presence",
+              "transient_eternity"
+            ]
+          },
+          {
+            "id": 6,
+            "label": "eternal",
+            "short": "M1:eternal",
+            "name": "eternal — M1 meta-term of permanent_existence, enduring_presence",
+            "extent": [
+              "permanent_existence",
+              "enduring_presence"
+            ],
+            "intent": [
+              "nullifying_continuum",
+              "vanishing_eternality"
+            ]
+          },
+          {
+            "id": 7,
+            "label": "transient",
+            "short": "M1:transient",
+            "name": "transient — M1 meta-term of momentary_existence, enduring_presence",
+            "extent": [
+              "momentary_existence",
+              "enduring_presence"
+            ],
+            "intent": [
+              "evanescent_presence",
+              "nullifying_continuum"
+            ]
+          },
+          {
+            "id": 8,
+            "label": "phantom",
+            "short": "M1:phantom",
+            "name": "phantom — M1 meta-term of pending_vanishment, permanent_existence",
+            "extent": [
+              "pending_vanishment",
+              "permanent_existence"
+            ],
+            "intent": [
+              "transient_eternity",
+              "vanishing_eternality"
+            ]
+          },
+          {
+            "id": 9,
+            "label": "Mixed_momentary_permanence",
+            "short": "Mix:Mixed_momentary_permanence",
+            "name": "Mixed_momentary_permanence — mixed meta-term of momentary_existence, permanent_existence",
+            "extent": [
+              "momentary_existence",
+              "permanent_existence"
+            ],
+            "intent": [
+              "transient_eternity",
+              "nullifying_continuum"
+            ]
+          },
+          {
+            "id": 10,
+            "label": "Mixed_pending_enduring",
+            "short": "Mix:Mixed_pending_enduring",
+            "name": "Mixed_pending_enduring — mixed meta-term of pending_vanishment, enduring_presence",
+            "extent": [
+              "pending_vanishment",
+              "enduring_presence"
+            ],
+            "intent": [
+              "evanescent_presence",
+              "vanishing_eternality"
+            ]
+          },
+          {
+            "id": 11,
+            "label": "evanescent_presence",
+            "short": "M2:evanescent_presence",
+            "name": "evanescent_presence — M2 meta-term containing momentary_existence, pending_vanishment, enduring_presence",
+            "extent": [
+              "momentary_existence",
+              "pending_vanishment",
+              "enduring_presence"
+            ],
+            "intent": [
+              "evanescent_presence"
+            ]
+          },
+          {
+            "id": 12,
+            "label": "transient_eternity",
+            "short": "M2:transient_eternity",
+            "name": "transient_eternity — M2 meta-term containing momentary_existence, pending_vanishment, permanent_existence",
+            "extent": [
+              "momentary_existence",
+              "pending_vanishment",
+              "permanent_existence"
+            ],
+            "intent": [
+              "transient_eternity"
+            ]
+          },
+          {
+            "id": 13,
+            "label": "nullifying_continuum",
+            "short": "M2:nullifying_continuum",
+            "name": "nullifying_continuum — M2 meta-term containing permanent_existence, enduring_presence, momentary_existence",
+            "extent": [
+              "permanent_existence",
+              "enduring_presence",
+              "momentary_existence"
+            ],
+            "intent": [
+              "nullifying_continuum"
+            ]
+          },
+          {
+            "id": 14,
+            "label": "vanishing_eternality",
+            "short": "M2:vanishing_eternality",
+            "name": "vanishing_eternality — M2 meta-term containing permanent_existence, enduring_presence, pending_vanishment",
+            "extent": [
+              "permanent_existence",
+              "enduring_presence",
+              "pending_vanishment"
+            ],
+            "intent": [
+              "vanishing_eternality"
+            ]
+          },
+          {
+            "id": 15,
+            "label": "top",
+            "short": "Top",
+            "name": "Top — all inner terms, no shared attribute",
+            "extent": [
+              "momentary_existence",
+              "pending_vanishment",
+              "permanent_existence",
+              "enduring_presence"
+            ],
+            "intent": []
+          }
+        ],
+        "edges": [
+          [
+            15,
+            11
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            5
+          ],
+          [
+            12,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            13,
+            9
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            8
+          ],
+          [
+            14,
+            10
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "validation": {
+    "layer_1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 and S2 are contraries. They are not antonyms, contradictories, or synonyms. They can hold together, both can fail together, and one can hold alone."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 and ~S1 are contradictories. S1 ('transience') and ~S1 ('endurance') are direct opposites."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 and ~S2 are contradictories. S2 ('permanence') and ~S2 ('ephemerality') are direct opposites."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "~S2 ('ephemerality') implies S1 ('transience'). Ephemerality implies transience."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "~S1 ('endurance') implies S2 ('permanence'). Endurance implies permanence."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('endurance') and ~S2 ('ephemerality') are contraries. They are not direct opposites, but they can hold together, both can fail together, and one can hold alone."
+      }
+    },
+    "layer_2_S1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 ('life') and S2 ('death') are contraries because they can hold together, both can fail together, and one can hold alone. They are not antonyms, contradictories, or synonyms."
+      },
+      "rule2": {
+        "pass": false,
+        "explanation": "S1 ('life') and ~S1 ('endlessness') are not contradictories because 'endlessness' does not directly oppose 'life'. 'Endlessness' can imply a state of being without end but does not negate the existence of life."
+      },
+      "rule3": {
+        "pass": false,
+        "explanation": "S2 ('death') and ~S2 ('survival') are not contradictories because 'survival' does not directly oppose 'death'. 'Survival' can imply continuing to exist but does not negate the possibility of death."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "~S2 ('survival') implies S1 ('life') because survival implies the continuation of life."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "~S1 ('endlessness') implies S2 ('death') because a state of endlessness can imply the cessation of life, leading to death."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('endlessness') and ~S2 ('survival') are contraries because they can hold together, both can fail together, and one can hold alone. They are not synonyms."
+      }
+    },
+    "layer_2_S2": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 and S2 are not antonyms, contradictories, nor synonyms. S1 represents 'uninterrupted continuity' and S2 represents 'consistent constancy'. They can both hold together, both can fail together, and one can hold alone, making them contraries."
+      },
+      "rule2": {
+        "pass": false,
+        "explanation": "S1 and ~S1 are not contradictories. S1 is 'uninterrupted continuity' and ~S1 is 'disruption'. Disruption can still occur intermittently without being a total contradiction."
+      },
+      "rule3": {
+        "pass": false,
+        "explanation": "S2 and ~S2 are not contradictories. S2 is 'consistent constancy' and ~S2 is 'variability'. Variability can exist within a consistent framework, so they are not strict contradictories."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "~S2 ('variability') implies S1 ('uninterrupted continuity'). If there is variability, there is likely an interruption in continuity."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "~S1 ('disruption') implies S2 ('consistent constancy'). If there is disruption, it suggests a lack of consistent constancy."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 ('disruption') and ~S2 ('variability') are contraries. Disruption and variability are opposite states; if one is present, the other is not."
+      }
+    },
+    "layer_2_~S1": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 and S2 are CONTRARIES. Both can hold together, both can fail together, one can hold alone."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 and ~S1 are contradictories."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 and ~S2 are contradictories."
+      },
+      "rule4": {
+        "pass": true,
+        "explanation": "If S2 (patient_endurance) holds, then S1 (resilient_stamina) must hold."
+      },
+      "rule5": {
+        "pass": true,
+        "explanation": "If ~S1 (~resilient_stamina) holds, then S2 (patient_endurance) must hold."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 and ~S2 are contraries."
+      }
+    },
+    "layer_2_~S2": {
+      "rule1": {
+        "pass": true,
+        "explanation": "S1 and S2 are indeed contraries. They cannot both hold together and cannot both fail together. One can hold alone, but not both together."
+      },
+      "rule2": {
+        "pass": true,
+        "explanation": "S1 and ~S1 are contradictories. S1 (momentary existence) and ~S1 (permanent existence) cannot both be true at the same time."
+      },
+      "rule3": {
+        "pass": true,
+        "explanation": "S2 and ~S2 are contradictories. S2 (pending vanishment) and ~S2 (enduring presence) cannot both be true at the same time."
+      },
+      "rule4": {
+        "pass": false,
+        "explanation": "~S2 (enduring presence) does not imply S1 (momentary existence). In fact, they are contraries, not contraries implying each other."
+      },
+      "rule5": {
+        "pass": false,
+        "explanation": "~S1 (permanent existence) does not imply S2 (pending vanishment). They are contraries, not contraries implying each other."
+      },
+      "rule6": {
+        "pass": true,
+        "explanation": "~S1 (permanent existence) and ~S2 (enduring presence) are contraries. They cannot both hold together and cannot both fail together. One can hold alone, but not both together."
+      }
+    }
+  },
+  "architectonic": {
+    "concepts": [
+      {
+        "id": "A:0",
+        "label": "bottom",
+        "short": "Bottom",
+        "name": "Bottom — empty extent, all four M2 attributes",
+        "extent": [],
+        "intent": [
+          "fleetingness",
+          "constancy",
+          "instability",
+          "obsolescence"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "shared_bottom"
+      },
+      {
+        "id": "A:5",
+        "label": "change",
+        "short": "M1:change",
+        "name": "change — M1 meta-term of transience, permanence",
+        "extent": [
+          "transience",
+          "permanence"
+        ],
+        "intent": [
+          "fleetingness",
+          "constancy"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:6",
+        "label": "stability",
+        "short": "M1:stability",
+        "name": "stability — M1 meta-term of endurance, ephemerality",
+        "extent": [
+          "endurance",
+          "ephemerality"
+        ],
+        "intent": [
+          "instability",
+          "obsolescence"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:7",
+        "label": "fleeting",
+        "short": "M1:fleeting",
+        "name": "fleeting — M1 meta-term of transience, ephemerality",
+        "extent": [
+          "transience",
+          "ephemerality"
+        ],
+        "intent": [
+          "fleetingness",
+          "instability"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:8",
+        "label": "lasting",
+        "short": "M1:lasting",
+        "name": "lasting — M1 meta-term of permanence, endurance",
+        "extent": [
+          "permanence",
+          "endurance"
+        ],
+        "intent": [
+          "constancy",
+          "obsolescence"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:9",
+        "label": "durability",
+        "short": "Mix:durability",
+        "name": "durability — mixed meta-term of transience, endurance",
+        "extent": [
+          "transience",
+          "endurance"
+        ],
+        "intent": [
+          "constancy",
+          "instability"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:10",
+        "label": "persistence",
+        "short": "Mix:persistence",
+        "name": "persistence — mixed meta-term of permanence, ephemerality",
+        "extent": [
+          "permanence",
+          "ephemerality"
+        ],
+        "intent": [
+          "fleetingness",
+          "obsolescence"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:11",
+        "label": "fleetingness",
+        "short": "M2:fleetingness",
+        "name": "fleetingness — M2 meta-term containing transience, permanence, ephemerality",
+        "extent": [
+          "transience",
+          "permanence",
+          "ephemerality"
+        ],
+        "intent": [
+          "fleetingness"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:12",
+        "label": "constancy",
+        "short": "M2:constancy",
+        "name": "constancy — M2 meta-term containing transience, permanence, endurance",
+        "extent": [
+          "transience",
+          "permanence",
+          "endurance"
+        ],
+        "intent": [
+          "constancy"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:13",
+        "label": "instability",
+        "short": "M2:instability",
+        "name": "instability — M2 meta-term containing endurance, ephemerality, transience",
+        "extent": [
+          "endurance",
+          "ephemerality",
+          "transience"
+        ],
+        "intent": [
+          "instability"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:14",
+        "label": "obsolescence",
+        "short": "M2:obsolescence",
+        "name": "obsolescence — M2 meta-term containing endurance, ephemerality, permanence",
+        "extent": [
+          "endurance",
+          "ephemerality",
+          "permanence"
+        ],
+        "intent": [
+          "obsolescence"
+        ],
+        "layer": 1,
+        "origin": "A",
+        "role": "layer_1_internal"
+      },
+      {
+        "id": "A:15",
+        "label": "top",
+        "short": "Top",
+        "name": "Top — all inner terms, no shared attribute",
+        "extent": [
+          "transience",
+          "permanence",
+          "endurance",
+          "ephemerality"
+        ],
+        "intent": [],
+        "layer": 1,
+        "origin": "A",
+        "role": "architectonic_top"
+      },
+      {
+        "id": "S1:1",
+        "label": "life",
+        "short": "S1",
+        "name": "life — inner term S1",
+        "extent": [
+          "life"
+        ],
+        "intent": [
+          "lifedeath",
+          "lifeshadow",
+          "lifecircle"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:2",
+        "label": "death",
+        "short": "S2",
+        "name": "death — inner term S2",
+        "extent": [
+          "death"
+        ],
+        "intent": [
+          "lifedeath",
+          "lifeshadow",
+          "deathend"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:3",
+        "label": "endlessness",
+        "short": "~S1",
+        "name": "endlessness — inner term ~S1",
+        "extent": [
+          "endlessness"
+        ],
+        "intent": [
+          "lifeshadow",
+          "lifecircle",
+          "deathend"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:4",
+        "label": "survival",
+        "short": "~S2",
+        "name": "survival — inner term ~S2",
+        "extent": [
+          "survival"
+        ],
+        "intent": [
+          "lifedeath",
+          "lifecircle",
+          "deathend"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:5",
+        "label": "transmutation",
+        "short": "M1:transmutation",
+        "name": "transmutation — M1 meta-term of life, death",
+        "extent": [
+          "life",
+          "death"
+        ],
+        "intent": [
+          "lifedeath",
+          "lifeshadow"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:6",
+        "label": "infinity",
+        "short": "M1:infinity",
+        "name": "infinity — M1 meta-term of endlessness, survival",
+        "extent": [
+          "endlessness",
+          "survival"
+        ],
+        "intent": [
+          "lifecircle",
+          "deathend"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:7",
+        "label": "renewal",
+        "short": "M1:renewal",
+        "name": "renewal — M1 meta-term of life, survival",
+        "extent": [
+          "life",
+          "survival"
+        ],
+        "intent": [
+          "lifedeath",
+          "lifecircle"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:8",
+        "label": "termination",
+        "short": "M1:termination",
+        "name": "termination — M1 meta-term of death, endlessness",
+        "extent": [
+          "death",
+          "endlessness"
+        ],
+        "intent": [
+          "lifeshadow",
+          "deathend"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:9",
+        "label": "lifendlessness",
+        "short": "Mix:lifendlessness",
+        "name": "lifendlessness — mixed meta-term of life, endlessness",
+        "extent": [
+          "life",
+          "endlessness"
+        ],
+        "intent": [
+          "lifeshadow",
+          "lifecircle"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:10",
+        "label": "deathsurvival",
+        "short": "Mix:deathsurvival",
+        "name": "deathsurvival — mixed meta-term of death, survival",
+        "extent": [
+          "death",
+          "survival"
+        ],
+        "intent": [
+          "lifedeath",
+          "deathend"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:11",
+        "label": "lifedeath",
+        "short": "M2:lifedeath",
+        "name": "lifedeath — M2 meta-term containing life, death, survival",
+        "extent": [
+          "life",
+          "death",
+          "survival"
+        ],
+        "intent": [
+          "lifedeath"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:12",
+        "label": "lifeshadow",
+        "short": "M2:lifeshadow",
+        "name": "lifeshadow — M2 meta-term containing life, death, endlessness",
+        "extent": [
+          "life",
+          "death",
+          "endlessness"
+        ],
+        "intent": [
+          "lifeshadow"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:13",
+        "label": "lifecircle",
+        "short": "M2:lifecircle",
+        "name": "lifecircle — M2 meta-term containing endlessness, survival, life",
+        "extent": [
+          "endlessness",
+          "survival",
+          "life"
+        ],
+        "intent": [
+          "lifecircle"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:14",
+        "label": "deathend",
+        "short": "M2:deathend",
+        "name": "deathend — M2 meta-term containing endlessness, survival, death",
+        "extent": [
+          "endlessness",
+          "survival",
+          "death"
+        ],
+        "intent": [
+          "deathend"
+        ],
+        "layer": 2,
+        "origin": "S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S1:15",
+        "label": "transience*",
+        "short": "transience",
+        "name": "Fully-articulated transience",
+        "extent": [
+          "life",
+          "death",
+          "endlessness",
+          "survival"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "S1",
+        "role": "interface"
+      },
+      {
+        "id": "S2:1",
+        "label": "uninterrupted continuity",
+        "short": "S1",
+        "name": "uninterrupted continuity — inner term S1",
+        "extent": [
+          "uninterrupted continuity"
+        ],
+        "intent": [
+          "endless_variation",
+          "uninterrupted_fluidity",
+          "disrupted_continuity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:2",
+        "label": "consistent constancy",
+        "short": "S2",
+        "name": "consistent constancy — inner term S2",
+        "extent": [
+          "consistent constancy"
+        ],
+        "intent": [
+          "endless_variation",
+          "uninterrupted_fluidity",
+          "variable_constancy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:3",
+        "label": "disruption",
+        "short": "~S1",
+        "name": "disruption — inner term ~S1",
+        "extent": [
+          "disruption"
+        ],
+        "intent": [
+          "uninterrupted_fluidity",
+          "disrupted_continuity",
+          "variable_constancy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:4",
+        "label": "variability",
+        "short": "~S2",
+        "name": "variability — inner term ~S2",
+        "extent": [
+          "variability"
+        ],
+        "intent": [
+          "endless_variation",
+          "disrupted_continuity",
+          "variable_constancy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:5",
+        "label": "endurence",
+        "short": "M1:endurence",
+        "name": "endurence — M1 meta-term of uninterrupted continuity, consistent constancy",
+        "extent": [
+          "uninterrupted continuity",
+          "consistent constancy"
+        ],
+        "intent": [
+          "endless_variation",
+          "uninterrupted_fluidity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:6",
+        "label": "fluxion",
+        "short": "M1:fluxion",
+        "name": "fluxion — M1 meta-term of disruption, variability",
+        "extent": [
+          "disruption",
+          "variability"
+        ],
+        "intent": [
+          "disrupted_continuity",
+          "variable_constancy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:7",
+        "label": "steadflow",
+        "short": "M1:steadflow",
+        "name": "steadflow — M1 meta-term of uninterrupted continuity, variability",
+        "extent": [
+          "uninterrupted continuity",
+          "variability"
+        ],
+        "intent": [
+          "endless_variation",
+          "disrupted_continuity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:8",
+        "label": "constvar",
+        "short": "M1:constvar",
+        "name": "constvar — M1 meta-term of consistent constancy, disruption",
+        "extent": [
+          "consistent constancy",
+          "disruption"
+        ],
+        "intent": [
+          "uninterrupted_fluidity",
+          "variable_constancy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:9",
+        "label": "disrupted_continuity",
+        "short": "Mix:disrupted_continuity",
+        "name": "disrupted_continuity — mixed meta-term of uninterrupted continuity, disruption",
+        "extent": [
+          "uninterrupted continuity",
+          "disruption"
+        ],
+        "intent": [
+          "uninterrupted_fluidity",
+          "disrupted_continuity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:10",
+        "label": "variable_constancy",
+        "short": "Mix:variable_constancy",
+        "name": "variable_constancy — mixed meta-term of consistent constancy, variability",
+        "extent": [
+          "consistent constancy",
+          "variability"
+        ],
+        "intent": [
+          "endless_variation",
+          "variable_constancy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:11",
+        "label": "endless_variation",
+        "short": "M2:endless_variation",
+        "name": "endless_variation — M2 meta-term containing uninterrupted continuity, consistent constancy, variability",
+        "extent": [
+          "uninterrupted continuity",
+          "consistent constancy",
+          "variability"
+        ],
+        "intent": [
+          "endless_variation"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:12",
+        "label": "uninterrupted_fluidity",
+        "short": "M2:uninterrupted_fluidity",
+        "name": "uninterrupted_fluidity — M2 meta-term containing uninterrupted continuity, consistent constancy, disruption",
+        "extent": [
+          "uninterrupted continuity",
+          "consistent constancy",
+          "disruption"
+        ],
+        "intent": [
+          "uninterrupted_fluidity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:13",
+        "label": "disrupted_continuity",
+        "short": "M2:disrupted_continuity",
+        "name": "disrupted_continuity — M2 meta-term containing disruption, variability, uninterrupted continuity",
+        "extent": [
+          "disruption",
+          "variability",
+          "uninterrupted continuity"
+        ],
+        "intent": [
+          "disrupted_continuity"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:14",
+        "label": "variable_constancy",
+        "short": "M2:variable_constancy",
+        "name": "variable_constancy — M2 meta-term containing disruption, variability, consistent constancy",
+        "extent": [
+          "disruption",
+          "variability",
+          "consistent constancy"
+        ],
+        "intent": [
+          "variable_constancy"
+        ],
+        "layer": 2,
+        "origin": "S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "S2:15",
+        "label": "permanence*",
+        "short": "permanence",
+        "name": "Fully-articulated permanence",
+        "extent": [
+          "uninterrupted continuity",
+          "consistent constancy",
+          "disruption",
+          "variability"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "S2",
+        "role": "interface"
+      },
+      {
+        "id": "~S1:1",
+        "label": "resilient_stamina",
+        "short": "S1",
+        "name": "resilient_stamina — inner term S1",
+        "extent": [
+          "resilient_stamina"
+        ],
+        "intent": [
+          "steadfastness",
+          "flexibility",
+          "wavering"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:2",
+        "label": "patient_endurance",
+        "short": "S2",
+        "name": "patient_endurance — inner term S2",
+        "extent": [
+          "patient_endurance"
+        ],
+        "intent": [
+          "steadfastness",
+          "flexibility",
+          "temperance"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:3",
+        "label": "volatile_instability",
+        "short": "~S1",
+        "name": "volatile_instability — inner term ~S1",
+        "extent": [
+          "volatile_instability"
+        ],
+        "intent": [
+          "flexibility",
+          "wavering",
+          "temperance"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:4",
+        "label": "impatient_fleetingness",
+        "short": "~S2",
+        "name": "impatient_fleetingness — inner term ~S2",
+        "extent": [
+          "impatient_fleetingness"
+        ],
+        "intent": [
+          "steadfastness",
+          "wavering",
+          "temperance"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:5",
+        "label": "steadfastness",
+        "short": "M1:steadfastness",
+        "name": "steadfastness — M1 meta-term of resilient_stamina, patient_endurance",
+        "extent": [
+          "resilient_stamina",
+          "patient_endurance"
+        ],
+        "intent": [
+          "steadfastness",
+          "flexibility"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:6",
+        "label": "chaos",
+        "short": "M1:chaos",
+        "name": "chaos — M1 meta-term of volatile_instability, impatient_fleetingness",
+        "extent": [
+          "volatile_instability",
+          "impatient_fleetingness"
+        ],
+        "intent": [
+          "wavering",
+          "temperance"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:7",
+        "label": "fortitude",
+        "short": "M1:fortitude",
+        "name": "fortitude — M1 meta-term of resilient_stamina, impatient_fleetingness",
+        "extent": [
+          "resilient_stamina",
+          "impatient_fleetingness"
+        ],
+        "intent": [
+          "steadfastness",
+          "wavering"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:8",
+        "label": "temperance",
+        "short": "M1:temperance",
+        "name": "temperance — M1 meta-term of patient_endurance, volatile_instability",
+        "extent": [
+          "patient_endurance",
+          "volatile_instability"
+        ],
+        "intent": [
+          "flexibility",
+          "temperance"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:9",
+        "label": "Mixed_resilient_instability",
+        "short": "Mix:Mixed_resilient_instability",
+        "name": "Mixed_resilient_instability — mixed meta-term of resilient_stamina, volatile_instability",
+        "extent": [
+          "resilient_stamina",
+          "volatile_instability"
+        ],
+        "intent": [
+          "flexibility",
+          "wavering"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:10",
+        "label": "Mixed_patient_fleetingness",
+        "short": "Mix:Mixed_patient_fleetingness",
+        "name": "Mixed_patient_fleetingness — mixed meta-term of patient_endurance, impatient_fleetingness",
+        "extent": [
+          "patient_endurance",
+          "impatient_fleetingness"
+        ],
+        "intent": [
+          "steadfastness",
+          "temperance"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:11",
+        "label": "steadfastness",
+        "short": "M2:steadfastness",
+        "name": "steadfastness — M2 meta-term containing resilient_stamina, patient_endurance, impatient_fleetingness",
+        "extent": [
+          "resilient_stamina",
+          "patient_endurance",
+          "impatient_fleetingness"
+        ],
+        "intent": [
+          "steadfastness"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:12",
+        "label": "flexibility",
+        "short": "M2:flexibility",
+        "name": "flexibility — M2 meta-term containing resilient_stamina, patient_endurance, volatile_instability",
+        "extent": [
+          "resilient_stamina",
+          "patient_endurance",
+          "volatile_instability"
+        ],
+        "intent": [
+          "flexibility"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:13",
+        "label": "wavering",
+        "short": "M2:wavering",
+        "name": "wavering — M2 meta-term containing volatile_instability, impatient_fleetingness, resilient_stamina",
+        "extent": [
+          "volatile_instability",
+          "impatient_fleetingness",
+          "resilient_stamina"
+        ],
+        "intent": [
+          "wavering"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:14",
+        "label": "temperance",
+        "short": "M2:temperance",
+        "name": "temperance — M2 meta-term containing volatile_instability, impatient_fleetingness, patient_endurance",
+        "extent": [
+          "volatile_instability",
+          "impatient_fleetingness",
+          "patient_endurance"
+        ],
+        "intent": [
+          "temperance"
+        ],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S1:15",
+        "label": "endurance*",
+        "short": "endurance",
+        "name": "Fully-articulated endurance",
+        "extent": [
+          "resilient_stamina",
+          "patient_endurance",
+          "volatile_instability",
+          "impatient_fleetingness"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "~S1",
+        "role": "interface"
+      },
+      {
+        "id": "~S2:1",
+        "label": "momentary_existence",
+        "short": "S1",
+        "name": "momentary_existence — inner term S1",
+        "extent": [
+          "momentary_existence"
+        ],
+        "intent": [
+          "evanescent_presence",
+          "transient_eternity",
+          "nullifying_continuum"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:2",
+        "label": "pending_vanishment",
+        "short": "S2",
+        "name": "pending_vanishment — inner term S2",
+        "extent": [
+          "pending_vanishment"
+        ],
+        "intent": [
+          "evanescent_presence",
+          "transient_eternity",
+          "vanishing_eternality"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:3",
+        "label": "permanent_existence",
+        "short": "~S1",
+        "name": "permanent_existence — inner term ~S1",
+        "extent": [
+          "permanent_existence"
+        ],
+        "intent": [
+          "transient_eternity",
+          "nullifying_continuum",
+          "vanishing_eternality"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:4",
+        "label": "enduring_presence",
+        "short": "~S2",
+        "name": "enduring_presence — inner term ~S2",
+        "extent": [
+          "enduring_presence"
+        ],
+        "intent": [
+          "evanescent_presence",
+          "nullifying_continuum",
+          "vanishing_eternality"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:5",
+        "label": "evanescent",
+        "short": "M1:evanescent",
+        "name": "evanescent — M1 meta-term of momentary_existence, pending_vanishment",
+        "extent": [
+          "momentary_existence",
+          "pending_vanishment"
+        ],
+        "intent": [
+          "evanescent_presence",
+          "transient_eternity"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:6",
+        "label": "eternal",
+        "short": "M1:eternal",
+        "name": "eternal — M1 meta-term of permanent_existence, enduring_presence",
+        "extent": [
+          "permanent_existence",
+          "enduring_presence"
+        ],
+        "intent": [
+          "nullifying_continuum",
+          "vanishing_eternality"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:7",
+        "label": "transient",
+        "short": "M1:transient",
+        "name": "transient — M1 meta-term of momentary_existence, enduring_presence",
+        "extent": [
+          "momentary_existence",
+          "enduring_presence"
+        ],
+        "intent": [
+          "evanescent_presence",
+          "nullifying_continuum"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:8",
+        "label": "phantom",
+        "short": "M1:phantom",
+        "name": "phantom — M1 meta-term of pending_vanishment, permanent_existence",
+        "extent": [
+          "pending_vanishment",
+          "permanent_existence"
+        ],
+        "intent": [
+          "transient_eternity",
+          "vanishing_eternality"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:9",
+        "label": "Mixed_momentary_permanence",
+        "short": "Mix:Mixed_momentary_permanence",
+        "name": "Mixed_momentary_permanence — mixed meta-term of momentary_existence, permanent_existence",
+        "extent": [
+          "momentary_existence",
+          "permanent_existence"
+        ],
+        "intent": [
+          "transient_eternity",
+          "nullifying_continuum"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:10",
+        "label": "Mixed_pending_enduring",
+        "short": "Mix:Mixed_pending_enduring",
+        "name": "Mixed_pending_enduring — mixed meta-term of pending_vanishment, enduring_presence",
+        "extent": [
+          "pending_vanishment",
+          "enduring_presence"
+        ],
+        "intent": [
+          "evanescent_presence",
+          "vanishing_eternality"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:11",
+        "label": "evanescent_presence",
+        "short": "M2:evanescent_presence",
+        "name": "evanescent_presence — M2 meta-term containing momentary_existence, pending_vanishment, enduring_presence",
+        "extent": [
+          "momentary_existence",
+          "pending_vanishment",
+          "enduring_presence"
+        ],
+        "intent": [
+          "evanescent_presence"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:12",
+        "label": "transient_eternity",
+        "short": "M2:transient_eternity",
+        "name": "transient_eternity — M2 meta-term containing momentary_existence, pending_vanishment, permanent_existence",
+        "extent": [
+          "momentary_existence",
+          "pending_vanishment",
+          "permanent_existence"
+        ],
+        "intent": [
+          "transient_eternity"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:13",
+        "label": "nullifying_continuum",
+        "short": "M2:nullifying_continuum",
+        "name": "nullifying_continuum — M2 meta-term containing permanent_existence, enduring_presence, momentary_existence",
+        "extent": [
+          "permanent_existence",
+          "enduring_presence",
+          "momentary_existence"
+        ],
+        "intent": [
+          "nullifying_continuum"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:14",
+        "label": "vanishing_eternality",
+        "short": "M2:vanishing_eternality",
+        "name": "vanishing_eternality — M2 meta-term containing permanent_existence, enduring_presence, pending_vanishment",
+        "extent": [
+          "permanent_existence",
+          "enduring_presence",
+          "pending_vanishment"
+        ],
+        "intent": [
+          "vanishing_eternality"
+        ],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "layer_2_internal"
+      },
+      {
+        "id": "~S2:15",
+        "label": "ephemerality*",
+        "short": "ephemerality",
+        "name": "Fully-articulated ephemerality",
+        "extent": [
+          "momentary_existence",
+          "pending_vanishment",
+          "permanent_existence",
+          "enduring_presence"
+        ],
+        "intent": [],
+        "layer": 2,
+        "origin": "~S2",
+        "role": "interface"
+      }
+    ],
+    "edges": [
+      [
+        "A:15",
+        "A:11"
+      ],
+      [
+        "A:15",
+        "A:12"
+      ],
+      [
+        "A:15",
+        "A:13"
+      ],
+      [
+        "A:15",
+        "A:14"
+      ],
+      [
+        "A:11",
+        "A:5"
+      ],
+      [
+        "A:11",
+        "A:7"
+      ],
+      [
+        "A:11",
+        "A:10"
+      ],
+      [
+        "A:12",
+        "A:5"
+      ],
+      [
+        "A:12",
+        "A:8"
+      ],
+      [
+        "A:12",
+        "A:9"
+      ],
+      [
+        "A:13",
+        "A:6"
+      ],
+      [
+        "A:13",
+        "A:7"
+      ],
+      [
+        "A:13",
+        "A:9"
+      ],
+      [
+        "A:14",
+        "A:6"
+      ],
+      [
+        "A:14",
+        "A:8"
+      ],
+      [
+        "A:14",
+        "A:10"
+      ],
+      [
+        "A:5",
+        "S1:15"
+      ],
+      [
+        "A:5",
+        "S2:15"
+      ],
+      [
+        "A:6",
+        "~S1:15"
+      ],
+      [
+        "A:6",
+        "~S2:15"
+      ],
+      [
+        "A:7",
+        "S1:15"
+      ],
+      [
+        "A:7",
+        "~S2:15"
+      ],
+      [
+        "A:8",
+        "S2:15"
+      ],
+      [
+        "A:8",
+        "~S1:15"
+      ],
+      [
+        "A:9",
+        "S1:15"
+      ],
+      [
+        "A:9",
+        "~S1:15"
+      ],
+      [
+        "A:10",
+        "S2:15"
+      ],
+      [
+        "A:10",
+        "~S2:15"
+      ],
+      [
+        "S1:15",
+        "S1:11"
+      ],
+      [
+        "S1:15",
+        "S1:12"
+      ],
+      [
+        "S1:15",
+        "S1:13"
+      ],
+      [
+        "S1:15",
+        "S1:14"
+      ],
+      [
+        "S1:11",
+        "S1:5"
+      ],
+      [
+        "S1:11",
+        "S1:7"
+      ],
+      [
+        "S1:11",
+        "S1:10"
+      ],
+      [
+        "S1:12",
+        "S1:5"
+      ],
+      [
+        "S1:12",
+        "S1:8"
+      ],
+      [
+        "S1:12",
+        "S1:9"
+      ],
+      [
+        "S1:13",
+        "S1:6"
+      ],
+      [
+        "S1:13",
+        "S1:7"
+      ],
+      [
+        "S1:13",
+        "S1:9"
+      ],
+      [
+        "S1:14",
+        "S1:6"
+      ],
+      [
+        "S1:14",
+        "S1:8"
+      ],
+      [
+        "S1:14",
+        "S1:10"
+      ],
+      [
+        "S1:5",
+        "S1:1"
+      ],
+      [
+        "S1:5",
+        "S1:2"
+      ],
+      [
+        "S1:6",
+        "S1:3"
+      ],
+      [
+        "S1:6",
+        "S1:4"
+      ],
+      [
+        "S1:7",
+        "S1:1"
+      ],
+      [
+        "S1:7",
+        "S1:4"
+      ],
+      [
+        "S1:8",
+        "S1:2"
+      ],
+      [
+        "S1:8",
+        "S1:3"
+      ],
+      [
+        "S1:9",
+        "S1:1"
+      ],
+      [
+        "S1:9",
+        "S1:3"
+      ],
+      [
+        "S1:10",
+        "S1:2"
+      ],
+      [
+        "S1:10",
+        "S1:4"
+      ],
+      [
+        "S1:1",
+        "A:0"
+      ],
+      [
+        "S1:2",
+        "A:0"
+      ],
+      [
+        "S1:3",
+        "A:0"
+      ],
+      [
+        "S1:4",
+        "A:0"
+      ],
+      [
+        "S2:15",
+        "S2:11"
+      ],
+      [
+        "S2:15",
+        "S2:12"
+      ],
+      [
+        "S2:15",
+        "S2:13"
+      ],
+      [
+        "S2:15",
+        "S2:14"
+      ],
+      [
+        "S2:11",
+        "S2:5"
+      ],
+      [
+        "S2:11",
+        "S2:7"
+      ],
+      [
+        "S2:11",
+        "S2:10"
+      ],
+      [
+        "S2:12",
+        "S2:5"
+      ],
+      [
+        "S2:12",
+        "S2:8"
+      ],
+      [
+        "S2:12",
+        "S2:9"
+      ],
+      [
+        "S2:13",
+        "S2:6"
+      ],
+      [
+        "S2:13",
+        "S2:7"
+      ],
+      [
+        "S2:13",
+        "S2:9"
+      ],
+      [
+        "S2:14",
+        "S2:6"
+      ],
+      [
+        "S2:14",
+        "S2:8"
+      ],
+      [
+        "S2:14",
+        "S2:10"
+      ],
+      [
+        "S2:5",
+        "S2:1"
+      ],
+      [
+        "S2:5",
+        "S2:2"
+      ],
+      [
+        "S2:6",
+        "S2:3"
+      ],
+      [
+        "S2:6",
+        "S2:4"
+      ],
+      [
+        "S2:7",
+        "S2:1"
+      ],
+      [
+        "S2:7",
+        "S2:4"
+      ],
+      [
+        "S2:8",
+        "S2:2"
+      ],
+      [
+        "S2:8",
+        "S2:3"
+      ],
+      [
+        "S2:9",
+        "S2:1"
+      ],
+      [
+        "S2:9",
+        "S2:3"
+      ],
+      [
+        "S2:10",
+        "S2:2"
+      ],
+      [
+        "S2:10",
+        "S2:4"
+      ],
+      [
+        "S2:1",
+        "A:0"
+      ],
+      [
+        "S2:2",
+        "A:0"
+      ],
+      [
+        "S2:3",
+        "A:0"
+      ],
+      [
+        "S2:4",
+        "A:0"
+      ],
+      [
+        "~S1:15",
+        "~S1:11"
+      ],
+      [
+        "~S1:15",
+        "~S1:12"
+      ],
+      [
+        "~S1:15",
+        "~S1:13"
+      ],
+      [
+        "~S1:15",
+        "~S1:14"
+      ],
+      [
+        "~S1:11",
+        "~S1:5"
+      ],
+      [
+        "~S1:11",
+        "~S1:7"
+      ],
+      [
+        "~S1:11",
+        "~S1:10"
+      ],
+      [
+        "~S1:12",
+        "~S1:5"
+      ],
+      [
+        "~S1:12",
+        "~S1:8"
+      ],
+      [
+        "~S1:12",
+        "~S1:9"
+      ],
+      [
+        "~S1:13",
+        "~S1:6"
+      ],
+      [
+        "~S1:13",
+        "~S1:7"
+      ],
+      [
+        "~S1:13",
+        "~S1:9"
+      ],
+      [
+        "~S1:14",
+        "~S1:6"
+      ],
+      [
+        "~S1:14",
+        "~S1:8"
+      ],
+      [
+        "~S1:14",
+        "~S1:10"
+      ],
+      [
+        "~S1:5",
+        "~S1:1"
+      ],
+      [
+        "~S1:5",
+        "~S1:2"
+      ],
+      [
+        "~S1:6",
+        "~S1:3"
+      ],
+      [
+        "~S1:6",
+        "~S1:4"
+      ],
+      [
+        "~S1:7",
+        "~S1:1"
+      ],
+      [
+        "~S1:7",
+        "~S1:4"
+      ],
+      [
+        "~S1:8",
+        "~S1:2"
+      ],
+      [
+        "~S1:8",
+        "~S1:3"
+      ],
+      [
+        "~S1:9",
+        "~S1:1"
+      ],
+      [
+        "~S1:9",
+        "~S1:3"
+      ],
+      [
+        "~S1:10",
+        "~S1:2"
+      ],
+      [
+        "~S1:10",
+        "~S1:4"
+      ],
+      [
+        "~S1:1",
+        "A:0"
+      ],
+      [
+        "~S1:2",
+        "A:0"
+      ],
+      [
+        "~S1:3",
+        "A:0"
+      ],
+      [
+        "~S1:4",
+        "A:0"
+      ],
+      [
+        "~S2:15",
+        "~S2:11"
+      ],
+      [
+        "~S2:15",
+        "~S2:12"
+      ],
+      [
+        "~S2:15",
+        "~S2:13"
+      ],
+      [
+        "~S2:15",
+        "~S2:14"
+      ],
+      [
+        "~S2:11",
+        "~S2:5"
+      ],
+      [
+        "~S2:11",
+        "~S2:7"
+      ],
+      [
+        "~S2:11",
+        "~S2:10"
+      ],
+      [
+        "~S2:12",
+        "~S2:5"
+      ],
+      [
+        "~S2:12",
+        "~S2:8"
+      ],
+      [
+        "~S2:12",
+        "~S2:9"
+      ],
+      [
+        "~S2:13",
+        "~S2:6"
+      ],
+      [
+        "~S2:13",
+        "~S2:7"
+      ],
+      [
+        "~S2:13",
+        "~S2:9"
+      ],
+      [
+        "~S2:14",
+        "~S2:6"
+      ],
+      [
+        "~S2:14",
+        "~S2:8"
+      ],
+      [
+        "~S2:14",
+        "~S2:10"
+      ],
+      [
+        "~S2:5",
+        "~S2:1"
+      ],
+      [
+        "~S2:5",
+        "~S2:2"
+      ],
+      [
+        "~S2:6",
+        "~S2:3"
+      ],
+      [
+        "~S2:6",
+        "~S2:4"
+      ],
+      [
+        "~S2:7",
+        "~S2:1"
+      ],
+      [
+        "~S2:7",
+        "~S2:4"
+      ],
+      [
+        "~S2:8",
+        "~S2:2"
+      ],
+      [
+        "~S2:8",
+        "~S2:3"
+      ],
+      [
+        "~S2:9",
+        "~S2:1"
+      ],
+      [
+        "~S2:9",
+        "~S2:3"
+      ],
+      [
+        "~S2:10",
+        "~S2:2"
+      ],
+      [
+        "~S2:10",
+        "~S2:4"
+      ],
+      [
+        "~S2:1",
+        "A:0"
+      ],
+      [
+        "~S2:2",
+        "A:0"
+      ],
+      [
+        "~S2:3",
+        "A:0"
+      ],
+      [
+        "~S2:4",
+        "A:0"
+      ]
+    ]
+  }
+}
